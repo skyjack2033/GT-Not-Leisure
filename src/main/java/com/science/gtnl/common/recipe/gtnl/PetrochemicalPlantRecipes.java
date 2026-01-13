@@ -134,7 +134,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
                 Materials.Silver.getPlasma(10))
             .fluidOutputs(
                 Materials.OilHeavy.getFluid(60),
-                Materials.Oil.getFluid(10),
+                Materials.Oil.getFluid(2),
                 Materials.Creosote.getFluid(120),
                 Materials.Water.getFluid(250),
                 FluidList.FermentedBacterialSludge.getFluidStack(10),
