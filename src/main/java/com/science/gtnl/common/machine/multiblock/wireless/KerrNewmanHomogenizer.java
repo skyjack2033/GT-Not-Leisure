@@ -172,21 +172,25 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
 
             beamUp = ScienceNotLeisure.proxy
                 .particleBeam(startUpX, startUpY, startUpZ, beamEndX, beamEndY, beamEndZ, 6, beamUp, true);
-            beamUp.startX = startUpX;
-            beamUp.startY = startUpY;
-            beamUp.startZ = startUpZ;
-            beamUp.endX = beamEndX;
-            beamUp.endY = beamEndY;
-            beamUp.endZ = beamEndZ;
+            if (beamUp != null) {
+                beamUp.startX = startUpX;
+                beamUp.startY = startUpY;
+                beamUp.startZ = startUpZ;
+                beamUp.endX = beamEndX;
+                beamUp.endY = beamEndY;
+                beamUp.endZ = beamEndZ;
+            }
 
             beamDown = ScienceNotLeisure.proxy
                 .particleBeam(startDownX, startDownY, startDownZ, beamEndX, beamEndY, beamEndZ, 6, beamDown, true);
-            beamDown.startX = startDownX;
-            beamDown.startY = startDownY;
-            beamDown.startZ = startDownZ;
-            beamDown.endX = beamEndX;
-            beamDown.endY = beamEndY;
-            beamDown.endZ = beamEndZ;
+            if (beamDown != null) {
+                beamDown.startX = startDownX;
+                beamDown.startY = startDownY;
+                beamDown.startZ = startDownZ;
+                beamDown.endX = beamEndX;
+                beamDown.endY = beamEndY;
+                beamDown.endZ = beamEndZ;
+            }
         }
     }
 
