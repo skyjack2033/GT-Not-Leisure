@@ -25,13 +25,13 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.common.machine.multiblock.LargeIncubator;
+import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
-import bartworks.API.recipe.BartWorksRecipeMaps;
 import bartworks.util.BWUtil;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Materials;
@@ -257,7 +257,7 @@ public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<Microorg
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return BartWorksRecipeMaps.bacterialVatRecipes;
+        return GTNLRecipeMaps.MicroorganismMasterRecipes;
     }
 
     @Override

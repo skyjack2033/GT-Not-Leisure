@@ -3234,6 +3234,7 @@ Tooltip_LargeIncubator_Radio_Hatch=放射仓
 Tooltip_LargeIncubator_Casing=任意塑料混凝土方块
 
 NameMicroorganismMaster=微生物之主
+gtnl.recipe.MicroorganismMasterRecipes=微生物之主
 MicroorganismMasterRecipeType=细菌培养缸
 Tooltip_MicroorganismMaster_00=每级玻璃等级额外提供5%的加速和耗电减免(乘算叠加)
 Tooltip_MicroorganismMaster_01=不再需要保持输出仓半满

@@ -89,6 +89,7 @@ import com.science.gtnl.common.recipe.gtnl.IsaMillRecipes;
 import com.science.gtnl.common.recipe.gtnl.LavaMakerRecipes;
 import com.science.gtnl.common.recipe.gtnl.ManaInfusionRecipes;
 import com.science.gtnl.common.recipe.gtnl.MatterFabricatorRecipes;
+import com.science.gtnl.common.recipe.gtnl.MicroorganismMasterRecipes;
 import com.science.gtnl.common.recipe.gtnl.MolecularTransformerRecipes;
 import com.science.gtnl.common.recipe.gtnl.NanitesIntegratedProcessingRecipes;
 import com.science.gtnl.common.recipe.gtnl.NaquadahReactorRecipes;
@@ -161,11 +162,12 @@ public class RecipeLoader {
             recipePool.loadRecipes();
         }
 
-        RecipeUtil.copyAllRecipes(GTNLRecipeMaps.ConvertToCircuitAssembler, RecipeMaps.circuitAssemblerRecipes);
+        RecipeUtil.copyAllRecipes(GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes, RecipeMaps.circuitAssemblerRecipes);
     }
 
     public static void loadServerStart() {
-        RecipeUtil.removeMatchingRecipes(GTNLRecipeMaps.ConvertToCircuitAssembler, RecipeMaps.circuitAssemblerRecipes);
+        RecipeUtil
+            .removeMatchingRecipes(GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes, RecipeMaps.circuitAssemblerRecipes);
         if (recipesAdded) return;
         if (MainConfig.enableDeleteRecipe) {
             RemoveRecipes.removeRecipes();
@@ -212,7 +214,8 @@ public class RecipeLoader {
             new CyclotronRecipes(), new RuneAltarRecipes(), new IndustrialRockCrusherRecipes(),
             new PrecisionLaserEngraver(), new NanitesIntegratedProcessingRecipes(), new NanoForgeRecipes(),
             new SteamWeatherModuleRecipes(), new ElectricNeutronActivatorRecipes(), new ReactorProcessingUnitRecipes(),
-            new NuclearSaltProcessingPlantRecipes(), new MaceratorRecipes(), new QuantumForceTransformerRecipes() };
+            new NuclearSaltProcessingPlantRecipes(), new MaceratorRecipes(), new QuantumForceTransformerRecipes(),
+            new MicroorganismMasterRecipes() };
 
         for (IRecipePool recipePool : recipePools) {
             recipePool.loadRecipes();
@@ -269,7 +272,7 @@ public class RecipeLoader {
     }
 
     public static void loadCircuitRelatedRecipes() {
-        RecipeUtil.copyAllRecipes(GTNLRecipeMaps.ConvertToCircuitAssembler, RecipeMaps.circuitAssemblerRecipes);
+        RecipeUtil.copyAllRecipes(GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes, RecipeMaps.circuitAssemblerRecipes);
 
         new CircuitAssemblyLineRecipes().loadRecipes();
 

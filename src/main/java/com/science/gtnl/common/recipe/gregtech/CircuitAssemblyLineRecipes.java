@@ -45,7 +45,7 @@ public class CircuitAssemblyLineRecipes implements IRecipePool {
 
     private static void rebuildCircuitAssemblerMap(HashSet<GTRecipe> toRem, HashSet<GTRecipe> toAdd) {
         reAddOriginalRecipes();
-        GTNLRecipeMaps.ConvertToCircuitAssembler.getAllRecipes()
+        GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes.getAllRecipes()
             .forEach(e -> handleCircuitRecipeRebuilding(e, toRem, toAdd));
     }
 

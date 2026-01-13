@@ -30,7 +30,7 @@ import tectech.recipe.TTRecipeAdder;
 
 public class CircuitAssemblerConvertRecipes implements IRecipePool {
 
-    public RecipeMap<?> CAR = GTNLRecipeMaps.ConvertToCircuitAssembler;
+    public RecipeMap<?> CAR = GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes;
 
     @Override
     public void loadRecipes() {
