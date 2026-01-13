@@ -147,6 +147,8 @@ public class LanguageLoader {
         addWerkstoffLocalization(GTNLMaterials.GlowThorium, "荧光钍燃料", false);
         addWerkstoffLocalization(GTNLMaterials.UraniumFuel, "混合铀燃料", false);
         addWerkstoffLocalization(GTNLMaterials.UraniumWaste, "铀废料", false);
+        addWerkstoffLocalization(GTNLMaterials.AmmoniumBisulfate, "硫酸氢铵", false);
+        addWerkstoffLocalization(GTNLMaterials.AmmoniumPersulfate, "过硫酸铵", false);
 
         addGTMaterialLocalization(Materials.BlueAlloy, "蓝色合金", true);
 

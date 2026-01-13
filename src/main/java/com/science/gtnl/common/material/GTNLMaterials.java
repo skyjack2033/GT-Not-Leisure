@@ -1637,6 +1637,28 @@ public class GTNLMaterials implements Runnable {
             .addCells(),
         offsetID + 128,
         TextureSet.SET_FLUID);
+
+    public static final Werkstoff AmmoniumBisulfate = new Werkstoff(
+        new short[] { 250, 245, 225 },
+        "Ammonium Bisulfate",
+        subscriptNumbers("(NH4)HSO4"),
+        new Werkstoff.Stats(),
+        Werkstoff.Types.COMPOUND,
+        new Werkstoff.GenerationFeatures().disable()
+            .addCells(),
+        offsetID + 129,
+        TextureSet.SET_FLUID);
+
+    public static final Werkstoff AmmoniumPersulfate = new Werkstoff(
+        new short[] { 200, 235, 255 },
+        "Ammonium Persulfate",
+        subscriptNumbers("(NH4)2S2O8"),
+        new Werkstoff.Stats(),
+        Werkstoff.Types.COMPOUND,
+        new Werkstoff.GenerationFeatures().disable()
+            .addCells(),
+        offsetID + 130,
+        TextureSet.SET_FLUID);
     // Special
 
     public static final Werkstoff Periodicium = new Werkstoff(

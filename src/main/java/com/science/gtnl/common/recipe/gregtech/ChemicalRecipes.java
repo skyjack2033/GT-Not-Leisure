@@ -2,7 +2,6 @@ package com.science.gtnl.common.recipe.gregtech;
 
 import static gregtech.api.enums.Mods.*;
 import static gregtech.api.util.GTRecipeBuilder.*;
-import static gregtech.api.util.GTRecipeConstants.*;
 
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -593,6 +592,22 @@ public class ChemicalRecipes implements IRecipePool {
             .fluidOutputs(new FluidStack(GTPPFluids.GeneticMutagen, 8_000))
             .duration(30 * SECONDS)
             .eut(TierEU.RECIPE_HV)
+            .addTo(MCRR);
+
+        GTValues.RA.stdBuilder()
+            .fluidInputs(Materials.Ammonia.getGas(1000), Materials.SulfuricAcid.getFluid(1000))
+            .fluidOutputs(GTNLMaterials.AmmoniumBisulfate.getFluidOrGas(1000))
+            .duration(15 * SECONDS)
+            .eut(TierEU.EV)
+            .addTo(MCRR);
+
+        GTValues.RA.stdBuilder()
+            .fluidInputs(GTNLMaterials.AmmoniumPersulfate.getFluidOrGas(1000), Materials.Water.getFluid(2000))
+            .fluidOutputs(
+                GTNLMaterials.AmmoniumBisulfate.getFluidOrGas(2000),
+                new FluidStack(GTPPFluids.HydrogenPeroxide, 1000))
+            .duration(30 * SECONDS)
+            .eut(TierEU.IV)
             .addTo(MCRR);
     }
 }
