@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
@@ -20,10 +21,12 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.MultiChildWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotGroup;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.reavaritia.common.item.ToolHelper;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopUI;
 
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.gui.modularui.GUITextureSet;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.util.GTUtility;
 
 public interface IControllerUpgrade {
@@ -41,6 +44,28 @@ public interface IControllerUpgrade {
     boolean isUpgradeConsumed();
 
     void setUpgradeConsumed(boolean consumed);
+
+    default void dropStoredUpgradeItems(IGregTechTileEntity gtTE) {
+        if (gtTE == null) return;
+        if (gtTE.isClientSide()) return;
+
+        ItemStack[] items = getStoredUpgradeWindowItems();
+        if (items == null) return;
+
+        World world = gtTE.getWorld();
+        double x = gtTE.getXCoord() + 0.5;
+        double y = gtTE.getYCoord() + 0.5;
+        double z = gtTE.getZCoord() + 0.5;
+
+        for (int i = 0; i < items.length; i++) {
+            ItemStack stack = items[i];
+
+            if (stack != null && stack.stackSize > 0) {
+                ToolHelper.dropItem(stack.copy(), world, x, y, z);
+                items[i] = null;
+            }
+        }
+    }
 
     default void saveUpgradeNBTData(NBTTagCompound aNBT) {
         NBTTagCompound upgradeWindowStorageNBTTag = new NBTTagCompound();

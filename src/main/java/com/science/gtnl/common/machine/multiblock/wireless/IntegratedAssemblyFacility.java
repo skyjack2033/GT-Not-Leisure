@@ -255,6 +255,12 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     }
 
     @Override
+    public void onBlockDestroyed() {
+        super.onBlockDestroyed();
+        dropStoredUpgradeItems(getBaseMetaTileEntity());
+    }
+
+    @Override
     public boolean checkHatch() {
         return super.checkHatch() && mCasingTier >= 0;
     }

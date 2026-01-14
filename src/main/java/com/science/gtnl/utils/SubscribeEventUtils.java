@@ -81,7 +81,9 @@ public class SubscribeEventUtils {
             ModList.ReAvaritia.ID,
             ModList.ScienceNotLeisure.ID,
             ModList.Sudoku.ID,
-            ModList.GiveCount.ID));
+            ModList.GiveCount.ID,
+            ModList.ChromaticTooltips.ID,
+            ModList.ChromaticTooltipsCompat.ID));
 
     public static Object2IntMap<UUID> foodTickTimers = new Object2IntOpenHashMap<>();
 

@@ -118,6 +118,12 @@ public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<Horizon
     }
 
     @Override
+    public void onBlockDestroyed() {
+        super.onBlockDestroyed();
+        dropStoredUpgradeItems(getBaseMetaTileEntity());
+    }
+
+    @Override
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
         super.addUIWidgets(builder, buildContext);
         createUpgradeButton(builder, buildContext);

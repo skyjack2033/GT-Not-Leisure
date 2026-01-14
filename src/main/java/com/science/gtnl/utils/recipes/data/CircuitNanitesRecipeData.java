@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.minecraft.item.ItemStack;
 
+import gregtech.api.util.GTUtility;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -13,9 +14,9 @@ import lombok.Setter;
 @Setter
 public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipeData> {
 
-    public static Object2ObjectMap<ItemStack, CircuitNanitesRecipeData> recipeDataMap = new Object2ObjectOpenHashMap<>();
+    public static Object2ObjectMap<GTUtility.ItemId, CircuitNanitesRecipeData> recipeDataMap = new Object2ObjectOpenHashMap<>();
 
-    public ItemStack stack;
+    public GTUtility.ItemId stack;
     public double speedBoost = 1.0, euModifier = 1.0, failedChance = 0, outputMultiplier = 1.0;
     public int parallelCount = 1, maxTierSkips = 1;
     public double speedBoostMin = 0, speedBoostMax = 1;
@@ -32,7 +33,7 @@ public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipe
         double euModifierMin, double euModifierMax, int maxTierSkipsMin, int maxTierSkipsMax, double failedChanceMin,
         double failedChanceMax, int parallelCountMin, int parallelCountMax, double outputMultiplierMin,
         double outputMultiplierMax) {
-        this.stack = stack;
+        this.stack = GTUtility.ItemId.createWithoutNBT(stack);
         this.worldSeed = worldSeed;
         setRangeParams(
             speedBoostMin,
@@ -48,7 +49,7 @@ public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipe
             outputMultiplierMin,
             outputMultiplierMax);
         setDirectParams(worldSeed);
-        recipeDataMap.put(stack, this);
+        recipeDataMap.put(this.stack, this);
     }
 
     public static CircuitNanitesRecipeData getOrCreate(ItemStack stack, long worldSeed, double speedBoostMin,
@@ -56,13 +57,13 @@ public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipe
         double failedChanceMin, double failedChanceMax, int parallelCountMin, int parallelCountMax,
         double outputMultiplierMin, double outputMultiplierMax) {
 
-        CircuitNanitesRecipeData existing = recipeDataMap.get(stack);
+        CircuitNanitesRecipeData existing = recipeDataMap.get(GTUtility.ItemId.createWithoutNBT(stack));
         if (existing != null) {
             return existing;
         }
 
         CircuitNanitesRecipeData data = new CircuitNanitesRecipeData();
-        data.stack = stack;
+        data.stack = GTUtility.ItemId.createWithoutNBT(stack);
         data.worldSeed = worldSeed;
         data.setRangeParams(
             speedBoostMin,
@@ -78,7 +79,7 @@ public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipe
             outputMultiplierMin,
             outputMultiplierMax);
         data.setDirectParams(worldSeed);
-        recipeDataMap.put(stack, data);
+        recipeDataMap.put(data.stack, data);
         return data;
     }
 
@@ -123,7 +124,7 @@ public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipe
     public static double randomDoubleInRange(Random random, double min, double max) {
         if (max <= min) return min;
         double value = min + (max - min) * random.nextDouble();
-        return Math.round(value * 1000.0) / 1000.0;
+        return Math.round(value * 100.0) / 100.0;
     }
 
     public static int randomIntInRange(Random random, int min, int max) {

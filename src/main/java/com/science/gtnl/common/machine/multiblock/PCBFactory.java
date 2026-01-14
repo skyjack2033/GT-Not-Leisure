@@ -425,6 +425,12 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
         mWaterInputHatches.clear();
     }
 
+    @Override
+    public void onBlockDestroyed() {
+        super.onBlockDestroyed();
+        dropStoredUpgradeItems(getBaseMetaTileEntity());
+    }
+
     public int getMachineTier() {
         ItemStack stack = getControllerSlot();
         if (GTUtility.areStacksEqual(stack, t1Nanite)) return 1;
@@ -511,7 +517,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
             if (parallel <= 0) break;
 
-            if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[tier * 2 - 1])) {
+            if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[tier + 3])) {
                 int deductAmount = 50 / (int) GTUtility.powInt(2, machineTier - tier);
                 int timesToDeduct = fluidStack.amount / deductAmount;
                 if (timesToDeduct > 0) {
