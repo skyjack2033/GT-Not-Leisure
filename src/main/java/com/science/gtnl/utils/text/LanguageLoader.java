@@ -124,7 +124,7 @@ public class LanguageLoader {
         addWerkstoffLocalization(GTNLMaterials.RadonCrackedEnrichedNaquadah, "加氡裂化富集硅岩", false);
         addWerkstoffLocalization(GTNLMaterials.NaquadriaWaste, "超能硅岩废液", false);
         addWerkstoffLocalization(GTNLMaterials.SmallBaka, "硝苯氮", false);
-        addWerkstoffLocalization(GTNLMaterials.LargeBaka, "\uD86D\uDFFC苯氮", false);
+        addWerkstoffLocalization(GTNLMaterials.LargeBaka, "𫟼苯氮", false);
         addWerkstoffLocalization(GTNLMaterials.CompressedSteam, "压缩蒸汽", false);
         addWerkstoffLocalization(GTNLMaterials.Stronze, "青钢", false);
         addWerkstoffLocalization(GTNLMaterials.Breel, "青铁", false);
