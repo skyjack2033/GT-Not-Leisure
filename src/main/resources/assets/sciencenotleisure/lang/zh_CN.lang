@@ -768,6 +768,11 @@ Tooltip_AutoConfigurationMaintenanceHatch_01=它能掌控一切，除了自己.
 Tooltip_AutoConfigurationMaintenanceHatch_02=§b无私奉献！
 Info_ConfigurationMaintenanceHatch_00=配置机器处理耗时，单位：%%
 
+ConfigurationDroneDownLinkHatch=可配置无人机下行模块
+Tooltip_ConfigurationDroneDownLinkHatch_00=通过无人机维护多方块机器
+Tooltip_ConfigurationDroneDownLinkHatch_01=§m确实有点贪心
+Tooltip_ConfigurationDroneDownLinkHatch_02=§b俺也一样！
+
 NinefoldInputHatchEV=九重输入仓 (EV)
 NinefoldInputHatchIV=九重输入仓 (IV)
 NinefoldInputHatchLuV=九重输入仓 (LuV)

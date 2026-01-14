@@ -28,6 +28,7 @@ import com.science.gtnl.common.machine.cover.WirelessSteamCover;
 import com.science.gtnl.common.machine.hatch.BeamlinePipeMirror;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.hatch.CustomMaintenanceHatch;
+import com.science.gtnl.common.machine.hatch.CustomDroneDownLinkHatch;
 import com.science.gtnl.common.machine.hatch.DebugDataAccessHatch;
 import com.science.gtnl.common.machine.hatch.DebugEnergyHatch;
 import com.science.gtnl.common.machine.hatch.DualInputHatch;
@@ -2225,6 +2226,19 @@ public class MachineLoader {
                     StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_01"),
                     StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_02"), }));
         addItemTooltip(GTNLItemList.AutoConfigurationMaintenanceHatch.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+
+        GTNLItemList.ConfigurationDroneDownLinkHatch.set(
+            new CustomDroneDownLinkHatch(
+                CONFIGURATION_DRONE_DOWN_LINK_HATCH.ID,
+                "ConfigurationDroneDownLinkHatch",
+                StatCollector.translateToLocal("ConfigurationDroneDownLinkHatch"),
+                80,
+                120,
+                5,
+                new String[] { StatCollector.translateToLocal("Tooltip_ConfigurationDroneDownLinkHatch_00"),
+                    StatCollector.translateToLocal("Tooltip_ConfigurationDroneDownLinkHatch_01"),
+                    StatCollector.translateToLocal("Tooltip_ConfigurationDroneDownLinkHatch_02"), }));
+        addItemTooltip(GTNLItemList.ConfigurationDroneDownLinkHatch.get(1), AnimatedText.SNL_LONEI);
 
         GTNLItemList.ExplosionDynamoHatch.set(
             new ExplosionDynamoHatch(
