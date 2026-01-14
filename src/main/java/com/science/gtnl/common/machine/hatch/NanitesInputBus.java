@@ -28,7 +28,7 @@ public class NanitesInputBus extends MTEHatchInputBus {
             name,
             nameRegional,
             8,
-            16,
+            4,
             new String[] { StatCollector.translateToLocal("Tooltip_NanitesInputBus_00"),
                 StatCollector.translateToLocal("Tooltip_NanitesInputBus_01") });
     }
@@ -99,9 +99,9 @@ public class NanitesInputBus extends MTEHatchInputBus {
         IItemHandlerModifiable inventoryHandler = getInventoryHandler();
         if (inventoryHandler == null) return;
         builder.widget(
-            SlotGroup.ofItemHandler(inventoryHandler, 4)
+            SlotGroup.ofItemHandler(inventoryHandler, 2)
                 .startFromSlot(0)
-                .endAtSlot(15)
+                .endAtSlot(3)
                 .background(getGUITextureSet().getItemSlot())
                 .widgetCreator(slot -> new SlotWidget(slot).setFilter(this::limitedAllowPutStack))
                 .build()
