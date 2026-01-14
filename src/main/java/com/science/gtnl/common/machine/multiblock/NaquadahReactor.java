@@ -339,7 +339,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         @Override
         public int getMaxParallelRecipes() {
-            return 4;
+            return useExtraGas ? 16 : 4;
         }
 
         @Override
@@ -465,7 +465,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         @Override
         public int getMaxParallelRecipes() {
-            return 64;
+            return useExtraGas ? 256 : 64;
         }
 
         @Override
@@ -681,7 +681,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         @Override
         public int getMaxParallelRecipes() {
-            return 4096;
+            return useExtraGas ? 16384 : 4096;
         }
 
         @Override

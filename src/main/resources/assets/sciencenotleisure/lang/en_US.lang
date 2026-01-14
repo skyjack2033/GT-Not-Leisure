@@ -3235,6 +3235,7 @@ Tooltip_LargeIncubator_Radio_Hatch=Radioactive Hatch
 Tooltip_LargeIncubator_Casing=Any Plastic Concrete Block
 
 NameMicroorganismMaster=Microorganism Master
+gtnl.recipe.MicroorganismMasterRecipes=Microorganism Master
 MicroorganismMasterRecipeType=Bacterial Incubator
 Tooltip_MicroorganismMaster_00=Each glass tier provides an additional 5% speed and power reduction (multiplicative).
 Tooltip_MicroorganismMaster_01=No longer needs to keep the output bus half full.
