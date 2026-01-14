@@ -38,7 +38,7 @@ public class NaquadahReactorRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .fluidInputs(GGMaterial.naquadahBasedFuelMkII.getFluidOrGas(16), Materials.Hydrogen.getGas(1600))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkIIDepleted.getFluidOrGas(16))
-            .duration(1250)
+            .duration(1000)
             .eut(0)
             .metadata(REACTOR_TIER, Pair.of(0, TierEU.RECIPE_UEV))
             .addTo(NRR);
@@ -46,7 +46,7 @@ public class NaquadahReactorRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .fluidInputs(GGMaterial.naquadahBasedFuelMkII.getFluidOrGas(125), Materials.Nitrogen.getPlasma(80))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkIIDepleted.getFluidOrGas(125))
-            .duration(12500)
+            .duration(10000)
             .eut(0)
             .metadata(REACTOR_TIER, Pair.of(0, TierEU.RECIPE_UMV))
             .addTo(NRR);
@@ -54,7 +54,7 @@ public class NaquadahReactorRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .fluidInputs(GGMaterial.naquadahBasedFuelMkIII.getFluidOrGas(16), Materials.Iron.getPlasma(40))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkIIIDepleted.getFluidOrGas(16))
-            .duration(2000)
+            .duration(1400)
             .eut(0)
             .metadata(REACTOR_TIER, Pair.of(1, TierEU.RECIPE_UMV))
             .addTo(NRR);
@@ -62,7 +62,7 @@ public class NaquadahReactorRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .fluidInputs(GGMaterial.naquadahBasedFuelMkIII.getFluidOrGas(125), Materials.Radon.getPlasma(100))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkIIIDepleted.getFluidOrGas(125))
-            .duration(20000)
+            .duration(14000)
             .eut(0)
             .metadata(REACTOR_TIER, Pair.of(1, TierEU.RECIPE_UXV))
             .addTo(NRR);

@@ -455,7 +455,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         @Override
         public int getDurationMultiple() {
-            return 10;
+            return 24;
         }
 
         @Override
