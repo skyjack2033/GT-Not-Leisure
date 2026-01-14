@@ -315,7 +315,7 @@ public class GTNLRecipeMaps {
         .of("gtnl.recipe.FuelRefiningComplexRecipes")
         .maxIO(4, 0, 8, 1)
         .frontend(GeneralFrontend::new)
-        .dontUseProgressBar()
+        .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
         .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.FuelRefiningComplex.get(1)))
         .neiSpecialInfoFormatter(HeatingCoilSpecialValueFormatter.INSTANCE)
         .neiRecipeComparator(

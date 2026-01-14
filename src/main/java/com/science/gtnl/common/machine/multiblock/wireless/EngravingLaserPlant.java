@@ -249,6 +249,12 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     }
 
     @Override
+    public void onBlockDestroyed() {
+        super.onBlockDestroyed();
+        dropStoredUpgradeItems(getBaseMetaTileEntity());
+    }
+
+    @Override
     public double getEUtDiscount() {
         return super.getEUtDiscount() * Math.pow(0.95, mGlassTier) * Math.pow(0.95, mCasingTier);
     }
