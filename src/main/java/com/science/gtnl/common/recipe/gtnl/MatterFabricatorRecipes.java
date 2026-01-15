@@ -39,7 +39,7 @@ public class MatterFabricatorRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(2),
                 GTOreDictUnificator.get(OrePrefixes.ingot, Materials.Iron, 1L)
                     .setStackDisplayName(StatCollector.translateToLocal("NEI.MatterFabricatorRecipes.01")))
-            .fluidOutputs(Materials.UUAmplifier.getFluid(100000))
+            .fluidOutputs(Materials.UUAmplifier.getFluid(2000))
             .eut(120)
             .duration(200)
             .fake()
@@ -62,7 +62,7 @@ public class MatterFabricatorRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(2),
                 GTOreDictUnificator.get(OrePrefixes.gem, Materials.Emerald, 1L)
                     .setStackDisplayName(StatCollector.translateToLocal("NEI.MatterFabricatorRecipes.02")))
-            .fluidOutputs(Materials.UUAmplifier.getFluid(100000))
+            .fluidOutputs(Materials.UUAmplifier.getFluid(2000))
             .eut(120)
             .duration(200)
             .fake()
@@ -85,7 +85,7 @@ public class MatterFabricatorRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(2),
                 GTOreDictUnificator.get(OrePrefixes.block, Materials.Iron, 1L)
                     .setStackDisplayName(StatCollector.translateToLocal("NEI.MatterFabricatorRecipes.03")))
-            .fluidOutputs(Materials.UUAmplifier.getFluid(900000))
+            .fluidOutputs(Materials.UUAmplifier.getFluid(20000))
             .eut(120)
             .duration(200)
             .fake()
