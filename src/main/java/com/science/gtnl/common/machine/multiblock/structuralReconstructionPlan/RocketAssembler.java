@@ -284,6 +284,6 @@ public class RocketAssembler extends GTMMultiMachineBase<RocketAssembler>
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
-        enableRender = aNBT.getBoolean("enableRender");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
     }
 }

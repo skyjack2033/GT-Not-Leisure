@@ -243,7 +243,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
-        enableRender = aNBT.getBoolean("enableRender");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
         mLinkedUnits.clear();
         if (aNBT.hasKey("LinkedUnits")) {
             NBTTagList linkedList = aNBT.getTagList("LinkedUnits", Constants.NBT.TAG_COMPOUND);

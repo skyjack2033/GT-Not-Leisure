@@ -754,7 +754,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
         public void loadNBTData(NBTTagCompound aNBT) {
             super.loadNBTData(aNBT);
             isRenderActive = aNBT.getBoolean("isRenderActive");
-            enableRender = aNBT.getBoolean("enableRender");
+            if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
         }
 
         @Override

@@ -275,7 +275,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         mExtraModule = aNBT.getBoolean("mExtraModule");
         gravitonShardsSpent = aNBT.getInteger("gravitonShardsSpent");
         isRenderActive = aNBT.getBoolean("isRenderActive");
-        enableRender = aNBT.getBoolean("enableRender");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
 
         if (aNBT.hasKey("totalPowerConsumed")) {
             totalPowerConsumed = new BigInteger(aNBT.getByteArray("totalPowerConsumed"));

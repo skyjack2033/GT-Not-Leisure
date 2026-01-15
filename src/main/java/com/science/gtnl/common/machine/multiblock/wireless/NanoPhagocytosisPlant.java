@@ -573,6 +573,6 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
         isRenderActive = aNBT.getBoolean("isRenderActive");
-        enableRender = aNBT.getBoolean("enableRender");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
     }
 }
