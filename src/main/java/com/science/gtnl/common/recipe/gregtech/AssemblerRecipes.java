@@ -2929,6 +2929,23 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
+                ItemList.Hatch_DroneDownLink.get(4),
+                ItemList.WetTransformer_LuV_IV.get(4),
+                ItemList.Field_Generator_IV.get(4),
+                ItemList.Sensor_IV.get(8),
+                ItemList.Emitter_IV.get(8),
+                ItemList.Robot_Arm_IV.get(16),
+                ItemList.Electric_Piston_IV.get(16),
+                ItemList.Electric_Pump_IV.get(16),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 16))
+            .itemOutputs(GTNLItemList.ConfigurationDroneDownLinkHatch.get(1))
+            .fluidInputs(Materials.TungstenSteel.getMolten(9216))
+            .duration(30 * SECONDS)
+            .eut(TierEU.RECIPE_IV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
                 ItemList.Super_Tank_EV.get(1),
                 GTModHandler.getModItem(Botania.ID, "pool", 4, 3),
                 GTModHandler.getModItem(Botania.ID, "spreader", 2, 3),

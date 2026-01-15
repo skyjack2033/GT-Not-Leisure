@@ -768,6 +768,11 @@ Tooltip_AutoConfigurationMaintenanceHatch_01=Does control everything but itself.
 Tooltip_AutoConfigurationMaintenanceHatch_02=§bSelfless dedication!
 Info_ConfigurationMaintenanceHatch_00=Configuration machine processing time, unit: %%
 
+ConfigurationDroneDownLinkHatch=Configuration Drone DownLink Module
+Tooltip_ConfigurationDroneDownLinkHatch_00=For maintaining Multiblocks with Drone
+Tooltip_ConfigurationDroneDownLinkHatch_01=§mIndeed a bit greedy
+Tooltip_ConfigurationDroneDownLinkHatch_02=§bMe too!
+
 NinefoldInputHatchEV=Nonuple Input Hatch (EV)
 NinefoldInputHatchIV=Nonuple Input Hatch (IV)
 NinefoldInputHatchLuV=Nonuple Input Hatch (LuV)

@@ -1186,6 +1186,7 @@ public enum GTNLItemList implements IItemContainer {
     DebugResearchStation,
     ExplosionDynamoHatch,
     AutoConfigurationMaintenanceHatch,
+    ConfigurationDroneDownLinkHatch,
     PipelessSteamHatch,
     PipelessSteamVent,
     PipelessJetstreamHatch,
