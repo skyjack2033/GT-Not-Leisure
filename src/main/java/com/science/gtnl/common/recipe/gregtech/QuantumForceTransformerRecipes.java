@@ -3,10 +3,12 @@ package com.science.gtnl.common.recipe.gregtech;
 import static gregtech.api.util.GTRecipeBuilder.*;
 import static gregtech.api.util.GTRecipeConstants.*;
 import static gregtech.api.util.GTRecipeConstants.QFT_FOCUS_TIER;
+import static gtPlusPlus.api.recipe.GTPPRecipeMaps.*;
 
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -61,5 +63,21 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
             .metadata(QFT_CATALYST, GregtechItemList.SimpleNaquadahCatalyst.get(0))
             .metadata(QFT_FOCUS_TIER, 2)
             .addTo(QFT);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                Materials.Lead.getDust(16),
+                Materials.Bauxite.getDust(32),
+                WerkstoffLoader.Ferberite.get(OrePrefixes.dust, 16))
+            .itemOutputs(
+                Materials.Titanium.getDust(64),
+                Materials.TungstenSteel.getDust(64),
+                Materials.TungstenCarbide.getDust(64),
+                Materials.Indium.getDust(64))
+            .duration(20 * SECONDS)
+            .eut(TierEU.RECIPE_UV)
+            .metadata(QFT_CATALYST, GregtechItemList.TitaTungstenIndiumCatalyst.get(0))
+            .metadata(QFT_FOCUS_TIER, 1)
+            .addTo(quantumForceTransformerRecipes);
     }
 }
