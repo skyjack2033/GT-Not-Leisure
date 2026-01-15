@@ -681,8 +681,6 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
 
     @Override
     public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        if (this.mMachine) return -1;
-
         int count = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(stackSize, 1, 64);
         int built;
 
