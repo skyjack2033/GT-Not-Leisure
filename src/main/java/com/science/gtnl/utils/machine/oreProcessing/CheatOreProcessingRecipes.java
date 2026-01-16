@@ -227,7 +227,7 @@ public class CheatOreProcessingRecipes implements IRecipePool {
         ItemStack[] outputsRich = getOutputs(material, true);
 
         // registry normal stone ore
-        registryOreProcessRecipe(GTModHandler.getModItem("gregtech", "gt.blockores", 1, ID), outputs);
+        registryOreProcessRecipe(GTModHandler.getModItem(Mods.GregTech.ID, "gt.blockores", 1, ID), outputs);
 
         // registry gt stone ore
         for (OrePrefixes prefixes : basicStoneTypesExceptNormalStone) {
@@ -300,6 +300,7 @@ public class CheatOreProcessingRecipes implements IRecipePool {
 
         if (isRich) {
             for (ItemStack out : outputs) {
+                if (out == null) continue;
                 out.stackSize = Integer.MAX_VALUE;
             }
         }

@@ -1,7 +1,5 @@
 package com.science.gtnl.common.world;
 
-import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.*;
-
 import java.util.Random;
 
 import net.minecraft.world.World;
@@ -9,11 +7,35 @@ import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 
+import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.mixins.late.VisualProspecting.AccessorVeinTypeCaching;
+import com.science.gtnl.utils.enums.GTNLOreMixer;
+import com.sinthoras.visualprospecting.database.veintypes.VeinType;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import gregtech.api.enums.Mods;
+import gtneioreplugin.util.GT5OreLayerHelper;
 
-public class FluidLakeWorldGen {
+public class GTNLWorldgenloader {
+
+    public static void registry() {
+
+        // GT Veins registration
+        for (GTNLOreMixer oreMix : GTNLOreMixer.values()) {
+            oreMix.addGTOreLayer();
+            oreMix.addGaGregOreLayer();
+
+            GT5OreLayerHelper.mapOreLayerWrapper
+                .put(oreMix.oreMixBuilder.oreMixName, new GT5OreLayerHelper.OreLayerWrapper(oreMix.oreMixBuilder));
+            if (Mods.VisualProspecting.isModLoaded()) {
+                AccessorVeinTypeCaching.getVeinTypes()
+                    .put(oreMix.oreMixBuilder.oreMixName, new VeinType(oreMix.oreMixBuilder));
+            }
+        }
+
+        ScienceNotLeisure.LOG.info("Started Galactic Greg ore gen code");
+    }
 
     @SubscribeEvent
     public void onDecorateBiome(DecorateBiomeEvent.Decorate event) {
