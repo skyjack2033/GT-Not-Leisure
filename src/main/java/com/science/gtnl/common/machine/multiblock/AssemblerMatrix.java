@@ -167,6 +167,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     public boolean wirelessMode;
     public boolean showPattern = true;
     public String costingEUText = ZERO_STRING;
+    public long recipesDone;
 
     private String customName = "";
     private AENetworkProxy gridProxy;
@@ -777,6 +778,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         aNBT.setLong("mMaxParallelLong", mMaxParallelLong);
         aNBT.setBoolean("wirelessMode", wirelessMode);
         aNBT.setBoolean("showPattern", showPattern);
+        aNBT.setLong("recipesDone", recipesDone);
         if (customName != null) aNBT.setString("customName", customName);
         getProxy().writeToNBT(aNBT);
         saveInvData(aNBT, false);
@@ -861,6 +863,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         mMaxParallelLong = aNBT.getLong("mMaxParallelLong");
         wirelessMode = aNBT.getBoolean("wirelessMode");
         showPattern = aNBT.getBoolean("showPattern");
+        recipesDone = aNBT.getLong("recipesDone");
         if (aNBT.hasKey("customName")) customName = aNBT.getString("customName");
 
         NBTTagCompound storeRoot = null;
@@ -1217,6 +1220,8 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
                         this.lEUt = 0;
                     }
 
+                    recipesDone += usedParallel;
+
                     this.cachedOutputItems = preparedOutputs.toArray(new IAEItemStack[preparedOutputs.size()]);
                     this.mEfficiency = 10000;
                     this.mEfficiencyIncrease = 10000;
@@ -1300,6 +1305,11 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
                 (inventory.size() > mMaxSlots ? EnumChatFormatting.DARK_RED.toString()
                     : EnumChatFormatting.GOLD.toString()) + mMaxSlots + EnumChatFormatting.RESET));
         info.add(StatCollector.translateToLocal("Info_ShowPattern_" + (showPattern ? "Enabled" : "Disabled")));
+        info.add(
+            StatCollector.translateToLocal("GT5U.multiblock.recipesDone") + ": "
+                + EnumChatFormatting.GREEN
+                + GTUtility.formatNumbers(recipesDone)
+                + EnumChatFormatting.RESET);
         if (wirelessMode) {
             info.add(EnumChatFormatting.LIGHT_PURPLE + StatCollector.translateToLocal("Waila_WirelessMode"));
             info.add(
