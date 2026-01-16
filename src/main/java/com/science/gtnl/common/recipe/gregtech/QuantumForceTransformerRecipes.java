@@ -3,12 +3,16 @@ package com.science.gtnl.common.recipe.gregtech;
 import static gregtech.api.util.GTRecipeBuilder.*;
 import static gregtech.api.util.GTRecipeConstants.*;
 import static gregtech.api.util.GTRecipeConstants.QFT_FOCUS_TIER;
+import static gtPlusPlus.api.recipe.GTPPRecipeMaps.*;
 
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import bartworks.system.material.WerkstoffLoader;
+import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
 import gtPlusPlus.api.recipe.GTPPRecipeMaps;
@@ -35,5 +39,45 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
             .metadata(QFT_CATALYST, GregtechItemList.RareEarthGroupCatalyst.get(0))
             .metadata(QFT_FOCUS_TIER, 2)
             .addTo(QFT);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GGMaterial.naquadahEarth.get(OrePrefixes.dust, 64),
+                Materials.Sodium.getDust(64),
+                Materials.Carbon.getDust(1))
+            .itemOutputs(
+                Materials.Naquadah.getDust(64),
+                Materials.NaquadahEnriched.getDust(64),
+                Materials.Naquadria.getDust(64),
+                Materials.Titanium.getDust(64),
+                Materials.Adamantium.getDust(64),
+                Materials.Gallium.getDust(64),
+                Materials.Indium.getDust(64),
+                Materials.Trinium.getDust(64))
+            .fluidInputs(
+                Materials.Hydrogen.getGas(64000),
+                Materials.Fluorine.getGas(64000),
+                Materials.Oxygen.getPlasma(100))
+            .duration(20 * SECONDS)
+            .eut(TierEU.RECIPE_UEV)
+            .metadata(QFT_CATALYST, GregtechItemList.SimpleNaquadahCatalyst.get(0))
+            .metadata(QFT_FOCUS_TIER, 2)
+            .addTo(QFT);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                Materials.Lead.getDust(16),
+                Materials.Bauxite.getDust(32),
+                WerkstoffLoader.Ferberite.get(OrePrefixes.dust, 16))
+            .itemOutputs(
+                Materials.Titanium.getDust(64),
+                Materials.TungstenSteel.getDust(64),
+                Materials.TungstenCarbide.getDust(64),
+                Materials.Indium.getDust(64))
+            .duration(20 * SECONDS)
+            .eut(TierEU.RECIPE_UV)
+            .metadata(QFT_CATALYST, GregtechItemList.TitaTungstenIndiumCatalyst.get(0))
+            .metadata(QFT_FOCUS_TIER, 1)
+            .addTo(quantumForceTransformerRecipes);
     }
 }

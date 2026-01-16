@@ -321,7 +321,8 @@ public class SuperSpaceElevator extends TTMultiblockBase
             STRUCTURE_PIECE_MAIN_VERT_OFFSET,
             STRUCTURE_PIECE_MAIN_DEPTH_OFFSET);
 
-        int tTier = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(stackSize, 0, 5);
+        if (!GTStructureChannels.STRUCTURE_HEIGHT.hasValue(stackSize)) return;
+        int tTier = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(stackSize, 1, 5);
         for (int i = 0; i < tTier; i++) {
             this.buildPiece(
                 STRUCTURE_PIECE_EXTENDED,
@@ -335,10 +336,6 @@ public class SuperSpaceElevator extends TTMultiblockBase
 
     @Override
     public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        if (this.mMachine) return -1;
-
-        int tTier = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(stackSize, 0, 5);
-
         int built;
 
         built = this.survivalBuildPiece(
@@ -353,6 +350,9 @@ public class SuperSpaceElevator extends TTMultiblockBase
             true);
 
         if (built >= 0) return built;
+
+        if (!GTStructureChannels.STRUCTURE_HEIGHT.hasValue(stackSize)) return built;
+        int tTier = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(stackSize, 1, 5);
 
         for (int i = 0; i < tTier; i++) {
             built = this.survivalBuildPiece(

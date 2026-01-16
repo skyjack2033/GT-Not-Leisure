@@ -65,7 +65,6 @@
     "Gregtech.MixinMTEHatchSteamBusOutput",
     "Gregtech.MixinMTELightningRod",
     "Gregtech.MixinMTEPlasmaForge",
-    "Gregtech.MixinMTEPreciseAssembler",
     "Gregtech.MixinMTEMultiBlockBase",
     "Gregtech.MixinMTEMultiBlockBaseRecipeProcessing",
     "Gregtech.MixinMTETreeFarm",
@@ -91,7 +90,8 @@
     "TecTech.MixinMTEResearchStation",
     "TecTech.MixinTTRecipeAdder",
     "ThaumicTinkerer.AccessorAspectCropLootManager",
-    "ThaumicTinkerer.MixinItemBloodSword"
+    "ThaumicTinkerer.MixinItemBloodSword",
+    "VisualProspecting.AccessorVeinTypeCaching"
   ],
   "client": [
     "AppliedEnergistics.assembler.MixinGuiFluidPatternTerminal",

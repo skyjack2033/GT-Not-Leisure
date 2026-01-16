@@ -11,7 +11,7 @@ import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GTOreDictUnificator;
-import gtPlusPlus.core.util.minecraft.ItemUtils;
+import gtPlusPlus.core.material.nuclear.MaterialsFluorides;
 
 public class ElectrocellGeneratorRecipes implements IRecipePool {
 
@@ -23,7 +23,7 @@ public class ElectrocellGeneratorRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Zinc, 1),
-                ItemUtils.getItemStackOfAmountFromOreDict("dustBerylliumHydroxide", 6))
+                MaterialsFluorides.BERYLLIUM_HYDROXIDE.getDust(6))
             .itemOutputs(GTOreDictUnificator.get(OrePrefixes.ingot, Materials.Zinc, 1))
             .fluidInputs(Materials.Mercury.getFluid(35))
             .fluidOutputs(GTNLMaterials.ToxicMercurySludge.getFluidOrGas(40))
