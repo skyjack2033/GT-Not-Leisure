@@ -32,7 +32,7 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
                 Materials.Cerium.getDust(64),
                 Materials.Gadolinium.getDust(64),
                 Materials.Samarium.getDust(64),
-                WerkstoffMaterialPool.Hafnia.get(OrePrefixes.dust,64),
+                WerkstoffMaterialPool.Hafnia.get(OrePrefixes.dust, 64),
                 MaterialsElements.getInstance().ZIRCONIUM.getDust(64),
                 ItemList.SuperconductorComposite.get(1))
             .duration(20 * SECONDS)
@@ -59,6 +59,24 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
                 Materials.Hydrogen.getGas(64000),
                 Materials.Fluorine.getGas(64000),
                 Materials.Oxygen.getPlasma(100))
+            .duration(20 * SECONDS)
+            .eut(TierEU.RECIPE_UEV)
+            .metadata(QFT_CATALYST, GregtechItemList.SimpleNaquadahCatalyst.get(0))
+            .metadata(QFT_FOCUS_TIER, 2)
+            .addTo(QFT);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GGMaterial.enrichedNaquadahEarth.get(OrePrefixes.dust, 32),
+                Materials.Zinc.getDust(64),
+                Materials.Carbon.getDust(1))
+            .itemOutputs(
+                Materials.Naquadah.getDust(64),
+                Materials.NaquadahEnriched.getDust(64),
+                Materials.Naquadria.getDust(64),
+                Materials.Chrome.getDust(64),
+                Materials.Trinium.getDust(64))
+            .fluidInputs(Materials.SulfuricAcid.getFluid(16000), Materials.Oxygen.getPlasma(100))
             .duration(20 * SECONDS)
             .eut(TierEU.RECIPE_UEV)
             .metadata(QFT_CATALYST, GregtechItemList.SimpleNaquadahCatalyst.get(0))

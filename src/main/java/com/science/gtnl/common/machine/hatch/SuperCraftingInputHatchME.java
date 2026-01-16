@@ -516,7 +516,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
                 supportFluids ? StatCollector.translateToLocal("Tooltip_SuperCraftingInputHatchME_03_00")
                     : StatCollector.translateToLocal("Tooltip_SuperCraftingInputHatchME_03_01"),
                 StatCollector.translateToLocal("Tooltip_SuperCraftingInputHatchME_04"),
-                StatCollector.translateToLocal("Tooltip_SuperCraftingInputHatchME_06")});
+                StatCollector.translateToLocal("Tooltip_SuperCraftingInputHatchME_06") });
         disableSort = true;
         this.supportFluids = supportFluids;
     }
