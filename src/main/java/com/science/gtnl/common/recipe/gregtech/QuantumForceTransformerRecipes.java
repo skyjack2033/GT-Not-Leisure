@@ -18,6 +18,7 @@ import gregtech.api.recipe.RecipeMap;
 import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.material.MaterialsElements;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
+import gtnhlanth.common.register.WerkstoffMaterialPool;
 
 public class QuantumForceTransformerRecipes implements IRecipePool {
 
@@ -31,7 +32,7 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
                 Materials.Cerium.getDust(64),
                 Materials.Gadolinium.getDust(64),
                 Materials.Samarium.getDust(64),
-                MaterialsElements.getInstance().HAFNIUM.getDust(64),
+                WerkstoffMaterialPool.Hafnia.get(OrePrefixes.dust,64),
                 MaterialsElements.getInstance().ZIRCONIUM.getDust(64),
                 ItemList.SuperconductorComposite.get(1))
             .duration(20 * SECONDS)
@@ -42,18 +43,18 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GGMaterial.naquadahEarth.get(OrePrefixes.dust, 64),
+                GGMaterial.naquadahEarth.get(OrePrefixes.dust, 32),
                 Materials.Sodium.getDust(64),
                 Materials.Carbon.getDust(1))
             .itemOutputs(
                 Materials.Naquadah.getDust(64),
-                Materials.NaquadahEnriched.getDust(64),
-                Materials.Naquadria.getDust(64),
-                Materials.Titanium.getDust(64),
-                Materials.Adamantium.getDust(64),
-                Materials.Gallium.getDust(64),
-                Materials.Indium.getDust(64),
-                Materials.Trinium.getDust(64))
+                Materials.Naquadah.getDust(64),
+                Materials.NaquadahEnriched.getDust(28),
+                Materials.Naquadria.getDust(24),
+                Materials.Titanium.getDust(48),
+                Materials.Adamantium.getDust(48),
+                Materials.Gallium.getDust(48),
+                Materials.Trinium.getDust(48))
             .fluidInputs(
                 Materials.Hydrogen.getGas(64000),
                 Materials.Fluorine.getGas(64000),
