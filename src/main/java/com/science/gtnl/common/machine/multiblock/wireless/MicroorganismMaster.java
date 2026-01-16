@@ -32,7 +32,6 @@ import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
-import bartworks.util.BWUtil;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -208,19 +207,6 @@ public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<Microorg
             @NotNull
             @Override
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                boolean hasValidItem = false;
-
-                for (ItemStack stack : getAllStoredInputs()) {
-                    if (BWUtil.areStacksEqualOrNull((ItemStack) recipe.mSpecialItems, stack)) {
-                        hasValidItem = true;
-                        break;
-                    }
-                }
-
-                if (!hasValidItem) {
-                    return CheckRecipeResultRegistry.NO_RECIPE;
-                }
-
                 if (wirelessMode && recipe.mEUt > V[Math.min(mParallelTier + 1, 14)] * 4) {
                     return CheckRecipeResultRegistry.insufficientPower(recipe.mEUt);
                 }
