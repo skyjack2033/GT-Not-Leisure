@@ -661,7 +661,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
-        super.onScrewdriverRightClick(side, aPlayer, aX, aY, aZ, aTool);
         if (this.mMaxProgresstime > 0) {
             GTUtility.sendChatToPlayer(aPlayer, "Can't change mode when running !");
             return;
