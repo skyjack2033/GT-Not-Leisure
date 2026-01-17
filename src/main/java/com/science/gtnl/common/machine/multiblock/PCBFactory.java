@@ -365,7 +365,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
                         Maintenance,
                         Energy.or(ExoticEnergy),
                         ParallelCon)
-                    .buildAndChain( ofBlock(sBlockCasings8, 7)))
+                    .buildAndChain(ofBlock(sBlockCasings8, 7)))
             .addElement('C', ofBlock(sBlockCasings6, 7))
             .addElement('D', ofBlock(sBlockCasings10, 0))
             .addElement('E', ofBlock(sBlockCasings8, 10))
