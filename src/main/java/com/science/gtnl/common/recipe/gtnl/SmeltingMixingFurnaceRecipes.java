@@ -416,7 +416,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
             .addTo(SMFR);
 
         RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(5))
+            .itemInputs(GTUtility.getIntegratedCircuit(3))
             .fluidInputs(
                 Materials.Yttrium.getMolten(144 * 2),
                 Materials.Molybdenum.getMolten(144 * 4),
@@ -429,7 +429,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
             .addTo(SMFR);
 
         RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(6))
+            .itemInputs(GTUtility.getIntegratedCircuit(7))
             .fluidInputs(
                 Materials.Cobalt.getMolten(144),
                 Materials.Molybdenum.getMolten(144 * 8),
