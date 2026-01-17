@@ -63,6 +63,7 @@ public class TileEntityNBTPacket implements IMessage, IMessageHandler<TileEntity
 
             if (block != null) {
                 ItemStack result = new ItemStack(block, 1, metadata);
+                if (result.getItem() == null) return;
 
                 if (tileEntityNBT != null && !tileEntityNBT.hasNoTags()) {
                     NBTTagCompound itemTag = new NBTTagCompound();

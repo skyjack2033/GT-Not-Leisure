@@ -100,6 +100,7 @@ public class ClientUtils {
         int y = target.blockY;
         int z = target.blockZ;
         Block block = world.getBlock(x, y, z);
+        if (block == null) return false;
 
         if (!block.isAir(world, x, y, z)) {
             ItemStack result = block.getPickBlock(target, world, x, y, z, player);
@@ -108,6 +109,8 @@ public class ClientUtils {
             Item item = result.getItem();
             int blockID = Item.getIdFromItem(item);
             int blockMeta = result.getItemDamage();
+
+            if (blockID == 0) return false;
 
             TileEntity tileentity = world.getTileEntity(x, y, z);
             if (tileentity != null) {
