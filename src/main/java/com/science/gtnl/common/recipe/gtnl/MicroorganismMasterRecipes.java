@@ -30,6 +30,7 @@ public class MicroorganismMasterRecipes implements IRecipePool {
             }
 
             recipe.mSpecialItems = null;
+            recipe.isNBTSensitive = true;
             MMR.add(recipe);
         }
     }
