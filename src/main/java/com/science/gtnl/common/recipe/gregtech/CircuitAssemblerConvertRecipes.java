@@ -4,6 +4,8 @@ import static gregtech.api.enums.Mods.*;
 import static gregtech.api.util.GTRecipeBuilder.*;
 import static gregtech.api.util.GTRecipeConstants.*;
 
+import gregtech.api.GregTechAPI;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.science.gtnl.api.IRecipePool;
@@ -305,6 +307,40 @@ public class CircuitAssemblerConvertRecipes implements IRecipePool {
     }
 
     public void loadDeleteRecipe() {
+
+        ItemStack opticalCable = new ItemStack(GregTechAPI.sBlockMachines, 8, 15470);
+        RecipeBuilder.builder()
+            .setNEIDesc("Remove Change by GTNotLeisure")
+            .itemInputs(
+                ItemList.Optically_Perfected_CPU.get(1),
+                ItemList.Optically_Compatible_Memory.get(2),
+                ItemList.Circuit_Parts_CapacitorXSMD.get(16),
+                ItemList.Circuit_Parts_DiodeXSMD.get(16),
+                opticalCable,
+                GTOreDictUnificator.get(OrePrefixes.bolt, Materials.EnrichedHolmium, 8))
+            .fluidInputs(MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(144))
+            .itemOutputs(ItemList.Circuit_OpticalProcessor.get(1))
+            .requiresCleanRoom()
+            .duration(300)
+            .eut(TierEU.RECIPE_UHV)
+            .addTo(CAR);
+
+        RecipeBuilder.builder()
+            .setNEIDesc("Remove Change by GTNotLeisure")
+            .itemInputs(
+                ItemList.Circuit_Board_Bio_Ultra.get(1),
+                ItemList.Circuit_Bioprocessor.get(2),
+                GTNLItemList.BiowareSMDInductor.get(12),
+                GTNLItemList.BiowareSMDCapacitor.get(16),
+                ItemList.Circuit_Chip_Ram.get(32),
+                GTOreDictUnificator.get(OrePrefixes.wireFine, Materials.NiobiumTitanium, 24))
+            .fluidInputs(MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(144))
+            .itemOutputs(ItemList.Circuit_Biowarecomputer.get(1))
+            .requiresCleanRoom()
+            .duration(300)
+            .eut(TierEU.RECIPE_UV)
+            .addTo(CAR);
+
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
             .itemInputs(

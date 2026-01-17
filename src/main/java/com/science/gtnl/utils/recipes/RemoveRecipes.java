@@ -307,6 +307,8 @@ public class RemoveRecipes {
             ItemList.Circuit_Ultimatecrystalcomputer.get(1), // 晶体处理器电脑
             ItemList.Circuit_Crystalmainframe.get(1), // 晶体处理器主机
             ItemList.Circuit_Bioprocessor.get(1), // 生物处理器
+            ItemList.Circuit_Biowarecomputer.get(1), // 生物处理器集群
+            ItemList.Circuit_OpticalProcessor.get(1), // 光学处理器
             ItemList.Circuit_Neuroprocessor.get(1), // 湿件处理器
             ItemList.Circuit_Wetwarecomputer.get(1), // 湿件处理器集群
             ItemList.Circuit_Wetwaresupercomputer.get(1) // 湿件处理器电脑

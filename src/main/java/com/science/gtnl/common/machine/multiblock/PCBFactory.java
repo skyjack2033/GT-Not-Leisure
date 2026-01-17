@@ -365,7 +365,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
                         Maintenance,
                         Energy.or(ExoticEnergy),
                         ParallelCon)
-                    .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(sBlockCasings8, 7))))
+                    .buildAndChain( ofBlock(sBlockCasings8, 7)))
             .addElement('C', ofBlock(sBlockCasings6, 7))
             .addElement('D', ofBlock(sBlockCasings10, 0))
             .addElement('E', ofBlock(sBlockCasings8, 10))
@@ -394,6 +394,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             .addElement('R', ofBlock(sBlockCasings10, 7))
             .addElement('S', ofBlock(sBlockCasings9, 11))
             .addElement('T', ofBlock(sBlockCasingsTT, 6))
+            .addElement('U', ofBlock(sBlockCasings8, 7))
             .build();
     }
 
@@ -416,7 +417,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             return false;
         }
         setupParameters();
-        return mCountCasing >= 30;
+        return true;
     }
 
     @Override
@@ -506,23 +507,33 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
         for (FluidStack fluidStack : getStoredWater()) {
             if (parallel <= 0) break;
-            if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[tier - 1])) {
-                int deductAmount = 100 / (int) GTUtility.powInt(2, machineTier - tier);
+            // 先扣“高级净化水”（tier + 3）
+            if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[tier + 3])) {
+                int deductAmount = 50 / (int) GTUtility.powInt(2, machineTier - tier);
+                deductAmount = Math.max(1, deductAmount);
+
                 int timesToDeduct = fluidStack.amount / deductAmount;
+                timesToDeduct = Math.min(parallel, timesToDeduct); // 严格按本次并行
+
                 if (timesToDeduct > 0) {
                     fluidStack.amount -= deductAmount * timesToDeduct;
-                    parallel -= deductAmount;
+                    parallel -= timesToDeduct;
                 }
             }
 
             if (parallel <= 0) break;
 
-            if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[tier + 3])) {
-                int deductAmount = 50 / (int) GTUtility.powInt(2, machineTier - tier);
+            // 再扣“低级净化水”（tier - 1）
+            if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[tier - 1])) {
+                int deductAmount = 100 / (int) GTUtility.powInt(2, machineTier - tier);
+                deductAmount = Math.max(1, deductAmount);
+
                 int timesToDeduct = fluidStack.amount / deductAmount;
+                timesToDeduct = Math.min(parallel, timesToDeduct); // 严格按本次并行
+
                 if (timesToDeduct > 0) {
                     fluidStack.amount -= deductAmount * timesToDeduct;
-                    parallel -= deductAmount;
+                    parallel -= timesToDeduct;
                 }
             }
         }
