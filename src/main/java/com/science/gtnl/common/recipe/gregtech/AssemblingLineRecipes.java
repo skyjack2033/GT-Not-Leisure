@@ -23,6 +23,7 @@ import bartworks.common.loaders.ItemRegistry;
 import bartworks.system.material.WerkstoffLoader;
 import ggfab.GGItemList;
 import goodgenerator.items.GGMaterial;
+import goodgenerator.loader.Loaders;
 import goodgenerator.util.ItemRefer;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;
@@ -2392,5 +2393,26 @@ public class AssemblingLineRecipes implements IRecipePool {
             GTNLItemList.HyperNaquadahReactor.get(1),
             500,
             (int) TierEU.RECIPE_UEV);
+
+        TTRecipeAdder.addResearchableAssemblylineRecipe(
+            GTNLItemList.DecayHastener.get(1),
+            204800,
+            4000,
+            (int) TierEU.RECIPE_UV,
+            1,
+            new Object[] { GTNLItemList.DecayHastener.get(32), GTUtility.copyAmount(64, Loaders.NA.copy()),
+                GregtechItemList.COMET_Cyclotron.get(64), ItemRefer.Speeding_Pipe.get(64),
+                CustomItemList.tM_TeslaBase.get(64), ItemList.Electric_Pump_UV.get(32), ItemList.Sensor_UV.get(32),
+                ItemList.Emitter_UV.get(32), new Object[] { OrePrefixes.circuit.get(Materials.UHV), 16L },
+                com.dreammaster.gthandler.CustomItemList.HighEnergyFlowCircuit.get(64),
+                GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUV, 16),
+                GTNLMaterials.Polyetheretherketone.get(OrePrefixes.plateSuperdense, 8),
+                GregtechItemList.Laser_Lens_Special.get(1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Carbon, 2) },
+            new FluidStack[] { Materials.SolderingAlloy.getMolten(32000), Materials.Lubricant.getFluid(64000),
+                GTNLMaterials.Polyetheretherketone.getMolten(64000), Materials.NaquadahEnriched.getMolten(14400) },
+            GTNLItemList.FastNeutronBreederReactor.get(1),
+            1000,
+            (int) TierEU.RECIPE_UV);
     }
 }

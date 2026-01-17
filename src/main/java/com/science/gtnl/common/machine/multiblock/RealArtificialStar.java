@@ -434,7 +434,7 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
         rewardContinuous = aNBT.getByte("rewardContinuous");
         currentOutputEU = new BigInteger(aNBT.getString("currentOutputEU"));
         isRendering = aNBT.getBoolean("isRendering");
-        enableRender = aNBT.getBoolean("enableRender");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
     }
 
     @Override

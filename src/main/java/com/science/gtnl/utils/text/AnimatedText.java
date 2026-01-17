@@ -48,6 +48,11 @@ public class AnimatedText {
     public static final Supplier<String> SNL_SKYINR = () -> AnimatedText.SCIENCE_NOT_LEISURE
         .get() + RESET + ": " + AQUA + "Created By: Skyinr" + RESET;
 
+    public static final Supplier<String> SNL_LONEI = () -> AnimatedText.SCIENCE_NOT_LEISURE.get() + RESET
+        + ": "
+        + AnimatedText.LONEI.get()
+        + RESET;
+
     public static final Supplier<String> SCIENCE_NOT_LEISURE = chain(
         text(StatCollector.translateToLocal("Tooltip_Adder")),
         animatedText("Science Not Leisure", 1, 80, RED, GOLD, YELLOW, GREEN, AQUA, BLUE, LIGHT_PURPLE));
@@ -403,6 +408,21 @@ public class AnimatedText {
             GOLD + BOLD + UNDERLINE,
             GOLD + BOLD + UNDERLINE,
             GOLD + BOLD + UNDERLINE));
+
+    public static final Supplier<String> LONEI = chain(
+        animatedText(
+            "Lonei",
+            1,
+            90,
+            WHITE + BOLD,
+            GRAY + BOLD,
+            WHITE + BOLD,
+            GRAY + BOLD,
+            WHITE + BOLD,
+            GRAY + BOLD,
+            WHITE + BOLD,
+            GRAY + BOLD,
+            WHITE + BOLD));
 
     public static final String AuthorHighPressureRaven = EnumChatFormatting.WHITE + "High"
         + EnumChatFormatting.GRAY

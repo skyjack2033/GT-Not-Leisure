@@ -12,7 +12,7 @@ import com.science.gtnl.common.machine.hatch.SuperCraftingInputHatchME;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import com.science.gtnl.common.packet.NetWorkHandler;
 import com.science.gtnl.common.recipe.gtnl.ExtremeExtremeEntityCrusherRecipes;
-import com.science.gtnl.common.world.FluidLakeWorldGen;
+import com.science.gtnl.common.world.GTNLWorldgenloader;
 import com.science.gtnl.container.ContainerAEChisel;
 import com.science.gtnl.container.ContainerDirePatternEncoder;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAdvancedWorkbench;
@@ -58,7 +58,7 @@ public class CommonProxy implements IGuiHandler {
 
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
     public void init(FMLInitializationEvent event) {
-        MinecraftForge.TERRAIN_GEN_BUS.register(new FluidLakeWorldGen());
+        MinecraftForge.TERRAIN_GEN_BUS.register(new GTNLWorldgenloader());
         MinecraftForge.EVENT_BUS.register(new VMTweakHelper());
         FMLCommonHandler.instance()
             .bus()

@@ -123,7 +123,6 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
     public UUID ownerUUID;
     public boolean wirelessMode = false;
     public boolean isDualInputHatch = false;
-    public boolean useSingleAmp = true;
     public int minRecipeTime = 20;
 
     public GrandAssemblyLine(int aID, String aName, String aNameRegional) {
@@ -206,10 +205,10 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         ItemStack controllerItem = getControllerSlot();
         this.mParallelTier = getParallelTier(controllerItem);
         long energyEU = wirelessMode ? getUserEU(ownerUUID).longValue()
-            : GTValues.VP[mEnergyHatchTier] * (useSingleAmp ? 1 : getMaxInputAmps() / 2);
+            : GTValues.VP[mEnergyHatchTier] * getMaxInputAmps();
         int maxParallel = getTrueParallel();
 
-        if (energyEU <= 0) return CheckRecipeResultRegistry.POWER_OVERFLOW;
+        if (energyEU <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
 
         List<IDualInputInventory> inputInventories = new ObjectArrayList<>();
 
@@ -302,7 +301,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                     }
                 } else {
                     long neededInstant = (long) recipe.mEUt * finalParallel;
-                    if (currentWiredInstantPower + neededInstant > energyEU) {
+                    if (neededInstant > energyEU - currentWiredInstantPower) {
                         finalParallel = (int) ((energyEU - currentWiredInstantPower) / recipe.mEUt);
                     }
                 }
@@ -787,7 +786,6 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
         if (mParallelTier >= 12 && mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) {
             wirelessMode = true;
-            useSingleAmp = false;
             mEnergyHatchTier = 14;
             return mDataAccessHatches.size() <= 1 && mMaintenanceHatches.size() <= 1;
         }
@@ -801,14 +799,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         super.clearHatches();
         mDataAccessHatches.clear();
         isDualInputHatch = false;
-        useSingleAmp = true;
         wirelessMode = false;
-    }
-
-    @Override
-    public void setupParameters() {
-        super.setupParameters();
-        useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty() && getMaxInputAmps() <= 4;
     }
 
     @Override

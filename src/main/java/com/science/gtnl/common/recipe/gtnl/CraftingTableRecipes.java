@@ -467,6 +467,17 @@ public class CraftingTableRecipes implements IRecipePool {
                 new ItemStack(Items.water_bucket, 1), 'C', ItemList.Hull_LV.get(1), 'D',
                 OrePrefixes.gem.get(Materials.Diamond) });
 
+        RecipeBuilder.builder()
+            .itemInputs(
+                ItemList.Hull_LV.get(1),
+                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 2, 0, missing),
+                new ItemStack(Items.bucket, 3),
+                Materials.Diamond.getGems(3))
+            .itemOutputs(GregtechItemList.Hatch_Reservoir.get(1))
+            .duration(0)
+            .eut(0)
+            .addTo(HOR);
+
         GTModHandler.addCraftingRecipe(
             GTNLItemList.LargeSteamMixer.get(1),
             new Object[] { "ABA", "ACA", "DED", 'A',

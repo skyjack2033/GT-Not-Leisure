@@ -404,7 +404,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         isStartInitialized = aNBT.getBoolean("isStartInitialized");
         hasFinished = aNBT.getBoolean("hasFinished");
         isWaiting = aNBT.getBoolean("isWaiting");
-        enableRender = aNBT.getBoolean("enableRender");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
         tierMachine = aNBT.getByte("tierMachine");
         fortuneTier = aNBT.getInteger("fortuneTier");
         renderAngle = (float) aNBT.getDouble("renderAngle");

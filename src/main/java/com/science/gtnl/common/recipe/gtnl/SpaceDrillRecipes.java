@@ -57,8 +57,6 @@ public class SpaceDrillRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
-        int i;
-
         List<List<FluidStack>> tierOutputFluids = Collections.unmodifiableList(
             Arrays.asList(
                 Collections.unmodifiableList(
@@ -136,7 +134,7 @@ public class SpaceDrillRecipes implements IRecipePool {
             List<FuelVariant> fuels = tierIndex < tierFuelVariants.size() ? tierFuelVariants.get(tierIndex)
                 : Collections.emptyList();
 
-            for (i = 0; i < outputs.size(); i++) {
+            for (int i = 0; i < outputs.size(); i++) {
                 FluidStack output = outputs.get(i);
                 if (output == null) continue;
                 for (FuelVariant fuelVariant : fuels) {

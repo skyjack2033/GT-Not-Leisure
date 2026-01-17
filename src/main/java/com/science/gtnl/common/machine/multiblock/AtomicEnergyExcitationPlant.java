@@ -384,7 +384,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
         super.loadNBTData(aNBT);
         machineTier = aNBT.getInteger("mTier");
         isRenderActive = aNBT.getBoolean("isRenderActive");
-        enableRender = aNBT.getBoolean("enableRender");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
     }
 
     @Override
