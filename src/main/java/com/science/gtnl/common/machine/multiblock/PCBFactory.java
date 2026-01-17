@@ -395,7 +395,6 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             .addElement('S', ofBlock(sBlockCasings9, 11))
             .addElement('T', ofBlock(sBlockCasingsTT, 6))
             .addElement('U', ofBlock(sBlockCasings8, 7))
-
             .build();
     }
 
