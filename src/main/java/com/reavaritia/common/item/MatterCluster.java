@@ -188,6 +188,8 @@ public class MatterCluster extends Item implements ICosmicRenderItem {
     }
 
     public static void setClusterData(ItemStack stack, Object2IntMap<ItemStackWrapper> data, int count) {
+        if (stack == null || data == null) return;
+
         if (!stack.hasTagCompound()) {
             stack.setTagCompound(new NBTTagCompound());
         }
@@ -195,18 +197,31 @@ public class MatterCluster extends Item implements ICosmicRenderItem {
         NBTTagCompound clustertag = new NBTTagCompound();
         NBTTagList list = new NBTTagList();
 
-        for (Entry<ItemStackWrapper, Integer> entry : data.object2IntEntrySet()) {
+        var it = data.object2IntEntrySet()
+            .iterator();
+
+        while (it.hasNext()) {
+            Entry<ItemStackWrapper, Integer> entry = it.next();
+            ItemStackWrapper key = entry.getKey();
+            int value = entry.getValue();
+
+            if (key == null || key.stack() == null || value <= 0) {
+                it.remove();
+                continue;
+            }
+
             NBTTagCompound itemtag = new NBTTagCompound();
             itemtag.setTag(
                 ITEMTAG,
-                entry.getKey()
-                    .stack()
+                key.stack()
                     .writeToNBT(new NBTTagCompound()));
-            itemtag.setInteger(COUNTTAG, entry.getValue());
+            itemtag.setInteger(COUNTTAG, value);
             list.appendTag(itemtag);
         }
+
         clustertag.setTag(LISTTAG, list);
         clustertag.setInteger(MAINCOUNTTAG, count);
+
         stack.getTagCompound()
             .setTag(MAINTAG, clustertag);
     }
@@ -222,34 +237,46 @@ public class MatterCluster extends Item implements ICosmicRenderItem {
         Object2IntOpenHashMap<ItemStackWrapper> donordata = getClusterData(donor);
         Object2IntOpenHashMap<ItemStackWrapper> recipientdata = getClusterData(recipient);
 
-        ObjectArrayList<Entry<ItemStackWrapper, Integer>> datalist = new ObjectArrayList<>(
-            donordata.object2IntEntrySet());
+        donordata.object2IntEntrySet()
+            .removeIf(
+                e -> e.getKey() == null || e.getKey()
+                    .stack() == null);
+        recipientdata.object2IntEntrySet()
+            .removeIf(
+                e -> e.getKey() == null || e.getKey()
+                    .stack() == null);
 
-        while (recipientcount < capacity && donorcount > 0) {
-            Entry<ItemStackWrapper, Integer> e = datalist.get(0);
+        var it = donordata.object2IntEntrySet()
+            .iterator();
+
+        while (recipientcount < capacity && donorcount > 0 && it.hasNext()) {
+            Entry<ItemStackWrapper, Integer> e = it.next();
             ItemStackWrapper wrap = e.getKey();
             int wrapcount = e.getValue();
 
-            int count = Math.min(capacity - recipientcount, wrapcount);
+            if (wrap == null || wrap.stack() == null || wrapcount <= 0) {
+                it.remove();
+                continue;
+            }
 
-            recipientdata.put(wrap, recipientdata.getOrDefault(wrap, 0) + count);
+            int move = Math.min(capacity - recipientcount, wrapcount);
 
-            donorcount -= count;
-            recipientcount += count;
+            recipientdata.put(wrap, recipientdata.getOrDefault(wrap, 0) + move);
 
-            if (wrapcount - count > 0) {
-                e.setValue(wrapcount - count);
+            donorcount -= move;
+            recipientcount += move;
+
+            int left = wrapcount - move;
+            if (left > 0) {
+                e.setValue(left);
             } else {
-                donordata.remove(wrap);
-                datalist.remove(0);
+                it.remove();
             }
         }
 
-        // 更新 recipient 的数据
         setClusterData(recipient, recipientdata, recipientcount);
 
-        // 如果 donor 仍有剩余物品，更新 donor 数据，否则清空 donor 数据
-        if (donorcount > 0) {
+        if (donorcount > 0 && !donordata.isEmpty()) {
             setClusterData(donor, donordata, donorcount);
         } else {
             donor.setTagCompound(null);
