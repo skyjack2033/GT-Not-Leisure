@@ -3,7 +3,9 @@ package com.science.gtnl.common.render;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.render.PlayerDollRenderManager.*;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -321,6 +323,8 @@ public class PlayerDollRenderManagerClient {
         try {
             BufferedImage image = ImageIO.read(file);
             if (image != null) {
+                image = processSkinFormat(image);
+
                 pendingTextures.put(fileName, image);
 
                 ResourceLocation textureLocation = new ResourceLocation("custom", "texture_" + fileName);
@@ -409,6 +413,80 @@ public class PlayerDollRenderManagerClient {
             return false;
         }
         return username.matches("^[a-zA-Z0-9_\\-]+$");
+    }
+
+    public static BufferedImage processSkinFormat(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        // 如果已经是 64x64 且不需要转换，仍需处理不透明度（类似原版 ImageBufferDownload）
+        boolean isLegacy = (height == 32 && width == 64);
+
+        BufferedImage result = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = result.getGraphics();
+        graphics.drawImage(image, 0, 0, null);
+
+        if (isLegacy) {
+            // 填充下半部分透明
+            graphics.setColor(new Color(0, 0, 0, 0));
+            graphics.fillRect(0, 32, 64, 32);
+
+            // 镜像右侧肢体到左侧肢体 (Minecraft 1.8+ 规范)
+            graphics.drawImage(result, 24, 48, 20, 52, 4, 16, 8, 20, null);
+            graphics.drawImage(result, 28, 48, 24, 52, 8, 16, 12, 20, null);
+            graphics.drawImage(result, 20, 52, 16, 64, 8, 20, 12, 32, null);
+            graphics.drawImage(result, 24, 52, 20, 64, 4, 20, 8, 32, null);
+            graphics.drawImage(result, 28, 52, 24, 64, 0, 20, 4, 32, null);
+            graphics.drawImage(result, 32, 52, 28, 64, 12, 20, 16, 32, null);
+            graphics.drawImage(result, 40, 48, 36, 52, 44, 16, 48, 20, null);
+            graphics.drawImage(result, 44, 48, 40, 52, 48, 16, 52, 20, null);
+            graphics.drawImage(result, 36, 52, 32, 64, 48, 20, 52, 32, null);
+            graphics.drawImage(result, 40, 52, 36, 64, 44, 20, 48, 32, null);
+            graphics.drawImage(result, 44, 52, 40, 64, 40, 20, 44, 32, null);
+            graphics.drawImage(result, 48, 52, 44, 64, 52, 20, 56, 32, null);
+        }
+        graphics.dispose();
+
+        // 处理像素 alpha 通道（防止部分皮肤软件导出的全黑背景问题）
+        int[] imageData = ((DataBufferInt) result.getRaster()
+            .getDataBuffer()).getData();
+        setAreaOpaque(imageData, 64, 0, 0, 32, 16); // 头部
+
+        if (isLegacy) {
+            setAreaTransparent(imageData, 64, 32, 0, 64, 32); // 修正头盔层透明度
+        }
+
+        setAreaOpaque(imageData, 64, 0, 16, 64, 32); // 躯干和右肢
+        setAreaOpaque(imageData, 64, 16, 48, 48, 64); // 左肢
+
+        return result;
+    }
+
+    public static void setAreaTransparent(int[] imageData, int imageWidth, int x, int y, int width, int height) {
+        if (!hasTransparency(imageData, imageWidth, x, y, width, height)) {
+            for (int i = x; i < width; ++i) {
+                for (int j = y; j < height; ++j) {
+                    imageData[i + j * imageWidth] &= 16777215;
+                }
+            }
+        }
+    }
+
+    public static void setAreaOpaque(int[] imageData, int imageWidth, int x, int y, int width, int height) {
+        for (int i = x; i < width; ++i) {
+            for (int j = y; j < height; ++j) {
+                imageData[i + j * imageWidth] |= -16777216;
+            }
+        }
+    }
+
+    public static boolean hasTransparency(int[] imageData, int imageWidth, int x, int y, int width, int height) {
+        for (int i = x; i < width; ++i) {
+            for (int j = y; j < height; ++j) {
+                if ((imageData[i + j * imageWidth] >> 24 & 255) < 128) return true;
+            }
+        }
+        return false;
     }
 
 }
