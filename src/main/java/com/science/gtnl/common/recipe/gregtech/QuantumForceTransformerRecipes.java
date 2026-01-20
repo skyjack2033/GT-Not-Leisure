@@ -10,11 +10,13 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.util.GTUtility;
 import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.material.MaterialsElements;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
@@ -47,8 +49,7 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
                 Materials.Sodium.getDust(64),
                 Materials.Carbon.getDust(1))
             .itemOutputs(
-                Materials.Naquadah.getDust(64),
-                Materials.Naquadah.getDust(64),
+                GTUtility.copyAmountUnsafe(96, Materials.Naquadah.getDust(1)),
                 Materials.NaquadahEnriched.getDust(28),
                 Materials.Naquadria.getDust(24),
                 Materials.Titanium.getDust(48),
@@ -59,7 +60,7 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
                 Materials.Hydrogen.getGas(64000),
                 Materials.Fluorine.getGas(64000),
                 Materials.Oxygen.getPlasma(100))
-            .duration(20 * SECONDS)
+            .duration(10 * SECONDS)
             .eut(TierEU.RECIPE_UEV)
             .metadata(QFT_CATALYST, GregtechItemList.SimpleNaquadahCatalyst.get(0))
             .metadata(QFT_FOCUS_TIER, 2)
@@ -72,16 +73,33 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
                 Materials.Carbon.getDust(1))
             .itemOutputs(
                 Materials.Naquadah.getDust(64),
-                Materials.NaquadahEnriched.getDust(64),
+                GTUtility.copyAmountUnsafe(96, Materials.NaquadahEnriched.getDust(1)),
                 Materials.Naquadria.getDust(64),
                 Materials.Chrome.getDust(64),
                 Materials.Trinium.getDust(64))
             .fluidInputs(Materials.SulfuricAcid.getFluid(16000), Materials.Oxygen.getPlasma(100))
-            .duration(20 * SECONDS)
+            .duration(10 * SECONDS)
             .eut(TierEU.RECIPE_UEV)
             .metadata(QFT_CATALYST, GregtechItemList.SimpleNaquadahCatalyst.get(0))
             .metadata(QFT_FOCUS_TIER, 2)
             .addTo(QFT);
+
+        GTValues.RA.stdBuilder()
+            .itemInputs(GGMaterial.naquadriaEarth.get(OrePrefixes.dust, 32), Materials.Magnesium.getDust(64))
+            .itemOutputs(
+                GTUtility.copyAmountUnsafe(96, Materials.Naquadria.getDust(1)),
+                Materials.Barium.getDust(64),
+                Materials.Indium.getDust(64),
+                ItemList.NaquadriaSupersolid.get(1))
+            .fluidInputs(
+                Materials.PhosphoricAcid.getFluid(16_000),
+                Materials.SulfuricAcid.getFluid(16_000),
+                Materials.Oxygen.getPlasma(100))
+            .duration(5 * SECONDS)
+            .eut(TierEU.RECIPE_UMV)
+            .metadata(QFT_CATALYST, GregtechItemList.AdvancedNaquadahCatalyst.get(0))
+            .metadata(QFT_FOCUS_TIER, 3)
+            .addTo(quantumForceTransformerRecipes);
 
         RecipeBuilder.builder()
             .itemInputs(
