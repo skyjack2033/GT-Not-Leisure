@@ -1098,11 +1098,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     }
 
     @Override
-    public boolean getDefaultBatchMode() {
-        return true;
-    }
-
-    @Override
     public boolean supportsSingleRecipeLocking() {
         return true;
     }

@@ -862,7 +862,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         usedParallel = aNBT.getLong("usedParallel");
         mMaxParallelLong = aNBT.getLong("mMaxParallelLong");
         wirelessMode = aNBT.getBoolean("wirelessMode");
-        showPattern = aNBT.getBoolean("showPattern");
+        if (aNBT.hasKey("showPattern")) showPattern = aNBT.getBoolean("showPattern");
         recipesDone = aNBT.getLong("recipesDone");
         if (aNBT.hasKey("customName")) customName = aNBT.getString("customName");
 
