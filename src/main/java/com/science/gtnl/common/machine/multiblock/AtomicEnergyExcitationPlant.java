@@ -405,7 +405,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
 
     @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
-        logic.setAvailableVoltage(getAverageInputVoltage() * getMaxInputAmps());
+        logic.setAvailableVoltage(getMaxInputEu());
         logic.setAvailableAmperage(1);
         logic.setAmperageOC(true);
     }

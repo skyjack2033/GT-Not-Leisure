@@ -234,6 +234,13 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
         logic.setUnlimitedTierSkips();
     }
 
+    @Override
+    public void setProcessingLogicPower(ProcessingLogic logic) {
+        logic.setAvailableVoltage(getMaxInputEu());
+        logic.setAvailableAmperage(1);
+        logic.setAmperageOC(true);
+    }
+
     @Nonnull
     @Override
     public CheckRecipeResult checkProcessing() {

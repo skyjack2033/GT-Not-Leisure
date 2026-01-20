@@ -217,6 +217,13 @@ public class MegaMixer extends GTMMultiMachineBase<MegaMixer> implements ISurviv
     }
 
     @Override
+    public void setProcessingLogicPower(ProcessingLogic logic) {
+        logic.setAvailableVoltage(getMaxInputEu());
+        logic.setAvailableAmperage(1);
+        logic.setAmperageOC(true);
+    }
+
+    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }

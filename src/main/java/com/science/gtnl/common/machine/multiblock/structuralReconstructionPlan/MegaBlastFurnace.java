@@ -295,6 +295,13 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     }
 
     @Override
+    public void setProcessingLogicPower(ProcessingLogic logic) {
+        logic.setAvailableVoltage(getMaxInputEu());
+        logic.setAvailableAmperage(1);
+        logic.setAmperageOC(true);
+    }
+
+    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         this.buildPiece(
             STRUCTURE_PIECE_MAIN,

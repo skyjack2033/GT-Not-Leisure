@@ -225,7 +225,7 @@ public class MagneticConfinementDimensionalityShockDevice
             logic.setAmperageOC(true);
             logic.enablePerfectOverclock();
         } else {
-            logic.setAvailableVoltage(getMachineVoltageLimit() * getMaxInputAmps());
+            logic.setAvailableVoltage(getMaxInputEu());
             logic.setAvailableAmperage(1);
             logic.setAmperageOC(true);
         }

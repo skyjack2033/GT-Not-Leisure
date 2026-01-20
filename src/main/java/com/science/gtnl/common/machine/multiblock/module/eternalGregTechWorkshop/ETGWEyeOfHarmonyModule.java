@@ -275,7 +275,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         stellarPlasma = new FluidStackLong(outputFluids.get(outputFluids.size() - 2));
 
         successfulParallelAmount = (long) GTNLParallelHelper
-            .calculateChancedOutputMultiplier((int) ((successChance + pityChance) * 10000), 65536);
+            .calculateChancedOutputMultiplier((int) ((successChance + pityChance) * 10000), 2097152);
         // Iterate over item output list and apply yield & successful parallel values.
         for (ItemStackLong itemStackLong : outputItems) {
             itemStackLong.stackSize *= successfulParallelAmount;
@@ -310,7 +310,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     }
 
     private double recipeChanceCalculator() {
-        double chance = 0.6;
+        double chance = 0.8;
 
         if (parallelAmount > 1) {
             chance -= stellarPlasmaOverflowProbabilityAdjustment;

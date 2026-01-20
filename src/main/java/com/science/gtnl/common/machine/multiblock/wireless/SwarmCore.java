@@ -329,7 +329,7 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
         } else {
             boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty()
                 && getMaxInputAmps() <= 4;
-            logic.setAvailableVoltage(getMachineVoltageLimit() * getMaxInputAmps());
+            logic.setAvailableVoltage(getMaxInputEu());
             logic.setAvailableAmperage(1);
             logic.setAmperageOC(!useSingleAmp);
         }
