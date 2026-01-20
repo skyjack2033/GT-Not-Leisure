@@ -220,16 +220,14 @@ public class MagneticConfinementDimensionalityShockDevice
     @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
         if (wirelessMode) {
-            logic.setAvailableVoltage(V[15]);
-            logic.setAvailableAmperage(V[14]);
-            logic.setAmperageOC(false);
+            logic.setAvailableVoltage(Long.MAX_VALUE);
+            logic.setAvailableAmperage(1);
+            logic.setAmperageOC(true);
             logic.enablePerfectOverclock();
         } else {
-            boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty()
-                && getMaxInputAmps() <= 4;
-            logic.setAvailableVoltage(getMachineVoltageLimit());
-            logic.setAvailableAmperage(useSingleAmp ? 1 : getMaxInputAmps());
-            logic.setAmperageOC(!useSingleAmp);
+            logic.setAvailableVoltage(getMachineVoltageLimit() * getMaxInputAmps());
+            logic.setAvailableAmperage(1);
+            logic.setAmperageOC(true);
         }
     }
 
