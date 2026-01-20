@@ -10,13 +10,11 @@ import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -36,7 +34,6 @@ import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.SubscribeEventUtils;
-import com.science.gtnl.utils.Utils;
 
 import gregtech.api.enums.StructureError;
 import gregtech.api.enums.Textures;
@@ -238,26 +235,10 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
 
         MinecraftServer server = MinecraftServer.getServer();
         double msptDiff = 25.0 - (int) (MathHelper.average(server.tickTimeArray) * 1.0E-6D);
-
-        double adjustmentFactor;
-        if (msptDiff > 0) {
-            adjustmentFactor = Math.min(1.0, msptDiff);
-        } else {
-            adjustmentFactor = Math.max(-100.0, msptDiff * 5.0);
-        }
+        double adjustmentFactor = msptDiff > 0 ? Math.min(1.0, msptDiff) : Math.max(-100.0, msptDiff * 5.0);
 
         time = (long) (maxParallel / 5d + adjustmentFactor);
         if (time < 0) time = 0;
-        if (time >= 200) {
-            IGregTechTileEntity gtTE = getBaseMetaTileEntity();
-            int x = gtTE.getXCoord();
-            int y = gtTE.getYCoord();
-            int z = gtTE.getZCoord();
-            String name = gtTE.getOwnerName();
-            for (EntityPlayerMP player : server.getConfigurationManager().playerEntityList) {
-                player.addChatMessage(new ChatComponentTranslation("Info_FurnaceArray_00", x, y, z, name, time));
-            }
-        }
 
         List<ItemStack> outputSlots = new ArrayList<>();
         for (ItemStack stack : getItemOutputSlots(null)) {
@@ -281,43 +262,56 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
             ItemStack smeltedOutput = GTModHandler.getSmeltingOutput(item, false, null);
             if (smeltedOutput == null) continue;
 
+            int itemsPerRecipe = smeltedOutput.stackSize;
             long remainingToSmelt = Math.min(toSmelt, item.stackSize);
-            long maxOutput = 0;
+            long maxRecipesPossible = 0;
 
             if (hasMEOutputBus) {
-                maxOutput = remainingToSmelt;
+                maxRecipesPossible = remainingToSmelt;
             } else {
-                long needed = remainingToSmelt;
-                ItemStack outputType = smeltedOutput.copy();
-                outputType.stackSize = 1;
-
+                long neededRecipes = remainingToSmelt;
                 for (int i = 0; i < outputSlots.size(); i++) {
                     ItemStack slot = outputSlots.get(i);
+                    int spaceInSlot;
+
                     if (slot == null) {
-                        long canFit = Math.min(needed, outputType.getMaxStackSize());
-                        ItemStack newStack = outputType.copy();
-                        newStack.stackSize = (int) canFit;
-                        outputSlots.set(i, newStack);
-                        maxOutput += canFit;
-                        needed -= canFit;
-                    } else if (slot.isItemEqual(outputType)) {
-                        int space = (slot.stackSize == 65 ? (int) needed : slot.getMaxStackSize() - slot.stackSize);
-                        long canFit = Math.min(needed, space);
-                        slot.stackSize += (int) canFit;
-                        maxOutput += canFit;
-                        needed -= canFit;
+                        spaceInSlot = smeltedOutput.getMaxStackSize();
+                    } else if (GTUtility.areStacksEqual(slot, smeltedOutput)) {
+                        spaceInSlot = (slot.stackSize >= 64) ? (int) (neededRecipes * itemsPerRecipe)
+                            : (slot.getMaxStackSize() - slot.stackSize);
+                    } else {
+                        continue;
                     }
-                    if (needed <= 0) break;
+
+                    int recipesThatFit = spaceInSlot / itemsPerRecipe;
+                    int actualFit = (int) Math.min(neededRecipes, recipesThatFit);
+
+                    if (actualFit > 0) {
+                        maxRecipesPossible += actualFit;
+                        neededRecipes -= actualFit;
+                        if (slot == null) {
+                            ItemStack newStack = smeltedOutput.copy();
+                            newStack.stackSize = actualFit * itemsPerRecipe;
+                            outputSlots.set(i, newStack);
+                        } else {
+                            slot.stackSize += actualFit * itemsPerRecipe;
+                        }
+                    }
+                    if (neededRecipes <= 0) break;
                 }
             }
 
-            long toProcess = protectsExcessItem() ? maxOutput : remainingToSmelt;
+            long toProcess = protectsExcessItem() ? maxRecipesPossible : remainingToSmelt;
             if (toProcess <= 0) continue;
 
-            Utils.addStacksToList(smeltedOutputs, smeltedOutput, toProcess);
+            ItemStack finalOutput = smeltedOutput.copy();
+            finalOutput.stackSize = (int) (toProcess * itemsPerRecipe);
+
+            smeltedOutputs.add(finalOutput);
 
             item.stackSize -= (int) toProcess;
             toSmelt -= toProcess;
+
             if (toSmelt <= 0) break;
         }
 
