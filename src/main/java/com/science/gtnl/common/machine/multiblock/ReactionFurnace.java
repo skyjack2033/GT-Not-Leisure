@@ -153,7 +153,7 @@ public class ReactionFurnace extends GTMMultiMachineBase<ReactionFurnace> implem
     @NotNull
     public CheckRecipeResult checkProcessing() {
         List<ItemStack> tInput = getAllStoredInputs();
-        long availableEUt = GTUtility.roundUpVoltage(getMaxInputVoltage());
+        long availableEUt = GTUtility.roundUpVoltage(getMaxInputEu());
         if (availableEUt < 4) {
             return CheckRecipeResultRegistry.insufficientPower(4);
         }
