@@ -515,8 +515,14 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                 : GTUtility.ItemId.createNoCopy(mainReq);
 
             long mainAvailable = availableMap.getOrDefault(searchKey, 0L);
-            long maxParallelForThisSlot = (mainAvailable > 0 && mainReq.stackSize <= 0) ? Integer.MAX_VALUE
-                : mainAvailable / mainReq.stackSize;
+
+            long maxParallelForThisSlot = 0;
+
+            if (mainAvailable > 0 && mainReq.stackSize <= 0) {
+                maxParallelForThisSlot = Integer.MAX_VALUE;
+            } else if (mainReq.stackSize > 0) {
+                maxParallelForThisSlot = mainAvailable / mainReq.stackSize;
+            }
 
             if (maxParallelForThisSlot == 0 && recipe.mOreDictAlt != null && recipe.mOreDictAlt[i] != null) {
                 for (ItemStack alt : recipe.mOreDictAlt[i]) {
@@ -527,9 +533,12 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                         : GTUtility.ItemId.createNoCopy(alt);
 
                     long altAvailable = availableMap.getOrDefault(altSearchKey, 0L);
-                    if (altAvailable > 0) {
-                        maxParallelForThisSlot = (altAvailable > 0 && alt.stackSize <= 0) ? Integer.MAX_VALUE
-                            : altAvailable / alt.stackSize;
+
+                    if (altAvailable > 0 && alt.stackSize <= 0) {
+                        maxParallelForThisSlot = Integer.MAX_VALUE;
+                        break;
+                    } else if (alt.stackSize > 0) {
+                        maxParallelForThisSlot = mainAvailable / alt.stackSize;
                         break;
                     }
                 }
@@ -550,8 +559,16 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
             if (req == null) continue;
             long available = availableMap.getOrDefault(req.getFluid(), 0L);
             if (available < req.amount) return 0;
-            long maxParallelForThisSlot = (available > 0 && req.amount <= 0) ? Integer.MAX_VALUE
-                : available / req.amount;
+
+            long maxParallelForThisSlot = 0;
+
+            if (available > 0 && req.amount <= 0) {
+                maxParallelForThisSlot = Integer.MAX_VALUE;
+            } else if (req.amount > 0) {
+                maxParallelForThisSlot = req.amount;
+            }
+
+            if (maxParallelForThisSlot <= 0) return 0;
             currentParallel = Math.min(currentParallel, maxParallelForThisSlot);
         }
         return currentParallel;
