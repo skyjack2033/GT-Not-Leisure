@@ -538,11 +538,10 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
                     if (altAvailable > 0 && alt.stackSize <= 0) {
                         maxParallelForThisSlot = Integer.MAX_VALUE;
-                        break;
                     } else if (alt.stackSize > 0) {
                         maxParallelForThisSlot = mainAvailable / alt.stackSize;
-                        break;
                     }
+                    if (maxParallelForThisSlot > 0) break;
                 }
             }
 
