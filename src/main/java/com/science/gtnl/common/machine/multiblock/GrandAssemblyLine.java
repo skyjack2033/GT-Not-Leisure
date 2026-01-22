@@ -524,7 +524,9 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                 maxParallelForThisSlot = mainAvailable / mainReq.stackSize;
             }
 
-            if (maxParallelForThisSlot == 0 && recipe.mOreDictAlt != null && recipe.mOreDictAlt[i] != null) {
+            if (maxParallelForThisSlot == 0 && recipe.mOreDictAlt != null
+                && i < recipe.mOreDictAlt.length
+                && recipe.mOreDictAlt[i] != null) {
                 for (ItemStack alt : recipe.mOreDictAlt[i]) {
                     if (alt == null) continue;
 
