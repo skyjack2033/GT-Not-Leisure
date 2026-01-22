@@ -50,6 +50,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.bsideup.jabel.Desugar;
@@ -103,6 +104,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import tectech.thing.casing.BlockGTCasingsTT;
@@ -210,15 +212,19 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
         if (energyEU <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
 
-        List<IDualInputInventory> inputInventories = new ObjectArrayList<>();
+        ObjectList<IDualInputInventory> inputInventories = new ObjectArrayList<>();
 
         if (isDualInputHatch) {
             for (IDualInputHatch dualInputHatch : mDualInputHatches) {
+                ItemStack[] sharedItems = dualInputHatch.getSharedItems();
                 Iterator<? extends IDualInputInventory> inventoryIterator = dualInputHatch.inventories();
                 while (inventoryIterator.hasNext()) {
                     IDualInputInventory inventory = inventoryIterator.next();
                     if (inventory.isEmpty()) continue;
-                    inputInventories.add(inventory);
+                    IDualInputInventory wrappedInventory = new WrappedInventory(
+                        ArrayUtils.addAll(sharedItems, inventory.getItemInputs()),
+                        inventory.getFluidInputs());
+                    inputInventories.add(wrappedInventory);
                 }
             }
         } else {
@@ -232,7 +238,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
     public CheckRecipeResult processRecipeLogic(List<IDualInputInventory> inputInventories, long energyEU,
         int maxParallel, int minDuration) {
-        List<GTRecipe.RecipeAssemblyLine> validRecipes = new ObjectArrayList<>();
+        ObjectList<GTRecipe.RecipeAssemblyLine> validRecipes = new ObjectArrayList<>();
 
         if (AssemblyLineUtils.isItemDataStick(mInventory[1])) {
             validRecipes.addAll(AssemblyLineUtils.findALRecipeFromDataStick(mInventory[1]));
@@ -1006,22 +1012,25 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
     }
 
     @Desugar
-    public record WrappedInventory(List<ItemStack> itemInputs, List<FluidStack> fluidInputs)
-        implements IDualInputInventory {
+    public record WrappedInventory(ItemStack[] itemInputs, FluidStack[] fluidInputs) implements IDualInputInventory {
+
+        public WrappedInventory(List<ItemStack> itemInputs, List<FluidStack> fluidInputs) {
+            this(itemInputs.toArray(new ItemStack[0]), fluidInputs.toArray(new FluidStack[0]));
+        }
 
         @Override
         public boolean isEmpty() {
-            return itemInputs == null || fluidInputs == null;
+            return itemInputs == null || fluidInputs == null || itemInputs.length == 0 || fluidInputs.length == 0;
         }
 
         @Override
         public ItemStack[] getItemInputs() {
-            return itemInputs.toArray(new ItemStack[0]);
+            return itemInputs;
         }
 
         @Override
         public FluidStack[] getFluidInputs() {
-            return fluidInputs.toArray(new FluidStack[0]);
+            return fluidInputs;
         }
     }
 
