@@ -147,16 +147,14 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
     }
 
     @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
+    public void saveFilter(NBTTagCompound aNBT) {
         if (modid != null) aNBT.setString("modid", modid);
         if (name != null) aNBT.setString("name", name);
         aNBT.setInteger("meta", meta);
     }
 
     @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
+    public void loadFilter(NBTTagCompound aNBT) {
         if (aNBT.hasKey("modid")) modid = aNBT.getString("modid");
         if (aNBT.hasKey("name")) name = aNBT.getString("name");
         if (aNBT.hasKey("meta")) meta = aNBT.getInteger("meta");

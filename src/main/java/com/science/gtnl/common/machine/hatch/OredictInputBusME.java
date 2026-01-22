@@ -306,14 +306,40 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
-        if (hasFilter()) {
-            aNBT.setString("oreDict", oreDict);
-        }
+        saveFilter(aNBT);
         if (isSuper) {
             int[] sizes = new int[100];
             for (int i = 0; i < 100; ++i) sizes[i] = mInventory[i + 100] == null ? 0 : mInventory[i + 100].stackSize;
             aNBT.setIntArray("sizes", sizes);
         }
+    }
+
+    public void saveFilter(NBTTagCompound aNBT) {
+        if (hasFilter()) {
+            aNBT.setString("oreDict", oreDict);
+        }
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        loadFilter(aNBT);
+        if (isSuper && aNBT.hasKey("sizes")) {
+            int[] sizes = aNBT.getIntArray("sizes");
+            if (sizes.length == 100) {
+                for (int i = 0; i < 100; ++i) {
+                    if (sizes[i] != 0 && mInventory[i] != null) {
+                        ItemStack s = mInventory[i].copy();
+                        s.stackSize = sizes[i];
+                        mInventory[i + 100] = s;
+                    }
+                }
+            }
+        }
+    }
+
+    public void loadFilter(NBTTagCompound aNBT) {
+        if (aNBT.hasKey("oreDict")) oreDict = aNBT.getString("oreDict");
     }
 
     @Override
@@ -335,26 +361,6 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
             refreshItemList();
         }
         updateAllInformationSlots();
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        if (aNBT.hasKey("oreDict")) {
-            oreDict = aNBT.getString("oreDict");
-        }
-        if (isSuper && aNBT.hasKey("sizes")) {
-            int[] sizes = aNBT.getIntArray("sizes");
-            if (sizes.length == 100) {
-                for (int i = 0; i < 100; ++i) {
-                    if (sizes[i] != 0 && mInventory[i] != null) {
-                        ItemStack s = mInventory[i].copy();
-                        s.stackSize = sizes[i];
-                        mInventory[i + 100] = s;
-                    }
-                }
-            }
-        }
     }
 
     @Override

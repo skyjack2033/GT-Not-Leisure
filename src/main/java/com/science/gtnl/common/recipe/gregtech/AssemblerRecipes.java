@@ -1644,7 +1644,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 1),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 1),
                 GTModHandler.getModItem(TwilightForest.ID, "item.nagaScale", 64),
                 GTModHandler.getModItem(TwilightForest.ID, "tile.TFSpiralBricks", 64),
                 GTOreDictUnificator.get(OrePrefixes.block, Materials.Steeleaf, 16))
@@ -1658,7 +1658,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 0),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 0),
                 GTModHandler.getModItem(TwilightForest.ID, "item.hydraChop", 64),
                 GTModHandler.getModItem(TwilightForest.ID, "item.fieryBlood", 64),
                 GTOreDictUnificator.get(OrePrefixes.block, Materials.FierySteel, 16))
@@ -1672,7 +1672,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 4),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 4),
                 GTModHandler.getModItem(TwilightForest.ID, "item.tripleBow", 1),
                 GTModHandler.getModItem(TwilightForest.ID, "tile.TFAuroraBrick", 64),
                 GTModHandler.getModItem(TwilightForest.ID, "tile.AuroraPillar", 64))
@@ -1686,7 +1686,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 6),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 6),
                 GTModHandler.getModItem(TwilightForest.ID, "item.phantomHelm", 1),
                 GTModHandler.getModItem(TwilightForest.ID, "item.phantomPlate", 1),
                 GTOreDictUnificator.get(OrePrefixes.block, Materials.Knightmetal, 16))
@@ -1700,7 +1700,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 3),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 3),
                 GTModHandler.getModItem(TwilightForest.ID, "tile.TFTowerDevice", 64, 0),
                 GTModHandler.getModItem(TwilightForest.ID, "tile.TFTowerDevice", 64, 2),
                 GTModHandler.getModItem(TwilightForest.ID, "item.carminite", 32))
@@ -1714,7 +1714,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 5),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 5),
                 GTModHandler.getModItem(TwilightForest.ID, "item.meefStroganoff", 1),
                 GTModHandler.getModItem(TwilightForest.ID, "item.meefSteak", 64),
                 GTOreDictUnificator.get(OrePrefixes.block, Materials.IronWood, 16))
@@ -1728,7 +1728,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 7),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 7),
                 GTModHandler.getModItem(TwilightForest.ID, "item.alphaFur", 16),
                 GTModHandler.getModItem(TwilightForest.ID, "item.iceBomb", 16),
                 GTModHandler.getModItem(TwilightForest.ID, "item.arcticFur", 64))
@@ -1742,7 +1742,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 new ItemStack(Items.book, 64),
                 NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 16, 2),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 2),
                 GTModHandler.getModItem(TwilightForest.ID, "item.scepterLifeDrain", 1),
                 GTModHandler.getModItem(TwilightForest.ID, "item.scepterTwilight", 1),
                 GTModHandler.getModItem(TwilightForest.ID, "item.scepterZombie", 1))

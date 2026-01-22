@@ -202,13 +202,14 @@ public class DualInputHatch extends MTEHatchInputBus implements IAddUIWidgets, I
     @Override
     public boolean allowPullStack(IGregTechTileEntity aBaseMetaTileEntity, int aIndex, ForgeDirection side,
         ItemStack aStack) {
-        return super.allowPullStack(aBaseMetaTileEntity, aIndex, side, aStack);
+        return aIndex != getCircuitSlot();
     }
 
     @Override
     public boolean allowPutStack(IGregTechTileEntity aBaseMetaTileEntity, int aIndex, ForgeDirection side,
         ItemStack aStack) {
-        return super.allowPutStack(aBaseMetaTileEntity, aIndex, side, aStack);
+        return aIndex != getCircuitSlot() && (mRecipeMap == null || disableFilter || mRecipeMap.containsInput(aStack))
+            && (disableLimited || limitedAllowPutStack(aIndex, aStack));
     }
 
     public FluidStack getFluid(int aSlot) {

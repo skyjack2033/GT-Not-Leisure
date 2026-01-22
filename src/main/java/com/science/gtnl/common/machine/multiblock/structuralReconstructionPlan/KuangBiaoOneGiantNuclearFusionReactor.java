@@ -80,12 +80,16 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.render.IMTERenderer;
 import lombok.Getter;
-import lombok.Setter;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public abstract class KuangBiaoOneGiantNuclearFusionReactor
-    extends GTMMultiMachineBase<KuangBiaoOneGiantNuclearFusionReactor> implements ISurvivalConstructable, IMTERenderer {
+    extends GTMMultiMachineBase<KuangBiaoOneGiantNuclearFusionReactor>
+    implements ISurvivalConstructable, IMTERenderer, IWirelessEnergy {
+
+    @Getter
+    public boolean wirelessMode = false;
+    public boolean wirelessUpgrade = false;
 
     public GTRecipe mLastRecipe;
     public long mEUStore;
@@ -140,6 +144,17 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
         byte data = 0;
         if (enableRender) data |= 0x01;
         return data;
+    }
+
+    @Override
+    public void setWirelessMode(boolean wirelessMode) {}
+
+    @Override
+    public void setWirelessUpgrade(boolean wirelessUpgrade) {}
+
+    @Override
+    public boolean isWirelessUpgrade() {
+        return true;
     }
 
     @Override
@@ -312,7 +327,7 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
                         }
                     }
 
-                    if (this.mEUStore <= 0 && mMaxProgresstime > 0) {
+                    if ((!wirelessMode && this.mEUStore <= 0) && mMaxProgresstime > 0) {
                         stopMachine(ShutDownReasonRegistry.POWER_LOSS);
                     }
                     if (mMaxProgresstime > 0) {
@@ -343,7 +358,7 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
                                 this.mEUStore = aBaseMetaTileEntity.getStoredEU();
                                 if (checkRecipe()) {
                                     markDirty();
-                                    if (this.mEUStore < this.mLastRecipe.mSpecialValue + this.lEUt) {
+                                    if (!wirelessMode && this.mEUStore < this.mLastRecipe.mSpecialValue + this.lEUt) {
                                         stopMachine(ShutDownReasonRegistry.POWER_LOSS);
                                     }
                                     aBaseMetaTileEntity.decreaseStoredEnergyUnits(this.lEUt, true);
@@ -379,8 +394,8 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
             @NotNull
             @Override
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                long powerToStart = recipe.getMetadataOrDefault(GTRecipeConstants.FUSION_THRESHOLD, 0L);
                 if (!mRunningOnLoad) {
+                    long powerToStart = recipe.getMetadataOrDefault(GTRecipeConstants.FUSION_THRESHOLD, 0L);
                     if (powerToStart > mEUStore) {
                         return CheckRecipeResultRegistry.insufficientStartupPower(BigInteger.valueOf(powerToStart));
                     }
@@ -760,18 +775,13 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
         }
     }
 
-    public static class UEVTier extends KuangBiaoOneGiantNuclearFusionReactor implements IWirelessEnergy {
+    public static class UEVTier extends KuangBiaoOneGiantNuclearFusionReactor {
 
         public int totalOverclockedDuration = 0;
         public int maxParallelStored = -1;
 
         public UUID ownerUUID;
         public boolean isRecipeProcessing = false;
-        @Getter
-        public boolean wirelessMode = false;
-        @Getter
-        @Setter
-        public boolean wirelessUpgrade = false;
         public BigInteger costingEU = BigInteger.ZERO;
         public String costingEUText = ZERO_STRING;
         public int cycleNum = 100_000;
@@ -792,6 +802,16 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
             } else {
                 wirelessMode = false;
             }
+        }
+
+        @Override
+        public void setWirelessUpgrade(boolean wirelessUpgrade) {
+            this.wirelessUpgrade = wirelessUpgrade;
+        }
+
+        @Override
+        public boolean isWirelessUpgrade() {
+            return this.wirelessUpgrade;
         }
 
         @Override
@@ -950,8 +970,8 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
                 @NotNull
                 @Override
                 public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                    long powerToStart = recipe.getMetadataOrDefault(GTRecipeConstants.FUSION_THRESHOLD, 0L);
                     if (!mRunningOnLoad) {
+                        long powerToStart = recipe.getMetadataOrDefault(GTRecipeConstants.FUSION_THRESHOLD, 0L);
                         if (!wirelessMode && powerToStart > mEUStore) {
                             return CheckRecipeResultRegistry.insufficientStartupPower(BigInteger.valueOf(powerToStart));
                         }

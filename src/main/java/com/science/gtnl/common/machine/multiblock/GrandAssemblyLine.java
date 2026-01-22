@@ -508,18 +508,19 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
         for (int i = 0; i < recipe.mInputs.length; i++) {
             ItemStack mainReq = recipe.mInputs[i];
-            if (mainReq == null || mainReq.stackSize <= 0) continue;
+            if (mainReq == null) continue;
 
             GTUtility.ItemId searchKey = (mainReq.getItemDamage() == GTRecipeBuilder.WILDCARD)
                 ? GTUtility.ItemId.createAsWildcard(mainReq)
                 : GTUtility.ItemId.createNoCopy(mainReq);
 
             long mainAvailable = availableMap.getOrDefault(searchKey, 0L);
-            long maxParallelForThisSlot = mainAvailable / mainReq.stackSize;
+            long maxParallelForThisSlot = (mainAvailable > 0 && mainReq.stackSize <= 0) ? Integer.MAX_VALUE
+                : mainAvailable / mainReq.stackSize;
 
             if (maxParallelForThisSlot == 0 && recipe.mOreDictAlt != null && recipe.mOreDictAlt[i] != null) {
                 for (ItemStack alt : recipe.mOreDictAlt[i]) {
-                    if (alt == null || alt.stackSize <= 0) continue;
+                    if (alt == null) continue;
 
                     GTUtility.ItemId altSearchKey = (alt.getItemDamage() == GTRecipeBuilder.WILDCARD)
                         ? GTUtility.ItemId.createAsWildcard(alt)
@@ -527,7 +528,8 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
                     long altAvailable = availableMap.getOrDefault(altSearchKey, 0L);
                     if (altAvailable > 0) {
-                        maxParallelForThisSlot = altAvailable / alt.stackSize;
+                        maxParallelForThisSlot = (altAvailable > 0 && alt.stackSize <= 0) ? Integer.MAX_VALUE
+                            : altAvailable / alt.stackSize;
                         break;
                     }
                 }
@@ -548,7 +550,9 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
             if (req == null) continue;
             long available = availableMap.getOrDefault(req.getFluid(), 0L);
             if (available < req.amount) return 0;
-            currentParallel = Math.min(currentParallel, (double) available / req.amount);
+            long maxParallelForThisSlot = (available > 0 && req.amount <= 0) ? Integer.MAX_VALUE
+                : available / req.amount;
+            currentParallel = Math.min(currentParallel, maxParallelForThisSlot);
         }
         return currentParallel;
     }
