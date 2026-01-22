@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -124,7 +125,6 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
     public String costingEUText = ZERO_STRING;
     public UUID ownerUUID;
     public boolean wirelessMode = false;
-    public boolean isDualInputHatch = false;
     public int minRecipeTime = 20;
 
     public GrandAssemblyLine(int aID, String aName, String aNameRegional) {
@@ -214,22 +214,35 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
         ObjectList<IDualInputInventory> inputInventories = new ObjectArrayList<>();
 
-        if (isDualInputHatch) {
-            for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-                ItemStack[] sharedItems = dualInputHatch.getSharedItems();
-                Iterator<? extends IDualInputInventory> inventoryIterator = dualInputHatch.inventories();
-                while (inventoryIterator.hasNext()) {
-                    IDualInputInventory inventory = inventoryIterator.next();
-                    if (inventory.isEmpty()) continue;
-                    IDualInputInventory wrappedInventory = new WrappedInventory(
-                        ArrayUtils.addAll(sharedItems, inventory.getItemInputs()),
-                        inventory.getFluidInputs());
-                    inputInventories.add(wrappedInventory);
-                }
+        for (IDualInputHatch dualInputHatch : mDualInputHatches) {
+            ItemStack[] sharedItems = dualInputHatch.getSharedItems();
+            Iterator<? extends IDualInputInventory> inventoryIterator = dualInputHatch.inventories();
+            while (inventoryIterator.hasNext()) {
+                IDualInputInventory inventory = inventoryIterator.next();
+                if (inventory.isEmpty()) continue;
+                IDualInputInventory wrappedInventory = new WrappedInventory(
+                    ArrayUtils.addAll(sharedItems, inventory.getItemInputs()),
+                    inventory.getFluidInputs());
+                inputInventories.add(wrappedInventory);
             }
-        } else {
-            // 将常规输入仓/总线包装成总成
-            IDualInputInventory wrappedInventory = new WrappedInventory(getAllStoredInputs(), getStoredFluids());
+        }
+
+        // 将常规输入仓/总线包装成总成
+        short hatchColors = getHatchColors();
+        boolean doColorChecking = hatchColors != 0;
+        if (!doColorChecking) hatchColors = 0b1;
+
+        for (byte color = 0; color < (doColorChecking ? 16 : 1); color++) {
+            if (isColorAbsent(hatchColors, color)) continue;
+
+            List<ItemStack> inputItems = new ArrayList<>(getStoredInputsForColor(Optional.of(color)));
+            List<FluidStack> inputFluids = new ArrayList<>(getStoredFluidsForColor(Optional.of(color)));
+
+            if (getControllerSlot() != null) {
+                inputItems.add(getControllerSlot());
+            }
+
+            IDualInputInventory wrappedInventory = new WrappedInventory(inputItems, inputFluids);
             if (!wrappedInventory.isEmpty()) inputInventories.add(wrappedInventory);
         }
 
@@ -487,7 +500,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         Object2LongOpenHashMap<GTUtility.ItemId> itemMap = new Object2LongOpenHashMap<>();
         if (inputs == null) return itemMap;
         for (ItemStack is : inputs) {
-            if (is == null || is.stackSize <= 0) continue;
+            if (is == null || is.stackSize < 0) continue;
 
             itemMap.merge(GTUtility.ItemId.createNoCopy(is), is.stackSize, Long::sum);
             itemMap.merge(GTUtility.ItemId.createAsWildcard(is), is.stackSize, Long::sum);
@@ -520,13 +533,13 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                 ? GTUtility.ItemId.createAsWildcard(mainReq)
                 : GTUtility.ItemId.createNoCopy(mainReq);
 
-            long mainAvailable = availableMap.getOrDefault(searchKey, 0L);
+            long mainAvailable = availableMap.getOrDefault(searchKey, -1L);
 
             long maxParallelForThisSlot = 0;
 
-            if (mainAvailable > 0 && mainReq.stackSize <= 0) {
+            if (mainAvailable >= 0 && mainReq.stackSize <= 0) {
                 maxParallelForThisSlot = Integer.MAX_VALUE;
-            } else if (mainReq.stackSize > 0) {
+            } else if (mainAvailable > 0 && mainReq.stackSize > 0) {
                 maxParallelForThisSlot = mainAvailable / mainReq.stackSize;
             }
 
@@ -540,11 +553,11 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                         ? GTUtility.ItemId.createAsWildcard(alt)
                         : GTUtility.ItemId.createNoCopy(alt);
 
-                    long altAvailable = availableMap.getOrDefault(altSearchKey, 0L);
+                    long altAvailable = availableMap.getOrDefault(altSearchKey, -1L);
 
                     if (altAvailable > 0 && alt.stackSize <= 0) {
                         maxParallelForThisSlot = Integer.MAX_VALUE;
-                    } else if (alt.stackSize > 0) {
+                    } else if (altAvailable > 0 && alt.stackSize > 0) {
                         maxParallelForThisSlot = altAvailable / alt.stackSize;
                     }
                     if (maxParallelForThisSlot > 0) break;
@@ -807,11 +820,6 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         setupParameters();
         if (mParallelTier < 9 && !checkEnergyHatch()) return false;
 
-        if (!mDualInputHatches.isEmpty()) {
-            isDualInputHatch = true;
-            if (!mInputBusses.isEmpty() || !mInputHatches.isEmpty()) return false;
-        }
-
         if (mParallelTier >= 12 && mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) {
             wirelessMode = true;
             mEnergyHatchTier = 14;
@@ -826,7 +834,6 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
     public void clearHatches() {
         super.clearHatches();
         mDataAccessHatches.clear();
-        isDualInputHatch = false;
         wirelessMode = false;
     }
 
