@@ -1,9 +1,6 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import static gregtech.api.enums.Mods.*;
-import static gregtech.api.recipe.RecipeMaps.*;
 import static gregtech.api.recipe.RecipeMaps.plasmaForgeRecipes;
-import static gregtech.api.util.GTRecipeBuilder.*;
 import static gregtech.api.util.GTRecipeConstants.COIL_HEAT;
 
 import com.dreammaster.gthandler.DTPFCalculator;
@@ -71,7 +68,7 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTEC.getFluid(astral_titanium.getCatalystAmount(4)),
+                    MaterialsUEVplus.ExcitedDTSC.getFluid(astral_titanium.getCatalystAmount(4)),
                     Materials.Titanium.getMolten(tier_5_quantity))
                 .fluidOutputs(
                     MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(astral_titanium.getResidueAmount(4)),
@@ -157,7 +154,7 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTEC.getFluid(celestial_tungsten.getCatalystAmount(4)),
+                    MaterialsUEVplus.ExcitedDTSC.getFluid(celestial_tungsten.getCatalystAmount(4)),
                     Materials.Tungsten.getMolten(tier_5_quantity))
                 .fluidOutputs(
                     MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(celestial_tungsten.getResidueAmount(4)),
@@ -243,7 +240,7 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTEC.getFluid(advanced_nitinol.getCatalystAmount(4)),
+                    MaterialsUEVplus.ExcitedDTSC.getFluid(advanced_nitinol.getCatalystAmount(4)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_5_quantity))
                 .fluidOutputs(
                     MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(advanced_nitinol.getResidueAmount(4)),
