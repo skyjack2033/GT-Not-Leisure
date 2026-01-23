@@ -2,11 +2,14 @@ package com.science.gtnl.common.item.items.bauble;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
+import java.util.List;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -15,6 +18,8 @@ import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import baubles.api.BaubleType;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class RejectionRing extends BaubleItem {
 
@@ -24,6 +29,13 @@ public class RejectionRing extends BaubleItem {
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "RejectionRing");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         GTNLItemList.RejectionRing.set(new ItemStack(this, 1));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack itemStack, final EntityPlayer player, final List<String> toolTip,
+        final boolean advancedToolTips) {
+        toolTip.add(StatCollector.translateToLocal("Tooltip_RejectionRing_00"));
     }
 
     @Override

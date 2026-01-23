@@ -1500,6 +1500,7 @@ Info_GhostlyShape_Cancel=One of your actions canceled the Ghostly Shape effect
 item.SatietyRing.name=Ring of Satiety
 item.SuperReachRing.name=Super Reach Ring
 item.RejectionRing.name=Ring of Rejection
+Tooltip_RejectionRing_00=Don't touch me... you'll regret it...
 item.RoyalGel.name=Royal Gel
 item.LuckyHorseshoe.name=Lucky Horseshoe
 item.PhysicsCape.name=Physics Cape

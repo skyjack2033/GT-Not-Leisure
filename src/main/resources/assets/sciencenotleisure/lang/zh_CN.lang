@@ -1500,6 +1500,7 @@ Info_GhostlyShape_Cancel=你的某个行为使你退出了幽灵形态
 item.SatietyRing.name=饱食指环
 item.SuperReachRing.name=超级触物指环
 item.RejectionRing.name=排斥指环
+Tooltip_RejectionRing_00=不要碰我……你会后悔的……
 item.RoyalGel.name=皇家凝胶
 item.LuckyHorseshoe.name=幸运马掌
 item.PhysicsCape.name=物理学披风
