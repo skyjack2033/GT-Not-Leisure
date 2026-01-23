@@ -47,5 +47,53 @@ public class FluidSolidifierRecipes implements IRecipePool {
             .duration(20)
             .eut(TierEU.RECIPE_LV)
             .addTo(FSR);
+
+        RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0))
+            .fluidInputs(MaterialsUEVplus.SixPhasedCopper.getMolten(1296))
+            .itemOutputs(MaterialsUEVplus.SixPhasedCopper.getBlocks(1))
+            .duration(204)
+            .eut(TierEU.RECIPE_UEV)
+            .addTo(FSR);
+
+        RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0))
+            .fluidInputs(MaterialsUEVplus.WhiteDwarfMatter.getMolten(1296))
+            .itemOutputs(MaterialsUEVplus.WhiteDwarfMatter.getBlocks(1))
+            .duration(204)
+            .eut(TierEU.RECIPE_UEV)
+            .addTo(FSR);
+
+        RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0))
+            .fluidInputs(MaterialsUEVplus.BlackDwarfMatter.getMolten(1296))
+            .itemOutputs(MaterialsUEVplus.BlackDwarfMatter.getBlocks(1))
+            .duration(204)
+            .eut(TierEU.RECIPE_UEV)
+            .addTo(FSR);
+
+        RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0))
+            .fluidInputs(MaterialsUEVplus.Universium.getMolten(1296))
+            .itemOutputs(MaterialsUEVplus.Universium.getBlocks(1))
+            .duration(204)
+            .eut(TierEU.RECIPE_UMV)
+            .addTo(FSR);
+
+        RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0))
+            .fluidInputs(MaterialsUEVplus.MagMatter.getMolten(1296))
+            .itemOutputs(MaterialsUEVplus.MagMatter.getBlocks(1))
+            .duration(204)
+            .eut(TierEU.RECIPE_UMV)
+            .addTo(FSR);
+
+        RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0))
+            .fluidInputs(MaterialsUEVplus.Eternity.getMolten(1296))
+            .itemOutputs(MaterialsUEVplus.Eternity.getBlocks(1))
+            .duration(204)
+            .eut(TierEU.RECIPE_UMV)
+            .addTo(FSR);
     }
 }
