@@ -26,6 +26,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.google.common.collect.Iterables;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
@@ -241,6 +244,23 @@ public class ItemUtils {
             throw new RuntimeException(e);
         }
         return itemStack;
+    }
+
+    public static FluidStack getFluidFromItemFluidDisplay(ItemStack stack) {
+        if (stack == null || !stack.hasTagCompound()) {
+            return null;
+        }
+
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            return null;
+        }
+
+        Fluid tFluid = FluidRegistry.getFluid(stack.getItemDamage());
+        if (tFluid == null) return null;
+        long fluidAmount = nbt.getLong("mFluidDisplayAmount");
+
+        return new FluidStack(tFluid, (int) fluidAmount);
     }
 
     public static ItemStack getSpecialFlower(String typeName, int amount) {

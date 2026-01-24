@@ -11,15 +11,18 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.input.Mouse;
 
 import com.glodblock.github.client.gui.GuiItemMonitor;
+import com.glodblock.github.common.item.ItemFluidDrop;
 import com.gtnewhorizons.modularui.api.KeyboardUtil;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.item.items.Stick;
 import com.science.gtnl.common.packet.KeyBindingHandler;
 import com.science.gtnl.utils.ClientUtils;
+import com.science.gtnl.utils.item.ItemUtils;
 
 import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
@@ -42,6 +45,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.util.AssemblyLineUtils;
+import gregtech.common.items.ItemFluidDisplay;
 
 @SideOnly(Side.CLIENT)
 public class GTNLInputHandler implements IContainerInputHandler {
@@ -103,6 +107,11 @@ public class GTNLInputHandler implements IContainerInputHandler {
     public boolean mouseClicked(GuiContainer gui, int mousex, int mousey, int button) {
         ItemStack stack = GuiContainerManager.getStackMouseOver(gui);
         if (stack == null) return false;
+        if (stack.getItem() instanceof ItemFluidDisplay) {
+            FluidStack fluidStack = ItemUtils.getFluidFromItemFluidDisplay(stack);
+            if (fluidStack == null) return false;
+            stack = ItemFluidDrop.newStack(fluidStack);
+        }
         return startAEWork(stack, mousex, mousey);
     }
 
