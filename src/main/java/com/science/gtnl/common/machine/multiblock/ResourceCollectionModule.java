@@ -194,7 +194,15 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
     @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
-        logic.setAvailableVoltage(Integer.MAX_VALUE);
+        long recipePower;
+
+        if (processingLogicEU <= 0) {
+            recipePower = Integer.MAX_VALUE;
+        } else {
+            recipePower = processingLogicEU;
+        }
+
+        logic.setAvailableVoltage(recipePower);
         logic.setAvailableAmperage((long) parallelSetting.get());
         logic.setAmperageOC(false);
     }
