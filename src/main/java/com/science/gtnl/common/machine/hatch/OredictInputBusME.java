@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.hatch;
 
 import static gregtech.api.enums.GTValues.*;
 
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
+import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.math.Color;
 import com.gtnewhorizons.modularui.api.math.Size;
@@ -665,7 +665,7 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
             .setSize(16, 16)
             .setPos(188, 46));
 
-        builder.widget(TextWidget.dynamicString(() -> {
+        builder.widget(TextWidget.dynamicText(() -> {
             boolean isActive = isActive();
             boolean isPowered = isPowered();
             boolean isBooting = isBooting();
@@ -673,9 +673,9 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state);
+                return Text.localised("{0}{1}§f", EnumChatFormatting.GREEN, state);
             } else {
-                return EnumChatFormatting.DARK_RED + state;
+                return new Text(EnumChatFormatting.DARK_RED + state);
             }
         })
             .setTextAlignment(Alignment.Center)

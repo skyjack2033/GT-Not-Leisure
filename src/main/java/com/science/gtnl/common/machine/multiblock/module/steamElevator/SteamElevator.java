@@ -42,6 +42,7 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
+import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
@@ -497,14 +498,15 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
                 .setDefaultColor(COLOR_TEXT_WHITE.get())
                 .setEnabled(widget -> mMachine));
 
-        screenElements
-            .widget(
-                TextWidget
-                    .dynamicString(
-                        () -> StatCollector.translateToLocal(
-                            "gt.blockmachines.multimachine.ig.elevator.gui.numOfModules") + ": " + getNumberOfModules())
-                    .setDefaultColor(COLOR_TEXT_WHITE.get())
-                    .setEnabled(widget -> getBaseMetaTileEntity().isAllowedToWork()));
+        screenElements.widget(
+            TextWidget
+                .dynamicText(
+                    () -> new Text(
+                        StatCollector.translateToLocal("gt.blockmachines.multimachine.ig.elevator.gui.numOfModules")
+                            + ": "
+                            + getNumberOfModules()))
+                .setDefaultColor(COLOR_TEXT_WHITE.get())
+                .setEnabled(widget -> getBaseMetaTileEntity().isAllowedToWork()));
     }
 
     @Override

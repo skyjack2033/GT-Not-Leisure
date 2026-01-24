@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.text.DecimalFormat;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -879,7 +878,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             new FakeSyncWidget.BooleanSyncer(() -> autoPullItemList, SuperDualInputHatchME.this::setAutoPullItemList)
                 .setSynced(false, true));
 
-        builder.widget(TextWidget.dynamicString(() -> {
+        builder.widget(TextWidget.dynamicText(() -> {
             boolean isActive = isActive();
             boolean isPowered = isPowered();
             boolean isBooting = isBooting();
@@ -887,9 +886,9 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state);
+                return Text.localised("{0}{1}§f", EnumChatFormatting.GREEN, state);
             } else {
-                return EnumChatFormatting.DARK_RED + state;
+                return new Text(EnumChatFormatting.DARK_RED + state);
             }
         })
             .setTextAlignment(Alignment.Center)

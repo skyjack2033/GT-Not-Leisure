@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -93,6 +94,9 @@ import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchInputBusME;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtneioreplugin.plugin.block.ModBlocks;
+import gtneioreplugin.plugin.item.ItemDimensionDisplay;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import tectech.thing.block.TileEntityEyeOfHarmony;
 import tectech.thing.casing.BlockGTCasingsTT;
 import tectech.thing.metaTileEntity.multi.MTEEyeOfHarmony;
@@ -104,6 +108,75 @@ import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 
 public class EyeOfHarmonyInjector extends TTMultiblockBase
     implements IConstructable, ISurvivalConstructable, IMTERenderer {
+
+    @Deprecated
+    public static final Object2IntMap<String> DIM_TO_TIER = new Object2IntOpenHashMap<>();
+
+    static {
+        // Tier 0
+        DIM_TO_TIER.put("Ow", 0);
+        DIM_TO_TIER.put("Ne", 0);
+        DIM_TO_TIER.put("TF", 0);
+        DIM_TO_TIER.put("ED", 0);
+        DIM_TO_TIER.put("EA", 0);
+
+        // Tier 1
+        DIM_TO_TIER.put("Mo", 1);
+
+        // Tier 2
+        DIM_TO_TIER.put("De", 2);
+        DIM_TO_TIER.put("Ma", 2);
+        DIM_TO_TIER.put("Ph", 2);
+
+        // Tier 3
+        DIM_TO_TIER.put("As", 3);
+        DIM_TO_TIER.put("Ca", 3);
+        DIM_TO_TIER.put("Ce", 3);
+        DIM_TO_TIER.put("Eu", 3);
+        DIM_TO_TIER.put("Ga", 3);
+        DIM_TO_TIER.put("Rb", 3);
+
+        // Tier 4
+        DIM_TO_TIER.put("Io", 4);
+        DIM_TO_TIER.put("Me", 4);
+        DIM_TO_TIER.put("Ve", 4);
+
+        // Tier 5
+        DIM_TO_TIER.put("En", 5);
+        DIM_TO_TIER.put("Mi", 5);
+        DIM_TO_TIER.put("Ob", 5);
+        DIM_TO_TIER.put("Ti", 5);
+        DIM_TO_TIER.put("Ra", 5);
+
+        // Tier 6
+        DIM_TO_TIER.put("Pr", 6);
+        DIM_TO_TIER.put("Tr", 6);
+
+        // Tier 7
+        DIM_TO_TIER.put("Ha", 7);
+        DIM_TO_TIER.put("KB", 7);
+        DIM_TO_TIER.put("MM", 7);
+        DIM_TO_TIER.put("Pl", 7);
+
+        // Tier 8
+        DIM_TO_TIER.put("BC", 8);
+        DIM_TO_TIER.put("BE", 8);
+        DIM_TO_TIER.put("BF", 8);
+        DIM_TO_TIER.put("CB", 8);
+        DIM_TO_TIER.put("TE", 8);
+        DIM_TO_TIER.put("VB", 8);
+
+        // Tier 9
+        DIM_TO_TIER.put("An", 9);
+        DIM_TO_TIER.put("Ho", 9);
+        DIM_TO_TIER.put("Mh", 9);
+        DIM_TO_TIER.put("MB", 9);
+        DIM_TO_TIER.put("Np", 9);
+        DIM_TO_TIER.put("Se", 9);
+
+        // Tier 10
+        DIM_TO_TIER.put("DD", 10);
+    }
 
     public static float MAX_ANGLE = 50;
     public static int STATUS_WINDOW_ID = 10;
@@ -224,7 +297,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                 long rawStarMatterStored = link.gtnl$getStellarPlasmaStored();
                 unit.heliumAmount = heliumStored;
                 unit.hydrogenAmount = hydrogenStored;
-                unit.rawStarMatterSAmount = rawStarMatterStored;
+                unit.rawStarMatterAmount = rawStarMatterStored;
             }
         }
     }
@@ -341,8 +414,51 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         for (int i = 0; i < this.mLinkedUnits.size(); i++) {
             int height = rowHeight * i;
             LinkedEyeOfHarmonyUnit unit = mLinkedUnits.get(i);
+            if (unit == null) continue;
             MTEEyeOfHarmony mte = unit.mMetaTileEntity;
+            if (mte == null) continue;
+            IEyeOfHarmonyControllerLink link = (IEyeOfHarmonyControllerLink) mte;
             IGregTechTileEntity gtTE = mte.getBaseMetaTileEntity();
+
+            int tier = calcTier(mte.getControllerSlot());
+            long astralAmount = link.gtnl$getAstralArrayAmount();
+            long parallelAmount = link.gtnl$getParallelAmount();
+
+            unit.displayHeliumMax = (unit.maxHeliumAmount != -1) ? unit.maxHeliumAmount
+                : getAutoComputedAmount(
+                    tier,
+                    astralAmount,
+                    parallelAmount,
+                    (long) maxFluidAmount,
+                    (long) maxHeliumAmountSetting.get(),
+                    0);
+
+            unit.displayHydrogenMax = (unit.maxHydrogenAmount != -1) ? unit.maxHydrogenAmount
+                : getAutoComputedAmount(
+                    tier,
+                    astralAmount,
+                    parallelAmount,
+                    (long) maxFluidAmount,
+                    (long) maxHydrogenAmountSetting.get(),
+                    1);
+
+            unit.displayRawStarMatterMax = (unit.maxRawStarMatterAmount != -1) ? unit.maxRawStarMatterAmount
+                : getAutoComputedAmount(
+                    tier,
+                    astralAmount,
+                    parallelAmount,
+                    (long) maxFluidAmount,
+                    (long) maxRawStarMatterAmountSetting.get(),
+                    2);
+
+            mainDisp
+                .widget(new FakeSyncWidget.LongSyncer(() -> unit.displayHeliumMax, val -> unit.displayHeliumMax = val));
+            mainDisp.widget(
+                new FakeSyncWidget.LongSyncer(() -> unit.displayHydrogenMax, val -> unit.displayHydrogenMax = val));
+            mainDisp.widget(
+                new FakeSyncWidget.LongSyncer(
+                    () -> unit.displayRawStarMatterMax,
+                    val -> unit.displayRawStarMatterMax = val));
 
             mainDisp
                 .widget(new FakeSyncWidget.LongSyncer(() -> unit.maxHeliumAmount, val -> unit.maxHeliumAmount = val));
@@ -350,13 +466,13 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                 new FakeSyncWidget.LongSyncer(() -> unit.maxHydrogenAmount, val -> unit.maxHydrogenAmount = val));
             mainDisp.widget(
                 new FakeSyncWidget.LongSyncer(
-                    () -> unit.maxRawStarMatterSAmount,
-                    val -> unit.maxRawStarMatterSAmount = val));
+                    () -> unit.maxRawStarMatterAmount,
+                    val -> unit.maxRawStarMatterAmount = val));
 
             mainDisp.widget(new FakeSyncWidget.LongSyncer(() -> unit.heliumAmount, val -> unit.heliumAmount = val));
             mainDisp.widget(new FakeSyncWidget.LongSyncer(() -> unit.hydrogenAmount, val -> unit.hydrogenAmount = val));
             mainDisp.widget(
-                new FakeSyncWidget.LongSyncer(() -> unit.rawStarMatterSAmount, val -> unit.rawStarMatterSAmount = val));
+                new FakeSyncWidget.LongSyncer(() -> unit.rawStarMatterAmount, val -> unit.rawStarMatterAmount = val));
 
             mainDisp.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 if (gtTE.isClientSide()) {
@@ -414,7 +530,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                                 } else if (GTUtility.areFluidsEqual(fluid, hydrogenStack)) {
                                     amount = unit.hydrogenAmount;
                                 } else if (GTUtility.areFluidsEqual(fluid, rawStarMatterStack)) {
-                                    amount = unit.rawStarMatterSAmount;
+                                    amount = unit.rawStarMatterAmount;
                                 }
 
                                 tooltip.add(Text.localised("modularui.fluid.phantom.amount", amount));
@@ -439,21 +555,24 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
 
             // Display machine name and status
             String name = mte.getLocalName();
-            String statusString = name + "  " + unit.getStatusString();
+            String statusString = name + " - " + unit.getStatusString();
 
             mainDisp.widget(
-                TextWidget.dynamicString(() -> statusString)
+                TextWidget.dynamicText(() -> new Text(statusString))
                     .setSynced(true)
                     .setTextAlignment(Alignment.CenterLeft)
                     .setPos(75, 5 + height));
 
-            mainDisp.widget(
-                TextWidget.localised("Tooltip_EyeOfHarmonyInjector_HeliumParametrization")
-                    .setSize(200, 18)
-                    .setPos(15, 18 + height))
+            mainDisp.widget(TextWidget.dynamicText(() -> {
+                String title = StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_HeliumParametrization");
+                if (unit.maxHeliumAmount != -1) return new Text(title);
+                return new Text(title + " - " + StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_04"));
+            })
+                .setSize(200, 18)
+                .setPos(15, 18 + height))
                 .widget(
                     new NumericWidget().setSetter(val -> unit.maxHeliumAmount = (long) val)
-                        .setGetter(() -> unit.maxHeliumAmount)
+                        .setGetter(() -> unit.maxHeliumAmount != -1 ? unit.maxHeliumAmount : unit.displayHeliumMax)
                         .setBounds(-1, Long.MAX_VALUE)
                         .setScrollValues(1, 10000, 1000000)
                         .setTextAlignment(Alignment.Center)
@@ -462,13 +581,17 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                         .setPos(15, 36 + height)
                         .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
 
-            mainDisp.widget(
-                TextWidget.localised("Tooltip_EyeOfHarmonyInjector_HydrogenParametrization")
-                    .setSize(200, 18)
-                    .setPos(15, 54 + height))
+            mainDisp.widget(TextWidget.dynamicText(() -> {
+                String title = StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_HydrogenParametrization");
+                if (unit.maxHydrogenAmount != -1) return new Text(title);
+                return new Text(title + " - " + StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_04"));
+            })
+                .setSize(200, 18)
+                .setPos(15, 54 + height))
                 .widget(
                     new NumericWidget().setSetter(val -> unit.maxHydrogenAmount = (long) val)
-                        .setGetter(() -> unit.maxHydrogenAmount)
+                        .setGetter(
+                            () -> unit.maxHydrogenAmount != -1 ? unit.maxHydrogenAmount : unit.displayHydrogenMax)
                         .setBounds(-1, Long.MAX_VALUE)
                         .setScrollValues(1, 10000, 1000000)
                         .setTextAlignment(Alignment.Center)
@@ -477,13 +600,19 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                         .setPos(15, 72 + height)
                         .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
 
-            mainDisp.widget(
-                TextWidget.localised("Tooltip_EyeOfHarmonyInjector_RawStarMatterParametrization")
-                    .setSize(200, 18)
-                    .setPos(15, 90 + height))
+            mainDisp.widget(TextWidget.dynamicText(() -> {
+                String title = StatCollector
+                    .translateToLocal("Tooltip_EyeOfHarmonyInjector_RawStarMatterParametrization");
+                if (unit.maxRawStarMatterAmount != -1) return new Text(title);
+                return new Text(title + " - " + StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_04"));
+            })
+                .setSize(200, 18)
+                .setPos(15, 90 + height))
                 .widget(
-                    new NumericWidget().setSetter(val -> unit.maxRawStarMatterSAmount = (long) val)
-                        .setGetter(() -> unit.maxRawStarMatterSAmount)
+                    new NumericWidget().setSetter(val -> unit.maxRawStarMatterAmount = (long) val)
+                        .setGetter(
+                            () -> unit.maxRawStarMatterAmount != -1 ? unit.maxRawStarMatterAmount
+                                : unit.displayRawStarMatterMax)
                         .setBounds(-1, Long.MAX_VALUE)
                         .setScrollValues(1, 10000, 1000000)
                         .setTextAlignment(Alignment.Center)
@@ -568,12 +697,39 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             if (core == null) continue;
             IEyeOfHarmonyControllerLink link = (IEyeOfHarmonyControllerLink) core;
 
+            long astralAmount = link.gtnl$getAstralArrayAmount();
+            long parallelAmount = link.gtnl$getParallelAmount();
+
+            ItemStack controllerItem = core.getControllerSlot();
+            int tier = calcTier(controllerItem);
+
+            long computedHydrogenMax = Long.MAX_VALUE;
+            long computedHeliumMax = Long.MAX_VALUE;
+            long computedRawStarMatterMax = Long.MAX_VALUE;
+
+            if (tier > 0) {
+                if (astralAmount > 0) {
+                    double cau = 12.4d * 1_000d * parallelAmount * tier;
+                    computedRawStarMatterMax = (long) Math.ceil(cau);
+                } else {
+                    computedHydrogenMax = tier;
+                    computedHeliumMax = tier;
+                }
+            }
+
             long heliumMaxAmount = unit.maxHeliumAmount != -1 ? unit.maxHeliumAmount
-                : (long) Math.min(maxFluidAmount, maxHeliumAmountSetting.get());
+                : (long) Math.min(Math.min(maxFluidAmount, maxHeliumAmountSetting.get()), computedHeliumMax);
+
             long hydrogenMaxAmount = unit.maxHydrogenAmount != -1 ? unit.maxHydrogenAmount
-                : (long) Math.min(maxFluidAmount, maxHydrogenAmountSetting.get());
-            long rawstarmatterMaxAmount = unit.maxRawStarMatterSAmount != -1 ? unit.maxRawStarMatterSAmount
-                : (long) Math.min(maxFluidAmount, maxRawStarMatterAmountSetting.get());
+                : (long) Math.min(Math.min(maxFluidAmount, maxHydrogenAmountSetting.get()), computedHydrogenMax);
+
+            long rawstarmatterMaxAmount = unit.maxRawStarMatterAmount != -1 ? unit.maxRawStarMatterAmount
+                : (long) Math
+                    .min(Math.min(maxFluidAmount, maxRawStarMatterAmountSetting.get()), computedRawStarMatterMax);
+
+            unit.displayHeliumMax = heliumMaxAmount;
+            unit.displayHydrogenMax = hydrogenMaxAmount;
+            unit.displayRawStarMatterMax = rawstarmatterMaxAmount;
 
             long storedHelium = link.gtnl$getHeliumStored();
             long storedHydrogen = link.gtnl$getHydrogenStored();
@@ -633,7 +789,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
 
             unit.heliumAmount = workingHelium;
             unit.hydrogenAmount = workingHydrogen;
-            unit.rawStarMatterSAmount = workingRawstarmatter;
+            unit.rawStarMatterAmount = workingRawstarmatter;
 
             if (!outputFluidStack.isEmpty() || storedHelium != workingHelium
                 || storedHydrogen != workingHydrogen
@@ -843,6 +999,37 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         allHatches.addAll(dualHatches);
 
         return allHatches;
+    }
+
+    public static int calcTier(@Nullable ItemStack stack) {
+        if (stack == null) return 0;
+
+        String dim = ItemDimensionDisplay.getDimension(stack);
+        if (dim == null || dim.isEmpty()) return 0;
+
+        return Math.min(9, DIM_TO_TIER.getOrDefault(dim, 0)) + 1;
+    }
+
+    public static long getAutoComputedAmount(int tier, long astralAmount, long parallelAmount, long maxFluidAmount,
+        long maxSetting, int type) {
+        if (tier <= 0) {
+            return Math.min(maxFluidAmount, maxSetting);
+        }
+
+        long computed = Long.MAX_VALUE;
+
+        if (astralAmount > 0) {
+            if (type == 2) {
+                double cau = 12.4d * 1_000d * parallelAmount * tier;
+                computed = (long) Math.ceil(cau);
+            }
+        } else {
+            if (type == 0 || type == 1) {
+                computed = tier * 1000000000L;
+            }
+        }
+
+        return Math.min(Math.min(maxFluidAmount, maxSetting), computed);
     }
 
     private static final int HORIZONTAL_OFF_SET = 26;

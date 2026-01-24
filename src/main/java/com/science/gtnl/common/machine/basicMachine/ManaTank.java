@@ -17,6 +17,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
@@ -470,10 +471,11 @@ public class ManaTank extends MTEDigitalTankBase {
                 new TextWidget(StatCollector.translateToLocal("GT5U.machines.digitaltank.lockfluid.label"))
                     .setDefaultColor(COLOR_TEXT_WHITE.get())
                     .setPos(101, 20))
-            .widget(TextWidget.dynamicString(() -> {
+            .widget(TextWidget.dynamicText(() -> {
                 FluidStack fluidStack = FluidRegistry.getFluidStack(lockedFluidName, 1);
-                return fluidStack != null ? fluidStack.getLocalizedName()
-                    : StatCollector.translateToLocal("GT5U.machines.digitaltank.lockfluid.empty");
+                return new Text(
+                    fluidStack != null ? fluidStack.getLocalizedName()
+                        : StatCollector.translateToLocal("GT5U.machines.digitaltank.lockfluid.empty"));
             })
                 .setDefaultColor(COLOR_TEXT_WHITE.get())
                 .setTextAlignment(Alignment.CenterLeft)

@@ -2491,6 +2491,7 @@ Info_EyeOfHarmonyInjector_00=Configure maximum input amount independently
 Info_EyeOfHarmonyInjector_01=Target coordinates:
 Info_EyeOfHarmonyInjector_02=Click to highlight Eye Of Harmony coordinates
 Info_EyeOfHarmonyInjector_03=Open the Eye of Harmony independent configuration panel
+Info_EyeOfHarmonyInjector_04=§aAuto max amount
 Info_EyeOfHarmonyInjector_Title=§9Eye Of Harmony Status
 
 NameReactionFurnace=Reaction Furnace

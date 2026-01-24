@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.hatch;
 import static gregtech.api.enums.GTValues.TIER_COLORS;
 import static gregtech.api.enums.GTValues.VN;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -859,7 +858,7 @@ public class SuperInputHatchME extends MTEHatchInputME {
                 .widget(new FakeSyncWidget.BooleanSyncer(() -> autoPullFluidList, this::setAutoPullFluidList));
         }
 
-        builder.widget(TextWidget.dynamicString(() -> {
+        builder.widget(TextWidget.dynamicText(() -> {
             boolean isActive = isActive();
             boolean isPowered = isPowered();
             boolean isBooting = isBooting();
@@ -867,9 +866,9 @@ public class SuperInputHatchME extends MTEHatchInputME {
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state);
+                return Text.localised("{0}{1}§f", EnumChatFormatting.GREEN, state);
             } else {
-                return EnumChatFormatting.DARK_RED + state;
+                return new Text(EnumChatFormatting.DARK_RED + state);
             }
         })
             .setTextAlignment(Alignment.Center)

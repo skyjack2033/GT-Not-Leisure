@@ -42,6 +42,7 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
+import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
@@ -601,16 +602,17 @@ public class SuperSpaceElevator extends TTMultiblockBase
             new TextWidget(StatCollector.translateToLocal("gt.blockmachines.multimachine.ig.elevator.gui.ready"))
                 .setDefaultColor(COLOR_TEXT_WHITE.get())
                 .setEnabled(widget -> mMachine));
-        screenElements
-            .widget(
-                TextWidget
-                    .dynamicString(
-                        () -> StatCollector.translateToLocal(
-                            "gt.blockmachines.multimachine.ig.elevator.gui.numOfModules") + ": " + getNumberOfModules())
-                    .setDefaultColor(COLOR_TEXT_WHITE.get())
-                    .setEnabled(widget -> getBaseMetaTileEntity().isAllowedToWork()));
         screenElements.widget(
-            TextWidget.dynamicString(() -> StatCollector.translateToLocal("Info_SuperSpaceElevator_00") + mTier)
+            TextWidget
+                .dynamicText(
+                    () -> new Text(
+                        StatCollector.translateToLocal("gt.blockmachines.multimachine.ig.elevator.gui.numOfModules")
+                            + ": "
+                            + getNumberOfModules()))
+                .setDefaultColor(COLOR_TEXT_WHITE.get())
+                .setEnabled(widget -> getBaseMetaTileEntity().isAllowedToWork()));
+        screenElements.widget(
+            TextWidget.dynamicText(() -> new Text(StatCollector.translateToLocal("Info_SuperSpaceElevator_00") + mTier))
                 .setDefaultColor(COLOR_TEXT_WHITE.get())
                 .setEnabled(widget -> getBaseMetaTileEntity().isAllowedToWork()));
     }

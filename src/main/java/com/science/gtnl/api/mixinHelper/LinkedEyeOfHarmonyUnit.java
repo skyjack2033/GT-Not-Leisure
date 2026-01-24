@@ -22,11 +22,15 @@ public class LinkedEyeOfHarmonyUnit {
 
     public long maxHeliumAmount = -1;
     public long maxHydrogenAmount = -1;
-    public long maxRawStarMatterSAmount = -1;
+    public long maxRawStarMatterAmount = -1;
 
     public long heliumAmount = 0;
     public long hydrogenAmount = 0;
-    public long rawStarMatterSAmount = 0;
+    public long rawStarMatterAmount = 0;
+
+    public long displayHeliumMax = 0;
+    public long displayHydrogenMax = 0;
+    public long displayRawStarMatterMax = 0;
 
     public int x, y, z;
 
@@ -48,7 +52,7 @@ public class LinkedEyeOfHarmonyUnit {
     public LinkedEyeOfHarmonyUnit(NBTTagCompound nbtData, boolean addTE) {
         this.maxHeliumAmount = nbtData.getLong("maxHeliumAmount");
         this.maxHydrogenAmount = nbtData.getLong("maxHydrogenAmount");
-        this.maxRawStarMatterSAmount = nbtData.getLong("maxRawStarMatterSAmount");
+        this.maxRawStarMatterAmount = nbtData.getLong("maxRawStarMatterSAmount");
         NBTTagCompound linkData = nbtData.getCompoundTag("linkData");
 
         // Load coordinates from link data
@@ -77,7 +81,7 @@ public class LinkedEyeOfHarmonyUnit {
     public LinkedEyeOfHarmonyUnit(NBTTagCompound nbtData, World world) {
         this.maxHeliumAmount = nbtData.getLong("maxHeliumAmount");
         this.maxHydrogenAmount = nbtData.getLong("maxHydrogenAmount");
-        this.maxRawStarMatterSAmount = nbtData.getLong("maxRawStarMatterSAmount");
+        this.maxRawStarMatterAmount = nbtData.getLong("maxRawStarMatterSAmount");
         NBTTagCompound linkData = nbtData.getCompoundTag("linkData");
         // Load coordinates from link data
         x = linkData.getInteger("x");
@@ -119,7 +123,7 @@ public class LinkedEyeOfHarmonyUnit {
         tag.setTag("linkData", linkData);
         tag.setLong("maxHeliumAmount", maxHeliumAmount);
         tag.setLong("maxHydrogenAmount", maxHydrogenAmount);
-        tag.setLong("maxRawStarMatterSAmount", maxRawStarMatterSAmount);
+        tag.setLong("maxRawStarMatterSAmount", maxRawStarMatterAmount);
 
         tag.setInteger(
             "worldID",

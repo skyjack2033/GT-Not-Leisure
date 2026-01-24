@@ -35,6 +35,7 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
+import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
@@ -572,10 +573,9 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     @Override
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
         super.drawTexts(screenElements, inventorySlot);
-        screenElements
-            .widget(
-                TextWidget.dynamicString(() -> StatCollector.translateToLocal("Info_PCBFactory_00") + machineTier)
-                    .setDefaultColor(COLOR_TEXT_WHITE.get()))
+        screenElements.widget(
+            TextWidget.dynamicText(() -> new Text(StatCollector.translateToLocal("Info_PCBFactory_00") + machineTier))
+                .setDefaultColor(COLOR_TEXT_WHITE.get()))
             .widget(
                 new FakeSyncWidget.IntegerSyncer(() -> machineTier, tier -> machineTier = tier).setSynced(true, false));
     }

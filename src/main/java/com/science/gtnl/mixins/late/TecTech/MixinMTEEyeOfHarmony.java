@@ -70,6 +70,12 @@ public abstract class MixinMTEEyeOfHarmony extends TTMultiblockBase implements I
     @Shadow
     protected abstract long getStellarPlasmaStored();
 
+    @Shadow
+    private long astralArrayAmount;
+
+    @Shadow
+    private long parallelAmount;
+
     public MixinMTEEyeOfHarmony(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
     }
@@ -87,6 +93,16 @@ public abstract class MixinMTEEyeOfHarmony extends TTMultiblockBase implements I
     @Override
     public long gtnl$getStellarPlasmaStored() {
         return getStellarPlasmaStored();
+    }
+
+    @Override
+    public long gtnl$getAstralArrayAmount() {
+        return astralArrayAmount;
+    }
+
+    @Override
+    public long gtnl$getParallelAmount() {
+        return parallelAmount;
     }
 
     @Override

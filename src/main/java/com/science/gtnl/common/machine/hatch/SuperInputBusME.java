@@ -4,7 +4,6 @@ import static gregtech.api.enums.GTValues.TIER_COLORS;
 import static gregtech.api.enums.GTValues.VN;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +21,7 @@ import net.minecraft.util.StatCollector;
 import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
+import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.math.Color;
 import com.gtnewhorizons.modularui.api.math.Size;
@@ -700,7 +700,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
             .setSize(16, 16)
             .setPos(188, 46));
 
-        builder.widget(TextWidget.dynamicString(() -> {
+        builder.widget(TextWidget.dynamicText(() -> {
             boolean isActive = isActive();
             boolean isPowered = isPowered();
             boolean isBooting = isBooting();
@@ -708,9 +708,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state);
+                return Text.localised("{0}{1}§f", EnumChatFormatting.GREEN, state);
             } else {
-                return EnumChatFormatting.DARK_RED + state;
+                return new Text(EnumChatFormatting.DARK_RED + state);
             }
         })
             .setTextAlignment(Alignment.Center)

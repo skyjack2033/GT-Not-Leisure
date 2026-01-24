@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
@@ -137,16 +138,17 @@ public abstract class MixinMTEVoidMinerBase extends MTEEnhancedMultiBlockBase<Mi
     }
 
     @Unique
-    private String vmTweak$getDimensionDisplayName() {
-        if (!gtnl$enableMixin) return "";
+    private Text vmTweak$getDimensionDisplayName() {
+        if (!gtnl$enableMixin) return Text.EMPTY;
         String ext = null;
         try {
             Block block = ModBlocks.getBlock(vmTweak$mLastDimensionOverride);
             ext = new ItemStack(block).getDisplayName();
         } catch (Exception ignored) {}
 
-        return EnumChatFormatting.YELLOW + StatCollector.translateToLocal("Info_Dimension_Override")
-            + (ext == null ? vmTweak$mLastDimensionOverride : ext);
+        return new Text(
+            EnumChatFormatting.YELLOW + StatCollector.translateToLocal("Info_Dimension_Override")
+                + (ext == null ? vmTweak$mLastDimensionOverride : ext));
     }
 
     @Override
@@ -357,7 +359,7 @@ public abstract class MixinMTEVoidMinerBase extends MTEEnhancedMultiBlockBase<Mi
         super.drawTexts(screenElements, inventorySlot);
         if (!gtnl$enableMixin) return;
         screenElements.widget(
-            TextWidget.dynamicString(this::vmTweak$getDimensionDisplayName)
+            TextWidget.dynamicText(this::vmTweak$getDimensionDisplayName)
                 .setSynced(true)
                 .setDefaultColor(EnumChatFormatting.YELLOW)
                 .setTextAlignment(Alignment.CenterLeft)
