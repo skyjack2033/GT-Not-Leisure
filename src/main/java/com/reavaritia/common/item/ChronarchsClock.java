@@ -4,8 +4,12 @@ import static com.reavaritia.ReAvaritia.RESOURCE_ROOT_ID;
 
 import java.util.List;
 
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.dispenser.IBehaviorDispenseItem;
+import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.EnumRarity;
@@ -17,6 +21,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
@@ -39,7 +44,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ChronarchsClock extends Item implements SubtitleDisplay {
+public class ChronarchsClock extends Item implements SubtitleDisplay, IBehaviorDispenseItem {
 
     private IIcon iconOn;
 
@@ -99,7 +104,7 @@ public class ChronarchsClock extends Item implements SubtitleDisplay {
             EntityChronarchClock point = new EntityChronarchClock(
                 world,
                 player.posX,
-                player.posY + 0.5,
+                player.posY,
                 player.posZ,
                 MainConfig.chronarchsClockRadius,
                 MainConfig.chronarchsClockSpeedMultiplier,
@@ -167,6 +172,49 @@ public class ChronarchsClock extends Item implements SubtitleDisplay {
             originalTickrate = -1f;
             restoring = false;
         }
+    }
+
+    @Override
+    public ItemStack dispense(IBlockSource source, ItemStack stack) {
+        World world = source.getWorld();
+
+        if (world.isRemote) {
+            return stack;
+        }
+
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            nbt = new NBTTagCompound();
+            stack.setTagCompound(nbt);
+        }
+
+        long lastUsed = nbt.getLong("LastUsed");
+
+        if (world.getTotalWorldTime() - lastUsed < MainConfig.chronarchsClockCooldown) {
+            return stack;
+        }
+
+        EnumFacing facing = BlockDispenser.func_149937_b(source.getBlockMetadata());
+        IPosition pos = BlockDispenser.func_149939_a(source);
+
+        double x = pos.getX();
+        double y = pos.getY();
+        double z = pos.getZ();
+
+        EntityChronarchClock point = new EntityChronarchClock(
+            world,
+            x + facing.getFrontOffsetX() * 0.5,
+            y + facing.getFrontOffsetY() * 0.5,
+            z + facing.getFrontOffsetZ() * 0.5,
+            MainConfig.chronarchsClockRadius,
+            MainConfig.chronarchsClockSpeedMultiplier,
+            MainConfig.chronarchsClockDurationTicks);
+
+        world.spawnEntityInWorld(point);
+
+        nbt.setLong("LastUsed", world.getTotalWorldTime());
+
+        return stack;
     }
 
     @Override

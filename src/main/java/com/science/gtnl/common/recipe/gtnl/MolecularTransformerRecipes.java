@@ -27,14 +27,14 @@ public class MolecularTransformerRecipes implements IRecipePool {
     public void loadRecipes() {
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.gemExquisite, Materials.Sapphire, 1L))
-            .itemOutputs(GTModHandler.getModItem(IndustrialCraft2.ID, "itemBatLamaCrystal", 1, 26))
+            .itemOutputs(GTModHandler.getModItem(IndustrialCraft2.ID, "itemBatLamaCrystal", 1, 0))
             .duration(800)
             .eut(524288)
             .addTo(MTR);
 
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.gemExquisite, Materials.Ruby, 1L))
-            .itemOutputs(GTModHandler.getModItem(IndustrialCraft2.ID, "itemBatCrystal", 2, 26))
+            .itemOutputs(GTModHandler.getModItem(IndustrialCraft2.ID, "itemBatCrystal", 2, 0))
             .duration(200)
             .eut(524288)
             .addTo(MTR);

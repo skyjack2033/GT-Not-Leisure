@@ -154,6 +154,14 @@ public class FormingPressRecipes implements IRecipePool {
             .addTo(FPR);
 
         RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0), ItemList.Netherite_Nanoparticles.get(9))
+            .fluidInputs(Materials.InfusedGold.getMolten(1296))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.block, Materials.Netherite, 1))
+            .duration(300)
+            .eut(TierEU.RECIPE_UIV)
+            .addTo(FPR);
+
+        RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Optically_Compatible_Memory.get(1),
                 ItemList.Circuit_Wafer_NOR.get(1),
@@ -293,6 +301,14 @@ public class FormingPressRecipes implements IRecipePool {
             .itemInputs(ItemList.Shape_Mold_Rod_Long.get(0), ItemList.Intensely_Bonded_Netherite_Nanoparticles.get(1))
             .fluidInputs(Materials.InfusedGold.getMolten(144))
             .itemOutputs(GTOreDictUnificator.get(OrePrefixes.stickLong, Materials.Netherite, 1))
+            .duration(100)
+            .eut(TierEU.RECIPE_UEV)
+            .addTo(FPR);
+
+        RecipeBuilder.builder()
+            .itemInputs(ItemList.Shape_Mold_Block.get(0), ItemList.Intensely_Bonded_Netherite_Nanoparticles.get(9))
+            .fluidInputs(Materials.InfusedGold.getMolten(1296))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.block, Materials.Netherite, 1))
             .duration(100)
             .eut(TierEU.RECIPE_UEV)
             .addTo(FPR);

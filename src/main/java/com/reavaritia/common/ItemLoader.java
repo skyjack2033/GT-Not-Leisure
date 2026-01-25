@@ -1,5 +1,6 @@
 package com.reavaritia.common;
 
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.item.Item;
 
 import com.reavaritia.common.item.BlazeAxe;
@@ -67,6 +68,7 @@ public class ItemLoader {
         IRegistry(MatterCluster, "MatterCluster");
         IRegistry(ChronarchsClock, "ChronarchsClock");
 
+        BlockDispenser.dispenseBehaviorRegistry.putObject(ChronarchsClock, ChronarchsClock);
     }
 
     public static void IRegistry(Item item, String name) {

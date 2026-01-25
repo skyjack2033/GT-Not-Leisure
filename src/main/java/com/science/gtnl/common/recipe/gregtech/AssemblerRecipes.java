@@ -2097,6 +2097,14 @@ public class AssemblerRecipes implements IRecipePool {
             .addTo(As);
 
         RecipeBuilder.builder()
+            .itemInputs(ItemList.Hatch_Void.get(1), ItemList.Automation_Filter_LV.get(1), ItemList.FluidFilter.get(1))
+            .itemOutputs(GTNLItemList.SuperVoidHatch.get(1))
+            .fluidInputs(Materials.Tin.getMolten(288))
+            .duration(200)
+            .eut(TierEU.RECIPE_LV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
             .itemInputs(
                 GTNLItemList.SteamCompactPipeCasing.get(4),
                 new ItemStack(Blocks.brick_block, 64),

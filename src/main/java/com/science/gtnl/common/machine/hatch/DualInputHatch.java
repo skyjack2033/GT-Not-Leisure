@@ -318,29 +318,71 @@ public class DualInputHatch extends MTEHatchInputBus implements IAddUIWidgets, I
     @Override
     public int fill(FluidStack aFluid, boolean doFill) {
         if (aFluid == null || aFluid.getFluid()
-            .getID() <= 0 || aFluid.amount <= 0 || !canTankBeFilled() || !isFluidInputAllowed(aFluid)) return 0;
-        if (!hasFluid(aFluid) && getFirstEmptySlot() != -1) {
-            int tFilled = Math.min(aFluid.amount, mCapacityPer);
-            if (doFill) {
-                FluidStack tFluid = aFluid.copy();
-                tFluid.amount = tFilled;
-                addFluid(tFluid, getFirstEmptySlot());
-                getBaseMetaTileEntity().markDirty();
-            }
-            return tFilled;
+            .getID() <= 0 || aFluid.amount <= 0 || !canTankBeFilled() || !isFluidInputAllowed(aFluid)) {
+            return 0;
         }
-        if (hasFluid(aFluid)) {
-            int tLeft = mCapacityPer - getFluidAmount(aFluid);
-            int tFilled = Math.min(tLeft, aFluid.amount);
-            if (doFill) {
-                FluidStack tFluid = aFluid.copy();
-                tFluid.amount = tFilled;
-                addFluid(tFluid, getFluidSlot(tFluid));
-                getBaseMetaTileEntity().markDirty();
+
+        int toFill = aFluid.amount;
+        int filled = 0;
+
+        if (disableLimited) {
+            if (!hasFluid(aFluid) && getFirstEmptySlot() != -1) {
+                int tFilled = Math.min(toFill, mCapacityPer);
+                if (doFill) {
+                    FluidStack tFluid = aFluid.copy();
+                    tFluid.amount = tFilled;
+                    addFluid(tFluid, getFirstEmptySlot());
+                    getBaseMetaTileEntity().markDirty();
+                }
+                return tFilled;
             }
-            return tFilled;
+
+            if (hasFluid(aFluid)) {
+                int tLeft = mCapacityPer - getFluidAmount(aFluid);
+                int tFilled = Math.min(tLeft, toFill);
+                if (doFill) {
+                    FluidStack tFluid = aFluid.copy();
+                    tFluid.amount = tFilled;
+                    addFluid(tFluid, getFluidSlot(tFluid));
+                    getBaseMetaTileEntity().markDirty();
+                }
+                return tFilled;
+            }
+
+            return 0;
         }
-        return 0;
+
+        for (int i = 0; i < mStoredFluid.length && toFill > 0; i++) {
+            FluidStack stored = mStoredFluid[i];
+            if (stored != null && stored.isFluidEqual(aFluid)) {
+                int space = mCapacityPer - stored.amount;
+                if (space > 0) {
+                    int add = Math.min(space, toFill);
+                    if (doFill) {
+                        stored.amount += add;
+                        getBaseMetaTileEntity().markDirty();
+                    }
+                    filled += add;
+                    toFill -= add;
+                }
+            }
+        }
+
+        for (int i = 0; i < mStoredFluid.length && toFill > 0; i++) {
+            if (mStoredFluid[i] == null) {
+                int add = Math.min(mCapacityPer, toFill);
+                if (doFill) {
+                    FluidStack tFluid = aFluid.copy();
+                    tFluid.amount = add;
+                    setFluid(tFluid, i);
+                    getBaseMetaTileEntity().markDirty();
+                }
+                filled += add;
+                toFill -= add;
+            }
+        }
+
+        return filled;
     }
 
     @Override
