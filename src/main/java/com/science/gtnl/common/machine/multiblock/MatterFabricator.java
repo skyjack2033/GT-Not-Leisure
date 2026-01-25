@@ -37,11 +37,10 @@ import com.science.gtnl.utils.StructureUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
+import gregtech.api.enums.VoidingMode;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
-import gregtech.api.metatileentity.implementations.MTEHatch;
-import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.objects.ItemData;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
@@ -50,7 +49,6 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import tectech.thing.casing.BlockGTCasingsTT;
 
 public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> implements ISurvivalConstructable {
@@ -170,6 +168,16 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
         buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }
 
+    @Override
+    public boolean supportsVoidProtection() {
+        return false;
+    }
+
+    @Override
+    public VoidingMode getVoidingMode() {
+        return VoidingMode.VOID_ALL;
+    }
+
     @NotNull
     @Override
     public CheckRecipeResult checkProcessing() {
@@ -243,41 +251,12 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
             mOutputFluids = outputFluids.toArray(new FluidStack[0]);
         }
 
-        this.lEUt = -(int) Math.min(totalOutput * 4L, Integer.MAX_VALUE);
+        this.lEUt = -totalOutput * 4L;
         this.mProgresstime = 0;
         this.mEfficiency = 10000;
         this.mMaxProgresstime = (int) (128 * mConfigSpeedBoost);
 
         return CheckRecipeResultRegistry.SUCCESSFUL;
-    }
-
-    @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-
-        if (aBaseMetaTileEntity.isServerSide()) {
-            if (this.mProgresstime > 0) {
-                if (!consumeEnergy(-this.lEUt)) {
-                    stopMachine(ShutDownReasonRegistry.POWER_LOSS);
-                }
-            }
-        }
-    }
-
-    public boolean consumeEnergy(long amount) {
-        for (MTEHatchEnergy energyHatch : mEnergyHatches) {
-            if (energyHatch.getEUVar() >= amount) {
-                energyHatch.setEUVar(energyHatch.getEUVar() - amount);
-                return true;
-            }
-        }
-        for (MTEHatch exoEnergyHatch : mExoticEnergyHatches) {
-            if (exoEnergyHatch.getEUVar() >= amount) {
-                exoEnergyHatch.setEUVar(exoEnergyHatch.getEUVar() - amount);
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
