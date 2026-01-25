@@ -182,6 +182,11 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
     }
 
     @Override
+    public boolean checkEnergyHatch() {
+        return true;
+    }
+
+    @Override
     public double getEUtDiscount() {
         return 1 - (mParallelTier / 50.0);
     }
