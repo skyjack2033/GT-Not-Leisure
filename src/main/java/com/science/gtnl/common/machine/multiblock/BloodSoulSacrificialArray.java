@@ -222,7 +222,13 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
         return StructureDefinition.<BloodSoulSacrificialArray>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
             .addElement('A', ofBlock(Loaders.FRF_Casings, 0))
-            .addElement('B', ofBlock(sBlockCasings8, 10))
+            .addElement(
+                'B',
+                buildHatchAdder(BloodSoulSacrificialArray.class).atLeast(Maintenance, InputBus, OutputBus, ParallelCon)
+                    .adder(BloodSoulSacrificialArray::addToMachineList)
+                    .dot(1)
+                    .casingIndex(getCasingTextureID())
+                    .buildAndChain(GregTechAPI.sBlockCasings8, 10))
             .addElement('C', ofBlock(gtPlusPlus.core.block.ModBlocks.blockSpecialMultiCasings, 13))
             .addElement('D', ofBlock(gtPlusPlus.core.block.ModBlocks.blockCasingsMisc, 9))
             .addElement('E', ofBlockAnyMeta(BlockList.BloodyIchorium.getBlock()))

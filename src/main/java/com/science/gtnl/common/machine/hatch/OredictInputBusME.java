@@ -2,6 +2,7 @@ package com.science.gtnl.common.machine.hatch;
 
 import static gregtech.api.enums.GTValues.*;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -673,7 +674,7 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return Text.localised("{0}{1}§f", EnumChatFormatting.GREEN, state);
+                return new Text(MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state));
             } else {
                 return new Text(EnumChatFormatting.DARK_RED + state);
             }

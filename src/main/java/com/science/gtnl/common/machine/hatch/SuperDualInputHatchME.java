@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -886,7 +887,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return Text.localised("{0}{1}§f", EnumChatFormatting.GREEN, state);
+                return new Text(MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state));
             } else {
                 return new Text(EnumChatFormatting.DARK_RED + state);
             }

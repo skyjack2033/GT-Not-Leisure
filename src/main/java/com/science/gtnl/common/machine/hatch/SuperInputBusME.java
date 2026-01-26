@@ -4,6 +4,7 @@ import static gregtech.api.enums.GTValues.TIER_COLORS;
 import static gregtech.api.enums.GTValues.VN;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -708,7 +709,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return Text.localised("{0}{1}§f", EnumChatFormatting.GREEN, state);
+                return new Text(MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state));
             } else {
                 return new Text(EnumChatFormatting.DARK_RED + state);
             }
