@@ -75,7 +75,6 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoidingMode;
@@ -202,8 +201,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
     public CheckRecipeResult checkProcessing() {
         ItemStack controllerItem = getControllerSlot();
         this.mParallelTier = getParallelTier(controllerItem);
-        long energyEU = wirelessMode ? getUserEU(ownerUUID).longValue()
-            : GTValues.VP[mEnergyHatchTier] * getMaxInputAmps();
+        long energyEU = wirelessMode ? getUserEU(ownerUUID).longValue() : getMaxInputEu();
         int maxParallel = getTrueParallel();
 
         if (energyEU <= 0) return CheckRecipeResultRegistry.NO_RECIPE;

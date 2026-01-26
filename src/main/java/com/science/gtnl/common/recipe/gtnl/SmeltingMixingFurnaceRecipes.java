@@ -547,7 +547,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTUtility.getIntegratedCircuit(2),
+                GTUtility.getIntegratedCircuit(3),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Carbon, 14))
             .fluidInputs(Materials.Trinium.getMolten(144 * 45), Materials.Naquadah.getMolten(144 * 81))
             .fluidOutputs(MaterialsAlloy.TRINIUM_NAQUADAH_CARBON.getFluidStack(1440 * 14))
@@ -1696,7 +1696,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
+                GTUtility.getIntegratedCircuit(12),
                 GTUtility.copyAmountUnsafe(1440, GTOreDictUnificator.get(OrePrefixes.dust, Materials.Phosphorus, 1)),
                 GTUtility.copyAmountUnsafe(300, GTOreDictUnificator.get(OrePrefixes.dust, Materials.Sulfur, 1)))
             .fluidInputs(
