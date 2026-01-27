@@ -31,7 +31,7 @@ public class MixinEyeOfHarmonyRecipeStorage {
         at = @At(value = "INVOKE", target = "Ljava/util/HashMap;values()Ljava/util/Collection;", ordinal = 0))
     private Collection<EyeOfHarmonyRecipe> ensurePreRegistrationValuesCall(
         HashMap<String, EyeOfHarmonyRecipe> originalMap) {
-        EyeOfHarmonyRecipes.loadRecipes();
+        new EyeOfHarmonyRecipes().loadRecipes();
         originalMap.putAll(EyeOfHarmonyRecipeFactory.customRecipeHashMap);
         return originalMap.values();
     }

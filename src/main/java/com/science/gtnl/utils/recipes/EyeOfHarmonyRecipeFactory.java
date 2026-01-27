@@ -1,12 +1,10 @@
 package com.science.gtnl.utils.recipes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.science.gtnl.mixins.late.Debug.AccessorEyeOfHarmonyRecipe;
 
@@ -64,7 +62,7 @@ public class EyeOfHarmonyRecipeFactory {
         accessor.setSpacetimeCasingTierRequired(Math.min(8, rocketTierOfRecipe));
         accessor.setEuStartCost(euStartCost);
         accessor.setEuOutput(euOutput);
-        accessor.setRecipeEnergyEfficiency((double) euOutput / euStartCost);
+        accessor.setRecipeEnergyEfficiency((double) euOutput / euStartCost * 100);
         accessor.setHydrogenRequirement(hydrogenRequirement);
         accessor.setHeliumRequirement(heliumRequirement);
         accessor.setMiningTimeSeconds(miningTimeSeconds);
@@ -73,24 +71,43 @@ public class EyeOfHarmonyRecipeFactory {
         return instance;
     }
 
-    public static void addCustomRecipeEntry(ItemStack recipeTriggerItem, ArrayList<Pair<ItemStack, Long>> outputItems,
-        ArrayList<Pair<FluidStack, Long>> outputFluids, long rocketTierOfRecipe, long euStartCost, long euOutput,
+    public static void addCustomRecipeEntry(ItemStack recipeTriggerItem, ItemStackLong[] outputItems,
+        FluidStackLong[] outputFluids, long rocketTierOfRecipe, long euStartCost, long euOutput,
         long hydrogenRequirement, long heliumRequirement, long miningTimeSeconds, double baseSuccessChance) {
+        if (recipeTriggerItem == null) return;
 
-        ArrayList<ItemStackLong> outputItemsLong = new ArrayList<>();
-        for (Pair<ItemStack, Long> pair : outputItems) {
-            outputItemsLong.add(new ItemStackLong(pair.getLeft(), pair.getRight()));
+        ArrayList<ItemStackLong> itemsList = new ArrayList<>();
+        if (outputItems != null) {
+            Collections.addAll(itemsList, outputItems);
         }
 
-        ArrayList<FluidStackLong> outputFluidsLong = new ArrayList<>();
-        for (Pair<FluidStack, Long> pair : outputFluids) {
-            outputFluidsLong.add(new FluidStackLong(pair.getLeft(), pair.getRight()));
+        ArrayList<FluidStackLong> fluidsList = new ArrayList<>();
+        if (outputFluids != null) {
+            Collections.addAll(fluidsList, outputFluids);
         }
+
+        addCustomRecipeEntry(
+            recipeTriggerItem,
+            itemsList,
+            fluidsList,
+            rocketTierOfRecipe,
+            euStartCost,
+            euOutput,
+            hydrogenRequirement,
+            heliumRequirement,
+            miningTimeSeconds,
+            baseSuccessChance);
+    }
+
+    public static void addCustomRecipeEntry(ItemStack recipeTriggerItem, ArrayList<ItemStackLong> outputItems,
+        ArrayList<FluidStackLong> outputFluids, long rocketTierOfRecipe, long euStartCost, long euOutput,
+        long hydrogenRequirement, long heliumRequirement, long miningTimeSeconds, double baseSuccessChance) {
+        if (recipeTriggerItem == null) return;
 
         EyeOfHarmonyRecipe recipe = createCustomRecipe(
             recipeTriggerItem,
-            outputItemsLong,
-            outputFluidsLong,
+            outputItems,
+            outputFluids,
             rocketTierOfRecipe,
             euStartCost,
             euOutput,
