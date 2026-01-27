@@ -328,6 +328,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_07"))
             .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_08"))
             .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_10"))
             .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
             .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
