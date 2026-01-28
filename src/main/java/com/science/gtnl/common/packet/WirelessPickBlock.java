@@ -87,6 +87,15 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
         }
     }
 
+    public static int getFirstEmptySlot(EntityPlayerMP player) {
+        for (int i = 9; i < player.inventory.mainInventory.length; i++) {
+            if (player.inventory.mainInventory[i] == null) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     @Optional.Method(modid = "Baubles")
     public void readBaubles(EntityPlayerMP player, ItemStack exitem, int slot) {
         for (int i = 0; i < BaublesApi.getBaubles(player)
@@ -124,6 +133,12 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
             IGrid grid = obj.getGrid();
             if (grid == null) return false;
             if (securityCheck(player, grid, SecurityPermissions.EXTRACT)) {
+                ItemStack vitem = player.inventory.getStackInSlot(slot);
+                int empty_slot = getFirstEmptySlot(player);
+                if (empty_slot != -1) {
+                    player.inventory.setInventorySlotContents(empty_slot, vitem);
+                }
+
                 IStorageGrid storageGrid = grid.getCache(IStorageGrid.class);
                 var iItemStorageChannel = storageGrid.getItemInventory();
                 var aeItem = iItemStorageChannel.extractItems(
