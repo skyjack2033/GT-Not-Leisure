@@ -13,7 +13,9 @@ import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
 import static kubatech.loaders.BlockLoader.*;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
@@ -63,6 +65,7 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
+import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.render.IMTERenderer;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -71,6 +74,8 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
     implements IConstructable, ISurvivalConstructable {
 
     public boolean useExtraGas = false;
+    public UUID ownerUUID;
+    public BigInteger bigEUt;
 
     public NaquadahReactor(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -148,6 +153,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
     @Nonnull
     @Override
     public CheckRecipeResult checkProcessing() {
+        bigEUt = null;
         useExtraGas = false;
 
         List<FluidStack> tFluids = getStoredFluids();
@@ -175,13 +181,30 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         if (useExtraGas) {
             mMaxProgresstime /= getDurationMultiple();
-            lEUt *= getEUtMultiple();
+
+            long mult = getEUtMultiple();
+
+            if (lEUt > Long.MAX_VALUE / mult) {
+                bigEUt = BigInteger.valueOf(lEUt)
+                    .multiply(BigInteger.valueOf(mult));
+                lEUt = 0;
+            } else {
+                lEUt *= mult;
+            }
         }
 
         mOutputItems = processingLogic.getOutputItems();
         mOutputFluids = processingLogic.getOutputFluids();
 
         return result;
+    }
+
+    @Override
+    protected void outputAfterRecipe() {
+        super.outputAfterRecipe();
+        if (bigEUt == null) return;
+        WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, bigEUt);
+        bigEUt = null;
     }
 
     @Override
@@ -215,6 +238,9 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
         if (tag.getBoolean("useExtraGas")) {
             currentTip.add(StatCollector.translateToLocal("Info_NaquadahReactor_01"));
         }
+        if (tag.getBoolean("wirelessMode")) {
+            currentTip.add(EnumChatFormatting.LIGHT_PURPLE + StatCollector.translateToLocal("Waila_WirelessMode"));
+        }
     }
 
     @Override
@@ -222,11 +248,10 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
         int z) {
         super.getWailaNBTData(player, tile, tag, world, x, y, z);
         IGregTechTileEntity tileEntity = getBaseMetaTileEntity();
-        if (tileEntity != null) {
-            if (tileEntity.isActive()) {
-                tag.setBoolean("useExtraGas", useExtraGas);
-            }
-        }
+        if (tileEntity == null) return;
+        if (tileEntity.isActive()) return;
+        tag.setBoolean("useExtraGas", useExtraGas);
+        if (bigEUt != null) tag.setBoolean("wirelessMode", true);
     }
 
     @Override
@@ -243,12 +268,18 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
         aNBT.setBoolean("useExtraGas", useExtraGas);
+        if (bigEUt != null) {
+            aNBT.setString("bigEUt", bigEUt.toString());
+        }
     }
 
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
         useExtraGas = aNBT.getBoolean("useExtraGas");
+        if (aNBT.hasKey("bigEUt")) {
+            bigEUt = new BigInteger(aNBT.getString("bigEUt"));
+        }
     }
 
     public static class LargeNaquadahReactor extends NaquadahReactor<LargeNaquadahReactor> {
@@ -584,6 +615,12 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
             if (isRenderActive) data |= 0x01;
             if (enableRender) data |= 0x02;
             return data;
+        }
+
+        @Override
+        public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
+            super.onFirstTick(aBaseMetaTileEntity);
+            this.ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
         }
 
         @Override

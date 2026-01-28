@@ -9,6 +9,7 @@ import com.science.gtnl.utils.recipes.metadata.NaquadahReactorMetadata;
 
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
 
@@ -64,7 +65,59 @@ public class NaquadahReactorRecipes implements IRecipePool {
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkIIIDepleted.getFluidOrGas(125))
             .duration(14000)
             .eut(0)
+            .metadata(REACTOR_TIER, Pair.of(1, TierEU.RECIPE_MAX))
+            .addTo(NRR);
+
+        RecipeBuilder.builder()
+            .fluidInputs(
+                GGMaterial.naquadahBasedFuelMkIV.getFluidOrGas(16),
+                MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(50))
+            .fluidOutputs(GGMaterial.naquadahBasedFuelMkIVDepleted.getFluidOrGas(16))
+            .duration(1800)
+            .eut(0)
             .metadata(REACTOR_TIER, Pair.of(1, TierEU.RECIPE_UXV))
+            .addTo(NRR);
+
+        RecipeBuilder.builder()
+            .fluidInputs(GGMaterial.naquadahBasedFuelMkIV.getFluidOrGas(150), Materials.Tartarite.getMolten(72))
+            .fluidOutputs(GGMaterial.naquadahBasedFuelMkIVDepleted.getFluidOrGas(150))
+            .duration(18000)
+            .eut(0)
+            .metadata(REACTOR_TIER, Pair.of(1, TierEU.RECIPE_MAX * 4))
+            .addTo(NRR);
+
+        RecipeBuilder.builder()
+            .fluidInputs(GGMaterial.naquadahBasedFuelMkV.getFluidOrGas(16), MaterialsUEVplus.Protomatter.getFluid(100))
+            .fluidOutputs(GGMaterial.naquadahBasedFuelMkVDepleted.getFluidOrGas(16))
+            .duration(2000)
+            .eut(0)
+            .metadata(REACTOR_TIER, Pair.of(2, TierEU.RECIPE_MAX))
+            .addTo(NRR);
+
+        RecipeBuilder.builder()
+            .fluidInputs(GGMaterial.naquadahBasedFuelMkV.getFluidOrGas(175), MaterialsUEVplus.ExcitedDTSC.getFluid(50))
+            .fluidOutputs(GGMaterial.naquadahBasedFuelMkVDepleted.getFluidOrGas(175))
+            .duration(20000)
+            .eut(0)
+            .metadata(REACTOR_TIER, Pair.of(2, TierEU.RECIPE_MAX * 16))
+            .addTo(NRR);
+
+        RecipeBuilder.builder()
+            .fluidInputs(GGMaterial.naquadahBasedFuelMkVI.getFluidOrGas(16), MaterialsUEVplus.SpaceTime.getMolten(18))
+            .fluidOutputs(GGMaterial.naquadahBasedFuelMkVIDepleted.getFluidOrGas(16))
+            .duration(2200)
+            .eut(0)
+            .metadata(REACTOR_TIER, Pair.of(2, TierEU.RECIPE_MAX * 4))
+            .addTo(NRR);
+
+        RecipeBuilder.builder()
+            .fluidInputs(
+                GGMaterial.naquadahBasedFuelMkVI.getFluidOrGas(175),
+                MaterialsUEVplus.WhiteDwarfMatter.getMolten(2))
+            .fluidOutputs(GGMaterial.naquadahBasedFuelMkVIDepleted.getFluidOrGas(175))
+            .duration(22000)
+            .eut(0)
+            .metadata(REACTOR_TIER, Pair.of(2, TierEU.RECIPE_MAX * 64))
             .addTo(NRR);
 
     }
