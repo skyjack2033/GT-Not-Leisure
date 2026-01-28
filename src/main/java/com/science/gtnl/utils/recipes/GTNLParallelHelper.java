@@ -21,6 +21,7 @@ import gregtech.api.objects.XSTR;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.recipe.check.SingleRecipeCheck;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
@@ -29,6 +30,11 @@ import gregtech.api.util.VoidProtectionHelper;
 
 @SuppressWarnings({ "unused", "UnusedReturnValue" })
 public class GTNLParallelHelper extends ParallelHelper {
+
+    @Nonnull
+    public static final CheckRecipeResult PARALLEL_OVERFLOW = SimpleCheckRecipeResult.ofFailure("parallel_overflow");
+    @Nonnull
+    public static final CheckRecipeResult PARALLEL_ZERO = SimpleCheckRecipeResult.ofFailure("parallel_zero");
 
     public static final double MAX_BATCH_MODE_TICK_TIME = 128;
     /**
@@ -535,7 +541,7 @@ public class GTNLParallelHelper extends ParallelHelper {
         }
 
         if (currentParallel <= 0) {
-            result = CheckRecipeResultRegistry.INTERNAL_ERROR;
+            result = currentParallel == 0 ? PARALLEL_ZERO : PARALLEL_OVERFLOW;
             return;
         }
 

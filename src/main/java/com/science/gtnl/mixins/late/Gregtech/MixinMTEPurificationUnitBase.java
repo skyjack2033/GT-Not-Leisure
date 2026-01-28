@@ -55,6 +55,7 @@ import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.science.gtnl.api.mixinHelper.ICostingEUHolder;
 import com.science.gtnl.api.mixinHelper.IWirelessMode;
+import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -196,7 +197,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
                 .min(gtnl$maxParallelLong, Math.floorDiv(amountAvailable, (long) waterInput.amount));
             // This should not happen, throw an error
             if (gtnl$effectiveParallelLong == 0) {
-                cir.setReturnValue(CheckRecipeResultRegistry.INTERNAL_ERROR);
+                cir.setReturnValue(GTNLParallelHelper.PARALLEL_ZERO);
                 return;
             }
 

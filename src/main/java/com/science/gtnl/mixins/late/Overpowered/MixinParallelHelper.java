@@ -2,6 +2,8 @@ package com.science.gtnl.mixins.late.Overpowered;
 
 import java.util.OptionalDouble;
 
+import javax.annotation.Nonnull;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,8 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.utils.enums.ModList;
 import com.science.gtnl.utils.recipes.ChanceBonusManager;
+import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 
 import gregtech.api.interfaces.tileentity.IVoidable;
+import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.ParallelHelper;
@@ -31,6 +36,13 @@ public abstract class MixinParallelHelper {
     @Shadow
     protected IVoidable machine;
 
+    @Shadow
+    @Nonnull
+    protected CheckRecipeResult result;
+
+    @Shadow
+    protected int currentParallel;
+
     /**
      * Inject at the start of determineParallel to apply voltage-based chance bonus.
      */
@@ -45,5 +57,11 @@ public abstract class MixinParallelHelper {
                 recipe = ChanceBonusManager.copyAndBonusChance(recipe, bonusOptional.getAsDouble());
             }
         }
+    }
+
+    @Inject(method = "determineParallel", at = @At("RETURN"), remap = false)
+    private void determineParallelZero(CallbackInfo ci) {
+        if (result != CheckRecipeResultRegistry.INTERNAL_ERROR) return;
+        result = currentParallel == 0 ? GTNLParallelHelper.PARALLEL_ZERO : GTNLParallelHelper.PARALLEL_OVERFLOW;
     }
 }
