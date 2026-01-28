@@ -85,7 +85,7 @@ public class ReactionFurnace extends GTMMultiMachineBase<ReactionFurnace> implem
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings9, 11);
+        return StructureUtils.getTextureIndex(sBlockCasings8, 7);
     }
 
     @Override

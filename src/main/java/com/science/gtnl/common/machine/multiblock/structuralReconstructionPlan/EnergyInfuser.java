@@ -23,6 +23,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.brandon3055.draconicevolution.common.blocks.itemblocks.DraconiumItemBlock;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -240,6 +241,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable {
                     return false;
                 }
             } else if (Mods.COFHCore.isModLoaded() && item instanceof IEnergyContainerItem energyContainerItem) {
+                if (item instanceof DraconiumItemBlock && stack.getItemDamage() == 2) return true;
                 if (energyContainerItem.getEnergyStored(stack) < energyContainerItem.getMaxEnergyStored(stack)) {
                     return false;
                 }
@@ -318,7 +320,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable {
     public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         outputAllItems = true;
-        GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("Info_EnergyInfuser_00" + this.machineMode));
+        GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("Info_EnergyInfuser_00"));
     }
 
     @Override
