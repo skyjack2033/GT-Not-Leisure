@@ -640,7 +640,6 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
     @Override
     public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        if (mMachine) return -1;
         int built;
 
         built = survivalBuildPiece(
