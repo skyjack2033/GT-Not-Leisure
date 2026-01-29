@@ -201,8 +201,19 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
     public CheckRecipeResult checkProcessing() {
         ItemStack controllerItem = getControllerSlot();
         this.mParallelTier = getParallelTier(controllerItem);
-        long energyEU = wirelessMode ? getUserEU(ownerUUID).longValue() : getMaxInputEu();
         int maxParallel = getTrueParallel();
+        long energyEU;
+
+        if (wirelessMode) {
+            BigInteger eu = getUserEU(ownerUUID);
+            if (eu.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
+                energyEU = Long.MAX_VALUE;
+            } else {
+                energyEU = eu.longValue();
+            }
+        } else {
+            energyEU = getMaxInputEu();
+        }
 
         if (energyEU <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
 
