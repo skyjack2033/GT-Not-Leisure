@@ -151,6 +151,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         }
 
         mStoredItems.addAll(toStore);
+        mOutputItems = mStoredItems.toArray(new ItemStack[0]);
 
         if (!mStoredItems.isEmpty()) {
             return SimpleCheckRecipeResult.ofSuccess("charging");
@@ -159,8 +160,6 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         if (toStore.isEmpty()) {
             return SimpleCheckRecipeResult.ofFailure("no_chargeable_item");
         }
-
-        mOutputItems = mStoredItems.toArray(new ItemStack[0]);
 
         return SimpleCheckRecipeResult.ofSuccess("charging");
     }
