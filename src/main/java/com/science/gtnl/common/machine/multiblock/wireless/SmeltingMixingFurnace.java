@@ -224,7 +224,7 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
             return false;
         }
         setupParameters();
-        return this.mCountCasing > 15;
+        return true;
     }
 
     @Override
