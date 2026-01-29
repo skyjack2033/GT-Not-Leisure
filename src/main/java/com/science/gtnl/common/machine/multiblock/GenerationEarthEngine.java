@@ -12,8 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -27,7 +25,6 @@ import com.science.gtnl.utils.enums.GTNLStructureChannels;
 
 import crazypants.enderio.EnderIO;
 import gregtech.api.enums.Textures;
-import gregtech.api.interfaces.INEIPreviewModifier;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -39,8 +36,7 @@ import kubatech.loaders.BlockLoader;
 import tectech.thing.block.BlockQuantumGlass;
 import tectech.thing.casing.TTCasingsContainer;
 
-public class GenerationEarthEngine extends MultiMachineBase<GenerationEarthEngine>
-    implements ISurvivalConstructable, INEIPreviewModifier {
+public class GenerationEarthEngine extends MultiMachineBase<GenerationEarthEngine> implements ISurvivalConstructable {
 
     private static final int HORIZONTAL_OFF_SET = 321;
     private static final int VERTICAL_OFF_SET = 321;
@@ -138,12 +134,6 @@ public class GenerationEarthEngine extends MultiMachineBase<GenerationEarthEngin
     @Override
     public IAlignmentLimits getInitialAlignmentLimits() {
         return (d, r, f) -> d == ForgeDirection.UP;
-    }
-
-    @Override
-    public void onPreviewConstruct(@NotNull ItemStack trigger) {
-        if (!GTNLStructureChannels.STRUCTURE_RENDER.hasValue(trigger)) return;
-        buildPiece(STRUCTURE_PIECE_MAIN, trigger, false, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }
 
     @Override
