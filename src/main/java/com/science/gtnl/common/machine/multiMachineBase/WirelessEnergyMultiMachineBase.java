@@ -240,11 +240,9 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
         costingEUText = ZERO_STRING;
         totalOverclockedDuration = 0;
         cycleNow = 0;
+        if (!wirelessMode) return super.checkProcessing();
+
         maxParallelStored = getTrueParallel();
-        if (!wirelessMode) {
-            maxParallelStored = 0;
-            return super.checkProcessing();
-        }
 
         boolean succeeded = false;
         CheckRecipeResult finalResult = CheckRecipeResultRegistry.SUCCESSFUL;
@@ -256,14 +254,14 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
                 break;
             }
             succeeded = true;
-            if (maxParallelStored <= 0) {
+            if (maxParallelStored <= -1) {
                 finalResult = r;
                 break;
             }
         }
 
         if (!succeeded) {
-            maxParallelStored = 0;
+            maxParallelStored = -1;
             return finalResult;
         }
         updateSlots();
@@ -278,7 +276,7 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
         mEfficiency = 10000;
         mEfficiencyIncrease = 10000;
         mMaxProgresstime = totalOverclockedDuration;
-        maxParallelStored = 0;
+        maxParallelStored = -1;
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
@@ -331,7 +329,7 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
 
     @Override
     public int getMaxParallelRecipes() {
-        if (maxParallelStored >= 0) {
+        if (wirelessMode && maxParallelStored >= 0) {
             return maxParallelStored;
         }
         mParallelTier = getParallelTier(getControllerSlot());
