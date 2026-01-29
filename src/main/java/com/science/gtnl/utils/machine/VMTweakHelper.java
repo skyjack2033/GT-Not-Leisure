@@ -30,6 +30,7 @@ public class VMTweakHelper {
         for (int i : DimensionManager.getStaticDimensionIDs()) {
             if (dimMapping.containsKey(i)) continue;
             String name = getNameForID(i);
+            if (i == 100) name = "Underdark";
 
             int index = dimName.indexOf(name);
             if (index >= 0) {
