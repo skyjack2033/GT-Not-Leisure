@@ -301,7 +301,7 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
 
                         double heatReductionPerUnit = computationPerTick / 20.0 * heatMultiplier;
 
-                        int usedCoolantFactor = (int) Math
+                        double usedCoolantFactor = Math
                             .min(rack.heat / heatReductionPerUnit, totalSuperCoolant / coolantRequired);
 
                         int coolantConsumed = (int) (usedCoolantFactor * coolantRequired);
