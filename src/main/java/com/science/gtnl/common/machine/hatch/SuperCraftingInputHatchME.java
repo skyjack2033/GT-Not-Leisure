@@ -663,6 +663,9 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
     public int rows() {
         if (lastNonNullIndex == -1) refreshLastNonNullIndex();
         int calculatedRows = (lastNonNullIndex + 9) / 9;
+        if ((lastNonNullIndex + 1) % 9 == 0) {
+            calculatedRows++;
+        }
         return Math.min(Math.max(calculatedRows, 1), 40);
     }
 
