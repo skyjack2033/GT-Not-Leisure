@@ -42,7 +42,6 @@ import gregtech.api.enums.SoundResource;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
-import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTUtility;
@@ -143,21 +142,15 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         mMaxProgresstime = 1;
         List<ItemStack> toStore = new ArrayList<>();
 
-        for (MTEHatchInputBus inputBus : mInputBusses) {
-            if (!inputBus.isValid()) continue;
-            for (int i = 0; i < inputBus.getSizeInventory() - 1; i++) {
-                ItemStack stack = inputBus.getStackInSlot(i);
-                if (stack == null || stack.getItem() == null) continue;
-                if (!isItemStackFullyCharged(stack) || !isItemStackFullyRepaired(stack)) {
-                    toStore.add(stack.copy());
-                    inputBus.decrStackSize(i, stack.stackSize);
-                }
-
+        for (ItemStack stack : getAllStoredInputs()) {
+            if (stack == null || stack.getItem() == null) continue;
+            if (!isItemStackFullyCharged(stack) || !isItemStackFullyRepaired(stack)) {
+                toStore.add(stack.copy());
+                stack.stackSize = 0;
             }
         }
 
         mStoredItems.addAll(toStore);
-        saveNBTData(new NBTTagCompound());
 
         if (!mStoredItems.isEmpty()) {
             return SimpleCheckRecipeResult.ofSuccess("charging");
