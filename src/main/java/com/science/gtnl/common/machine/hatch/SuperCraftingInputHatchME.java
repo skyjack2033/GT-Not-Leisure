@@ -488,6 +488,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
     // holds all internal inventories
     @SuppressWarnings("unchecked") // Java doesn't allow to create an array of a generic type.
     public PatternSlot<SuperCraftingInputHatchME>[] internalInventory = new PatternSlot[MAX_PATTERN_COUNT];
+    public int lastNonNullIndex = -1;
 
     // a hash map for faster lookup of pattern slots, not necessarily all valid.
     public Map<ICraftingPatternDetails, PatternSlot<SuperCraftingInputHatchME>> patternDetailsPatternSlotMap = new HashMap<>(
@@ -660,7 +661,9 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
 
     @Override
     public int rows() {
-        return 40;
+        if (lastNonNullIndex == -1) refreshLastNonNullIndex();
+        int calculatedRows = (lastNonNullIndex + 9) / 9;
+        return Math.min(Math.max(calculatedRows, 1), 40);
     }
 
     @Override
@@ -1116,6 +1119,20 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
         patternDetailsPatternSlotMap.put(patternSlot.getPatternDetails(), patternSlot);
 
         needPatternSync = true;
+
+        refreshLastNonNullIndex();
+    }
+
+    public void refreshLastNonNullIndex() {
+        lastNonNullIndex = -1;
+        if (internalInventory == null || internalInventory.length == 0) return;
+
+        for (int i = internalInventory.length - 1; i >= 0; i--) {
+            if (internalInventory[i] != null) {
+                lastNonNullIndex = i;
+                break;
+            }
+        }
     }
 
     @Override
@@ -1320,6 +1337,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
                 te.getZCoord());
             return true;
         }
+        refreshLastNonNullIndex();
         return super.onRightclick(aBaseMetaTileEntity, aPlayer, side, aX, aY, aZ);
     }
 
