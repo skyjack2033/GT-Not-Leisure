@@ -2414,5 +2414,25 @@ public class AssemblingLineRecipes implements IRecipePool {
             GTNLItemList.FastNeutronBreederReactor.get(1),
             1000,
             (int) TierEU.RECIPE_UV);
+
+        TTRecipeAdder.addResearchableAssemblylineRecipe(
+            ItemList.Transdimensional_Alignment_Matrix.get(1),
+            2000000,
+            40000,
+            (int) TierEU.RECIPE_UMV,
+            1,
+            new Object[] { GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.SpaceTime, 48),
+                GregtechItemList.SpaceTimeContinuumRipper.get(32),
+                CustomItemList.TimeAccelerationFieldGeneratorTier0.get(4), CustomItemList.eM_Hollow.get(64),
+                CustomItemList.EOH_Reinforced_Temporal_Casing.get(32),
+                CustomItemList.EOH_Reinforced_Spatial_Casing.get(32), ItemList.Machine_Multi_PlasmaForge.get(8),
+                ReAvaItemList.ChronarchsClock.get(1), GregtechItemList.Laser_Lens_Special.get(64) },
+            new FluidStack[] { GTNLMaterials.SuperMutatedLivingSolder.getFluidOrGas(512000),
+                MaterialsUEVplus.ExcitedDTEC.getFluid(2048000),
+                MaterialsUEVplus.DimensionallyShiftedSuperfluid.getFluid(256000),
+                MaterialsUEVplus.SpaceTime.getMolten(96000) },
+            GTNLItemList.TransdimensionalMnemonicMatrix.get(1),
+            16000,
+            (int) TierEU.RECIPE_UMV);
     }
 }
