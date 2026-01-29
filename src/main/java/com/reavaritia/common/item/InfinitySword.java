@@ -263,46 +263,52 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
 
         int processed = 0;
         Iterator<Entity> iterator = sweepAttackTargets.iterator();
+
         while (iterator.hasNext() && processed < MAX_ENTITY_PROCESS_PER_TICK) {
             Entity target = iterator.next();
+            boolean shouldRemove = false;
 
             if (target.isDead || target.worldObj != world) {
-                iterator.remove();
-                continue;
-            }
+                shouldRemove = true;
+            } else if (target instanceof EntityDoppleganger livingTarget) {
 
-            if (target instanceof EntityDoppleganger livingTarget) {
                 List<String> playersWhoAttacked = ((AccessorEntityDoppleganger) livingTarget).getPlayersWhoAttacked();
+
                 String playerName = player.getCommandSenderName();
                 if (!playersWhoAttacked.contains(playerName)) {
                     playersWhoAttacked.add(playerName);
                 }
+
                 livingTarget.recentlyHit = 100;
                 DamageSource playerSource = DamageSource.causePlayerDamage(player);
+
                 livingTarget.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
                 livingTarget.setHealth(0);
                 livingTarget.onDeath(playerSource);
                 livingTarget.setDead();
                 livingTarget.worldObj.removeEntity(livingTarget);
-                iterator.remove();
-            }
 
-            if (target instanceof EntityDragon) {
+                shouldRemove = true;
+            } else if (target instanceof EntityDragon) {
                 target.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
                 target.setDead();
-                iterator.remove();
-            }
-
-            if (target instanceof EntityPlayer targetPlater) {
+                shouldRemove = true;
+            } else if (target instanceof EntityPlayer targetPlayer) {
                 if (player.isSneaking()) {
-                    handlePlayerTarget(targetPlater, player, world);
+                    handlePlayerTarget(targetPlayer, player, world);
                 }
+                shouldRemove = true;
             } else if (target instanceof EntityLivingBase livingTarget) {
                 livingTarget.recentlyHit = 100;
                 applyDoubleSweepDamage(livingTarget, player);
+                shouldRemove = true;
             }
+
             processed++;
-            iterator.remove();
+
+            if (shouldRemove) {
+                iterator.remove();
+            }
         }
     }
 
