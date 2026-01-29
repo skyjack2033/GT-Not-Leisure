@@ -5,8 +5,7 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
 import static gregtech.api.GregTechAPI.*;
 import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.enums.Textures.BlockIcons.NAQUADAH_REACTOR_SOLID_FRONT;
-import static gregtech.api.enums.Textures.BlockIcons.NAQUADAH_REACTOR_SOLID_FRONT_ACTIVE;
+import static gregtech.api.enums.Textures.BlockIcons.*;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
@@ -49,6 +48,7 @@ import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.metadata.NaquadahReactorMetadata;
 
 import goodgenerator.items.GGMaterial;
+import goodgenerator.loader.Loaders;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Textures;
@@ -591,7 +591,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
                     buildHatchAdder(AdvancedHyperNaquadahReactor.class).casingIndex(getCasingTextureID())
                         .dot(1)
                         .atLeast(Maintenance, InputHatch, OutputHatch, Dynamo.or(ExoticDynamo))
-                        .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(defcCasingBlock, 7))))
+                        .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(Loaders.magneticFluxCasing, 0))))
                 .addElement('G', ofFrame(Materials.Naquadria))
                 .addElement('H', ofBlock(BlockLoader.metaCasing, 18))
                 .addElement('I', isAir())
@@ -600,7 +600,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         @Override
         public int getCasingTextureID() {
-            return (1 << 7) + (15 + 48);
+            return (12 << 7) + 9;
         }
 
         @Override

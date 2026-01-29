@@ -2434,5 +2434,28 @@ public class AssemblingLineRecipes implements IRecipePool {
             GTNLItemList.TransdimensionalMnemonicMatrix.get(1),
             16000,
             (int) TierEU.RECIPE_UMV);
+
+        TTRecipeAdder.addResearchableAssemblylineRecipe(
+            GTNLItemList.HyperNaquadahReactor.get(1),
+            8192000,
+            16384,
+            (int) TierEU.RECIPE_UXV,
+            1,
+            new Object[] { ItemRefer.GravityStabilizationCasing.get(64), ItemRefer.MagneticFluxCasing.get(32),
+                ItemRefer.AntimatterAnnihilationMatrix.get(4), GTNLItemList.HyperNaquadahReactor.get(2),
+                ItemList.Electric_Pump_UMV.get(32), ItemList.Field_Generator_UMV.get(8),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SpaceTime, 2),
+                GTOreDictUnificator.get(OrePrefixes.rotor, MaterialsUEVplus.ProtoHalkonite, 16),
+                ItemList.NuclearStar.get(64), new Object[] { OrePrefixes.circuit.get(Materials.UMV), 16L },
+                ItemList.ZPM5.get(1),
+                GTModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 4, 26),
+                GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.SuperconductorUMV, 16),
+                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.TranscendentMetal, 64) },
+            new FluidStack[] { MaterialsUEVplus.Antimatter.getFluid(10), GGMaterial.shirabon.getMolten(18432),
+                GTNLMaterials.SuperMutatedLivingSolder.getFluidOrGas(512000),
+                MaterialsUEVplus.DimensionallyShiftedSuperfluid.getFluid(64000) },
+            GTNLItemList.AdvancedHyperNaquadahReactor.get(1),
+            32000,
+            (int) TierEU.RECIPE_UMV);
     }
 }
