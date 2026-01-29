@@ -590,7 +590,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
             if (available > 0 && req.amount <= 0) {
                 maxParallelForThisSlot = Integer.MAX_VALUE;
             } else if (req.amount > 0) {
-                maxParallelForThisSlot = req.amount;
+                maxParallelForThisSlot = available / req.amount;
             }
 
             if (maxParallelForThisSlot <= 0) return 0;
