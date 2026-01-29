@@ -160,7 +160,17 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
             return SimpleCheckRecipeResult.ofFailure("no_chargeable_item");
         }
 
+        mOutputItems = mStoredItems.toArray(new ItemStack[0]);
+
         return SimpleCheckRecipeResult.ofSuccess("charging");
+    }
+
+    @Override
+    protected void runMachine(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        if (mMaxProgresstime > 0 && mProgresstime + 1 >= mMaxProgresstime) {
+            mOutputItems = null;
+        }
+        super.runMachine(aBaseMetaTileEntity, aTick);
     }
 
     @Override
