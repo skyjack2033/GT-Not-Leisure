@@ -25,7 +25,9 @@ import org.jetbrains.annotations.NotNull;
 
 import com.brandon3055.draconicevolution.common.blocks.itemblocks.DraconiumItemBlock;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
+import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
+import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
@@ -51,7 +53,7 @@ import tectech.thing.casing.TTCasingsContainer;
 import tectech.thing.metaTileEntity.hatch.MTEHatchEnergyMulti;
 import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 
-public class EnergyInfuser extends TTMultiblockBase implements IConstructable {
+public class EnergyInfuser extends TTMultiblockBase implements IConstructable, ISurvivalConstructable {
 
     public final List<ItemStack> mStoredItems = new ArrayList<>();
     public boolean outputAllItems = false;
@@ -65,26 +67,6 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable {
     private static final int HORIZONTAL_OFF_SET = 2;
     private static final int VERTICAL_OFF_SET = 7;
     private static final int DEPTH_OFF_SET = 0;
-
-    @Override
-    public IStructureDefinition<EnergyInfuser> getStructure_EM() {
-        return StructureDefinition.<EnergyInfuser>builder()
-            .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
-            .addElement('A', ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('B', ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))
-            .addElement(
-                'C',
-                buildHatchAdder(EnergyInfuser.class)
-                    .atLeast(InputHatch, InputBus, OutputBus, Maintenance, Energy.or(ExoticEnergy))
-                    .casingIndex(1028)
-                    .dot(1)
-                    .buildAndChain(
-                        onElementPass(x -> ++x.mCountCasing, ofBlock(TTCasingsContainer.sBlockCasingsTT, 4))))
-            .addElement('D', ofBlock(TTCasingsContainer.sBlockCasingsTT, 7))
-            .addElement('E', ofFrame(Materials.Osmiridium))
-            .addElement('F', ofBlock(lscLapotronicEnergyUnit, 6))
-            .build();
-    }
 
     public EnergyInfuser(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -107,6 +89,46 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable {
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)
                 .setPos(172, 67));
+    }
+
+    @Override
+    public IStructureDefinition<EnergyInfuser> getStructure_EM() {
+        return StructureDefinition.<EnergyInfuser>builder()
+            .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
+            .addElement('A', ofBlock(BlockLoader.metaBlockGlass, 2))
+            .addElement('B', ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))
+            .addElement(
+                'C',
+                buildHatchAdder(EnergyInfuser.class)
+                    .atLeast(InputHatch, InputBus, OutputBus, Maintenance, Energy.or(ExoticEnergy))
+                    .casingIndex(1028)
+                    .dot(1)
+                    .buildAndChain(
+                        onElementPass(x -> ++x.mCountCasing, ofBlock(TTCasingsContainer.sBlockCasingsTT, 4))))
+            .addElement('D', ofBlock(TTCasingsContainer.sBlockCasingsTT, 7))
+            .addElement('E', ofFrame(Materials.Osmiridium))
+            .addElement('F', ofBlock(lscLapotronicEnergyUnit, 6))
+            .build();
+    }
+
+    @Override
+    public void construct(ItemStack stackSize, boolean hintsOnly) {
+        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
+    }
+
+    @Override
+    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+        if (mMachine) return -1;
+        return survivalBuildPiece(
+            STRUCTURE_PIECE_MAIN,
+            stackSize,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            elementBudget,
+            env,
+            false,
+            true);
     }
 
     @Override
@@ -390,17 +412,6 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable {
     @Override
     public SoundResource getActivitySoundLoop() {
         return SoundResource.TECTECH_MACHINES_FX_WHOOUM;
-    }
-
-    @Override
-    public void construct(ItemStack stackSize, boolean hintsOnly) {
-        structureBuild_EM(
-            STRUCTURE_PIECE_MAIN,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET,
-            stackSize,
-            hintsOnly);
     }
 
     @Override
