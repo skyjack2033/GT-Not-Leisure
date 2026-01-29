@@ -1,17 +1,13 @@
 package com.science.gtnl.common.machine.multiMachineBase;
 
 import static com.science.gtnl.utils.Utils.filterValidMTEs;
-import static gregtech.api.gui.modularui.GTUITextures.*;
-import static gregtech.api.metatileentity.BaseTileEntity.*;
 import static gregtech.api.util.GTUtility.validMTEList;
-import static net.minecraft.util.StatCollector.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
@@ -400,28 +396,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     }
 
     /**
-     * Proxy Standard Eu Modifier Supplier.
-     *
-     * @return The value (or a method to get the value) of Eu Modifier (dynamically) .
-     */
-    @Deprecated
-    @ApiStatus.OverrideOnly
-    public double getEuModifier() {
-        return 1.0F;
-    }
-
-    /**
-     * Proxy Standard Speed Multiplier Supplier.
-     *
-     * @return The value (or a method to get the value) of Speed Multiplier (dynamically) .
-     */
-    @Deprecated
-    @ApiStatus.OverrideOnly
-    public double getSpeedBonus() {
-        return 1.0F;
-    }
-
-    /**
      * Proxy Standard Parallel Supplier.
      *
      * @return The value (or a method to get the value) of Max Parallel (dynamically) .
@@ -467,9 +441,9 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
 
     public int getParallelTier(ItemStack inventory) {
         if (inventory == null) return 0;
-        for (Map.Entry<ItemStack, Integer> entry : PARALLEL_TIERS.entrySet()) {
-            if (GTUtility.areStacksEqual(inventory, entry.getKey())) {
-                return entry.getValue();
+        for (Object2IntMap.Entry<ItemStack> entry : PARALLEL_TIERS.object2IntEntrySet()) {
+            if (GTUtility.areStacksEqual(inventory, entry.getKey(), true)) {
+                return entry.getIntValue();
             }
         }
         return 0;
@@ -765,8 +739,8 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     // region Overrides
     @Override
     public String[] getInfoData() {
-        String dSpeed = String.format("%.3f", this.getSpeedBonus() * 100) + "%";
-        String dEUMod = String.format("%.3f", this.getEuModifier() * 100) + "%";
+        String dSpeed = String.format("%.3f", this.getDurationModifier() * 100) + "%";
+        String dEUMod = String.format("%.3f", this.getEUtDiscount() * 100) + "%";
 
         String[] origin = super.getInfoData();
         String[] ret = new String[origin.length + 3];

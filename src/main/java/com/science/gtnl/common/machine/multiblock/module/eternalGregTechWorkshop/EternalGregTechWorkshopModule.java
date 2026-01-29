@@ -218,7 +218,7 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
         str.add(
             YELLOW + StatCollector.translateToLocalFormatted(
                 "tt.infodata.multi.multiplier.recipe_time",
-                RESET + formatNumbers(getSpeedBonus())));
+                RESET + formatNumbers(mSpeedBoost)));
         return str.toArray(new String[0]);
     }
 
