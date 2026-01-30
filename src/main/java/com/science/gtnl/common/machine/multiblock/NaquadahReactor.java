@@ -913,7 +913,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
                 currentTip.add(
                     StatCollector.translateToLocal("Info_NaquadahReactor_02") + EnumChatFormatting.WHITE
                         + euText
-                        + " EU/t"
+                        + " EU"
                         + EnumChatFormatting.RESET);
             }
 
@@ -959,7 +959,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
             info[4] = StatCollector.translateToLocal("NaquadahReactor.Generates") + EnumChatFormatting.RED
                 + euText
                 + EnumChatFormatting.RESET
-                + " EU/t";
+                + " EU";
 
             return info;
         }

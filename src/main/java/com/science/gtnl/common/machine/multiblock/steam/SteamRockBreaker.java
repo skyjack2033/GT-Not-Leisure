@@ -211,7 +211,7 @@ public class SteamRockBreaker extends SteamMultiMachineBase<SteamRockBreaker> im
 
     @Override
     public IAlignmentLimits getInitialAlignmentLimits() {
-        return (d, r, f) -> d.offsetY == 0 && r.isNotRotated() && f.isNotFlipped();
+        return (d, r, f) -> d.offsetY == 0 && r.isNotRotated();
     }
 
     @Override
