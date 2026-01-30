@@ -452,13 +452,11 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                     2);
 
             if (unit.displayRawStarMatterMax != 0 && unit.maxHeliumAmount == -1 && unit.maxHydrogenAmount == -1) {
-
                 unit.displayHeliumMax = 0;
                 unit.displayHydrogenMax = 0;
             }
 
             if ((unit.displayHeliumMax != 0 || unit.displayHydrogenMax != 0) && unit.maxRawStarMatterAmount == -1) {
-
                 unit.displayRawStarMatterMax = 0;
             }
 
@@ -1027,7 +1025,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             return Math.min(maxFluidAmount, maxSetting);
         }
 
-        long computed = Long.MAX_VALUE;
+        long computed = 0;
 
         if (astralAmount > 0) {
             if (type == 2) {
