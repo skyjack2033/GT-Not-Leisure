@@ -219,7 +219,11 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
             endRecipeProcessing();
         }
-        return super.onRunningTick(stack);
+        if (this.lEUt > 0) {
+            addEnergyOutput(this.lEUt);
+            return true;
+        }
+        return true;
     }
 
     @Override
