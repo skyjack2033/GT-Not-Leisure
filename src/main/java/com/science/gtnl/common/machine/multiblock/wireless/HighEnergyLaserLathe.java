@@ -31,7 +31,6 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import tectech.thing.casing.BlockGTCasingsTT;
 
 public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEnergyLaserLathe> {
 
@@ -85,7 +84,7 @@ public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEne
 
     @Override
     public int getCasingTextureID() {
-        return BlockGTCasingsTT.textureOffset + 4;
+        return StructureUtils.getTextureIndex(sBlockCasings8, 7);
     }
 
     @Override
