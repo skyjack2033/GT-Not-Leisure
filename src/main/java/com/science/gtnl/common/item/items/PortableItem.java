@@ -34,12 +34,15 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.config.Actionable;
+import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.networking.security.PlayerSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.tile.misc.TileInterface;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.common.tileentities.machines.IDualInputHatchWithPattern;
 import lombok.val;
 
 public class PortableItem extends Item {
@@ -70,6 +73,8 @@ public class PortableItem extends Item {
     public boolean tryMoveItems(World world, int x, int y, int z, ItemStack stack, EntityPlayer player) {
         TileEntity te = world.getTileEntity(x, y, z);
         if (te instanceof IInventory inventory) {
+            boolean patternOnly = te instanceof IGregTechTileEntity gtTE
+                && gtTE.getMetaTileEntity() instanceof IDualInputHatchWithPattern;
             val type = getPortableType(stack);
             val bagIInv = type.getInventory(stack);
             if (bagIInv == null) return false;
@@ -83,6 +88,7 @@ public class PortableItem extends Item {
             for (int slot = 0; slot < bagInv.getSlots(); slot++) {
                 var item = bagInv.getStackInSlot(slot);
                 if (item == null) continue;
+                if (patternOnly && !(item.getItem() instanceof ICraftingPatternItem)) continue;
                 item = item.copy();
                 for (int iSlot = 0; iSlot < inv.getSlots(); iSlot++) {
                     item = inv.insertItem(iSlot, item, false);
