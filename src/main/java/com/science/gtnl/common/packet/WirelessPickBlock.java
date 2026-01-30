@@ -3,6 +3,7 @@ package com.science.gtnl.common.packet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.S2FPacketSetSlot;
 
 import com.glodblock.github.util.Util;
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
@@ -60,7 +61,7 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
         ItemStack handItem = player.inventory.getStackInSlot(message.slot);
         ItemStack needItem = message.stack.copy();
         if (handItem != null) {
-            if (handItem.stackSize >= handItem.getMaxStackSize()) return null;
+            if (handItem.stackSize > handItem.getMaxStackSize()) return null;
             else needItem.stackSize = handItem.getMaxStackSize();
         }
 
@@ -113,13 +114,13 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
 
     private boolean work(ItemStack item, EntityPlayerMP player, ItemStack exItem, int slot, int x, int y, int z) {
         if (Platform.isClient()) return true;
-        int handItemConnt = 0;
-        if (player.inventory.getStackInSlot(slot) != null) {
-            ItemStack vitem = player.inventory.getStackInSlot(slot);
-            if (exItem.getItem() != vitem.getItem() || exItem.getItemDamage() != vitem.getItemDamage()
-                || exItem.getTagCompound() != vitem.getTagCompound()) return true;
-            handItemConnt = player.inventory.getStackInSlot(slot).stackSize;
-        }
+        // int handItemConnt = 0;
+        // if (player.inventory.getStackInSlot(slot) != null) {
+        // ItemStack vitem = player.inventory.getStackInSlot(slot);
+        // if (exItem.getItem() != vitem.getItem() || exItem.getItemDamage() != vitem.getItemDamage()
+        // || exItem.getTagCompound() != vitem.getTagCompound()) return true;
+        // handItemConnt = player.inventory.getStackInSlot(slot).stackSize;
+        // }
 
         WirelessTerminalGuiObject obj = MEHandler.getTerminalGuiObject(item, player, x, y);
 
@@ -133,11 +134,6 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
             IGrid grid = obj.getGrid();
             if (grid == null) return false;
             if (securityCheck(player, grid, SecurityPermissions.EXTRACT)) {
-                ItemStack vitem = player.inventory.getStackInSlot(slot);
-                int empty_slot = getFirstEmptySlot(player);
-                if (empty_slot != -1) {
-                    player.inventory.setInventorySlotContents(empty_slot, vitem);
-                }
 
                 IStorageGrid storageGrid = grid.getCache(IStorageGrid.class);
                 var iItemStorageChannel = storageGrid.getItemInventory();
@@ -153,10 +149,21 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
                         Actionable.MODULATE,
                         new PlayerSource(player, obj));
 
+                    ItemStack from = player.inventory.getStackInSlot(slot);
+                    int emptySlot = getFirstEmptySlot(player);
+                    if (emptySlot != -1 && from != null) {
+                        player.inventory.setInventorySlotContents(emptySlot, from);
+                    }
+
                     player.inventory.setInventorySlotContents(
                         slot,
-                        aeitem.setStackSize(aeitem.getStackSize() + handItemConnt)
+                        aeitem.setStackSize(aeitem.getStackSize()) // +handItemConnt)
                             .getItemStack());
+
+                    player.updateHeldItem();
+                    if (emptySlot != -1 && from != null) {
+                        player.playerNetServerHandler.sendPacket(new S2FPacketSetSlot(0, emptySlot, from));
+                    }
                     return true;
                 }
             }
