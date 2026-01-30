@@ -9,7 +9,6 @@ import static gregtech.api.enums.Textures.BlockIcons.*;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
-import static kubatech.loaders.BlockLoader.*;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.math.BigInteger;
@@ -226,18 +225,33 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
     @Override
     public void getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
+
         super.getWailaBody(itemStack, currentTip, accessor, config);
         final NBTTagCompound tag = accessor.getNBTData();
-        if (tag.hasKey("mEUt")) {
+
+        String euText = null;
+
+        if (tag.hasKey("mEUtBig")) {
+            try {
+                BigInteger big = new BigInteger(tag.getString("mEUtBig"));
+                euText = GTUtility.formatNumbers(big);
+            } catch (NumberFormatException ignored) {}
+        } else if (tag.hasKey("mEUt")) {
+            euText = GTUtility.formatNumbers(tag.getLong("mEUt"));
+        }
+
+        if (euText != null) {
             currentTip.add(
                 StatCollector.translateToLocal("Info_NaquadahReactor_00") + EnumChatFormatting.WHITE
-                    + tag.getLong("mEUt")
+                    + euText
                     + " EU/t"
                     + EnumChatFormatting.RESET);
         }
+
         if (tag.getBoolean("useExtraGas")) {
             currentTip.add(StatCollector.translateToLocal("Info_NaquadahReactor_01"));
         }
+
         if (tag.getBoolean("wirelessMode")) {
             currentTip.add(EnumChatFormatting.LIGHT_PURPLE + StatCollector.translateToLocal("Waila_WirelessMode"));
         }
@@ -251,16 +265,34 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
         if (tileEntity == null) return;
         if (tileEntity.isActive()) return;
         tag.setBoolean("useExtraGas", useExtraGas);
-        if (bigEUt != null) tag.setBoolean("wirelessMode", true);
+
+        if (bigEUt != null) {
+            tag.setString(
+                "mEUtBig",
+                bigEUt.abs()
+                    .toString());
+            tag.setBoolean("wirelessMode", true);
+        } else {
+            tag.setLong("mEUt", Math.abs(lEUt));
+        }
     }
 
     @Override
     public String[] getInfoData() {
         String[] info = super.getInfoData();
+
+        String euText;
+        if (bigEUt != null) {
+            euText = GTUtility.formatNumbers(bigEUt.abs());
+        } else {
+            euText = GTUtility.formatNumbers(Math.abs(this.lEUt));
+        }
+
         info[4] = StatCollector.translateToLocal("NaquadahReactor.Generates") + EnumChatFormatting.RED
-            + GTUtility.formatNumbers(Math.abs(this.lEUt))
+            + euText
             + EnumChatFormatting.RESET
             + " EU/t";
+
         return info;
     }
 
