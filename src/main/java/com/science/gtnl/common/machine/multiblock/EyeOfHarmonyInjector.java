@@ -451,6 +451,17 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                     (long) maxRawStarMatterAmountSetting.get(),
                     2);
 
+            if (unit.displayRawStarMatterMax != 0 && unit.maxHeliumAmount == -1 && unit.maxHydrogenAmount == -1) {
+
+                unit.displayHeliumMax = 0;
+                unit.displayHydrogenMax = 0;
+            }
+
+            if ((unit.displayHeliumMax != 0 || unit.displayHydrogenMax != 0) && unit.maxRawStarMatterAmount == -1) {
+
+                unit.displayRawStarMatterMax = 0;
+            }
+
             mainDisp
                 .widget(new FakeSyncWidget.LongSyncer(() -> unit.displayHeliumMax, val -> unit.displayHeliumMax = val));
             mainDisp.widget(
