@@ -411,7 +411,10 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
 
     @Override
     public boolean setStackToZeroInsteadOfNull(int aIndex) {
-        return isSuper ? aIndex < 201 || aIndex >= ALL_SLOT_COUNT : super.setStackToZeroInsteadOfNull(aIndex);
+        if (processingRecipe) {
+            return true;
+        }
+        return isSuper ? (aIndex < 201 || aIndex >= ALL_SLOT_COUNT) : aIndex != getManualSlot();
     }
 
     @Override

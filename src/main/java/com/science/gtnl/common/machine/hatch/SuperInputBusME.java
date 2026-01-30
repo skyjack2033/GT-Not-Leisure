@@ -301,6 +301,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
 
     @Override
     public boolean setStackToZeroInsteadOfNull(int aIndex) {
+        if (processingRecipe) {
+            return true;
+        }
         return aIndex < 201 || aIndex >= ALL_SLOT_COUNT;
     }
 
