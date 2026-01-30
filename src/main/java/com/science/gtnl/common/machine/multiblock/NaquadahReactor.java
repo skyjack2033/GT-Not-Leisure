@@ -231,9 +231,9 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         String euText = null;
 
-        if (tag.hasKey("mEUtBig")) {
+        if (tag.hasKey("bigEUt")) {
             try {
-                BigInteger big = new BigInteger(tag.getString("mEUtBig"));
+                BigInteger big = new BigInteger(tag.getString("bigEUt"));
                 euText = GTUtility.formatNumbers(big);
             } catch (NumberFormatException ignored) {}
         } else if (tag.hasKey("mEUt")) {
@@ -268,7 +268,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
         if (bigEUt != null) {
             tag.setString(
-                "mEUtBig",
+                "bigEUt",
                 bigEUt.abs()
                     .toString());
             tag.setBoolean("wirelessMode", true);
