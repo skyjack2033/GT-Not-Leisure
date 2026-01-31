@@ -3706,3 +3706,6 @@ NEI.RealArtificialStarGeneratingRecipes.specialValue=产生：
 
 gui.AssemblerMatrix.button.upload_pattern=上传样板至当前网络中可用的§9装配矩阵§r。
 text.AssemblerMatrix.tooltip.0=网络已有类似的合成样板,已跳过上传并返还空白样板！
+
+text.CraftComplete.tooltip.0=§5自动合成完毕！
+text.CraftComplete.tooltip.1=%s %s, 用时 %s

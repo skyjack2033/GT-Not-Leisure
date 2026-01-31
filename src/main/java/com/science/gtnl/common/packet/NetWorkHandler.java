@@ -36,6 +36,7 @@ public class NetWorkHandler {
         registerMessage(SyncRecipePacket.class, i++, Side.CLIENT);
         registerMessage(PlaceItemInHotbarPacket.class, i++, Side.CLIENT);
         registerMessage(RequestGameProfilePacket.class, i++, Side.SERVER);
+        registerMessage(CraftCompleteNotificationPacket.class, i++, Side.CLIENT);
     }
 
     private static <T extends IMessageHandler<T, IMessage> & IMessage> void registerMessage(Class<T> c, int i,

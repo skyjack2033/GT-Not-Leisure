@@ -19,6 +19,7 @@
     "AppliedEnergistics.assembler.MixinContainerInterfaceTerminal",
     "AppliedEnergistics.MixinCraftingCPUCluster",
     "AppliedEnergistics.MixinCraftingCPUCluster$AccessorTaskProgress",
+    "AppliedEnergistics.MixinCraftingCPUCluster$AccessorCraftNotification",
     "AppliedEnergistics.QuamtumComputer.MixinCraftingCPUCluster",
     "AppliedEnergistics.QuamtumComputer.MixinCraftingGridCache",
     "Bartwork.MixinCircuitImprintLoader",

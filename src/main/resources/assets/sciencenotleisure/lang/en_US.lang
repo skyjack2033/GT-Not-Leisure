@@ -3706,3 +3706,6 @@ NEI.RealArtificialStarGeneratingRecipes.specialValue=Generates:
 
 gui.AssemblerMatrix.button.upload_pattern=Upload pattern to available §9Assembler Matrix§r in current network.
 text.AssemblerMatrix.tooltip.0=A similar pattern exists. Upload skipped and blank pattern returned!
+
+text.CraftComplete.tooltip.0=§5Auto-Crafting Complete
+text.CraftComplete.tooltip.1=%s %s, took %s

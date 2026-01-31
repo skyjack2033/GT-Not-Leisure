@@ -61,6 +61,7 @@ import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.utils.SubscribeEventClientUtils;
 import com.science.gtnl.utils.detrav.DetravScannerGUI;
 import com.science.gtnl.utils.enums.GuiType;
+import com.science.gtnl.utils.gui.NotificationTickHandler;
 
 import Forge.NullPointerException;
 import appeng.client.render.ItemRenderer;
@@ -179,6 +180,10 @@ public class ClientProxy extends CommonProxy {
         FMLCommonHandler.instance()
             .bus()
             .register(new TitleDisplayHandler());
+
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new NotificationTickHandler());
     }
 
     @Override
