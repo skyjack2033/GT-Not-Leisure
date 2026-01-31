@@ -28,6 +28,7 @@ public abstract class MixinProcessingDust {
         ItemStack aStack, CallbackInfo ci) {
         if (aPrefix != OrePrefixes.dust) return;
         if (aMaterial.mStandardMoltenFluid == null) return;
+        if (aMaterial == Materials.Rubber || aMaterial == Materials.BorosilicateGlass) return;
 
         GTValues.RA.stdBuilder()
             .itemInputs(ItemList.Shape_Mold_Ball.get(0))
