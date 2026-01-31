@@ -712,29 +712,40 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             ItemStack controllerItem = core.getControllerSlot();
             int tier = calcTier(controllerItem);
 
-            long computedHydrogenMax = Long.MAX_VALUE;
-            long computedHeliumMax = Long.MAX_VALUE;
-            long computedRawStarMatterMax = Long.MAX_VALUE;
+            long autoHelium = getAutoComputedAmount(
+                tier,
+                astralAmount,
+                parallelAmount,
+                (long) maxFluidAmount,
+                (long) maxHeliumAmountSetting.get(),
+                0);
+            long autoHydrogen = getAutoComputedAmount(
+                tier,
+                astralAmount,
+                parallelAmount,
+                (long) maxFluidAmount,
+                (long) maxHydrogenAmountSetting.get(),
+                1);
+            long autoRSM = getAutoComputedAmount(
+                tier,
+                astralAmount,
+                parallelAmount,
+                (long) maxFluidAmount,
+                (long) maxRawStarMatterAmountSetting.get(),
+                2);
 
-            if (tier > 0) {
-                if (astralAmount > 0) {
-                    double cau = 12.4d * 1_000d * parallelAmount * tier;
-                    computedRawStarMatterMax = (long) Math.ceil(cau);
-                } else {
-                    computedHydrogenMax = tier;
-                    computedHeliumMax = tier;
-                }
+            if (autoRSM > 0 && unit.maxHeliumAmount == -1 && unit.maxHydrogenAmount == -1) {
+                autoHelium = 0;
+                autoHydrogen = 0;
             }
 
-            long heliumMaxAmount = unit.maxHeliumAmount != -1 ? unit.maxHeliumAmount
-                : (long) Math.min(Math.min(maxFluidAmount, maxHeliumAmountSetting.get()), computedHeliumMax);
+            if ((autoHelium > 0 || autoHydrogen > 0) && unit.maxRawStarMatterAmount == -1) {
+                autoRSM = 0;
+            }
 
-            long hydrogenMaxAmount = unit.maxHydrogenAmount != -1 ? unit.maxHydrogenAmount
-                : (long) Math.min(Math.min(maxFluidAmount, maxHydrogenAmountSetting.get()), computedHydrogenMax);
-
-            long rawstarmatterMaxAmount = unit.maxRawStarMatterAmount != -1 ? unit.maxRawStarMatterAmount
-                : (long) Math
-                    .min(Math.min(maxFluidAmount, maxRawStarMatterAmountSetting.get()), computedRawStarMatterMax);
+            long heliumMaxAmount = unit.maxHeliumAmount != -1 ? unit.maxHeliumAmount : autoHelium;
+            long hydrogenMaxAmount = unit.maxHydrogenAmount != -1 ? unit.maxHydrogenAmount : autoHydrogen;
+            long rawstarmatterMaxAmount = unit.maxRawStarMatterAmount != -1 ? unit.maxRawStarMatterAmount : autoRSM;
 
             unit.displayHeliumMax = heliumMaxAmount;
             unit.displayHydrogenMax = hydrogenMaxAmount;
@@ -743,6 +754,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             long storedHelium = link.gtnl$getHeliumStored();
             long storedHydrogen = link.gtnl$getHydrogenStored();
             long storedRawstarmatter = link.gtnl$getStellarPlasmaStored();
+
             long workingHelium = storedHelium;
             long workingHydrogen = storedHydrogen;
             long workingRawstarmatter = storedRawstarmatter;
