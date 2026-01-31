@@ -4926,6 +4926,11 @@ public class MachineLoader {
             .registerOre("blockGlass" + GTValues.VN[13], GTNLItemList.ShirabonReinforcedBoronSilicateGlass.get(1));
 
         if (MainConfig.enableRegisterPlayerDollGlass) {
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 1, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 2, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 3, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 4, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 5, 14, 1);
             GlassTier.addCustomGlass(BlockLoader.playerDoll, 0, 14, 1);
             GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[14], GTNLItemList.PlayerDoll.get(1));
         }
