@@ -833,7 +833,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTUtility.getIntegratedCircuit(6),
+                GTUtility.getIntegratedCircuit(7),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Bronze, 4),
                 GTOreDictUnificator.get(OrePrefixes.stick, Materials.Bronze, 4))
             .itemOutputs(GTNLItemList.BronzeMachineFrame.get(1))
@@ -844,7 +844,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTUtility.getIntegratedCircuit(6),
+                GTUtility.getIntegratedCircuit(7),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Steel, 4),
                 GTOreDictUnificator.get(OrePrefixes.stick, Materials.Steel, 4))
             .itemOutputs(GTNLItemList.SteelMachineFrame.get(1))
