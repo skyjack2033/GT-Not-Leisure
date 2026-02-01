@@ -350,33 +350,29 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             IEyeOfHarmonyControllerLink link = (IEyeOfHarmonyControllerLink) mte;
             IGregTechTileEntity gtTE = mte.getBaseMetaTileEntity();
 
-            long tier = calcTier(mte.getControllerSlot());
+            EyeOfHarmonyRecipe recipe = findRecipe(mte.getControllerSlot());
             long astralAmount = link.gtnl$getAstralArrayAmount();
-            long parallelAmount = link.gtnl$getParallelAmount();
 
             unit.displayHeliumMax = (unit.maxHeliumAmount != -1) ? unit.maxHeliumAmount
                 : getAutoComputedAmount(
-                    tier,
+                    recipe,
                     astralAmount,
-                    parallelAmount,
                     (long) maxFluidAmount,
                     (long) maxHeliumAmountSetting.get(),
                     0);
 
             unit.displayHydrogenMax = (unit.maxHydrogenAmount != -1) ? unit.maxHydrogenAmount
                 : getAutoComputedAmount(
-                    tier,
+                    recipe,
                     astralAmount,
-                    parallelAmount,
                     (long) maxFluidAmount,
                     (long) maxHydrogenAmountSetting.get(),
                     1);
 
             unit.displayRawStarMatterMax = (unit.maxRawStarMatterAmount != -1) ? unit.maxRawStarMatterAmount
                 : getAutoComputedAmount(
-                    tier,
+                    recipe,
                     astralAmount,
-                    parallelAmount,
                     (long) maxFluidAmount,
                     (long) maxRawStarMatterAmountSetting.get(),
                     2);
@@ -637,29 +633,24 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             IEyeOfHarmonyControllerLink link = (IEyeOfHarmonyControllerLink) core;
 
             long astralAmount = link.gtnl$getAstralArrayAmount();
-            long parallelAmount = link.gtnl$getParallelAmount();
 
-            ItemStack controllerItem = core.getControllerSlot();
-            long tier = calcTier(controllerItem);
+            EyeOfHarmonyRecipe recipe = findRecipe(core.getControllerSlot());
 
             long autoHelium = getAutoComputedAmount(
-                tier,
+                recipe,
                 astralAmount,
-                parallelAmount,
                 (long) maxFluidAmount,
                 (long) maxHeliumAmountSetting.get(),
                 0);
             long autoHydrogen = getAutoComputedAmount(
-                tier,
+                recipe,
                 astralAmount,
-                parallelAmount,
                 (long) maxFluidAmount,
                 (long) maxHydrogenAmountSetting.get(),
                 1);
             long autoRSM = getAutoComputedAmount(
-                tier,
+                recipe,
                 astralAmount,
-                parallelAmount,
                 (long) maxFluidAmount,
                 (long) maxRawStarMatterAmountSetting.get(),
                 2);
@@ -952,31 +943,28 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         return allHatches;
     }
 
-    public static long calcTier(@Nullable ItemStack stack) {
-        if (stack == null) return 0;
-
-        EyeOfHarmonyRecipe recipe = TecTech.eyeOfHarmonyRecipeStorage.recipeLookUp(stack);
-        if (recipe == null) return 0;
-
-        return recipe.getRocketTier();
+    public static EyeOfHarmonyRecipe findRecipe(@Nullable ItemStack stack) {
+        if (stack == null) return null;
+        return TecTech.eyeOfHarmonyRecipeStorage.recipeLookUp(stack);
     }
 
-    public static long getAutoComputedAmount(long tier, long astralAmount, long parallelAmount, long maxFluidAmount,
+    public static long getAutoComputedAmount(EyeOfHarmonyRecipe recipe, long astralAmount, long maxFluidAmount,
         long maxSetting, int type) {
-        if (tier <= 0) {
+        if (recipe == null) {
             return Math.min(maxFluidAmount, maxSetting);
         }
 
         long computed = 0;
 
-        if (astralAmount > 0) {
-            if (type == 2) {
-                double cau = 12.4d * 1_000d * parallelAmount * tier;
-                computed = (long) Math.ceil(cau);
-            }
+        if (astralAmount > 0 && type == 2) {
+            long parallelExponent = (long) Math.floor(Math.log(8 * Math.min(astralAmount, 8637)) / Math.log(1.7));
+            long parallelAmount = (long) GTUtility.powInt(2, parallelExponent);
+            computed = (long) (recipe.getHeliumRequirement() * (12.4 / 1_000_000f) * parallelAmount);
         } else {
-            if (type == 0 || type == 1) {
-                computed = tier * 1000000000L;
+            if (type == 0) {
+                computed = recipe.getHeliumRequirement();
+            } else if (type == 1) {
+                computed = recipe.getHydrogenRequirement();
             }
         }
 
