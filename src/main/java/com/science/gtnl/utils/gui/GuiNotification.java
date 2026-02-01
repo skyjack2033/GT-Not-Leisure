@@ -16,7 +16,6 @@ import org.lwjgl.opengl.GL12;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import eu.usrv.yamcore.client.Notification;
 
 /**
  * Original source copied from BeyondRealityCore. All credits go to pauljoda for this code

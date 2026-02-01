@@ -7,6 +7,7 @@ import net.minecraft.util.StatCollector;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
+import com.science.gtnl.utils.gui.Notification;
 import com.science.gtnl.utils.gui.NotificationTickHandler;
 
 import appeng.core.localization.GuiText;
@@ -16,7 +17,6 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import eu.usrv.yamcore.client.Notification;
 import io.netty.buffer.ByteBuf;
 
 public class CraftCompleteNotificationPacket

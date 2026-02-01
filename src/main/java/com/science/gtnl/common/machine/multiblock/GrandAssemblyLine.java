@@ -828,11 +828,10 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         if (mParallelTier >= 12 && mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) {
             wirelessMode = true;
             mEnergyHatchTier = 14;
-            return mDataAccessHatches.size() <= 1 && mMaintenanceHatches.size() <= 1;
+            return mMaintenanceHatches.size() <= 1;
         }
 
-        return !(mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) && mDataAccessHatches.size() <= 1
-            && mMaintenanceHatches.size() <= 1;
+        return !(mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) && mMaintenanceHatches.size() <= 1;
     }
 
     @Override
