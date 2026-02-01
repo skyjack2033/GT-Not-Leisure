@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
 
-import com.science.gtnl.mixins.late.Debug.AccessorEyeOfHarmonyRecipe;
+import com.science.gtnl.mixins.late.Gregtech.AccessorEyeOfHarmonyRecipe;
 
 import gtneioreplugin.plugin.block.BlockDimensionDisplay;
 import gtneioreplugin.plugin.block.ModBlocks;
