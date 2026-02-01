@@ -94,9 +94,8 @@ import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchInputBusME;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtneioreplugin.plugin.block.ModBlocks;
-import gtneioreplugin.plugin.item.ItemDimensionDisplay;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import tectech.TecTech;
+import tectech.recipe.EyeOfHarmonyRecipe;
 import tectech.thing.block.TileEntityEyeOfHarmony;
 import tectech.thing.casing.BlockGTCasingsTT;
 import tectech.thing.metaTileEntity.multi.MTEEyeOfHarmony;
@@ -108,75 +107,6 @@ import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 
 public class EyeOfHarmonyInjector extends TTMultiblockBase
     implements IConstructable, ISurvivalConstructable, IMTERenderer {
-
-    @Deprecated
-    public static final Object2IntMap<String> DIM_TO_TIER = new Object2IntOpenHashMap<>();
-
-    static {
-        // Tier 0
-        DIM_TO_TIER.put("Ow", 0);
-        DIM_TO_TIER.put("Ne", 0);
-        DIM_TO_TIER.put("TF", 0);
-        DIM_TO_TIER.put("ED", 0);
-        DIM_TO_TIER.put("EA", 0);
-
-        // Tier 1
-        DIM_TO_TIER.put("Mo", 1);
-
-        // Tier 2
-        DIM_TO_TIER.put("De", 2);
-        DIM_TO_TIER.put("Ma", 2);
-        DIM_TO_TIER.put("Ph", 2);
-
-        // Tier 3
-        DIM_TO_TIER.put("As", 3);
-        DIM_TO_TIER.put("Ca", 3);
-        DIM_TO_TIER.put("Ce", 3);
-        DIM_TO_TIER.put("Eu", 3);
-        DIM_TO_TIER.put("Ga", 3);
-        DIM_TO_TIER.put("Rb", 3);
-
-        // Tier 4
-        DIM_TO_TIER.put("Io", 4);
-        DIM_TO_TIER.put("Me", 4);
-        DIM_TO_TIER.put("Ve", 4);
-
-        // Tier 5
-        DIM_TO_TIER.put("En", 5);
-        DIM_TO_TIER.put("Mi", 5);
-        DIM_TO_TIER.put("Ob", 5);
-        DIM_TO_TIER.put("Ti", 5);
-        DIM_TO_TIER.put("Ra", 5);
-
-        // Tier 6
-        DIM_TO_TIER.put("Pr", 6);
-        DIM_TO_TIER.put("Tr", 6);
-
-        // Tier 7
-        DIM_TO_TIER.put("Ha", 7);
-        DIM_TO_TIER.put("KB", 7);
-        DIM_TO_TIER.put("MM", 7);
-        DIM_TO_TIER.put("Pl", 7);
-
-        // Tier 8
-        DIM_TO_TIER.put("BC", 8);
-        DIM_TO_TIER.put("BE", 8);
-        DIM_TO_TIER.put("BF", 8);
-        DIM_TO_TIER.put("CB", 8);
-        DIM_TO_TIER.put("TE", 8);
-        DIM_TO_TIER.put("VB", 8);
-
-        // Tier 9
-        DIM_TO_TIER.put("An", 9);
-        DIM_TO_TIER.put("Ho", 9);
-        DIM_TO_TIER.put("Mh", 9);
-        DIM_TO_TIER.put("MB", 9);
-        DIM_TO_TIER.put("Np", 9);
-        DIM_TO_TIER.put("Se", 9);
-
-        // Tier 10
-        DIM_TO_TIER.put("DD", 10);
-    }
 
     public static float MAX_ANGLE = 50;
     public static int STATUS_WINDOW_ID = 10;
@@ -420,7 +350,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             IEyeOfHarmonyControllerLink link = (IEyeOfHarmonyControllerLink) mte;
             IGregTechTileEntity gtTE = mte.getBaseMetaTileEntity();
 
-            int tier = calcTier(mte.getControllerSlot());
+            long tier = calcTier(mte.getControllerSlot());
             long astralAmount = link.gtnl$getAstralArrayAmount();
             long parallelAmount = link.gtnl$getParallelAmount();
 
@@ -710,7 +640,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             long parallelAmount = link.gtnl$getParallelAmount();
 
             ItemStack controllerItem = core.getControllerSlot();
-            int tier = calcTier(controllerItem);
+            long tier = calcTier(controllerItem);
 
             long autoHelium = getAutoComputedAmount(
                 tier,
@@ -1022,16 +952,16 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         return allHatches;
     }
 
-    public static int calcTier(@Nullable ItemStack stack) {
+    public static long calcTier(@Nullable ItemStack stack) {
         if (stack == null) return 0;
 
-        String dim = ItemDimensionDisplay.getDimension(stack);
-        if (dim == null || dim.isEmpty()) return 0;
+        EyeOfHarmonyRecipe recipe = TecTech.eyeOfHarmonyRecipeStorage.recipeLookUp(stack);
+        if (recipe == null) return 0;
 
-        return Math.min(9, DIM_TO_TIER.getOrDefault(dim, 0)) + 1;
+        return recipe.getRocketTier();
     }
 
-    public static long getAutoComputedAmount(int tier, long astralAmount, long parallelAmount, long maxFluidAmount,
+    public static long getAutoComputedAmount(long tier, long astralAmount, long parallelAmount, long maxFluidAmount,
         long maxSetting, int type) {
         if (tier <= 0) {
             return Math.min(maxFluidAmount, maxSetting);
