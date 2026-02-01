@@ -6,17 +6,22 @@ import static gregtech.api.GregTechAPI.*;
 import static gregtech.api.enums.HatchElement.*;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
-import static gregtech.api.util.GTUtility.validMTEList;
+import static gregtech.api.util.GTUtility.*;
 import static kekztech.common.Blocks.lscLapotronicEnergyUnit;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -29,8 +34,18 @@ import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructa
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
+import com.gtnewhorizons.modularui.api.drawable.ItemDrawable;
+import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
+import com.gtnewhorizons.modularui.api.widget.Widget;
+import com.gtnewhorizons.modularui.common.internal.network.NetworkUtils;
+import com.gtnewhorizons.modularui.common.widget.ChangeableWidget;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
+import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
+import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
+import com.gtnewhorizons.modularui.common.widget.MultiChildWidget;
+import com.gtnewhorizons.modularui.common.widget.SlotWidget;
+import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.item.ItemUtils;
@@ -54,7 +69,7 @@ import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 
 public class EnergyInfuser extends TTMultiblockBase implements IConstructable, ISurvivalConstructable {
 
-    public final List<ItemStack> mStoredItems = new ArrayList<>();
+    public List<ItemStack> mStoredItems = new ArrayList<>();
     public boolean outputAllItems = false;
     public static final int maxRepairedDamagePerOperation = 10000;
     public static final long usedEuPerDurability = 1000;
@@ -151,7 +166,6 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         }
 
         mStoredItems.addAll(toStore);
-        mOutputItems = mStoredItems.toArray(new ItemStack[0]);
 
         if (!mStoredItems.isEmpty()) {
             return SimpleCheckRecipeResult.ofSuccess("charging");
@@ -162,14 +176,6 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         }
 
         return SimpleCheckRecipeResult.ofSuccess("charging");
-    }
-
-    @Override
-    protected void runMachine(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        if (mMaxProgresstime > 0 && mProgresstime + 1 >= mMaxProgresstime) {
-            mOutputItems = null;
-        }
-        super.runMachine(aBaseMetaTileEntity, aTick);
     }
 
     @Override
@@ -409,6 +415,87 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
             .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_EnergyInfuser_Casing"))
             .toolTipFinisher();
         return tt;
+    }
+
+    @Override
+    public boolean showRecipeTextInGUI() {
+        return false;
+    }
+
+    @Override
+    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        super.drawTexts(screenElements, inventorySlot);
+        screenElements.widget(
+            TextWidget.dynamicString(this::generateCurrentProgress)
+                .setSynced(false)
+                .setTextAlignment(new Alignment(-1, -1))
+                .setSize(180, 12)
+                .setEnabled(widget -> (mStoredItems != null && !mStoredItems.isEmpty()) || (mMaxProgresstime > 0)));
+        final ChangeableWidget recipeOutputItemsWidget = new ChangeableWidget(this::generateCurrentRecipeInfoWidget);
+        // Display current recipe
+        screenElements.widget(
+            new FakeSyncWidget.ListSyncer<>(
+                () -> mStoredItems != null ? mStoredItems : Collections.emptyList(),
+                val -> {
+                    mStoredItems = val;
+                    recipeOutputItemsWidget.notifyChangeNoSync();
+                },
+                NetworkUtils::writeItemStack,
+                NetworkUtils::readItemStack))
+            .widget(new FakeSyncWidget.IntegerSyncer(() -> mProgresstime, val -> mProgresstime = val))
+            .widget(new FakeSyncWidget.IntegerSyncer(() -> mMaxProgresstime, val -> {
+                mMaxProgresstime = val;
+                recipeOutputItemsWidget.notifyChangeNoSync();
+            }));
+        screenElements.widget(recipeOutputItemsWidget);
+    }
+
+    @Override
+    public Widget generateCurrentRecipeInfoWidget() {
+        final DynamicPositionedColumn processingDetails = new DynamicPositionedColumn();
+
+        if (mStoredItems != null) {
+            final Map<ItemStack, Long> nameToAmount = new HashMap<>();
+
+            for (ItemStack item : mStoredItems) {
+                if (item == null || item.stackSize <= 0) continue;
+                nameToAmount.merge(item, (long) item.stackSize, Long::sum);
+            }
+
+            final List<Map.Entry<ItemStack, Long>> sortedMap = nameToAmount.entrySet()
+                .stream()
+                .sorted(
+                    Map.Entry.<ItemStack, Long>comparingByValue()
+                        .reversed())
+                .collect(Collectors.toList());
+
+            for (Map.Entry<ItemStack, Long> entry : sortedMap) {
+                Long itemCount = entry.getValue();
+                String itemName = entry.getKey()
+                    .getDisplayName();
+                String itemAmountString = EnumChatFormatting.WHITE + " x "
+                    + EnumChatFormatting.GOLD
+                    + formatShortenedLong(itemCount)
+                    + EnumChatFormatting.WHITE
+                    + appendRate(false, itemCount, true);
+                String lineText = EnumChatFormatting.AQUA + truncateText(itemName, 40 - itemAmountString.length())
+                    + itemAmountString;
+                String lineTooltip = EnumChatFormatting.AQUA + itemName + "\n" + appendRate(false, itemCount, false);
+
+                processingDetails.widget(
+                    new MultiChildWidget().addChild(
+                        new ItemDrawable(
+                            entry.getKey()
+                                .copy()).asWidget()
+                                    .setSize(8, 8)
+                                    .setPos(0, 0))
+                        .addChild(
+                            new TextWidget(lineText).setTextAlignment(Alignment.CenterLeft)
+                                .addTooltip(lineTooltip)
+                                .setPos(10, 1)));
+            }
+        }
+        return processingDetails;
     }
 
     @Override
