@@ -102,20 +102,6 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
     }
 
     @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        if (aBaseMetaTileEntity.isServerSide()) {
-            if (mParallelControllerHatches.size() == 1 && aTick % 20 == 0) {
-                for (ParallelControllerHatch module : mParallelControllerHatches) {
-                    setMaxParallel(module.getParallel());
-                    mParallelTier = module.mTier;
-                }
-            }
-            if (mEfficiency < 0) mEfficiency = 0;
-        }
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-    }
-
-    @Override
     public void clearHatches() {
         super.clearHatches();
         wirelessMode = false;
@@ -126,7 +112,6 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
         super.setupParameters();
         mParallelTier = getParallelTier(getControllerSlot());
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
-            setMaxParallel(module.getParallel());
             mParallelTier = module.mTier;
             break;
         }
@@ -340,7 +325,6 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
         mParallelTier = getParallelTier(getControllerSlot());
 
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
-            setMaxParallel(module.getParallel());
             mParallelTier = module.mTier;
             return module.getParallel() << 4;
         }

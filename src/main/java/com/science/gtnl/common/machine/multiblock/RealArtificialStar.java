@@ -712,6 +712,11 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
             .setBlock((int) (x + xOffset), (int) (y + yOffset), (int) (z + zOffset), Blocks.air);
     }
 
+    public boolean addInputBusOrOutputBusToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        return addInputBusToMachineList(aTileEntity, aBaseCasingIndex)
+            || addOutputBusToMachineList(aTileEntity, aBaseCasingIndex);
+    }
+
     @Override
     public void checkMaintenance() {}
 

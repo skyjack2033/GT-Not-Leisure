@@ -111,7 +111,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     public int mGlassTier = -1;
     public int mParallelTier = 0;
     public int mEnergyHatchTier = 0;
-    public int mMaxParallel = 0;
     public double mConfigSpeedBoost = 1;
 
     @Getter
@@ -764,11 +763,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             || addExoticEnergyInputToMachineList(aTileEntity, aBaseCasingIndex);
     }
 
-    public boolean addInputBusOrOutputBusToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
-        return addInputBusToMachineList(aTileEntity, aBaseCasingIndex)
-            || addOutputBusToMachineList(aTileEntity, aBaseCasingIndex);
-    }
-
     public boolean checkHatch() {
         return mMaintenanceHatches.size() <= 1 && (this.getPollutionPerSecond(null) <= 0 || !mMufflerHatches.isEmpty())
             && mParallelControllerHatches.size() <= 1;
@@ -1079,14 +1073,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     @Override
     public int getRecipeCatalystPriority() {
         return -1;
-    }
-
-    public int getMaxParallel() {
-        return mMaxParallel;
-    }
-
-    public void setMaxParallel(int parallel) {
-        mMaxParallel = parallel;
     }
 
     public void updateHatchTexture() {

@@ -4715,7 +4715,7 @@ public class MachineLoader {
                 "HumongousWirelessEnergyHatch",
                 StatCollector.translateToLocal("HumongousWirelessEnergyHatch"),
                 14,
-                Integer.MAX_VALUE));
+                Integer.MAX_VALUE / 10));
         addItemTooltip(GTNLItemList.HumongousWirelessEnergyHatch.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
         GTNLItemList.HumongousWirelessDynamoHatch.set(

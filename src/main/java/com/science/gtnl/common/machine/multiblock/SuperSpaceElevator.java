@@ -52,6 +52,7 @@ import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.item.ItemUtils;
 
@@ -123,6 +124,8 @@ public class SuperSpaceElevator extends TTMultiblockBase
     public ArrayList<TileEntityModuleBase> mProjectModuleHatches = new ArrayList<>();
     public TileEntitySpaceElevatorCable elevatorCable;
     public boolean isLoadedChunk;
+
+    public ArrayList<ParallelControllerHatch> mParallelControllerHatches = new ArrayList<>();
 
     public SuperSpaceElevator(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -276,6 +279,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
                         InputHatch,
                         OutputHatch,
                         OutputBus,
+                        ProjectModuleElement.ParallelCon,
                         HatchElement.EnergyMulti,
                         HatchElement.DynamoMulti,
                         HatchElement.InputData,
@@ -298,6 +302,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
                             InputHatch,
                             OutputHatch,
                             OutputBus,
+                            ProjectModuleElement.ParallelCon,
                             HatchElement.EnergyMulti,
                             HatchElement.DynamoMulti,
                             HatchElement.InputData,
@@ -375,8 +380,6 @@ public class SuperSpaceElevator extends TTMultiblockBase
 
     @Override
     public boolean checkMachine_EM(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        mProjectModuleHatches.clear();
-        elevatorCable = null;
         motorTier = 0;
         wirelessMode = false;
         mTier = 0;
@@ -418,37 +421,12 @@ public class SuperSpaceElevator extends TTMultiblockBase
         return mCountCasing > 1000;
     }
 
-    public boolean addProjectModuleToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
-        if (aTileEntity == null) {
-            return false;
-        }
-        IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
-        if (aMetaTileEntity == null) {
-            return false;
-        }
-        if (aMetaTileEntity instanceof TileEntityModuleBase moduleBase) {
-            return mProjectModuleHatches.add(moduleBase);
-        }
-        return false;
-    }
-
-    public boolean addCable(Block block, int aBaseCasingIndex, World world, int x, int y, int z) {
-        // Check if the cable block is valid and can see the sky
-        if (block != GregTechAPI.sSpaceElevatorCable || world == null) {
-            return false;
-        }
-        if (!world.canBlockSeeTheSky(x, y + 1, z)) {
-            return false;
-        }
-
-        TileEntity te = world.getTileEntity(x, y, z);
-
-        if (te instanceof TileEntitySpaceElevatorCable) {
-            elevatorCable = (TileEntitySpaceElevatorCable) te;
-            return true;
-        }
-
-        return false;
+    @Override
+    protected void clearHatches_EM() {
+        super.clearHatches_EM();
+        mProjectModuleHatches.clear();
+        elevatorCable = null;
+        mParallelControllerHatches.clear();
     }
 
     @Override
@@ -673,7 +651,64 @@ public class SuperSpaceElevator extends TTMultiblockBase
         return false;
     }
 
+    public boolean addParallelControllerToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        if (aTileEntity == null) {
+            return false;
+        }
+        IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
+        if (aMetaTileEntity == null) {
+            return false;
+        }
+        if (aMetaTileEntity instanceof ParallelControllerHatch hatch) {
+            hatch.updateTexture(aBaseCasingIndex);
+            hatch.updateCraftingIcon(this.getMachineCraftingIcon());
+            return mParallelControllerHatches.add(hatch);
+        }
+        return false;
+    }
+
+    public boolean addProjectModuleToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        if (aTileEntity == null) {
+            return false;
+        }
+        IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
+        if (aMetaTileEntity == null) {
+            return false;
+        }
+        if (aMetaTileEntity instanceof TileEntityModuleBase moduleBase) {
+            return mProjectModuleHatches.add(moduleBase);
+        }
+        return false;
+    }
+
+    public boolean addCable(Block block, int aBaseCasingIndex, World world, int x, int y, int z) {
+        // Check if the cable block is valid and can see the sky
+        if (block != GregTechAPI.sSpaceElevatorCable || world == null) {
+            return false;
+        }
+        if (!world.canBlockSeeTheSky(x, y + 1, z)) {
+            return false;
+        }
+
+        TileEntity te = world.getTileEntity(x, y, z);
+
+        if (te instanceof TileEntitySpaceElevatorCable) {
+            elevatorCable = (TileEntitySpaceElevatorCable) te;
+            return true;
+        }
+
+        return false;
+    }
+
     public enum ProjectModuleElement implements IHatchElement<SuperSpaceElevator> {
+
+        ParallelCon(SuperSpaceElevator::addParallelControllerToMachineList, ParallelControllerHatch.class) {
+
+            @Override
+            public long count(SuperSpaceElevator tileEntity) {
+                return tileEntity.mParallelControllerHatches.size();
+            }
+        },
 
         ProjectModule(SuperSpaceElevator::addProjectModuleToMachineList, TileEntityModuleBase.class) {
 

@@ -801,7 +801,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                             module.connect();
                             module.setEUtDiscount(getEUtDiscount());
                             module.setDurationModifier(getSpeedBoost());
-                            module.setMMaxParallel(getTrueParallel());
+                            module.setMaxParallel(getTrueParallel());
                             module.setMaxUseEUt(getMaxUseEUt());
                             module.setHeat(getHeatingCapacity());
                             EternalGregTechWorkshopModule.queryMilestoneStats(module, this);
@@ -809,8 +809,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                             module.disconnect();
                             module.setEUtDiscount(1);
                             module.setDurationModifier(1);
-                            module.setMMaxParallel(0);
-                            module.setMMaxParallel(0);
+                            module.setMaxParallel(0);
                             module.setMaxUseEUt(0);
                         }
                     }

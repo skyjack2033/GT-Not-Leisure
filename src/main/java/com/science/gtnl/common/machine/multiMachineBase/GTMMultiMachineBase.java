@@ -7,7 +7,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 
-import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.util.ExoticEnergyInputHelper;
@@ -41,23 +40,6 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
     }
 
     @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        if (aBaseMetaTileEntity.isServerSide()) {
-            if (aTick % 20 == 0) {
-                for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
-                    setMaxParallel(module.getParallel());
-                    mParallelTier = module.mTier;
-                    break;
-                }
-            } else {
-                setMaxParallel(8);
-            }
-            if (mEfficiency < 0) mEfficiency = 0;
-        }
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-    }
-
-    @Override
     public double getEUtDiscount() {
         return 0.8 - (mParallelTier / 50.0);
     }
@@ -72,7 +54,6 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
         super.setupParameters();
         mParallelTier = getParallelTier(getControllerSlot());
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
-            setMaxParallel(module.getParallel());
             mParallelTier = module.mTier;
             break;
         }
@@ -98,7 +79,6 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
         mParallelTier = getParallelTier(getControllerSlot());
 
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
-            setMaxParallel(module.getParallel());
             mParallelTier = module.mTier;
             return module.getParallel();
         }

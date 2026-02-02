@@ -279,9 +279,8 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
                 }
 
                 maxParallel = GTUtility.min(parallel, getTrueParallel());
-                mMaxParallel = maxParallel;
 
-                if (mMaxParallel <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
+                if (maxParallel <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
 
                 return super.validateRecipe(recipe);
             }

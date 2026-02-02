@@ -139,17 +139,13 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
         mSpeedBoost = boost;
     }
 
-    public int getMMaxParallel() {
-        return mMaxParallel;
-    }
-
-    public void setMMaxParallel(int parallel) {
-        mMaxParallel = parallel;
-    }
-
     @Override
     public int getMaxParallelRecipes() {
-        return getMMaxParallel();
+        return maxParallel;
+    }
+
+    public void setMaxParallel(int parallel) {
+        maxParallel = parallel;
     }
 
     @Override
@@ -190,7 +186,7 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
                     .setEUtDiscount(getEUtDiscount())
                     .setDurationModifier(getDurationModifier());
             }
-        }.setMaxParallelSupplier(this::getMMaxParallel);
+        }.setMaxParallelSupplier(this::getMaxParallelRecipes);
     }
 
     @Override

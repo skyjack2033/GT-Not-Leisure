@@ -499,19 +499,24 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
             .addElement('F', ofBlock(sBlockCasingsTT, 2))
             .addElement(
                 'G',
-                buildHatchAdder(SupercomputingCenter.class)
-                    .atLeast(
-                        InputHatch,
-                        OutputHatch,
-                        Maintenance,
-                        Energy.or(ExoticEnergy),
-                        HatchElement.Uncertainty,
-                        HatchElement.InputData,
-                        HatchElement.OutputData,
-                        CustomHatchElement.WirelessOutputData)
-                    .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 7))
-                    .dot(1)
-                    .buildAndChain(sBlockCasings9, 7))
+                ofChain(
+                    buildHatchAdder(SupercomputingCenter.class)
+                        .atLeast(
+                            InputHatch,
+                            OutputHatch,
+                            Maintenance,
+                            Energy.or(ExoticEnergy),
+                            HatchElement.Uncertainty,
+                            HatchElement.InputData,
+                            HatchElement.OutputData)
+                        .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 7))
+                        .dot(1)
+                        .buildAndChain(sBlockCasings9, 7),
+                    buildHatchAdder(SupercomputingCenter.class)
+                        .adder(SupercomputingCenter::addWirelessDataOutputToMachineList)
+                        .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 7))
+                        .dot(1)
+                        .buildAndChain(sBlockCasings9, 7)))
             .addElement('H', ofBlock(sBlockCasings8, 7))
             .addElement('I', ofBlock(sBlockCasingsTT, 0))
             .addElement('J', ofBlock(sBlockCasings8, 5))
@@ -550,15 +555,6 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     }
 
     public enum CustomHatchElement implements IHatchElement<SupercomputingCenter> {
-
-        WirelessOutputData(SupercomputingCenter::addWirelessDataOutputToMachineList,
-            MTEHatchWirelessComputationOutput.class) {
-
-            @Override
-            public long count(SupercomputingCenter tileEntity) {
-                return tileEntity.mWirelessComputationOutputHatchs.size();
-            }
-        },
 
         RackHatch(SupercomputingCenter::addRackToMachineList, MTEHatchRack.class) {
 

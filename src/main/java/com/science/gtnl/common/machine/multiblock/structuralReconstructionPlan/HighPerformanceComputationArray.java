@@ -1,10 +1,10 @@
 package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
 import static com.science.gtnl.ScienceNotLeisure.network;
 import static com.science.gtnl.utils.enums.BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK;
 import static com.science.gtnl.utils.enums.BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK_ACTIVE;
+import static gregtech.api.GregTechAPI.*;
 import static gregtech.api.enums.GTValues.V;
 import static gregtech.api.enums.HatchElement.*;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
@@ -563,18 +563,24 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
             .addShape("back", transpose(new String[][] { { " AA" }, { " AA" }, { " AA" }, { " AA" }, { " AA" } }))
             .addElement(
                 'A',
-                buildHatchAdder(HighPerformanceComputationArray.class)
-                    .atLeast(
-                        Energy.or(ExoticEnergy),
-                        Maintenance,
-                        InputHatch,
-                        HatchElement.Uncertainty,
-                        HatchElement.InputData,
-                        HatchElement.OutputData,
-                        WirelessComputationHatchElement.WirelessComputationHatch)
-                    .casingIndex(BlockGTCasingsTT.textureOffset + 1)
-                    .dot(1)
-                    .buildAndChain(ofBlock(TTCasingsContainer.sBlockCasingsTT, 1)))
+                ofChain(
+                    buildHatchAdder(HighPerformanceComputationArray.class)
+                        .atLeast(
+                            InputHatch,
+                            OutputHatch,
+                            Maintenance,
+                            Energy.or(ExoticEnergy),
+                            HatchElement.Uncertainty,
+                            HatchElement.InputData,
+                            HatchElement.OutputData)
+                        .casingIndex(BlockGTCasingsTT.textureOffset + 1)
+                        .dot(1)
+                        .buildAndChain(TTCasingsContainer.sBlockCasingsTT, 1),
+                    buildHatchAdder(HighPerformanceComputationArray.class)
+                        .adder(HighPerformanceComputationArray::addWirelessDataOutputToMachineList)
+                        .casingIndex(BlockGTCasingsTT.textureOffset + 1)
+                        .dot(1)
+                        .buildAndChain(TTCasingsContainer.sBlockCasingsTT, 1)))
             .addElement('B', ofBlock(TTCasingsContainer.sBlockCasingsTT, 1))
             .addElement('C', ofBlock(TTCasingsContainer.sBlockCasingsTT, 2))
             .addElement('D', ofBlock(TTCasingsContainer.sBlockCasingsTT, 3))
@@ -720,37 +726,6 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
             return mRackHatchs.add(hatch);
         }
         return false;
-    }
-
-    public enum WirelessComputationHatchElement implements IHatchElement<HighPerformanceComputationArray> {
-
-        WirelessComputationHatch(HighPerformanceComputationArray::addWirelessDataOutputToMachineList,
-            MTEHatchWirelessComputationOutput.class);
-
-        private final List<Class<? extends IMetaTileEntity>> mteClasses;
-        private final IGTHatchAdder<HighPerformanceComputationArray> adder;
-
-        @SafeVarargs
-        WirelessComputationHatchElement(IGTHatchAdder<HighPerformanceComputationArray> adder,
-            Class<? extends IMetaTileEntity>... mteClasses) {
-            this.mteClasses = Collections.unmodifiableList(Arrays.asList(mteClasses));
-            this.adder = adder;
-        }
-
-        @Override
-        public List<? extends Class<? extends IMetaTileEntity>> mteClasses() {
-            return mteClasses;
-        }
-
-        @Override
-        public IGTHatchAdder<? super HighPerformanceComputationArray> adder() {
-            return adder;
-        }
-
-        @Override
-        public long count(HighPerformanceComputationArray t) {
-            return t.mWirelessComputationOutputHatchs.size();
-        }
     }
 
     public final boolean addWirelessDataOutputToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {

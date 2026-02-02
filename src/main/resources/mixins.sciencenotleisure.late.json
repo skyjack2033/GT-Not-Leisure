@@ -76,6 +76,7 @@
     "Gregtech.MixinProcessingLogic",
     "Gregtech.MixinRecipeGenFluids",
     "Gregtech.MixinProcessingDust",
+    "Gregtech.MixinTTMultiblockBase",
     "Gregtech.AssLineRemover.MixinGTMod",
     "Gregtech.AssLineRemover.MixinGTRecipeBuilder",
     "Gregtech.AssLineRemover.MixinTTRecipeAdder",

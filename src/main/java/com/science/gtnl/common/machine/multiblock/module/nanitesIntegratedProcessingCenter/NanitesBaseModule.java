@@ -159,12 +159,10 @@ public abstract class NanitesBaseModule<T extends NanitesBaseModule<T>> extends 
         setDurationModifier = boost;
     }
 
-    @Override
     public int getMaxParallel() {
         return setMaxParallel;
     }
 
-    @Override
     public void setMaxParallel(int parallel) {
         setMaxParallel = parallel;
     }

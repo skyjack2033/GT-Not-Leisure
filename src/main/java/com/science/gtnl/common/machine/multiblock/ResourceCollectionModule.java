@@ -8,6 +8,8 @@ import static net.minecraft.item.ItemStack.areItemStacksEqual;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -27,6 +29,7 @@ import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.DynamicTextWidget;
+import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
@@ -39,6 +42,7 @@ import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
+import gregtech.api.interfaces.IHatchElement;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -50,6 +54,7 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtnhintergalactic.tile.multi.elevator.TileEntitySpaceElevator;
 import gtnhintergalactic.tile.multi.elevatormodules.TileEntityModuleBase;
@@ -81,6 +86,8 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     public final ItemStack MiningDroneMkXI = ItemList.MiningDroneUIV.get(16);
     public final ItemStack MiningDroneMkXII = ItemList.MiningDroneUMV.get(16);
     public final ItemStack MiningDroneMkXIII = ItemList.MiningDroneUXV.get(16);
+
+    public ArrayList<ParallelControllerHatch> mParallelControllerHatches = new ArrayList<>();
 
     public ResourceCollectionModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional, 25, 5, 1);
@@ -148,7 +155,7 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
             .addElement(
                 'H',
                 GTStructureUtility.ofHatchAdderOptional(
-                    ResourceCollectionModule::addClassicToMachineList,
+                    ResourceCollectionModule::addAllHatchToMachineList,
                     4096,
                     1,
                     sBlockCasingsSE,
@@ -170,7 +177,17 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
         mParallelTier = getParallelTier(aStack);
 
-        return true;
+        return mParallelControllerHatches.size() <= 1;
+    }
+
+    @Override
+    public void clearHatches() {
+        super.clearHatches();
+        this.mParallelControllerHatches.clear();
+        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+            mParallelTier = module.mTier;
+            break;
+        }
     }
 
     @Override
@@ -211,6 +228,11 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
         mParallelTier = getParallelTier(getControllerSlot());
         if (mParallelTier <= 1) {
             return 8;
+        }
+
+        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+            mParallelTier = module.mTier;
+            return module.getParallel();
         }
 
         return 1 << (2 * (mParallelTier - 2));
@@ -385,11 +407,54 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
         return 0;
     }
 
-    @Nonnull
-    @Override
-    public CheckRecipeResult checkProcessing_EM() {
-        ItemStack controllerItem = getControllerSlot();
-        this.mParallelTier = getParallelTier(controllerItem);
-        return super.checkProcessing_EM();
+    public boolean addAllHatchToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        return addParallelControllerToMachineList(aTileEntity, aBaseCasingIndex)
+            || addClassicToMachineList(aTileEntity, aBaseCasingIndex);
+    }
+
+    public boolean addParallelControllerToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        if (aTileEntity == null) {
+            return false;
+        }
+        IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
+        if (aMetaTileEntity == null) {
+            return false;
+        }
+        if (aMetaTileEntity instanceof ParallelControllerHatch hatch) {
+            hatch.updateTexture(aBaseCasingIndex);
+            hatch.updateCraftingIcon(this.getMachineCraftingIcon());
+            return mParallelControllerHatches.add(hatch);
+        }
+        return false;
+    }
+
+    public enum CustomHatchElement implements IHatchElement<ResourceCollectionModule> {
+
+        ParallelCon(ResourceCollectionModule::addParallelControllerToMachineList, ParallelControllerHatch.class) {
+
+            @Override
+            public long count(ResourceCollectionModule tileEntity) {
+                return 0;
+            }
+        };
+
+        private final List<Class<? extends IMetaTileEntity>> mteClasses;
+        private final IGTHatchAdder<ResourceCollectionModule> adder;
+
+        @SafeVarargs
+        CustomHatchElement(IGTHatchAdder<ResourceCollectionModule> adder,
+            Class<? extends IMetaTileEntity>... mteClasses) {
+            this.mteClasses = Collections.unmodifiableList(Arrays.asList(mteClasses));
+            this.adder = adder;
+        }
+
+        @Override
+        public List<? extends Class<? extends IMetaTileEntity>> mteClasses() {
+            return mteClasses;
+        }
+
+        public IGTHatchAdder<? super ResourceCollectionModule> adder() {
+            return adder;
+        }
     }
 }

@@ -87,25 +87,26 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
 
     @Override
     public int getCasingTextureID() {
-        return BlockGTCasingsTT.textureOffset;
+        return StructureUtils.getTextureIndex(sBlockCasings9, 12);
     }
 
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
         if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+            if (aActive)
+                return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(BlockGTCasingsTT.textureOffset),
+                    TextureFactory.builder()
+                        .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
+                        .extFacing()
+                        .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(BlockGTCasingsTT.textureOffset),
                 TextureFactory.builder()
                     .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
                     .extFacing()
                     .build() };
         }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(BlockGTCasingsTT.textureOffset) };
     }
 
     @Override
@@ -127,7 +128,7 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
                 'L',
                 buildHatchAdder(NeutroniumWireCutting.class)
                     .atLeast(Maintenance, InputBus, OutputBus, InputHatch, Energy.or(ExoticEnergy), ParallelCon)
-                    .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 12))
+                    .casingIndex(getCasingTextureID())
                     .dot(1)
                     .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(sBlockCasings9, 12))))
             .addElement('M', ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))
