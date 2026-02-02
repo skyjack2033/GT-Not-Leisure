@@ -225,7 +225,6 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
             .addElement(
                 'B',
                 buildHatchAdder(BloodSoulSacrificialArray.class).atLeast(Maintenance, InputBus, OutputBus, ParallelCon)
-                    .adder(BloodSoulSacrificialArray::addToMachineList)
                     .dot(1)
                     .casingIndex(getCasingTextureID())
                     .buildAndChain(GregTechAPI.sBlockCasings8, 10))
@@ -255,7 +254,6 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
             .addElement(
                 'Z',
                 buildHatchAdder(BloodSoulSacrificialArray.class).atLeast(Maintenance, InputBus, OutputBus, ParallelCon)
-                    .adder(BloodSoulSacrificialArray::addToMachineList)
                     .dot(1)
                     .casingIndex(getCasingTextureID())
                     .buildAndChain(GregTechAPI.sBlockCasings8, 3))
