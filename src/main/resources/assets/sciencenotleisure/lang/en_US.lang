@@ -763,10 +763,8 @@ Tooltip_ParallelControllerHatch_03=§5EU Consumption: -%s %%
 Info_ParallelControllerHatch_00=Parallel
 
 AutoConfigurationMaintenanceHatch=Auto Configuration MaintenanceHatch
-SterileMaintenanceHatch=Sterile Maintenance Hatch
 SterileConfigurationMaintenanceHatch=Sterile Configuration Maintenance Hatch
-AbsoluteMaintenanceHatch=Absolute Maintenance Hatch
-AbsoluteConfigurationMaintenanceHatch=Absolute Configuration Maintenance Hatch
+HumongousConfigurationMaintenanceHatch=Humongous Configuration MaintenanceHatch
 Tooltip_AutoConfigurationMaintenanceHatch_00=For automatically maintaining Multiblocks
 Tooltip_AutoConfigurationMaintenanceHatch_01=Does control everything but itself.
 Tooltip_AutoConfigurationMaintenanceHatch_02=§bSelfless dedication!

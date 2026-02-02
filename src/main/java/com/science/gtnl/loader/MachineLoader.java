@@ -2464,6 +2464,32 @@ public class MachineLoader {
                 14));
         addItemTooltip(GTNLItemList.HumongousDualInputHatchMAX.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
+        GTNLItemList.SterileConfigurationMaintenanceHatch.set(
+            new CustomMaintenanceHatch(
+                STERILE_CONFIGURATION_MAINTENANCE_HATCH.ID,
+                "SterileConfigurationMaintenanceHatch",
+                StatCollector.translateToLocal("SterileConfigurationMaintenanceHatch"),
+                70,
+                130,
+                9,
+                new String[] { StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_00"),
+                    StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_01"),
+                    StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_02"), }));
+        addItemTooltip(GTNLItemList.SterileConfigurationMaintenanceHatch.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+
+        GTNLItemList.HumongousConfigurationMaintenanceHatch.set(
+            new CustomMaintenanceHatch(
+                HUMONGOUS_CONFIGURATION_MAINTENANCE_HATCH.ID,
+                "HumongousConfigurationMaintenanceHatch",
+                StatCollector.translateToLocal("HumongousConfigurationMaintenanceHatch"),
+                50,
+                150,
+                14,
+                new String[] { StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_00"),
+                    StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_01"),
+                    StatCollector.translateToLocal("Tooltip_AutoConfigurationMaintenanceHatch_02"), }));
+        addItemTooltip(GTNLItemList.HumongousConfigurationMaintenanceHatch.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+
         GTNLItemList.ManaDynamoHatchLV.set(
             new ManaDynamoHatch(
                 MANA_DYNAMO_HATCH_LV.ID,

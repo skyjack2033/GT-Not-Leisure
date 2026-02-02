@@ -763,10 +763,8 @@ Tooltip_ParallelControllerHatch_03=§5EU消耗：-%s %%
 Info_ParallelControllerHatch_00=并行
 
 AutoConfigurationMaintenanceHatch=可配置自动维护仓
-SterileMaintenanceHatch=无菌维护仓
 SterileConfigurationMaintenanceHatch=可配置无菌维护仓
-AbsoluteMaintenanceHatch=绝对洁净维护仓
-AbsoluteConfigurationMaintenanceHatch=可配置绝对洁净维护仓
+HumongousConfigurationMaintenanceHatch=可配置鸿蒙维护仓
 Tooltip_AutoConfigurationMaintenanceHatch_00=用于自动维护多方块机器
 Tooltip_AutoConfigurationMaintenanceHatch_01=它能掌控一切，除了自己.
 Tooltip_AutoConfigurationMaintenanceHatch_02=§b无私奉献！
