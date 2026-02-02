@@ -583,6 +583,11 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
                         }
 
                         @Override
+                        public boolean onMouseScroll(int direction) {
+                            return false;
+                        }
+
+                        @Override
                         public IDrawable[] getBackground() {
                             IDrawable slot;
                             if (autoPullItemList) {
