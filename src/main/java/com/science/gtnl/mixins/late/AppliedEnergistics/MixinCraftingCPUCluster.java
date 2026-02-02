@@ -1,12 +1,7 @@
 package com.science.gtnl.mixins.late.AppliedEnergistics;
 
-import static com.science.gtnl.ScienceNotLeisure.*;
-
-import java.util.Iterator;
 import java.util.Map;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 
@@ -17,7 +12,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -29,7 +23,6 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalLongRef;
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
-import com.science.gtnl.common.packet.CraftCompleteNotificationPacket;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.utils.ChiselPatternDetails;
 import com.science.gtnl.utils.DireCraftingPatternDetails;
@@ -346,36 +339,6 @@ public abstract class MixinCraftingCPUCluster {
         cir.setReturnValue(Utils.getExtraInterfaceName(name));
     }
 
-    @Inject(
-        method = "lambda$new$1ae9d77$1",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/entity/player/EntityPlayer;addChatMessage(Lnet/minecraft/util/IChatComponent;)V"))
-    private void beforeAddChatMessage(ItemStack finalOutput, long numsOfOutput, long elapsedTime, CallbackInfo ci,
-        @Local EntityPlayer player) {
-        network.sendTo(
-            new CraftCompleteNotificationPacket(finalOutput, numsOfOutput, elapsedTime),
-            (EntityPlayerMP) player);
-    }
-
-    @Redirect(
-        method = "onPlayerLogIn",
-        at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;"))
-    private Object redirectIteratorNext(Iterator<?> instance, @Local EntityPlayer player) {
-        Object next = instance.next();
-
-        AccessorCraftNotification accessor = (AccessorCraftNotification) next;
-
-        network.sendTo(
-            new CraftCompleteNotificationPacket(
-                accessor.getFinalOutput(),
-                accessor.getOutputsCount(),
-                accessor.getElapsedTime()),
-            (EntityPlayerMP) player);
-
-        return next;
-    }
-
     @Mixin(targets = "appeng.me.cluster.implementations.CraftingCPUCluster$TaskProgress", remap = false)
     public interface AccessorTaskProgress {
 
@@ -384,18 +347,5 @@ public abstract class MixinCraftingCPUCluster {
 
         @Accessor
         void setValue(long value);
-    }
-
-    @Mixin(targets = "appeng.me.cluster.implementations.CraftingCPUCluster$CraftNotification", remap = false)
-    public interface AccessorCraftNotification {
-
-        @Accessor
-        ItemStack getFinalOutput();
-
-        @Accessor
-        long getOutputsCount();
-
-        @Accessor
-        long getElapsedTime();
     }
 }
