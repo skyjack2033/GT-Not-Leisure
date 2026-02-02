@@ -11,6 +11,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.util.ExoticEnergyInputHelper;
+import gregtech.api.util.GTUtility;
 
 public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> extends MultiMachineBase<T> {
 
@@ -42,10 +43,11 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
     @Override
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         if (aBaseMetaTileEntity.isServerSide()) {
-            if (mParallelControllerHatches.size() == 1 && aTick % 20 == 0) {
-                for (ParallelControllerHatch module : mParallelControllerHatches) {
+            if (aTick % 20 == 0) {
+                for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
                     setMaxParallel(module.getParallel());
                     mParallelTier = module.mTier;
+                    break;
                 }
             } else {
                 setMaxParallel(8);
@@ -69,6 +71,11 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
     public void setupParameters() {
         super.setupParameters();
         mParallelTier = getParallelTier(getControllerSlot());
+        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+            setMaxParallel(module.getParallel());
+            mParallelTier = module.mTier;
+            break;
+        }
     }
 
     @Override
@@ -90,8 +97,8 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
     public int getMaxParallelRecipes() {
         mParallelTier = getParallelTier(getControllerSlot());
 
-        if (mParallelControllerHatches.size() == 1) {
-            ParallelControllerHatch module = mParallelControllerHatches.get(0);
+        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+            setMaxParallel(module.getParallel());
             mParallelTier = module.mTier;
             return module.getParallel();
         }

@@ -125,6 +125,11 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
     public void setupParameters() {
         super.setupParameters();
         mParallelTier = getParallelTier(getControllerSlot());
+        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+            setMaxParallel(module.getParallel());
+            mParallelTier = module.mTier;
+            break;
+        }
         setWirelessMode(mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty());
     }
 
@@ -334,11 +339,12 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
         }
         mParallelTier = getParallelTier(getControllerSlot());
 
-        if (mParallelControllerHatches.size() == 1) {
-            ParallelControllerHatch module = mParallelControllerHatches.get(0);
+        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+            setMaxParallel(module.getParallel());
             mParallelTier = module.mTier;
             return module.getParallel() << 4;
-        } else if (mParallelTier <= 1) {
+        }
+        if (mParallelTier <= 1) {
             return 8;
         } else {
             return 1 << (2 * (mParallelTier - 2) + 4);
