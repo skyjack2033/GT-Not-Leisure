@@ -53,8 +53,8 @@ public class MainConfig {
     public static int meteorMinerMaxBlockPerCycle = 1;
     public static int meteorMinerMaxRowPerCycle = 1;
 
-    public static int euEveryEnhancementCore = 100;
-    public static int euEveryDepletedExcitedNaquadahFuelRod = 4125000;
+    public static int euEveryEnhancementCore = 250;
+    public static int euEveryDepletedExcitedNaquadahFuelRod = 7500000;
     public static double secondsOfArtificialStarProgressCycleTime = 6.4;
     public static boolean enableRenderDefaultArtificialStar = true;
 
