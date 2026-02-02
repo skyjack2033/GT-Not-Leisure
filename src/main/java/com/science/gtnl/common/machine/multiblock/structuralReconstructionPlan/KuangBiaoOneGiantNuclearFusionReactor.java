@@ -961,7 +961,7 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
                         availableVoltage = V[Math.min(mParallelTier + 1, 14)];
                     }
                     return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
-                        .setAmperageOC(!wirelessMode)
+                        .setAmperageOC(true)
                         .setPerfectOC(getPerfectOC())
                         .setEUtDiscount(0.4 - (mParallelTier / 50.0))
                         .setDurationModifier(1.0 / 10.0 * Math.pow(0.75, mParallelTier));

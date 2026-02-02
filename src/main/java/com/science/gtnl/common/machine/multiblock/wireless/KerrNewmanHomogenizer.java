@@ -276,7 +276,20 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         return StructureDefinition.<KerrNewmanHomogenizer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
             .addElement('A', ofBlock(blockCasings3Misc, 13))
-            .addElement('B', ofBlock(sBlockCasings10, 3))
+            .addElement(
+                'B',
+                buildHatchAdder(KerrNewmanHomogenizer.class)
+                    .atLeast(
+                        Maintenance,
+                        InputBus,
+                        OutputBus,
+                        InputHatch,
+                        OutputHatch,
+                        Energy.or(ExoticEnergy),
+                        ParallelCon)
+                    .casingIndex(getCasingTextureID())
+                    .dot(1)
+                    .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(sBlockCasings10, 3))))
             .addElement('C', ofBlock(sBlockCasings10, 11))
             .addElement('D', ofFrame(Materials.TungstenCarbide))
             .addElement(
@@ -293,7 +306,20 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
                     .casingIndex(getCasingTextureID())
                     .dot(1)
                     .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(sBlockCasings8, 7))))
-            .addElement('F', ofBlock(defcCasingBlock, 7))
+            .addElement(
+                'F',
+                buildHatchAdder(KerrNewmanHomogenizer.class)
+                    .atLeast(
+                        Maintenance,
+                        InputBus,
+                        OutputBus,
+                        InputHatch,
+                        OutputHatch,
+                        Energy.or(ExoticEnergy),
+                        ParallelCon)
+                    .casingIndex(getCasingTextureID())
+                    .dot(1)
+                    .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(defcCasingBlock, 7))))
             .addElement('G', ofBlock(blockCasings2Misc, 2))
             .addElement('H', ofBlock(BlockLoader.metaCasing, 5))
             .addElement('I', ofBlock(sBlockCasings10, 12))
@@ -311,7 +337,20 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
             .addElement('U', ofBlock(LanthItemList.SHIELDED_ACCELERATOR_CASING, 0))
             .addElement('V', ofBlock(sBlockCasingsDyson, 1))
             .addElement('W', ofBlock(sBlockCasings9, 11))
-            .addElement('X', ofBlock(blockCasings2Misc, 12))
+            .addElement(
+                'X',
+                buildHatchAdder(KerrNewmanHomogenizer.class)
+                    .atLeast(
+                        Maintenance,
+                        InputBus,
+                        OutputBus,
+                        InputHatch,
+                        OutputHatch,
+                        Energy.or(ExoticEnergy),
+                        ParallelCon)
+                    .casingIndex(getCasingTextureID())
+                    .dot(1)
+                    .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(blockCasings2Misc, 12))))
             .addElement('Y', ofBlock(sBlockCasings1, 14))
             .addElement(
                 'Z',
@@ -362,7 +401,7 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch())
             return false;
         setupParameters();
-        return mCountCasing > 200;
+        return true;
     }
 
     @Override

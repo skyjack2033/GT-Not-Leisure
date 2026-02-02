@@ -698,7 +698,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             .setAmperage(getMaxInputAmps())
             .setRecipeEUt(128)
             .setDuration(12 * 20)
-            .setAmperageOC(mEnergyHatches.size() != 1)
+            .setAmperageOC(true)
             .setExtraDurationModifier(mConfigSpeedBoost);
         calculator.calculate();
         this.mMaxProgresstime = (isWaiting) ? 200 : calculator.getDuration();
