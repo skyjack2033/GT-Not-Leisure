@@ -144,7 +144,7 @@ public class FishingGroundRecipes implements IRecipePool {
                 500,
                 500,
                 100,
-                5)
+                1)
             .duration(400)
             .eut(TierEU.RECIPE_EV)
             .addTo(FGR);
