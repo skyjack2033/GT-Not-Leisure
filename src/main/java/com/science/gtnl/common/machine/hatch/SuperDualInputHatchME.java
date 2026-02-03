@@ -1177,7 +1177,12 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
                         .getItemInventory()
                         .extractItems(toextract, Actionable.MODULATE, getRequestSource());
                     if (get == null || get.getStackSize() != get.getStackSize()) {
-                        ScienceNotLeisure.LOG.fatal("cannot extract!");
+                        IGregTechTileEntity te = controller.getBaseMetaTileEntity();
+                        ScienceNotLeisure.LOG.fatal(
+                            "Super Dual Input Hatch ME cannot extract! at {}, {}, {}",
+                            te.getXCoord(),
+                            te.getYCoord(),
+                            te.getZCoord());
                         controller.stopMachine(ShutDownReasonRegistry.CRITICAL_NONE);
                         return SimpleCheckRecipeResult.ofFailurePersistOnShutdown("stocking_bus_fail_extraction");
                     }
