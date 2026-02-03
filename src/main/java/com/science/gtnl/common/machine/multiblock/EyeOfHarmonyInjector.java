@@ -837,8 +837,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         }
 
         ItemStack stackInSlot1 = getStackInSlot(1);
-        if (stackInSlot1 != null && stackInSlot1.getUnlocalizedName()
-            .startsWith("gt.integrated_circuit")) rList.add(stackInSlot1);
+        if (GTUtility.isAnyIntegratedCircuit(stackInSlot1)) rList.add(stackInSlot1);
         if (!inputsFromME.isEmpty()) {
             rList.addAll(inputsFromME.values());
         }

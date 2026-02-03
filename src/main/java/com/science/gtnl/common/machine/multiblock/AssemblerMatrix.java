@@ -969,6 +969,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
                     newStack,
                     this.getBaseMetaTileEntity()
                         .getWorld());
+                if (pattern == null) continue;
                 if (pattern.isCraftable()) {
                     pattern = new DireCraftingPatternDetails(pattern);
                 }
@@ -1119,7 +1120,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
                         input,
                         this.getBaseMetaTileEntity()
                             .getWorld());
-
+                    if (p == null) continue;
                     if (p.isCraftable()) {
                         p = new DireCraftingPatternDetails(p);
                     }
