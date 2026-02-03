@@ -474,7 +474,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
             } else {
                 if (elevatorCable != null && IGConfig.spaceElevator.isCableRenderingEnabled
                     && elevatorCable.getAnimation() == TileEntitySpaceElevatorCable.ClimberAnimation.NO_ANIMATION
-                    && aTick % 2000 == 0) {
+                    && aTick % 200 == 0) {
                     elevatorCable.startAnimation(TileEntitySpaceElevatorCable.ClimberAnimation.DELIVER_ANIMATION);
                 }
             }
