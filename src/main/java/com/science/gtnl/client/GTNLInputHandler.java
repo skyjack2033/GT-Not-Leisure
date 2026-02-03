@@ -110,6 +110,7 @@ public class GTNLInputHandler implements IContainerInputHandler {
         if (stack.getItem() instanceof ItemFluidDisplay) {
             FluidStack fluidStack = ItemUtils.getFluidFromItemFluidDisplay(stack);
             if (fluidStack == null) return false;
+            if (fluidStack.amount == 0) fluidStack.amount = 1;
             stack = ItemFluidDrop.newStack(fluidStack);
         }
         return startAEWork(stack, mousex, mousey);
