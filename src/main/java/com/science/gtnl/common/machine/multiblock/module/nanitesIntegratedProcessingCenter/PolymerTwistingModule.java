@@ -34,10 +34,12 @@ public class PolymerTwistingModule extends NanitesBaseModule<PolymerTwistingModu
 
     public PolymerTwistingModule(String aName) {
         super(aName);
+        isPolModule = true;
     }
 
     public PolymerTwistingModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+        isPolModule = true;
     }
 
     @Override
@@ -118,16 +120,10 @@ public class PolymerTwistingModule extends NanitesBaseModule<PolymerTwistingModu
 
     @Override
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        mCountCasing = 0;
-        isPolModule = false;
-
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch())
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch()) {
             return false;
-
-        isPolModule = true;
-        mEnergyHatchTier = checkEnergyHatchTier();
-        setWirelessMode(mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty());
-
+        }
+        setupParameters();
         return true;
     }
 }

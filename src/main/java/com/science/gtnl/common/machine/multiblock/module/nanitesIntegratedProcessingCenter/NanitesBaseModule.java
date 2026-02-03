@@ -79,14 +79,6 @@ public abstract class NanitesBaseModule<T extends NanitesBaseModule<T>> extends 
     }
 
     @Override
-    public void clearHatches() {
-        super.clearHatches();
-        isOreModule = false;
-        isBioModule = false;
-        isPolModule = false;
-    }
-
-    @Override
     public RecipeMap<?> getRecipeMap() {
         return GTNLRecipeMaps.NanitesIntegratedProcessingRecipes;
     }

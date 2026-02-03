@@ -49,6 +49,7 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTRecipe;
+import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
@@ -67,9 +68,9 @@ public class NanitesIntegratedProcessingCenter
     private static final String[][] shape = StructureUtils.readStructureFromFile(NIPC_STRUCTURE_FILE_PATH);
 
     public ArrayList<NanitesBaseModule<?>> moduleMachine = new ArrayList<>();
-    public boolean isOreModule = false;
-    public boolean isBioModule = false;
-    public boolean isPolModule = false;
+    public boolean oreModule = false;
+    public boolean bioModule = false;
+    public boolean polModule = false;
 
     public NanitesIntegratedProcessingCenter(String aName) {
         super(aName);
@@ -140,7 +141,7 @@ public class NanitesIntegratedProcessingCenter
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         if (aBaseMetaTileEntity.isServerSide()) {
             if (!moduleMachine.isEmpty() && moduleMachine.size() <= 3) {
-                for (NanitesBaseModule<?> module : moduleMachine) {
+                for (NanitesBaseModule<?> module : GTUtility.validMTEList(moduleMachine)) {
                     if (allowModuleConnection(module, this)) {
                         module.connect();
                         module.setEUtDiscount(getEUtDiscount());
@@ -156,7 +157,7 @@ public class NanitesIntegratedProcessingCenter
                     }
                 }
             } else if (moduleMachine.size() > 3) {
-                for (NanitesBaseModule<?> module : moduleMachine) {
+                for (NanitesBaseModule<?> module : GTUtility.validMTEList(moduleMachine)) {
                     module.disconnect();
                 }
             }
@@ -254,17 +255,18 @@ public class NanitesIntegratedProcessingCenter
         mHeatingCapacity = (int) this.getMCoilLevel()
             .getHeat() + 100 * (BWUtil.getTier(this.getMaxInputEu()) - 2);
 
-        for (NanitesBaseModule<?> module : moduleMachine) {
+        for (NanitesBaseModule<?> module : GTUtility.validMTEList(moduleMachine)) {
+            if (!module.mMachine) continue;
             if (module instanceof BioengineeringModule) {
-                isBioModule = module.isBioModule;
+                bioModule = true;
             }
 
             if (module instanceof PolymerTwistingModule) {
-                isPolModule = module.isPolModule;
+                polModule = true;
             }
 
             if (module instanceof OreExtractionModule) {
-                isOreModule = module.isOreModule;
+                oreModule = true;
             }
         }
     }
@@ -273,6 +275,9 @@ public class NanitesIntegratedProcessingCenter
     public void clearHatches() {
         super.clearHatches();
         moduleMachine.clear();
+        bioModule = false;
+        polModule = false;
+        oreModule = false;
     }
 
     @Override
@@ -299,13 +304,13 @@ public class NanitesIntegratedProcessingCenter
                     NanitesIntegratedProcessingMetadata.INSTANCE,
                     new NanitesIntegratedProcessingRecipesData(false, false, false));
 
-                if (data.bioengineeringModule && !isBioModule) {
+                if (data.bioengineeringModule && !bioModule) {
                     return SimpleCheckRecipeResult.ofFailure("missing_bio_module");
                 }
-                if (data.oreExtractionModule && !isOreModule) {
+                if (data.oreExtractionModule && !oreModule) {
                     return SimpleCheckRecipeResult.ofFailure("missing_ore_module");
                 }
-                if (data.polymerTwistingModule && !isPolModule) {
+                if (data.polymerTwistingModule && !polModule) {
                     return SimpleCheckRecipeResult.ofFailure("missing_pol_module");
                 }
 
@@ -381,7 +386,7 @@ public class NanitesIntegratedProcessingCenter
     }
 
     public static boolean allowModuleConnection(NanitesBaseModule<?> module, NanitesIntegratedProcessingCenter center) {
-
+        if (!module.mMachine) return false;
         if (module instanceof BioengineeringModule) {
             return true;
         }
@@ -400,7 +405,7 @@ public class NanitesIntegratedProcessingCenter
     @Override
     public void onRemoval() {
         if (moduleMachine != null && !moduleMachine.isEmpty()) {
-            for (NanitesBaseModule<?> module : moduleMachine) {
+            for (NanitesBaseModule<?> module : GTUtility.validMTEList(moduleMachine)) {
                 module.disconnect();
             }
         }

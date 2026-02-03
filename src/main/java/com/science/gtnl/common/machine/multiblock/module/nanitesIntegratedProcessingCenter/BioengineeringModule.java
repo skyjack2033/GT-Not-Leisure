@@ -32,10 +32,12 @@ public class BioengineeringModule extends NanitesBaseModule<BioengineeringModule
 
     public BioengineeringModule(String aName) {
         super(aName);
+        isBioModule = true;
     }
 
     public BioengineeringModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+        isBioModule = true;
     }
 
     @Override
@@ -124,11 +126,5 @@ public class BioengineeringModule extends NanitesBaseModule<BioengineeringModule
         }
         setupParameters();
         return true;
-    }
-
-    @Override
-    public void setupParameters() {
-        super.setupParameters();
-        isBioModule = true;
     }
 }

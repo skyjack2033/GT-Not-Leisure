@@ -36,10 +36,12 @@ public class OreExtractionModule extends NanitesBaseModule<OreExtractionModule> 
 
     public OreExtractionModule(String aName) {
         super(aName);
+        isOreModule = true;
     }
 
     public OreExtractionModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+        isOreModule = true;
     }
 
     @Override
@@ -126,15 +128,10 @@ public class OreExtractionModule extends NanitesBaseModule<OreExtractionModule> 
 
     @Override
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        mCountCasing = 0;
-        isOreModule = false;
-
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch())
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch()) {
             return false;
-
-        isOreModule = true;
-        mEnergyHatchTier = checkEnergyHatchTier();
-        setWirelessMode(mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty());
+        }
+        setupParameters();
         return true;
     }
 }
