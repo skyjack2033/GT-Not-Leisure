@@ -82,6 +82,7 @@ import com.science.gtnl.common.machine.multiblock.EyeOfHarmonyInjector;
 import com.science.gtnl.common.machine.multiblock.FOGAlloyBlastSmelterModule;
 import com.science.gtnl.common.machine.multiblock.FOGAlloySmelterModule;
 import com.science.gtnl.common.machine.multiblock.FOGExtractorModule;
+import com.science.gtnl.common.machine.multiblock.FOGSolarMuonCatalystModule;
 import com.science.gtnl.common.machine.multiblock.FuelRefiningComplex;
 import com.science.gtnl.common.machine.multiblock.GenerationEarthEngine;
 import com.science.gtnl.common.machine.multiblock.GrandAssemblyLine;
@@ -1720,6 +1721,15 @@ public class MachineLoader {
         GTNLItemList.FurnaceArray.set(
             new FurnaceArray(FURNACE_ARRAY.ID, "FurnaceArray", StatCollector.translateToLocal("NameFurnaceArray")));
         addItemTooltip(GTNLItemList.FurnaceArray.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+
+        GTNLItemList.FOGSolarMuonCatalystModule.set(
+            new FOGSolarMuonCatalystModule(
+                FOG_SOLAR_MUON_CATALYST_MODULE.ID,
+                "FOGSolarMuonCatalystModule",
+                StatCollector.translateToLocal("NameFOGSolarMuonCatalystModule")));
+        addItemTooltip(GTNLItemList.FOGSolarMuonCatalystModule.get(1), AnimatedText.TIDAL);
+        addItemTooltip(GTNLItemList.FOGSolarMuonCatalystModule.get(1), AnimatedText.WAVE);
+        addItemTooltip(GTNLItemList.FOGSolarMuonCatalystModule.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
         // Special Machine
         GTNLItemList.CheatOreProcessingFactory.set(

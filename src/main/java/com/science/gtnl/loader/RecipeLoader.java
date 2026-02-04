@@ -109,6 +109,7 @@ import com.science.gtnl.common.recipe.gtnl.ShallowChemicalCouplingRecipes;
 import com.science.gtnl.common.recipe.gtnl.ShapedArcaneCraftingRecipes;
 import com.science.gtnl.common.recipe.gtnl.ShimmerRecipes;
 import com.science.gtnl.common.recipe.gtnl.SmeltingMixingFurnaceRecipes;
+import com.science.gtnl.common.recipe.gtnl.SolarMuonCatalystRecipes;
 import com.science.gtnl.common.recipe.gtnl.SpaceDrillRecipes;
 import com.science.gtnl.common.recipe.gtnl.SpaceMinerRecipes;
 import com.science.gtnl.common.recipe.gtnl.SteamCarpenterRecipe;
@@ -215,7 +216,7 @@ public class RecipeLoader {
             new PrecisionLaserEngraver(), new NanitesIntegratedProcessingRecipes(), new NanoForgeRecipes(),
             new SteamWeatherModuleRecipes(), new ElectricNeutronActivatorRecipes(), new ReactorProcessingUnitRecipes(),
             new NuclearSaltProcessingPlantRecipes(), new MaceratorRecipes(), new QuantumForceTransformerRecipes(),
-            new MicroorganismMasterRecipes() };
+            new MicroorganismMasterRecipes(), new SolarMuonCatalystRecipes() };
 
         for (IRecipePool recipePool : recipePools) {
             recipePool.loadRecipes();

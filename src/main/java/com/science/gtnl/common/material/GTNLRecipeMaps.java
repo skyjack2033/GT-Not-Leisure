@@ -39,6 +39,7 @@ import com.science.gtnl.utils.recipes.metadata.IsaMillMetadata;
 import com.science.gtnl.utils.recipes.metadata.NanitesIntegratedProcessingMetadata;
 import com.science.gtnl.utils.recipes.metadata.NaquadahReactorMetadata;
 import com.science.gtnl.utils.recipes.metadata.ResourceCollectionModuleMetadata;
+import com.science.gtnl.utils.recipes.metadata.SolorMuonCatalystMetadata;
 import com.science.gtnl.utils.recipes.metadata.SteamFusionMetadata;
 
 import goodgenerator.api.recipe.ComponentAssemblyLineFrontend;
@@ -644,6 +645,21 @@ public class GTNLRecipeMaps {
         .frontend(GTNLLogoFrontend::new)
         .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
         .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.MicroorganismMaster.get(1)))
+        .build();
+
+    public static final RecipeMap<RecipeMapBackend> SolarMuonCatalystRecipes = RecipeMapBuilder
+        .of("gtnl.recipe.SolarMuonCatalystRecipes", RecipeMapBackend::new)
+        .maxIO(1, 0, 8, 1)
+        .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
+        .frontend(GeneralFrontend::new)
+        .neiHandlerInfo(
+            builder -> builder.setDisplayStack(GTNLItemList.FOGSolarMuonCatalystModule.get(1))
+                .setMaxRecipesPerPage(1))
+        .neiRecipeComparator(
+            Comparator
+                .<GTRecipe, Boolean>comparing(
+                    recipe -> recipe.getMetadataOrDefault(SolorMuonCatalystMetadata.INSTANCE, false))
+                .thenComparing(GTRecipe::compareTo))
         .build();
 
     public static final RecipeMap<RecipeMapBackend> GrandAssemblyLineSpecialRecipes = RecipeMapBuilder

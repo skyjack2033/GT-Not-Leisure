@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.science.gtnl.common.machine.multiblock.FOGAlloyBlastSmelterModule;
 import com.science.gtnl.common.machine.multiblock.FOGAlloySmelterModule;
 import com.science.gtnl.common.machine.multiblock.FOGExtractorModule;
+import com.science.gtnl.common.machine.multiblock.FOGSolarMuonCatalystModule;
 
 import tectech.thing.metaTileEntity.multi.godforge.MTEBaseModule;
 import tectech.thing.metaTileEntity.multi.godforge.MTEForgeOfGods;
@@ -30,6 +31,11 @@ public abstract class MixinGodForgeMath {
         if ((module instanceof FOGAlloyBlastSmelterModule || module instanceof FOGExtractorModule)
             && godforge.isUpgradeActive(FDIM)) {
             cir.setReturnValue(true);
+            return;
+        }
+        if (module instanceof FOGSolarMuonCatalystModule && godforge.isUpgradeActive(QGPIU)) {
+            cir.setReturnValue(true);
+            return;
         }
     }
 
@@ -44,6 +50,8 @@ public abstract class MixinGodForgeMath {
             return 2048;
         } else if (module instanceof FOGAlloyBlastSmelterModule) {
             return 512;
+        } else if (module instanceof FOGSolarMuonCatalystModule) {
+            return 256;
         }
         return constant;
     }

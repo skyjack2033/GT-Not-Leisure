@@ -3045,6 +3045,19 @@ Tooltip_FOGExtractorModule_04=processing materials at extremely high speeds.
 Tooltip_FOGExtractorModule_05=The desired method of processing can be selected in the GUI.
 Tooltip_FOGExtractorModule_06=This module is specialized in infinite parallel processing.
 
+NameFOGSolarMuonCatalystModule=Solar Muon Catalyst
+gtnl.recipe.SolarMuonCatalystRecipes=Solar Muon Catalyst
+SolorMuonCatalystMetadata.0=Requires three Godforge Rings and all upgrade
+GT5U.gui.text.not_enough_upgrade=Insufficient requirements
+FOGSolarMuonCatalystModuleRecipeType=Matter Catalyst
+Tooltip_FOGSolarMuonCatalystModule_00=This is a module of the Godforge
+Tooltip_FOGSolarMuonCatalystModule_01=Must be part of a Godforge to function.
+Tooltip_FOGSolarMuonCatalystModule_02=Used for restructuring matter under extreme temperature differentials.
+Tooltip_FOGSolarMuonCatalystModule_03=The eighth module of the Godforge, it uses muons to force atomic nuclei into tighter convergence.
+Tooltip_FOGSolarMuonCatalystModule_04=It accelerates matter directly toward the end of time itself.
+Tooltip_FOGSolarMuonCatalystModule_05=It requires the highest tier of the Godforge.
+Tooltip_FOGSolarMuonCatalystModule_06=This module is specialized in highly efficient matter transmutation.
+
 Tooltip_FOGModule_Casing_00= Singularity Reinforced Stellar Shielding Casing
 Tooltip_FOGModule_Casing_01= Boundless Gravitationally Severed Structure Casing
 Tooltip_FOGModule_Casing_02= Harmonic Phonon Transmission Conduit

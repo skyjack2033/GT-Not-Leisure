@@ -635,6 +635,7 @@ public enum GTNLItemList implements IItemContainer {
     SupercomputingCenter,
     PCBFactory,
     FurnaceArray,
+    FOGSolarMuonCatalystModule,
 
     EnergyHatchLV,
     EnergyHatchLV4A,
