@@ -7,6 +7,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinRecipeLoader",
-    "MixinTST_OreProcessingFactory"
+    "MixinTST_OreProcessingFactory",
+    "MixinMM_DimensionallyTranscendentMatterPlasmaForgePrototypeMK2"
   ]
 }
