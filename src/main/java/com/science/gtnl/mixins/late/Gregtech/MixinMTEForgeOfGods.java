@@ -67,9 +67,9 @@ public abstract class MixinMTEForgeOfGods {
             value = "INVOKE",
             target = "Ltectech/thing/metaTileEntity/multi/godforge/util/GodforgeMath;allowModuleConnection(Ltectech/thing/metaTileEntity/multi/godforge/MTEBaseModule;Ltectech/thing/metaTileEntity/multi/godforge/MTEForgeOfGods;)Z"))
     private void onModuleLoop(IGregTechTileEntity aBaseMetaTileEntity, long aTick, CallbackInfo ci,
-        @Local MTEBaseModule module, @Local(argsOnly = true) MTEForgeOfGods godforge) {
+        @Local MTEBaseModule module) {
         if (module instanceof IFOGModule fogModule) {
-            fogModule.setMaster(godforge);
+            fogModule.setMaster((MTEForgeOfGods) (Object) this);
         }
     }
 }
