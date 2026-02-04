@@ -37,6 +37,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -334,6 +335,18 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
 
         this.currentRecipe = recipe;
         return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
+
+    @Redirect(
+        method = "calculateBoostedSuccessChance",
+        at = @At(
+            value = "INVOKE",
+            target = "Lgregtech/common/tileentities/machines/multi/purification/MTEPurificationUnitBase;isWaterBoosted(Lgregtech/api/util/GTRecipe;)Z"))
+    private boolean redirectWaterBoost(MTEPurificationUnitBase<?> instance, GTRecipe recipe) {
+        if (gtnl$wirelessMode) {
+            return gtnl$isWaterBoostedList(recipe);
+        }
+        return instance.isWaterBoosted(recipe);
     }
 
     @Unique
