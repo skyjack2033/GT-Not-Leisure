@@ -18,22 +18,64 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.IRecipeMap;
+import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
 
 public class InfusionCraftingRecipes implements IRecipePool {
 
-    public ItemStack[] itemsUnconsumed = new ItemStack[] { new ItemStack(bigPearl) };
+    public static final ItemStack IC2_MACHINE = GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockMachine", 1, 1);
 
-    public ItemStack[] checkInputSpecial(ItemStack... itemStacks) {
-        baseLoop: for (ItemStack i : itemStacks) {
-            for (ItemStack u : itemsUnconsumed) {
-                if (GTUtility.areStacksEqual(i, u)) {
-                    i.stackSize = 0;
-                    break baseLoop;
-                }
+    public static final ItemStack BLAST_FURNACE_TEMPLATE = GTModHandler
+        .getModItem(Mods.EtFuturumRequiem.ID, "blast_furnace", 1, 1);
+
+    public static final Set<GTUtility.ItemId> UNCONSUMED_ITEMS = new HashSet<>();
+
+    static {
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(new ItemStack(bigPearl)));
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "weakBloodOrb", 1)));
+        UNCONSUMED_ITEMS
+            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "apprenticeBloodOrb", 1)));
+        UNCONSUMED_ITEMS
+            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "magicianBloodOrb", 1)));
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "masterBloodOrb", 1)));
+        UNCONSUMED_ITEMS
+            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "archmageBloodOrb", 1)));
+        UNCONSUMED_ITEMS
+            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "transcendentBloodOrb", 1)));
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "creativeFiller", 1)));
+        UNCONSUMED_ITEMS
+            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.ForbiddenMagic.ID, "EldritchOrb", 1)));
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.Avaritia.ID, "Orb_Armok", 1)));
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.Thaumcraft.ID, "FocusWarding", 1)));
+    }
+
+    public static ItemStack[] checkInputSpecial(ItemStack... itemStacks) {
+        final int len = itemStacks.length;
+        ItemStack[] copy = new ItemStack[len];
+
+        for (int idx = 0; idx < len; idx++) {
+            ItemStack i = itemStacks[idx];
+            if (i == null) {
+                copy[idx] = null;
+                continue;
             }
+
+            ItemStack out = i.copy();
+
+            if (out.getItem() == IC2_MACHINE.getItem()) {
+                ItemStack bf = BLAST_FURNACE_TEMPLATE.copy();
+                bf.stackSize = out.stackSize;
+                out = bf;
+            }
+
+            if (UNCONSUMED_ITEMS.contains(GTUtility.ItemId.create(out))) {
+                out.stackSize = 0;
+            }
+
+            copy[idx] = out;
         }
-        return itemStacks;
+
+        return copy;
     }
 
     public Set<Item> skips;
