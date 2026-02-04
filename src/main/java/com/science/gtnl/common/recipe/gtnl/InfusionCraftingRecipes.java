@@ -43,8 +43,10 @@ public class InfusionCraftingRecipes implements IRecipePool {
         UNCONSUMED_ITEMS
             .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "transcendentBloodOrb", 1)));
         UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "creativeFiller", 1)));
-        UNCONSUMED_ITEMS
-            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.ForbiddenMagic.ID, "EldritchOrb", 1)));
+        if (Mods.ForbiddenMagic.isModLoaded()) {
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.ForbiddenMagic.ID, "EldritchOrb", 1)));
+        }
         UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.Avaritia.ID, "Orb_Armok", 1)));
         UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.Thaumcraft.ID, "FocusWarding", 1)));
     }
@@ -62,7 +64,7 @@ public class InfusionCraftingRecipes implements IRecipePool {
 
             ItemStack out = i.copy();
 
-            if (out.getItem() == IC2_MACHINE.getItem()) {
+            if (out.getItem() == IC2_MACHINE.getItem() && BLAST_FURNACE_TEMPLATE != null) {
                 ItemStack bf = BLAST_FURNACE_TEMPLATE.copy();
                 bf.stackSize = out.stackSize;
                 out = bf;

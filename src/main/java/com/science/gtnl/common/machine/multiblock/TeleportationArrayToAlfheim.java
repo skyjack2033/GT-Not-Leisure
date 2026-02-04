@@ -183,7 +183,13 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
         }
         if (shouldExplode) {
             World world = aBaseMetaTileEntity.getWorld();
-            world.playSoundEffect(0, 0, 0, RESOURCE_ROOT_ID + ":" + "protal.boom", 1.0F, 1.0F);
+            world.playSoundEffect(
+                aBaseMetaTileEntity.getXCoord(),
+                aBaseMetaTileEntity.getYCoord(),
+                aBaseMetaTileEntity.getZCoord(),
+                RESOURCE_ROOT_ID + ":" + "protal.boom",
+                1.0F,
+                1.0F);
             triggerExplosion(aBaseMetaTileEntity, Strength);
             return CheckRecipeResultRegistry.SUCCESSFUL;
         }

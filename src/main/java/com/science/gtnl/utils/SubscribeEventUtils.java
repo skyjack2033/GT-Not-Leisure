@@ -1,6 +1,6 @@
 package com.science.gtnl.utils;
 
-import static com.science.gtnl.ScienceNotLeisure.network;
+import static com.science.gtnl.ScienceNotLeisure.*;
 import static com.science.gtnl.common.render.PlayerDollRenderManager.*;
 import static com.science.gtnl.utils.steam.GlobalSteamWorldSavedData.loadInstance;
 
@@ -37,6 +37,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 import com.science.gtnl.api.TickrateAPI;
@@ -73,6 +74,7 @@ import gregtech.api.metatileentity.BaseMetaTileEntity;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry;
+import tectech.thing.casing.TTCasingsContainer;
 import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.item.IManaDissolvable;
 import vazkii.botania.api.mana.IManaItem;
@@ -328,6 +330,25 @@ public class SubscribeEventUtils {
     }
 
     // World
+    @SubscribeEvent
+    public void onBlockPlaced(BlockEvent.PlaceEvent event) {
+        if (event.world.isRemote) return;
+        World world = event.world;
+        int x = event.x;
+        int y = event.y;
+        int z = event.z;
+
+        Block block = event.block;
+        int meta = world.getBlockMetadata(x, y, z);
+
+        if (block == TTCasingsContainer.GodforgeCasings && meta == 8) {
+
+            if (world.rand.nextInt(1000) == 0) {
+                world.playSoundEffect(x, y, z, RESOURCE_ROOT_ID + ":tidal.wave", 1.0F, 1.0F);
+            }
+        }
+    }
+
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
         World world = event.world;

@@ -17,6 +17,15 @@
       }
     ]
   },
+  "tidal.wave": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "tidal.wave",
+        "stream": false
+      }
+    ]
+  },
   "protal.boom": {
     "category": "player",
     "sounds": [
