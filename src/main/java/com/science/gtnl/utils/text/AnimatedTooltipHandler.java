@@ -88,14 +88,18 @@ public class AnimatedTooltipHandler {
         if (text == null || text.isEmpty() || formattingArray == null || formattingArray.length == 0) return () -> "";
 
         final int finalDelay = Math.max(delay, 1);
-        final int finalPosstep = Math.max(posstep, 0);
+        final int finalPosstep = posstep == 0 ? 1 : posstep;
 
         return () -> {
             StringBuilder sb = new StringBuilder(text.length() * 3);
-            int offset = (int) ((System.currentTimeMillis() / finalDelay) % formattingArray.length);
+            int len = formattingArray.length;
+            int offset = (int) ((System.currentTimeMillis() / finalDelay) % len);
+
             for (int i = 0; i < text.length(); i++) {
                 char c = text.charAt(i);
-                int indexColorArray = (i * finalPosstep + formattingArray.length - offset) % formattingArray.length;
+
+                int indexColorArray = Math.floorMod(i * finalPosstep - offset, len);
+
                 sb.append(formattingArray[indexColorArray]);
                 sb.append(c);
             }

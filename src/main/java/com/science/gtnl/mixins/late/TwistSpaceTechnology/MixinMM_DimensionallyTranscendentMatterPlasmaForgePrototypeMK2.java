@@ -37,7 +37,7 @@ public abstract class MixinMM_DimensionallyTranscendentMatterPlasmaForgePrototyp
     MultiExecutionCoreMachineSupportAllModuleBase<MixinMM_DimensionallyTranscendentMatterPlasmaForgePrototypeMK2> {
 
     @Shadow
-    private double runningTime;
+    private long runningTime;
 
     @Shadow
     protected double fuelCostMultiplier;
