@@ -2457,5 +2457,27 @@ public class AssemblingLineRecipes implements IRecipePool {
             GTNLItemList.AdvancedHyperNaquadahReactor.get(1),
             32000,
             (int) TierEU.RECIPE_UMV);
+
+        TTRecipeAdder.addResearchableAssemblylineRecipe(
+            CustomItemList.Machine_Multi_QuarkGluonPlasmaModule.get(1),
+            768000000,
+            131072,
+            (int) TierEU.RECIPE_UXV,
+            1,
+            new Object[] { CustomItemList.Machine_Multi_QuarkGluonPlasmaModule.get(16),
+                ItemList.Machine_Multi_PlasmaForge.get(16), ItemRefer.Compact_Fusion_MK5.get(4), ItemList.ZPM5.get(4),
+                CustomItemList.Godforge_HarmonicPhononTransmissionConduit.get(32), ItemList.Robot_Arm_UXV.get(16),
+                ItemList.Conveyor_Module_UXV.get(32), ItemList.Electric_Pump_UXV.get(64),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SuperconductorUMVBase, 64),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.MagMatter, 32),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Eternity, 32),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Universium, 16),
+                new Object[] { OrePrefixes.circuit.get(Materials.UMV), 64L } },
+            new FluidStack[] { MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(147456),
+                MaterialsUEVplus.ExcitedDTEC.getFluid(2048000), Materials.Lead.getPlasma(36864),
+                MaterialsUEVplus.TranscendentMetal.getMolten(147456) },
+            GTNLItemList.FOGSolarMuonCatalystModule.get(1),
+            300 * SECONDS,
+            (int) TierEU.RECIPE_UMV);
     }
 }
