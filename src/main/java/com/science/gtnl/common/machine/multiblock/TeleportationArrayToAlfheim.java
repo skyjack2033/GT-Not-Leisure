@@ -465,8 +465,8 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     @Override
     public void setupParameters() {
         super.setupParameters();
-        if (GTUtility.areStacksEqual(getControllerSlot(), GTModHandler.getModItem(Botania.ID, "pool", 1, 1))
-            || GTUtility.areStacksEqual(getControllerSlot(), asgardandelion)) {
+        if (GTUtility.areStacksEqual(getControllerSlot(), GTModHandler.getModItem(Botania.ID, "pool", 1, 1), true)
+            || GTUtility.areStacksEqual(getControllerSlot(), asgardandelion, true)) {
             enableInfinityMana = true;
         }
     }
@@ -495,8 +495,8 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
         if (this.mStartUpCheck < 0) {
             if (this.mMaxProgresstime > 0 && this.mProgresstime != 0 || this.getBaseMetaTileEntity()
                 .hasWorkJustBeenEnabled()) {
-                if (aTick % 20 == 0 || this.getBaseMetaTileEntity()
-                    .hasWorkJustBeenEnabled() && !enableInfinityMana) {
+                if ((aTick % 20 == 0 || this.getBaseMetaTileEntity()
+                    .hasWorkJustBeenEnabled()) && !enableInfinityMana) {
                     if (!this.depleteInputFromRestrictedHatches(this.mFluidManaInputHatch, 100)) {
                         this.causeMaintenanceIssue();
                         this.stopMachine(ShutDownReasonRegistry.outOfFluid(GTNLMaterials.FluidMana.getFluidOrGas(100)));

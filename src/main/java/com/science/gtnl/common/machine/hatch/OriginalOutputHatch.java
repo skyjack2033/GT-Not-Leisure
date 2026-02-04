@@ -40,6 +40,6 @@ public class OriginalOutputHatch extends MTEHatchOutput {
 
     @Override
     public int getCapacity() {
-        return 8000;
+        return 4096000;
     }
 }
