@@ -220,15 +220,32 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     }
 
     @Override
+    @Nonnull
     public @NotNull CheckRecipeResult checkProcessing() {
         CheckRecipeResult result = super.checkProcessing();
         if (!result.wasSuccessful()) return result;
+
         if (!wirelessMode) {
             depletePurifiedWater();
         }
-        for (ItemStack itemStack : mOutputItems) {
-            if (itemStack != null) itemStack.stackSize *= 2;
+
+        List<ItemStack> expandedOutputs = new ArrayList<>();
+
+        for (ItemStack is : mOutputItems) {
+            if (is == null) continue;
+
+            long doubledAmount = (long) is.stackSize * 2;
+            while (doubledAmount > 0) {
+                ItemStack copy = is.copy();
+                int currentTransfer = (int) Math.min(doubledAmount, Integer.MAX_VALUE);
+                copy.stackSize = currentTransfer;
+                expandedOutputs.add(copy);
+                doubledAmount -= currentTransfer;
+            }
         }
+
+        mOutputItems = expandedOutputs.toArray(new ItemStack[0]);
+
         return result;
     }
 
