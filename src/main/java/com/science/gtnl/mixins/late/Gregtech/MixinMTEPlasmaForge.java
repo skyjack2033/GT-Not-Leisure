@@ -76,7 +76,7 @@ public abstract class MixinMTEPlasmaForge extends MTEExtendedPowerMultiBlockBase
         return super.onRightclick(aBaseMetaTileEntity, aPlayer);
     }
 
-    @ModifyConstant(method = "onPostTick", constant = @Constant(longValue = 100))
+    @ModifyConstant(method = "onPostTick", constant = @Constant(longValue = 100, ordinal = 0))
     private long gtnl$modifyLockRuntime(long original) {
         return gtnl$lockRuntime ? 0 : (long) efficiency_decay_rate;
     }
