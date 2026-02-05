@@ -255,12 +255,6 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
             return finalResult;
         }
         updateSlots();
-        if (totalOverclockedDuration > 0) {
-            totalOverclockedDuration = (int) Math
-                .max(1, totalOverclockedDuration * Math.pow(0.75, mParallelTier - 4) / (cycleNow + 1));
-        } else {
-            totalOverclockedDuration = 1;
-        }
         costingEUText = GTUtility.formatNumbers(costingEU);
 
         mEfficiency = 10000;
@@ -308,13 +302,19 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
         if (wirelessMode) {
             logic.setAvailableVoltage(V[Math.min(mParallelTier + 1, 14)]);
             logic.setAvailableAmperage((8L << (2 * mParallelTier)) - 2L);
-            logic.setAmperageOC(false);
+            logic.setAmperageOC(true);
             logic.enablePerfectOverclock();
         } else {
             logic.setAvailableVoltage(getMaxInputEu());
             logic.setAvailableAmperage(1);
             logic.setAmperageOC(true);
         }
+    }
+
+    @Override
+    public long getMaxInputVoltage() {
+        if (wirelessMode) return V[Math.min(mParallelTier + 1, 14)];
+        return super.getMaxInputVoltage();
     }
 
     @Override
