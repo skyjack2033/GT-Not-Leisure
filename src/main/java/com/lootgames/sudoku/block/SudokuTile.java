@@ -1,6 +1,5 @@
 package com.lootgames.sudoku.block;
 
-import com.lootgames.sudoku.config.ConfigSudoku;
 import com.lootgames.sudoku.sudoku.GameSudoku;
 
 import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
@@ -14,7 +13,5 @@ public class SudokuTile extends BoardGameMasterTile<GameSudoku> {
     /**
      * Called by ActivatorBlock when setting up board, passing in the config snapshot.
      */
-    public void init(ConfigSudoku.ConfigSudokuSnapshot configSnapshot) {
-        game.setConfigSnapshot(configSnapshot);
-    }
+    public void init() {}
 }

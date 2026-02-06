@@ -4,9 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import com.lootgames.sudoku.Sudoku;
-import com.lootgames.sudoku.config.ConfigSudoku;
-
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
@@ -25,8 +22,6 @@ public class SudokuActivatorBlock extends GameBlock {
         float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             BlockPos pos = new BlockPos(x, y, z);
-            // snapshot for Sudoku
-            ConfigSudoku.ConfigSudokuSnapshot snapshot = Sudoku.SUDOKU.snapshot();
             // Setup board area: using allocatedSize as both width and height
             boolean succeed = LootGamesAPI.getFieldManager()
                 .trySetupBoard(
@@ -37,7 +32,7 @@ public class SudokuActivatorBlock extends GameBlock {
                     9,
                     SudokuBlocks.SDK_MASTER,
                     player)
-                .forTileIfSucceed(SudokuTile.class, master -> master.init(snapshot))
+                .forTileIfSucceed(SudokuTile.class, SudokuTile::init)
                 .isSucceed();
 
             if (succeed) {
