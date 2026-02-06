@@ -28,6 +28,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 
 import com.brandon3055.brandonscore.common.handlers.ProcessHandler;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -43,6 +44,7 @@ import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.machine.PortalToAlfheimExplosion;
+import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
@@ -529,7 +531,22 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
             public CheckRecipeResult validateRecipe(@Nonnull GTRecipe recipe) {
                 return super.validateRecipe(recipeWithMultiplier(recipe));
             }
-        }.setMaxTierSkips(getTrueParallel());
+
+            @Override
+            @Nonnull
+            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+                return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
+                    .setHeatOC(getHeatOC())
+                    .setMachineHeat(getMachineHeat())
+                    .setHeatDiscount(getHeatDiscount())
+                    .setAmperageOC(getAmperageOC())
+                    .setEUtDiscount(getEUtDiscount())
+                    .setDurationModifier(getDurationModifier())
+                    .setPerfectOC(getPerfectOC())
+                    .setMaxTierSkips(getMaxTierSkip())
+                    .setMaxOverclocks(getMaxOverclocks());
+            }
+        }.setMaxParallelSupplier(this::getTrueParallel);
     }
 
     public GTRecipe recipeWithMultiplier(GTRecipe recipe) {
