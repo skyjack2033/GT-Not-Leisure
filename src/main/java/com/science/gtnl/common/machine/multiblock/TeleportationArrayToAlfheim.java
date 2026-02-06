@@ -28,7 +28,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
 
 import com.brandon3055.brandonscore.common.handlers.ProcessHandler;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -117,7 +116,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
         };
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
         return Arrays.asList(
@@ -164,7 +163,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
             StatCollector.translateToLocal("TeleportationArrayToAlfheim_Mode_" + this.machineMode));
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public CheckRecipeResult checkProcessing() {
         boolean shouldExplode = false;
@@ -525,39 +524,25 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
                 return super.createParallelHelper(recipe).setFluidInputs(inputFluids);
             }
 
-            @NotNull
+            @Nonnull
             @Override
-            public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                return super.validateRecipe(recipeWithMultiplier(recipe, inputFluids));
+            public CheckRecipeResult validateRecipe(@Nonnull GTRecipe recipe) {
+                return super.validateRecipe(recipeWithMultiplier(recipe));
             }
         }.setMaxTierSkips(getTrueParallel());
     }
 
-    public GTRecipe recipeWithMultiplier(GTRecipe recipe, FluidStack[] fluidInputs) {
-        if (recipe == null || fluidInputs == null) {
-            return recipe;
+    public GTRecipe recipeWithMultiplier(GTRecipe recipe) {
+        if (recipe == null) {
+            return null;
         }
-
-        if (recipe.mFluidInputs == null || recipe.mFluidInputs.length == 0) {
-            return recipe;
-        }
-
-        if (recipe.mFluidInputs[0] == null) {
-            return recipe;
-        }
-
-        for (FluidStack fluid : fluidInputs) {
-            if (fluid == null) {
-                return recipe;
-            }
-        }
-
-        GTRecipe tRecipe = recipe.copy();
         if (enableInfinityMana) {
+            GTRecipe tRecipe = recipe.copy();
             tRecipe.mFluidInputs = null;
+            return tRecipe;
         }
 
-        return tRecipe;
+        return recipe;
     }
 
     @Override

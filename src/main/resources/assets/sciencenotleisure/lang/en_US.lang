@@ -20,7 +20,6 @@ Tooltip_Adder=Add Mod:
 Tooltip_ChangeAdder=Change Mod: 
 Tooltip_NoMobsSpawnInThisBlock=Mobs cannot Spawn on this Block
 Tooltip_NoTileEntitySpawnInThisBlock=This is NOT a TileEntity!
-Tooltip_PerfectOverclock=Machine can perform §cPerfect Overclock§r
 Tooltip_PressShift=§rHold §6Shift §rfor more information
 Tooltip_PressCtrl=§rHold §6Ctrl §rfor more information
 Tooltip_Damage=Durability: %s/%s
