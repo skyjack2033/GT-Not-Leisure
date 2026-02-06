@@ -94,7 +94,7 @@ public class MassFabricator extends GTMMultiMachineBase<MassFabricator> implemen
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addMultiAmpHatchInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .beginStructureBlock(5, 5, 8, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))
             .addOutputHatch(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))

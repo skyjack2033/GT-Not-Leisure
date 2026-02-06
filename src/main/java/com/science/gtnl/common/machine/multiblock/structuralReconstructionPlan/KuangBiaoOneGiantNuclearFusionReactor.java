@@ -230,7 +230,7 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
                     "Tooltip_KuangBiaoOneGiantNuclearFusionReactor_05",
                     TIER_COLORS[getRecipeMaxTier()] + VN[getRecipeMaxTier()]))
             .addInfo(StatCollector.translateToLocal("Tooltip_KuangBiaoOneGiantNuclearFusionReactor_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addTecTechHatchInfo()

@@ -105,7 +105,7 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
             .addInfo(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_01"))
             .addInfo(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addTecTechHatchInfo()

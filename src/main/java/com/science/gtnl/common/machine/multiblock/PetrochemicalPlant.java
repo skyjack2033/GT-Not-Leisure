@@ -114,7 +114,7 @@ public class PetrochemicalPlant extends MultiMachineBase<PetrochemicalPlant> imp
             .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_00"))
             .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_01"))
             .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addTecTechHatchInfo()
             .beginStructureBlock(28, 60, 65, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))

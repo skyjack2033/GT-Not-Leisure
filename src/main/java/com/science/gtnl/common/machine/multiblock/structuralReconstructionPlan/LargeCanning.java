@@ -148,7 +148,7 @@ public class LargeCanning extends GTMMultiMachineBase<LargeCanning> implements I
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addMultiAmpHatchInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .beginStructureBlock(5, 5, 7, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeCanning_Casing"))
             .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeCanning_Casing"))

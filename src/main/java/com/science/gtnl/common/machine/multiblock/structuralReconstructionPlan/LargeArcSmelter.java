@@ -106,7 +106,7 @@ public class LargeArcSmelter extends GTMMultiMachineBase<LargeArcSmelter> implem
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addMultiAmpHatchInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .beginStructureBlock(5, 4, 5, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_Casing"))
             .addInputBus(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_Casing"))

@@ -121,7 +121,7 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addTecTechHatchInfo()
             .beginStructureBlock(69, 51, 73, true)
             .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_09"))

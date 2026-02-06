@@ -136,7 +136,7 @@ public class CircuitComponentAssemblyLine extends WirelessEnergyMultiMachineBase
             .addInfo(StatCollector.translateToLocal("Tooltip_CircuitComponentAssemblyLine_03"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addTecTechHatchInfo()
             .beginStructureBlock(32, 5, 5, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_CircuitComponentAssemblyLine_Casing_00"))

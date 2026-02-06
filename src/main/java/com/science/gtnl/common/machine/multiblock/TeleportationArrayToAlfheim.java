@@ -415,7 +415,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
             .addInfo(StatCollector.translateToLocal("Tooltip_TeleportationArrayToAlfheim_01"))
             .addInfo(StatCollector.translateToLocal("Tooltip_TeleportationArrayToAlfheim_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_TeleportationArrayToAlfheim_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addTecTechHatchInfo()
             .beginStructureBlock(23, 18, 23, false)
             .addInputBus(StatCollector.translateToLocal("Tooltip_TeleportationArrayToAlfheim_Casing"), 1)

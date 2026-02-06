@@ -96,7 +96,7 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
         tt.addMachineType(StatCollector.translateToLocal("DesulfurizerRecipeType"))
             .addInfo(StatCollector.translateToLocal("Tooltip_Desulfurizer_00"))
             .addInfo(StatCollector.translateToLocal("Tooltip_Desulfurizer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addMultiAmpHatchInfo()
             .beginStructureBlock(12, 6, 6, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_Desulfurizer_Casing"))

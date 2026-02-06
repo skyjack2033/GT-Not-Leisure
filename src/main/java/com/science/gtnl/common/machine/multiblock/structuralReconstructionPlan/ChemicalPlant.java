@@ -99,7 +99,7 @@ public class ChemicalPlant extends GTMMultiMachineBase<ChemicalPlant> implements
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
             .addInfo(StatCollector.translateToLocal("Tooltip_ChemicalPlant_00"))
             .addInfo(StatCollector.translateToLocal("Tooltip_ChemicalPlant_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addMultiAmpHatchInfo()

@@ -77,7 +77,7 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
         tt.addMachineType(StatCollector.translateToLocal("IsaMillRecipeType"))
             .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_00"))
             .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addMultiAmpHatchInfo()

@@ -106,7 +106,7 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
             .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_03"))
             .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_04"))
             .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addTecTechHatchInfo()
             .beginStructureBlock(15, 17, 18, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))

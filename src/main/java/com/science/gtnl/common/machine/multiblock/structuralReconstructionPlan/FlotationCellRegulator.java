@@ -107,7 +107,7 @@ public class FlotationCellRegulator extends GTMMultiMachineBase<FlotationCellReg
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType(StatCollector.translateToLocal("FlotationCellRegulatorRecipeType"))
             .addInfo(StatCollector.translateToLocal("Tooltip_FlotationCellRegulator_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addMultiAmpHatchInfo()

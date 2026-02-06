@@ -252,7 +252,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
             .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PerfectOverclock"))
+            .addPerfectOCInfo()
             .addTecTechHatchInfo()
             .beginStructureBlock(17, 29, 23, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
