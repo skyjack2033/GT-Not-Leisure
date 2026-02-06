@@ -332,7 +332,8 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
                 return super.createOverclockCalculator(recipeAfterAdjustments(recipe))
                     .setExtraDurationModifier(mConfigSpeedBoost)
                     .setEUtDiscount(getEUtDiscount())
-                    .setDurationModifier(getDurationModifier());
+                    .setDurationModifier(getDurationModifier())
+                    .enablePerfectOC();
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
     }
@@ -357,8 +358,9 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
         if (wirelessMode) {
             logic.setAvailableVoltage(
                 machineMode == MACHINEMODE_DTPF ? Integer.MAX_VALUE : V[Math.min(mParallelTier + 1, 14)]);
-            logic.setAvailableAmperage((8L << (2 * mParallelTier)) - 2L);
-            logic.setAmperageOC(false);
+            logic
+                .setAvailableAmperage(((8L << (2 * mParallelTier)) - 2L) * (machineMode == MACHINEMODE_DTPF ? 128 : 1));
+            logic.setAmperageOC(true);
             logic.enablePerfectOverclock();
         } else {
             boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty()
