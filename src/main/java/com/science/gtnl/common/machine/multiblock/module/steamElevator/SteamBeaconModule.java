@@ -86,7 +86,7 @@ public class SteamBeaconModule extends SteamElevatorModule {
     private final ItemStackHandler inputSlotHandler = new ItemStackHandler(1);
     private ItemStack storedWindowItems;
 
-    public static final int CONFIG_WINDOW_ID = 12;
+    public static final int CONFIG_WINDOW_ID = 14;
 
     public SteamBeaconModule(int aID, String aName, String aNameRegional, int aTier) {
         super(aID, aName, aNameRegional, aTier);
