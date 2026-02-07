@@ -2497,9 +2497,12 @@ Tooltip_ReactionFurnace_00=Total Parallels: Parallel Control Core's Parallels * 
 Tooltip_ReactionFurnace_Casing=Any Reinforced Iridium Machine Block
 
 NameElementCopying=Element Copier
-gtnl.recipe.ElementCopyingRecipes=Element Copying
 ElementCopyingRecipeType=Element Copying
+Tooltip_ElementCopying_00=Fixed operation time: 20 ticks
+Tooltip_ElementCopying_01=Cannot be overclocked
+Tooltip_ElementCopying_02=All UU-Matter required for all copying is reduced by 10x
 Tooltip_ElementCopying_Casing=Any Molecular Machine Block
+Info_ElementCopying_00=Selected types: %s, UUM used: %s L, Energy cost: %s EU
 
 NameHandOfJohnDavisonRockefeller=Hand of John Davison Rockefeller
 HandOfJohnDavisonRockefellerRecipeType=Chemical Plant

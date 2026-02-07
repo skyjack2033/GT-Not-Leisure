@@ -1,5 +1,8 @@
 package com.science.gtnl.common.recipe.gregtech;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.config.MainConfig;
@@ -51,6 +54,13 @@ public class AlloyBlastSmelterRecipes implements IRecipePool {
             .fluidOutputs(GTNLMaterials.MolybdenumDisilicide.getMolten(432))
             .duration(1800)
             .eut(1920)
+            .addTo(aBS);
+
+        RecipeBuilder.builder()
+            .itemInputs(new ItemStack(Blocks.stone, 2))
+            .fluidOutputs(Materials.Lava.getFluid(1000))
+            .duration(200)
+            .eut(TierEU.RECIPE_LV)
             .addTo(aBS);
 
         if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();

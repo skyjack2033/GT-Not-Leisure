@@ -263,14 +263,6 @@ public class GTNLRecipeMaps {
         .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.FlotationCellRegulator.get(1)))
         .build();
 
-    public static RecipeMap<RecipeMapBackend> ElementCopyingRecipes = RecipeMapBuilder
-        .of("gtnl.recipe.ElementCopyingRecipes")
-        .maxIO(3, 9, 3, 3)
-        .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
-        .frontend(GTNLLogoFrontend::new)
-        .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.ElementCopying.get(1)))
-        .build();
-
     public static RecipeMap<RecipeMapBackend> WoodDistillationRecipes = RecipeMapBuilder
         .of("gtnl.recipe.WoodDistillationRecipes", RecipeMapBackend::new)
         .maxIO(1, 1, 1, 16)

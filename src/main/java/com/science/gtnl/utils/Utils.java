@@ -10,11 +10,15 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -29,6 +33,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.rcon.RConConsoleSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.UserListOpsEntry;
@@ -44,6 +49,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.mojang.authlib.GameProfile;
 import com.science.gtnl.mixins.early.Minecraft.AccessorStringTranslate;
 import com.science.gtnl.mixins.late.Gregtech.AccessorGTLanguageManager;
@@ -843,6 +849,29 @@ public class Utils {
 
         public boolean isEntityTarget() {
             return entityTarget != null;
+        }
+    }
+
+    public static class SetSyncer<T> extends FakeSyncWidget<Set<T>> {
+
+        public SetSyncer(Set<T> set, BiConsumer<PacketBuffer, T> writeElementToBuffer,
+            Function<PacketBuffer, T> readElementFromBuffer) {
+            super(() -> set, s -> {
+                set.clear();
+                s.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(set::add);
+            }, (buffer, s) -> {
+                List<T> list = new ArrayList<>(s);
+                writeListToBuffer(buffer, list, writeElementToBuffer);
+            }, buffer -> {
+                List<T> list = readListFromBuffer(buffer, readElementFromBuffer);
+                Set<T> result = new LinkedHashSet<>();
+                list.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(result::add);
+                return result;
+            });
         }
     }
 }

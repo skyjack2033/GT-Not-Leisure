@@ -232,7 +232,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
 
         // Deplete inputs from water boost if enabled.
         if (gtnl$isWaterBoostedList(this.currentRecipe)) {
-            ArrayList<FluidStack> inputWater = this.gtnl$getWaterBoostAmountList(this.currentRecipe);
+            List<FluidStack> inputWater = this.gtnl$getWaterBoostAmountList(this.currentRecipe);
             this.gtnl$depleteInputList(inputWater, false);
         }
 
@@ -289,7 +289,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
     }
 
     @Unique
-    public ArrayList<FluidStack> gtnl$getWaterBoostAmountList(GTRecipe recipe) {
+    public List<FluidStack> gtnl$getWaterBoostAmountList(GTRecipe recipe) {
 
         // Recipes should always be constructed so that output water is always the first fluid output
         FluidStack outputWater = recipe.mFluidOutputs[0];
@@ -364,13 +364,13 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
 
     @Unique
     public boolean gtnl$isWaterBoostedList(GTRecipe recipe) {
-        ArrayList<FluidStack> inputWater = gtnl$getWaterBoostAmountList(recipe);
+        List<FluidStack> inputWater = gtnl$getWaterBoostAmountList(recipe);
         // Simulate input drain to see if we can water boost
         return gtnl$depleteInputList(inputWater, true);
     }
 
     @Unique
-    public boolean gtnl$depleteInputList(ArrayList<FluidStack> fluids, boolean simulate) {
+    public boolean gtnl$depleteInputList(List<FluidStack> fluids, boolean simulate) {
         if (fluids == null || fluids.isEmpty()) return false;
 
         Map<Fluid, Long> mergedStorage = new HashMap<>();
@@ -457,7 +457,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
         List<MTEHatch> allHatches = new ArrayList<>(mInputHatches);
         allHatches.addAll(dualHatches);
 
-        return allHatches;
+        return GTUtility.filterValidMTEs(allHatches);
     }
 
     @Override

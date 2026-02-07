@@ -2497,9 +2497,12 @@ Tooltip_ReactionFurnace_00=总并行数：并行控制核心提供的并行 * 51
 Tooltip_ReactionFurnace_Casing=任意强化镀铱机械方块
 
 NameElementCopying=元素复制机
-gtnl.recipe.ElementCopyingRecipes=元素复制
 ElementCopyingRecipeType=元素复制
+Tooltip_ElementCopying_00=固定运行时间为20tick
+Tooltip_ElementCopying_01=无法超频
+Tooltip_ElementCopying_02=所有复制所需UU物质数量均减少10倍
 Tooltip_ElementCopying_Casing=任意分子机械方块
+Info_ElementCopying_00=已选择种类：%s，使用UU物质：%s L，耗电：%s EU
 
 NameHandOfJohnDavisonRockefeller=洛克菲勒之手
 HandOfJohnDavisonRockefellerRecipeType=化工厂
