@@ -338,7 +338,7 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     }
 
     @Override
-    protected void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
         super.drawTexts(screenElements, inventorySlot);
         screenElements
             .widget(

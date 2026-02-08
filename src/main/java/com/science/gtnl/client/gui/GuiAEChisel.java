@@ -75,13 +75,13 @@ public class GuiAEChisel extends AEBaseGui {
     }
 
     @Override
-    protected void mouseClicked(int xPos, int yPos, int button) {
+    public void mouseClicked(int xPos, int yPos, int button) {
         parallel.mouseClicked(xPos, yPos, button);
         super.mouseClicked(xPos, yPos, button);
     }
 
     @Override
-    protected void keyTyped(char character, int key) {
+    public void keyTyped(char character, int key) {
         if (!this.checkHotbarKeys(key)) {
             if (character == ' ') {
                 if (this.parallel.getText()

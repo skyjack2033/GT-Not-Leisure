@@ -422,7 +422,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
     }
 
     @Override
-    protected void clearHatches_EM() {
+    public void clearHatches_EM() {
         super.clearHatches_EM();
         mProjectModuleHatches.clear();
         elevatorCable = null;

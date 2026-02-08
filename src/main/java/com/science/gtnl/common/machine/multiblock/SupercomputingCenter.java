@@ -225,7 +225,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
 
     @Override
     @NotNull
-    protected CheckRecipeResult checkProcessing_EM() {
+    public CheckRecipeResult checkProcessing_EM() {
         parametrization.setToDefaults(false, true);
         eAvailableData = 0;
         double maxTemp = 0;
@@ -384,7 +384,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     }
 
     @Override
-    protected SoundResource getActivitySoundLoop() {
+    public SoundResource getActivitySoundLoop() {
         return SoundResource.TECTECH_MACHINES_FX_HIGH_FREQ;
     }
 
@@ -398,7 +398,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     }
 
     @Override
-    protected void extraExplosions_EM() {
+    public void extraExplosions_EM() {
         for (MetaTileEntity tTileEntity : mRackHatchs) {
             tTileEntity.getBaseMetaTileEntity()
                 .doExplosion(V[8]);
@@ -406,7 +406,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     }
 
     @Override
-    protected long getAvailableData_EM() {
+    public long getAvailableData_EM() {
         return eAvailableData;
     }
 
@@ -421,7 +421,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     }
 
     @Override
-    protected void afterRecipeCheckFailed() {
+    public void afterRecipeCheckFailed() {
         super.afterRecipeCheckFailed();
         for (MTEHatchRack rack : validMTEList(mRackHatchs)) {
             rack.getBaseMetaTileEntity()

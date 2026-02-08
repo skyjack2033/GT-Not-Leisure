@@ -56,11 +56,11 @@ import lombok.Getter;
 public class TileEntityAEChisel extends AENetworkInvTile implements IInterfaceHost, IGridTickable {
 
     private static final EnumSet<ForgeDirection> targets = EnumSet.complementOf(EnumSet.of(ForgeDirection.UNKNOWN));
-    protected final DualityInterface duality = new DualityInterface(this.getProxy(), this);
-    protected final AppEngInternalInventory inv = new AppEngInternalInventory(this, 1, 1);
-    protected final MachineSource source = new MachineSource(this);
-    protected final List<ChiselPatternDetails> patterns = new ObjectArrayList<>();
-    protected final IItemList<IAEItemStack> cache = new ItemList();
+    public final DualityInterface duality = new DualityInterface(this.getProxy(), this);
+    public final AppEngInternalInventory inv = new AppEngInternalInventory(this, 1, 1);
+    public final MachineSource source = new MachineSource(this);
+    public final List<ChiselPatternDetails> patterns = new ObjectArrayList<>();
+    public final IItemList<IAEItemStack> cache = new ItemList();
     @Getter
     private int parallel = 1;
 

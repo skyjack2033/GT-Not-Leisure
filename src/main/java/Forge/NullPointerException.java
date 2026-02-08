@@ -59,7 +59,7 @@ public class NullPointerException extends Entity implements IProjectile {
     }
 
     @Override
-    protected void entityInit() {
+    public void entityInit() {
         this.dataWatcher.addObject(16, (byte) 0);
     }
 
@@ -224,7 +224,7 @@ public class NullPointerException extends Entity implements IProjectile {
     }
 
     /**
-     * (abstract) Protected helper method to write subclass entity data to NBT.
+     * (abstract) public helper method to write subclass entity data to NBT.
      */
     public void writeEntityToNBT(NBTTagCompound tagCompound) {
         tagCompound.setShort("xTile", (short) this.hitBlockX);
@@ -237,7 +237,7 @@ public class NullPointerException extends Entity implements IProjectile {
     }
 
     /**
-     * (abstract) Protected helper method to read subclass entity data from NBT.
+     * (abstract) public helper method to read subclass entity data from NBT.
      */
     public void readEntityFromNBT(NBTTagCompound tagCompund) {
         this.hitBlockX = tagCompund.getShort("xTile");

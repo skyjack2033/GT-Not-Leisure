@@ -666,7 +666,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
         }
 
         @Override
-        protected void outputAfterRecipe() {
+        public void outputAfterRecipe() {
             super.outputAfterRecipe();
             if (bigEUt == null) return;
             WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, bigEUt);
