@@ -1,11 +1,6 @@
 package com.science.gtnl.common.machine.hatch;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -37,8 +32,6 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTUtility;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class HumongousDualInputHatch extends DualInputHatch implements ISkipStackSizeCheck {
 
@@ -205,54 +198,6 @@ public class HumongousDualInputHatch extends DualInputHatch implements ISkipStac
             stack.stackTagCompound = tag.getCompoundTag("tag");
         }
         return stack;
-    }
-
-    @Override
-    public void fillStacksIntoFirstSlots() {
-        final int L = mInventory.length - 1;
-
-        Object2IntOpenHashMap<GTUtility.ItemId> slots = new Object2IntOpenHashMap<>(L);
-        slots.defaultReturnValue(0);
-
-        HashMap<GTUtility.ItemId, ItemStack> stacks = new HashMap<>(L);
-        List<GTUtility.ItemId> order = new ArrayList<>(L);
-        IntArrayList validSlots = new IntArrayList(L);
-
-        for (int i = 0; i < L; i++) {
-            if (!isValidSlot(i)) continue;
-
-            validSlots.add(i);
-
-            ItemStack s = mInventory[i];
-            if (s == null) continue;
-
-            GTUtility.ItemId sID = GTUtility.ItemId.createNoCopy(s);
-
-            slots.addTo(sID, s.stackSize);
-
-            if (!stacks.containsKey(sID)) stacks.put(sID, s);
-            order.add(sID);
-            mInventory[i] = null;
-        }
-
-        int slotindex = 0;
-
-        Set<GTUtility.ItemId> processedIDs = new HashSet<>(L);
-        for (GTUtility.ItemId sID : order) {
-            if (!processedIDs.add(sID)) continue;
-
-            int totalToSet = slots.getInt(sID);
-            if (totalToSet <= 0) continue;
-
-            int slot = validSlots.getInt(slotindex);
-            slotindex++;
-
-            mInventory[slot] = stacks.get(sID)
-                .copy();
-            mInventory[slot].stackSize = totalToSet;
-
-            slots.put(sID, 0);
-        }
     }
 
     @Override

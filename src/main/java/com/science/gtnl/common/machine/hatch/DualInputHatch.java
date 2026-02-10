@@ -159,6 +159,9 @@ public class DualInputHatch extends MTEHatchInputBus implements IAddUIWidgets, I
     }
 
     @Override
+    public void fillStacksIntoFirstSlots() {}
+
+    @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
         if (mStoredFluid != null) {
