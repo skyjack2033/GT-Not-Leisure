@@ -9,8 +9,10 @@ import javax.annotation.Nonnull;
 import net.minecraft.util.StatCollector;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
+import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.math.Pos2d;
 import com.gtnewhorizons.modularui.common.widget.ProgressBar;
 import com.science.gtnl.utils.enums.GTNLItemList;
@@ -50,6 +52,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBackend;
 import gregtech.api.recipe.RecipeMapBuilder;
 import gregtech.api.util.GTRecipe;
+import gregtech.nei.GTNEIDefaultHandler;
 import gregtech.nei.formatter.HeatingCoilSpecialValueFormatter;
 
 public class GTNLRecipeMaps {
@@ -634,7 +637,34 @@ public class GTNLRecipeMaps {
     public static final RecipeMap<RecipeMapBackend> MicroorganismMasterRecipes = RecipeMapBuilder
         .of("gtnl.recipe.MicroorganismMasterRecipes")
         .maxIO(9, 1, 1, 1)
-        .frontend(GTNLLogoFrontend::new)
+        .frontend(
+            (uiPropertiesBuilder,
+                neiPropertiesBuilder) -> new GTNLLogoFrontend(uiPropertiesBuilder, neiPropertiesBuilder) {
+
+                    @Override
+                    public void drawNEIOverlayForInput(GTNEIDefaultHandler.@NotNull FixedPositionedStack stack) {
+                        super.drawNEIOverlayForInput(stack);
+                        drawFluidOverlay(stack);
+                    }
+
+                    @Override
+                    public void drawNEIOverlayForOutput(GTNEIDefaultHandler.@NotNull FixedPositionedStack stack) {
+                        super.drawNEIOverlayForOutput(stack);
+                        drawFluidOverlay(stack);
+                    }
+
+                    public void drawFluidOverlay(GTNEIDefaultHandler.FixedPositionedStack stack) {
+                        if (stack.isFluid()) {
+                            drawNEIOverlayText(
+                                "+",
+                                stack,
+                                colorOverride.getTextColorOrDefault("nei_overlay_yellow", 0xFDD835),
+                                0.5f,
+                                true,
+                                Alignment.TopRight);
+                        }
+                    }
+                })
         .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
         .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.MicroorganismMaster.get(1)))
         .build();

@@ -211,7 +211,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
             matter.add(Materials.UUMatter.getFluid(amount));
             totalUUMNeeded -= amount;
         }
-        depleteInputList(matter, true);
+        depleteInputList(matter, false);
 
         mOutputItems = itemEntry.stream()
             .map(
