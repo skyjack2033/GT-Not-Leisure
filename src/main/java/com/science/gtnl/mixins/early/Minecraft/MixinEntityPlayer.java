@@ -10,19 +10,30 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S1BPacketEntityAttach;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.science.gtnl.api.mixinHelper.IAnchorRespawn;
 import com.science.gtnl.api.mixinHelper.ILeashedToEntity;
 
 @Mixin(EntityPlayer.class)
-public abstract class MixinEntityPlayer extends EntityLivingBase implements ILeashedToEntity {
+public abstract class MixinEntityPlayer extends EntityLivingBase implements ILeashedToEntity, IAnchorRespawn {
+
+    @Shadow
+    public abstract void respawnPlayer();
+
+    @Unique
+    private int anchorDim = Integer.MAX_VALUE;
+    @Unique
+    private ChunkCoordinates anchorPos = null;
 
     @Unique
     private boolean gtnl$isLeashed;
@@ -35,6 +46,56 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements ILea
 
     public MixinEntityPlayer(World p_i1594_1_) {
         super(p_i1594_1_);
+    }
+
+    @Override
+    public void setAnchorRespawn(int dim, int x, int y, int z) {
+        this.anchorDim = dim;
+        this.anchorPos = new ChunkCoordinates(x, y, z);
+    }
+
+    @Override
+    public int getAnchorDim() {
+        return anchorDim;
+    }
+
+    @Override
+    public ChunkCoordinates getAnchorPos() {
+        return anchorPos;
+    }
+
+    @Override
+    public void clearAnchorRespawn() {
+        anchorDim = Integer.MAX_VALUE;
+        anchorPos = null;
+    }
+
+    @Inject(method = "writeEntityToNBT", at = @At("TAIL"))
+    private void writeAnchorNBT(NBTTagCompound tag, CallbackInfo ci) {
+        if (anchorPos != null) {
+            tag.setInteger("AnchorDim", anchorDim);
+            tag.setInteger("AnchorX", anchorPos.posX);
+            tag.setInteger("AnchorY", anchorPos.posY);
+            tag.setInteger("AnchorZ", anchorPos.posZ);
+        }
+    }
+
+    @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
+    private void readAnchorNBT(NBTTagCompound tag, CallbackInfo ci) {
+        if (tag.hasKey("AnchorDim")) {
+            anchorDim = tag.getInteger("AnchorDim");
+            anchorPos = new ChunkCoordinates(
+                tag.getInteger("AnchorX"),
+                tag.getInteger("AnchorY"),
+                tag.getInteger("AnchorZ"));
+        }
+    }
+
+    @Inject(method = "clonePlayer", at = @At("TAIL"))
+    private void cloneAnchor(EntityPlayer player, boolean conqueredEnd, CallbackInfo ci) {
+        IAnchorRespawn respawn = (IAnchorRespawn) player;
+        anchorDim = respawn.getAnchorDim();
+        anchorPos = respawn.getAnchorPos();
     }
 
     @Inject(method = "onUpdate", at = @At("TAIL"))

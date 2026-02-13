@@ -61,5 +61,104 @@
         "stream": "true"
       }
     ]
+  },
+  "respawn_anchor.ambient1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.ambient1",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.ambient2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.ambient2",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.ambient3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.ambient3",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.charge1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.charge1",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.charge2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.charge2",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.charge3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.charge3",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.deplete1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.deplete1",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.deplete2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.deplete2",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.set_spawn1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.set_spawn1",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.set_spawn2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.set_spawn2",
+        "stream": "true"
+      }
+    ]
+  },
+  "respawn_anchor.set_spawn3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "respawn_anchor.set_spawn3",
+        "stream": "true"
+      }
+    ]
   }
 }

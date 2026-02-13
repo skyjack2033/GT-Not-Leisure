@@ -14,6 +14,7 @@ import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.blocks.BlockAEChisel;
 import com.science.gtnl.common.block.blocks.BlockArtificialStarRender;
 import com.science.gtnl.common.block.blocks.BlockCardboardBox;
+import com.science.gtnl.common.block.blocks.BlockDimensionRespawnAnchor;
 import com.science.gtnl.common.block.blocks.BlockDirePatternEncoder;
 import com.science.gtnl.common.block.blocks.BlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.BlockHoneyFluid;
@@ -28,6 +29,7 @@ import com.science.gtnl.common.block.blocks.BlocksCompressedStargate;
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
 import com.science.gtnl.common.block.blocks.tile.TileEntityArtificialStar;
 import com.science.gtnl.common.block.blocks.tile.TileEntityCardboardBox;
+import com.science.gtnl.common.block.blocks.tile.TileEntityDimensionRespawnAnchor;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
@@ -68,6 +70,7 @@ public class BlockLoader {
     public static Block aeChisel;
     public static Block nanoPhagocytosisPlantRender;
     public static Block eternalGregTechWorkshopRender;
+    public static Block dimensionRespawnAnchor;
 
     public static BlockFluidBase honeyFluidBlock;
     public static Fluid honeyFluid;
@@ -125,6 +128,9 @@ public class BlockLoader {
 
         waterCandle = new BlockWaterCandle();
         GameRegistry.registerTileEntity(TileEntityWaterCandle.class, "WaterCandleTileEntity");
+
+        dimensionRespawnAnchor = new BlockDimensionRespawnAnchor();
+        GameRegistry.registerTileEntity(TileEntityDimensionRespawnAnchor.class, "DimensionRespawnAnchorTileEntity");
 
         GameRegistry.registerBlock(metaBlock, ItemBlockBase.class, metaBlock.getUnlocalizedName());
         GameRegistry.registerBlock(metaBlockGlow, ItemBlockGlow.class, metaBlockGlow.getUnlocalizedName());

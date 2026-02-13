@@ -1159,6 +1159,10 @@ tile.AEChisel.name=ME Chisel
 container.AEChisel=ME Chisel
 text.ae_chisel.gui.parallel=Set Pattern Parallel
 
+tile.DimensionRespawnAnchor.name=Dimension Respawn Anchor
+Info_DimensionRespawnAnchor_NoBedOrAnchor=You have no home bed or respawn anchor, or it was obstructed
+Info_DimensionRespawnAnchor_SetSpawn=Respawn point set
+
 item.ElectricProspectorTool.0.name=Mana Teleport Prospector Tool
 item.ElectricProspectorTool.1.name=Debug Teleport Prospector Tool
 Info_DetravScanner_TP=Teleport to vein: %s (%s, %s)
@@ -2493,7 +2497,8 @@ Info_EyeOfHarmonyInjector_Title=§9Eye Of Harmony Status
 
 NameReactionFurnace=Reaction Furnace
 ReactionFurnaceRecipeType=Furnace
-Tooltip_ReactionFurnace_00=Total Parallels: Parallel Control Core's Parallels * 512 - 1
+Tooltip_ReactionFurnace_00=Total Parallels: Parallel Control Core's Parallels * 8192 - 1
+Tooltip_ReactionFurnace_01=Wireless mode processing time is fixed at 128 ticks
 Tooltip_ReactionFurnace_Casing=Any Reinforced Iridium Machine Block
 
 NameElementCopying=Element Copier

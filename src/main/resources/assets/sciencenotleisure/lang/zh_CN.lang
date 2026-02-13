@@ -1159,6 +1159,10 @@ tile.AEChisel.name=ME雕凿机
 container.AEChisel=ME雕凿机
 text.ae_chisel.gui.parallel=设置样板并行
 
+tile.DimensionRespawnAnchor.name=维度重生锚
+Info_DimensionRespawnAnchor_NoBedOrAnchor=你的床或已充能的重生锚不存在或已被阻挡
+Info_DimensionRespawnAnchor_SetSpawn=重生点已设置
+
 item.ElectricProspectorTool.0.name=魔力传送探矿仪
 item.ElectricProspectorTool.1.name=Debug传送探矿仪
 Info_DetravScanner_TP=传送至矿脉：%s (%s，%s)
@@ -2493,7 +2497,8 @@ Info_EyeOfHarmonyInjector_Title=§9鸿蒙之眼状态
 
 NameReactionFurnace=反应炉
 ReactionFurnaceRecipeType=熔炉
-Tooltip_ReactionFurnace_00=总并行数：并行控制核心提供的并行 * 512 - 1
+Tooltip_ReactionFurnace_00=总并行数：并行控制核心提供的并行 * 8192 - 1
+Tooltip_ReactionFurnace_01=无线模式处理时间固定为128tick
 Tooltip_ReactionFurnace_Casing=任意强化镀铱机械方块
 
 NameElementCopying=元素复制机
