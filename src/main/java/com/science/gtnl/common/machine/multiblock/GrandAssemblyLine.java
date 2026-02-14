@@ -75,7 +75,6 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoidingMode;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -366,13 +365,6 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         if (tasks.isEmpty()) return CheckRecipeResultRegistry.NO_RECIPE;
 
         // --- 第二阶段：尝试超频 ---
-        int circuitOC = -1;
-        for (ItemStack item : getAllStoredInputs()) {
-            if (item != null && item.getItem() == ItemList.Circuit_Integrated.getItem()) {
-                circuitOC = item.getItemDamage();
-                break;
-            }
-        }
         int overclockFactor = (mParallelTier >= 11) ? 4 : 2;
 
         for (RecipeTask task : tasks) {
@@ -409,7 +401,6 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                     ocCount++;
                     thresh *= 4;
                 }
-                if (circuitOC >= 0) ocCount = Math.min(ocCount, circuitOC);
 
                 while (ocCount > 0 && task.adjustedPower * 4 <= Integer.MAX_VALUE
                     && task.adjustedTime / overclockFactor >= minDuration) {
@@ -455,46 +446,66 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
         // --- 最终结算 ---
         ArrayList<ItemStack> totalOutputs = new ArrayList<>();
-        long weightedDurationSum = 0; // 用于加权平均
-        long totalWeight = 0; // 总权重
-        BigInteger finalTotalWirelessEU = BigInteger.ZERO;
+
+        long weightedDurationSum = 0;
+        long totalWeight = 0;
+        long totalEU_Long = 0;
+
+        BigInteger totalEU_BI = BigInteger.ZERO;
 
         for (RecipeTask task : tasks) {
-            // 输出物品
             ItemStack out = task.recipe.mOutput.copy();
             ParallelHelper.addItemsLong(totalOutputs, out, (long) out.stackSize * task.parallel);
 
-            // 权重 = 耗电 * 并行数
             long weight = task.adjustedPower * task.parallel;
             weightedDurationSum += (long) task.adjustedTime * weight;
             totalWeight += weight;
 
-            // 无线模式能量统计
             if (wirelessMode) {
-                finalTotalWirelessEU = finalTotalWirelessEU.add(
-                    BigInteger.valueOf(task.adjustedPower * task.adjustedTime)
+                totalEU_BI = totalEU_BI.add(
+                    BigInteger.valueOf(task.adjustedPower)
+                        .multiply(BigInteger.valueOf(task.adjustedTime))
                         .multiply(BigInteger.valueOf(task.parallel)));
+            } else {
+                totalEU_Long += task.adjustedPower * (long) task.adjustedTime * task.parallel;
             }
         }
 
-        // 计算最终加权时间，至少为 1
-        int maxDurationFound = totalWeight > 0 ? (int) Math.max(1, weightedDurationSum / totalWeight) : 1;
+        int weightedTime = totalWeight > 0 ? (int) Math.max(1, weightedDurationSum / totalWeight) : 1;
 
-        // 能量结算
         if (wirelessMode) {
-            if (!addEUToGlobalEnergyMap(ownerUUID, finalTotalWirelessEU.negate())) {
-                return CheckRecipeResultRegistry.insufficientPower(finalTotalWirelessEU.longValue());
+            long requiredEUt = totalEU_BI.divide(BigInteger.valueOf(weightedTime))
+                .longValue();
+
+            long finalEUt = Math.max(1, Math.min(requiredEUt, energyEU));
+
+            int finalDuration = totalEU_BI.divide(BigInteger.valueOf(finalEUt))
+                .intValue();
+
+            if (!addEUToGlobalEnergyMap(ownerUUID, totalEU_BI.negate())) {
+                return CheckRecipeResultRegistry.insufficientPower(totalEU_BI.longValue());
             }
-            costingEUText = GTUtility.formatNumbers(finalTotalWirelessEU);
-            this.lEUt = 0;
+
+            costingEUText = GTUtility.formatNumbers(totalEU_BI);
+
+            this.lEUt = -finalEUt;
+            this.mMaxProgresstime = Math.max(1, finalDuration);
+
         } else {
-            this.lEUt = -currentWiredInstantPower;
+
+            long requiredEUt = totalEU_Long / Math.max(1, weightedTime);
+
+            long finalEUt = Math.max(1, Math.min(requiredEUt, energyEU));
+
+            int finalDuration = (int) Math.max(1, totalEU_Long / finalEUt);
+
+            this.lEUt = -finalEUt;
+            this.mMaxProgresstime = finalDuration;
         }
 
-        // 更新最终输出和进度
         mOutputItems = totalOutputs.toArray(new ItemStack[0]);
         updateSlots();
-        this.mMaxProgresstime = maxDurationFound;
+
         this.mEfficiency = 10000;
         this.mEfficiencyIncrease = 10000;
 
@@ -647,7 +658,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         for (int i = 0; i < invItems.length && remaining > 0; i++) {
             ItemStack invStack = invItems[i];
             if (invStack == null || invStack.stackSize <= 0) continue;
-            if (GTUtility.areStacksEqual(requirement, invStack)) {
+            if (areStacksEqual(requirement, invStack)) {
                 long toSubtract = Math.min(remaining, invStack.stackSize);
                 invStack.stackSize -= (int) toSubtract;
                 remaining -= toSubtract;
@@ -657,6 +668,25 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
             }
             if (remaining <= 0) break;
         }
+    }
+
+    public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2) {
+        if (stack1 == null || stack2 == null) return false;
+        if (stack1.getItem() != stack2.getItem()) return false;
+
+        int dmg1 = stack1.getItemDamage();
+        int dmg2 = stack2.getItemDamage();
+
+        if (dmg1 != dmg2 && dmg1 != GTRecipeBuilder.WILDCARD && dmg2 != GTRecipeBuilder.WILDCARD) {
+            return false;
+        }
+
+        NBTTagCompound tag1 = stack1.getTagCompound();
+
+        if (tag1 == null) return true;
+
+        NBTTagCompound tag2 = stack2.getTagCompound();
+        return tag1.equals(tag2);
     }
 
     public void consumeFluidsUnordered(GTRecipe.RecipeAssemblyLine recipe, int parallel, FluidStack[] invFluids) {

@@ -133,7 +133,8 @@ GTNL provides industrial-grade automation for your favorite magic mods.
 
 | GTNH Version | Mod Version |      Status       | Download                                                                                                                         |
 |:------------:|:-----------:|:-----------------:|:---------------------------------------------------------------------------------------------------------------------------------|
-|  **2.8.0**   |  `0.2.0+`   | ✅ **Recommended** | [![Latest](https://img.shields.io/badge/Download-Latest-success)](https://github.com/ABKQPO/GT-Not-Leisure/releases/latest)      |
+|  **2.8.4**   |  `0.2.2+`   | ✅ **Recommended** | [![Latest](https://img.shields.io/badge/Download-Latest-success)](https://github.com/ABKQPO/GT-Not-Leisure/releases/latest)      |
+|  **2.8.0+**  |   `0.2.2`   | ✅ **Recommended** | [![v0.2.1](https://img.shields.io/badge/Download-v0.2.2-orange)](https://github.com/ABKQPO/GT-Not-Leisure/releases/v0.2.2)       |
 |  **2.7.x**   |  `0.1.9.1`  |       ❌ EOL       | [![v0.1.9.1](https://img.shields.io/badge/Download-v0.1.9.1-orange)](https://github.com/ABKQPO/GT-Not-Leisure/releases/v0.1.9.1) |
 
 ## ⚠️ Installation & Update Instructions

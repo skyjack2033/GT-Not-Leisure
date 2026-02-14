@@ -107,7 +107,8 @@ public abstract class MixinServerConfigurationManager {
         method = "respawnPlayer",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/entity/player/EntityPlayerMP;getBedLocation(I)Lnet/minecraft/util/ChunkCoordinates;"))
+            target = "Lnet/minecraft/entity/player/EntityPlayerMP;getBedLocation(I)Lnet/minecraft/util/ChunkCoordinates;",
+            remap = false))
     private ChunkCoordinates redirectBedLocation(EntityPlayerMP player, int dimension) {
         IAnchorRespawn anchor = (IAnchorRespawn) player;
 
@@ -120,7 +121,10 @@ public abstract class MixinServerConfigurationManager {
 
     @Redirect(
         method = "respawnPlayer",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayerMP;isSpawnForced(I)Z"))
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/entity/player/EntityPlayerMP;isSpawnForced(I)Z",
+            remap = false))
     private boolean redirectSpawnForced(EntityPlayerMP player, int dimension) {
 
         IAnchorRespawn anchor = (IAnchorRespawn) player;
