@@ -15,7 +15,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,9 +25,6 @@ import com.science.gtnl.api.mixinHelper.ILeashedToEntity;
 
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements ILeashedToEntity, IAnchorRespawn {
-
-    @Shadow
-    public abstract void respawnPlayer();
 
     @Unique
     private int anchorDim = Integer.MAX_VALUE;
