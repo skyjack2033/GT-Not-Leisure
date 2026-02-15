@@ -818,7 +818,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockQuantumLinkChamber", 1),
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 47),
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCraftUnit", 1, 1))
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCraftingUnit", 1, 1))
             .itemOutputs(
                 ItemUtils
                     .getItemStack(GTNLItemList.OutputHatchMEProxy.get(1L), "{baseCapacity:9223372036854775807L}", null))
@@ -833,7 +833,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockQuantumLinkChamber", 1),
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 47),
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCraftUnit", 1, 1))
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCraftingUnit", 1, 1))
             .itemOutputs(
                 ItemUtils
                     .getItemStack(GTNLItemList.OutputBusMEProxy.get(1L), "{baseCapacity:9223372036854775807L}", null))
