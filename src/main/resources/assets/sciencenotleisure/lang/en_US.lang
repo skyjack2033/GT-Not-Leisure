@@ -250,7 +250,71 @@ tc.research_text.gtnl.welcome.1=Welcome to a world of curious thoughts and wonde
 
 tc.research_name.gtnl.timeStopPocketWatch=Time Stop Pocket Watch
 tc.research_text.gtnl.timeStopPocketWatch=Mastering the Secret of Time
-tc.research_text.gtnl.timeStopPocketWatch.1=In the ancient manuscripts of the Chronomantic school, records of the “Time Stop Pocket Watch” are scarce. It is said to have been first crafted by an alchemist weary of war and noise, longing to capture eternity within the flow of time. The construction of the watch itself is not complex—the true challenge lies in imbuing it with the essence of stillness. Rumors tell that the infusion must take place on the darkest night of the lunar cycle, surrounded by silent temporal crystals and hushed metals. Every thought of the practitioner must be held in perfect focus, lest the ritual turn awry and time itself lash back. If the ritual succeeds, one may briefly freeze the world’s flow at this very moment—but beware: time is never truly mastered. It merely waits for the moment to retaliate.
+tc.research_text.gtnl.timeStopPocketWatch.0=In the ancient manuscripts of the Chronomantic school, records of the “Time Stop Pocket Watch” are scarce. It is said to have been first crafted by an alchemist weary of war and noise, longing to capture eternity within the flow of time. The construction of the watch itself is not complex—the true challenge lies in imbuing it with the essence of stillness. Rumors tell that the infusion must take place on the darkest night of the lunar cycle, surrounded by silent temporal crystals and hushed metals. Every thought of the practitioner must be held in perfect focus, lest the ritual turn awry and time itself lash back. If the ritual succeeds, one may briefly freeze the world’s flow at this very moment—but beware: time is never truly mastered. It merely waits for the moment to retaliate.
+
+tc.research_name.gtnl.largeEssentiaGenerator=Combustion Engine in Magic World
+tc.research_text.gtnl.largeEssentiaGenerator=Will it cause Flux pollution?
+tc.research_text.gtnl.largeEssentiaGenerator.0=You have found that Essentia contains much more power than you thought. Is there a way to generate electricity from these Essentia?<BR><BR>The LEG(Large Essentia Generator) will automatically adapt its output voltage according to its dynamo hatch. The the Diffusion Cell determines the highest hatch tier that LEG can accept.
+tc.research_text.gtnl.largeEssentiaGenerator.1=Currently, only these Aspects can be converted into power directly without upgrades:<BR><BR>Terra: 800EU<BR><BR>Aqua: 5000EU<BR><BR>Ordo: 12000EU<BR><BR>Lux: 13000EU<BR><BR>Tempestas: 61200EU<BR><BR>Gelum: 3900EU<BR><BR>Vitreus: 2000EU<BR><BR>Potentia: 25600EU<BR><BR>Permutatio: 6000EU<BR><BR>Metallum: 2600EU
+tc.research_text.gtnl.largeEssentiaGenerator.2=Tenebrae: 9000EU<BR><BR>Praecantatio: 36000EU<BR><BR>Herba: 2600EU<BR><BR>Arbor: 4500EU<BR><BR>Bestia: 1000EU<BR><BR>Messis: 9800EU<BR><BR>Perfodio: 1300EU<BR><BR>Instrumentum: 1200EU<BR><BR>Meto: 3600EU<BR><BR>Tutamen: 6200EU<BR><BR>Fabrico: 1100EU
+tc.research_text.gtnl.largeEssentiaGenerator.3=Pannus: 600EU<BR><BR>Vinculum: 500EU<BR><BR>Magneto: 108000EU<BR><BR>Vesania: 1EU<BR><BR>Primordium: 217000<BR><BR>Gula: 64000EU<BR><BR>Tempus: 142857EU<BR><BR>You need to install upgrades on the generator if you want to use other kinds of Essentia as fuel.
+
+tc.research_name.gtnl.essentiaUpgradeEmpty=Upgrade your generator
+tc.research_text.gtnl.essentiaUpgradeEmpty=Let's try some more dangerous essentia.
+tc.research_text.gtnl.essentiaUpgradeEmpty.0=A blank upgrade! I bet it has infinity possibility.<BR><BR>Except few kinds of Essentia, most Essentia needs external fluid to help them diffuse in the cell or increase the efficiency. Without these special fluids, the Essentia will block up the crevice of cells, resulting in lower efficiency or even no output. You can install multiple upgrades in one LEG.<BR><BR>The formula to calculate the fluid consuming speed:<BR>Basic consuming speed * Essentia coefficient * consumed Essentia amount
+
+tc.research_name.gtnl.essentiaUpgradeAir=Essentia: AIR
+tc.research_text.gtnl.essentiaUpgradeAir=I can feel it on the wind.
+tc.research_text.gtnl.essentiaUpgradeAir.0=This kind of Essentia has a high affinity for air and requires air to assist it to diffuse.<BR><BR>We can use liquid air which is more concentrated to further increase the efficiency of Essentia.<BR><BR>The basic consuming speed is 160L/sec.
+tc.research_text.gtnl.essentiaUpgradeAir.1=Acceptable Aspects:<BR><BR>Aer: 10000EU Coefficient:x1.0<BR><BR>Motus: 20000EU Coefficient:x0.5<BR><BR>Volatus: 56000EU Coefficient:x2.0<BR><BR>Auram: 42000EU Coefficient:x2.7<BR><BR>Required Liquid:<BR><BR>Air: Efficiency:x1.0<BR><BR>Liquid Air: Efficiency:x1.5
+
+tc.research_name.gtnl.essentiaUpgradeThermal=Essentia: THERMAL
+tc.research_text.gtnl.essentiaUpgradeThermal=Melting down.
+tc.research_text.gtnl.essentiaUpgradeThermal.0=The energy from this kind of Essentia cannot be fully converted into electricity, and some of it is converted into heat that heats up the diffusion cell.<BR><BR>Coolants are needed to keep the generator running steadily and better coolants allow Essentia to release more energy safely.<BR><BR>The basic consuming speed is 40L/sec.
+tc.research_text.gtnl.essentiaUpgradeThermal.1=Acceptable Aspects:<BR><BR>Ignis: 16000EU Coefficient:x1.0<BR><BR>Aequalitas: 300000EU Coefficient:x7.0<BR><BR>Volatus: 56000EU Coefficient:x2.0<BR><BR>Infernus: 35700EU Coefficient:x3.0<BR><BR>Ira: 82600EU Coefficient:x5.0
+tc.research_text.gtnl.essentiaUpgradeThermal.2=Required Liquid:<BR><BR>Water: Efficiency:x0.5<BR><BR>Distilled Water: Efficiency:x1.0<BR><BR>Crushed Ice: Efficiency:x1.2<BR><BR>IC2 Coolant: Efficiency:x1.5<BR><BR>Cryotheum: Efficiency:x5.0<BR><BR>Super Coolant: Efficiency:x9.0
+
+tc.research_name.gtnl.essentiaUpgradeUnstable=Essentia: UNSTABLE
+tc.research_text.gtnl.essentiaUpgradeUnstable=Heart of chaos.
+tc.research_text.gtnl.essentiaUpgradeUnstable.0=This kind of Essentia tends to damage the diffusion cell or reacts with air easily.<BR><BR>Inert gases are needed to protect the diffusion cell.<BR><BR>The more inert the gas, the more energy can be safely released from the Essentia.<BR><BR>The basic consuming speed is 80L/sec.
+tc.research_text.gtnl.essentiaUpgradeUnstable.1=Acceptable Aspects:<BR><BR>Perditio: 4500EU Coefficient:x1.0<BR><BR>Vacuos: 8200EU Coefficient:x1.5<BR><BR>Venenum: 17000EU Coefficient:x2.0<BR><BR>Telum: 14200EU Coefficient:x2.5<BR><BR>Terminus: 300000EU Coefficient:x10.0
+tc.research_text.gtnl.essentiaUpgradeUnstable.2=Required Liquid:<BR><BR>Nitrogen: Efficiency:x1.0<BR><BR>Helium: Efficiency:x2.0<BR><BR>Neon: Efficiency:x2.2<BR><BR>Argon: Efficiency:x2.5<BR><BR>Krypton: Efficiency:x3.0<BR><BR>Xenon: Efficiency:x4.0
+
+tc.research_name.gtnl.essentiaUpgradeVictus=Essentia: VICTUS
+tc.research_text.gtnl.essentiaUpgradeVictus=Will it bleed?
+tc.research_text.gtnl.essentiaUpgradeVictus.0=This kind of Essentia contains the essence of life.<BR><BR>Most of them can't be converted into much energy directly, but you can provide them with Life Essence, enhancing the power they generate greatly.<BR><BR>The basic consuming speed is 360L/sec.
+tc.research_text.gtnl.essentiaUpgradeVictus.1=Acceptable Aspects:<BR><BR>Victus: 20000EU Coefficient:x1.0<BR><BR>Spiritus: 37600EU Coefficient:x0.7<BR><BR>Sano: 24600EU Coefficient:x1.2<BR><BR>Corpus: 5200EU Coefficient:x0.9<BR><BR>Humanus: 16700EU Coefficient:x1.3<BR><BR>Fames: 17600EU Coefficient:x1.1<BR><BR>Gloria: 120000EU Coefficient:x0.6
+tc.research_text.gtnl.essentiaUpgradeVictus.2=Optional Liquid:<BR><BR>Liquid XP: Efficiency:x2.0<BR><BR>Life Essence: Efficiency:x6.0
+
+tc.research_name.gtnl.essentiaUpgradeTainted=Essentia: TAINTED
+tc.research_text.gtnl.essentiaUpgradeTainted=Dirty Deeds Done Dirt Cheap
+tc.research_text.gtnl.essentiaUpgradeTainted.0=This kind of Essentia contains dark powers. It may cause flux pollution when running.<BR><BR>You can provide these Essentia with Purifying Fluid or Liquid Death...... resulting two different effects.<BR><BR>The Purifying Fluid can purify and greatly enhances the energy outputted by the Essentia, and also prevents the flux pollution.<BR><BR>The Water of Death does not dissolve Essentia, but adding it to diffused Essentia can have a wonderful effect. The lower the basic fuel value of the Essentia, the more the dark energy can be released.
+tc.research_text.gtnl.essentiaUpgradeTainted.1=The basic consuming speed is 60L/sec.
+tc.research_text.gtnl.essentiaUpgradeTainted.2=Acceptable Aspects:<BR><BR>Mortuus: 7200EU Coefficient:x1.0<BR><BR>Alienis: 9700EU Coefficient:x1.7<BR><BR>Vitium: 4700EU Coefficient:x10.0<BR><BR>Exanimis: 9000EU Coefficient:x1.2
+tc.research_text.gtnl.essentiaUpgradeTainted.3=Optional Liquid:<BR><BR>Purifying Fluid: Efficiency:x60.0<BR><BR>Liquid Death: Efficiency:x (25000/Basic Fuel Value)^4
+
+tc.research_name.gtnl.essentiaUpgradeMechanics=Essentia: MECHANICS
+tc.research_text.gtnl.essentiaUpgradeMechanics=Driven by Ether.
+tc.research_text.gtnl.essentiaUpgradeMechanics.0=This kind of Essentia must flow quickly in order to release energy.<BR><BR>Lubricants are needed to provide sufficient fluidity to the Essentia.<BR><BR>The basic consuming speed is 400L/sec.
+tc.research_text.gtnl.essentiaUpgradeMechanics.1=Acceptable Aspects:<BR><BR>Iter: 16000EU<BR><BR>Machina: 61200EU<BR><BR>Limus: 11800EU<BR><BR>The Coefficient is always x1.0
+tc.research_text.gtnl.essentiaUpgradeMechanics.2=Required Liquid:<BR><BR>Lubricant: Efficiency:x1.0
+
+tc.research_name.gtnl.essentiaUpgradeSprite=Essentia: SPRITE
+tc.research_text.gtnl.essentiaUpgradeSprite=Brain in a Machine.
+tc.research_text.gtnl.essentiaUpgradeSprite.0=The power directly generated from spiritual Essentia is very low. It is only when activated with Flowing Spirit or Hollow Tears that these Essentia can show their true power.<BR><BR>When the stable point of Diffusion Cell is low, Hollow Tears can stimulate more energy from Essentia. But when the stable point of Diffusion Cell becomes higher, only using Flowing Spirit can awaken the true power of Essentia.<BR><BR>The basic consuming speed is 40L/sec.
+tc.research_text.gtnl.essentiaUpgradeSprite.1=Acceptable Aspects:<BR><BR>Cognitio: 2200EU Coefficient:x1.2<BR><BR>Sensus: 1400EU Coefficient:x0.7<BR><BR>Lucrum: 6000EU Coefficient:x2.0<BR><BR>Strontio: 200EU Coefficient:x0.03<BR><BR>Nebrisum: 24300EU Coefficient:x2.0<BR><BR>Luxuria: 79200EU Coefficient:x3.7<BR><BR>Superbia: 10900EU Coefficient:x2.1<BR><BR>Invidia: 7700EU Coefficient:x1.0<BR><BR>Desidia: 600EU Coefficient:x0.1
+tc.research_text.gtnl.essentiaUpgradeSprite.2=Optional Liquid:<BR><BR>Hollow Tears: Efficiency:x 15x(1+100/Stable Point)<BR><BR>Flowing Spirit Efficiency:x 10x(1+Stable Point/100)<BR><BR>This means Flowing Spirit is more efficient when stable point is over 150.
+
+tc.research_name.gtnl.essentiaUpgradeRadiation=Essentia: RADIATION
+tc.research_text.gtnl.essentiaUpgradeRadiation=Atomic Heart
+tc.research_text.gtnl.essentiaUpgradeRadiation.0=The use of this Essentia for power generation is similar to the use of nuclear fuel, except that the Essentia represents a purely "radioactive" property rather than a specific nuclear fuel.<BR><BR>However, the method of boosting nuclear fuel power still applies here, and it will directly result in more energy being released from Essentia.<BR><BR>The basic consuming speed is 120L/sec.
+tc.research_text.gtnl.essentiaUpgradeRadiation.1=Acceptable Aspects:<BR><BR>Radio: 238000EU Coefficient:x1.0<BR><BR>Astrum: 118000EU Coefficient:x0.5
+tc.research_text.gtnl.essentiaUpgradeRadiation.2=Optional Liquid:<BR><BR>Molten Caesium: Efficiency:x2.0<BR><BR>Molten Uranium-235: Efficiency:x3.0<BR><BR>Molten Naquadah: Efficiency:x4.0<BR><BR>Molten Atomic Separation Catalyst: Efficiency:x16.0
+
+tc.research_name.gtnl.essentiaUpgradeElectric=Essentia: ELECTRIC
+tc.research_text.gtnl.essentiaUpgradeElectric=Get electricity from... electricity?
+tc.research_text.gtnl.essentiaUpgradeElectric.0=The ELECTRUM Essentia itself represents electricity!<BR><BR>The higher the voltage of the generator dynamo hatch, the more ELECTRUM will be affected by potential difference and increase the amount of energy.
+tc.research_text.gtnl.essentiaUpgradeElectric.1=Acceptable Aspects: Electrum<BR><BR>The formula to calculate its power:<BR>8x(3.0^Dynamo Hatch Tier)EU
 
 Tooltip_ResearchStation_00=Mark item in GUI to designate the research target
 
@@ -1116,6 +1180,12 @@ tile.lootgames.sdk_master.name=Sudoku
 Info_Sudoku_00=Renaming: %d
 Info_Sudoku_01=Last Click Time: %d
 
+tile.EssentiaHatch.name=Essentia Input Hatch
+Tooltip_EssentiaHatch_00=You can right click it with an Essentia Jar to set Essentia Filter
+Tooltip_EssentiaHatch_01=Right click it with empty hands to clear the Filter.
+Info_EssentiaHatch_00=Successfully locked to %s.
+Info_EssentiaHatch_01=Cleared.
+
 tile.playerDoll.name=Player Model
 Tooltip_PlayerDoll_00=Set the official player name
 Tooltip_PlayerDoll_01=Confirm
@@ -1402,6 +1472,16 @@ item.MetaItem.126.name=Shattered Singularity
 item.MetaItem.127.name=Transdimensional Mnemonic Matrix
 Tooltip_TransdimensionalMnemonicMatrix_00=Device supporting transdimensional mnemonic stabilization.
 Tooltip_TransdimensionalMnemonicMatrix_01=Prevents discount decay on the DTPF.
+item.MetaItem.128.name=Essentia Upgrade: EMPTY
+item.MetaItem.129.name=Essentia Upgrade: AIR
+item.MetaItem.130.name=Essentia Upgrade: THERMAL
+item.MetaItem.131.name=Essentia Upgrade: UNSTABLE
+item.MetaItem.132.name=Essentia Upgrade: VICTUS
+item.MetaItem.133.name=Essentia Upgrade: TAINTED
+item.MetaItem.134.name=Essentia Upgrade: MECHANICS
+item.MetaItem.135.name=Essentia Upgrade: SPIRIT
+item.MetaItem.136.name=Essentia Upgrade: RADIATION
+item.MetaItem.137.name=Essentia Upgrade: ELECTRIC
 
 item.SuspiciousStew.name=Suspicious Stew
 
@@ -2865,7 +2945,7 @@ Tooltip_TransliminalOasis_Casing=Any Pressure Suppression Machine Block
 NameHighEnergyLaserLathe=High Energy Laser Lathe
 HighEnergyLaserLatheRecipeType=Lathe
 Tooltip_HighEnergyLaserLathe_00=Each glass tier provides an additional 5% speed and power reduction (multiplicative).
-Tooltip_HighEnergyLaserLathe_Casing=Any Molecular Casing
+Tooltip_HighEnergyLaserLathe_Casing=Ang Advanced Iridium Plated Machine Casing
 
 NameSuperconductingElectromagnetism=Superconducting Electromagnetism
 SuperconductingElectromagnetismRecipeType=Electromagnetic Separator / Two-stage Magnetizer
@@ -3249,7 +3329,7 @@ IncubatorRecipeType=Bacterial Incubator
 Tooltip_Incubator_00=No longer needs to keep the output bus half full!
 Tooltip_Incubator_01=Fixed parallel of 4.
 Tooltip_Incubator_02=Glass tier limits the energy hatch tier, UHV glass unlocks all tiers.
-Tooltip_Incubator_Radio_Hatch=Radioactive Hatch
+Tooltip_Incubator_RadioHatch=Radioactive Hatch
 Tooltip_Incubator_Casing=Any Plastic Concrete Block
 
 NameLargeIncubator=Large Incubator
@@ -3259,7 +3339,7 @@ Tooltip_LargeIncubator_01=Consumes only 60% of the recipe's required power.
 Tooltip_LargeIncubator_02=No longer needs to keep the output bus half full.
 Tooltip_LargeIncubator_03=Ignores glass tier requirements and precise dosage requirements.
 Tooltip_LargeIncubator_04=Parallel: 4 * number of petri dishes + 2 * voltage tier * glass tier.
-Tooltip_LargeIncubator_Radio_Hatch=Radioactive Hatch
+Tooltip_LargeIncubator_RadioHatch=Radioactive Hatch
 Tooltip_LargeIncubator_Casing=Any Plastic Concrete Block
 
 NameMicroorganismMaster=Microorganism Master
@@ -3350,6 +3430,17 @@ Tooltip_PetrochemicalPlant_01=Final output: recipe output * coil level * voltage
 Tooltip_PetrochemicalPlant_02=Advanced extraction technology.
 Tooltip_PetrochemicalPlant_Casing=Any Pressure Suppression Machine Block
 Tooltip_PetrochemicalPlant_Muffler=Any Top Pressure Suppression Machine Block
+
+NameLargeEssentiaGenerator=Large Essentia Generator
+LargeEssentiaGeneratorRecipeType=Essentia Generator
+Tooltip_LargeEssentiaGenerator_00=Maybe some Thaumaturges are upset by it. . .
+Tooltip_LargeEssentiaGenerator_01=Transform Essentia into energy!
+Tooltip_LargeEssentiaGenerator_02=The Diffusion Cell determines the highest hatch tier that the LEG can accept.
+Tooltip_LargeEssentiaGenerator_03=Supports normal Dynamo Hatches or TecTech ones for up to 64A, but no Laser Hatches.
+Tooltip_LargeEssentiaGenerator_04=You can find more information about this generator in the Thaumonomicon.
+Tooltip_LargeEssentiaGenerator_Casing=Hint 1 dots
+Tooltip_LargeEssentiaGenerator_EssentiaInputHatch=Essentia Input Hatch
+Info_LargeEssentiaGenerator_00= Installed!
 
 NameLargeCircuitAssembler=Large Circuit Assembler
 LargeCircuitAssemblerRecipeType=Circuit Assembler

@@ -250,7 +250,71 @@ tc.research_text.gtnl.welcome.1=欢迎来到奇思妙想的新世界！
 
 tc.research_name.gtnl.timeStopPocketWatch=岁月静滞怀表
 tc.research_text.gtnl.timeStopPocketWatch=掌握时间的秘密
-tc.research_text.gtnl.timeStopPocketWatch.1=在古老的时间学派手稿中，有关「岁月静滞怀表」的记载寥寥无几。据说，它最早是由一位厌倦战争与喧嚣的炼金术士打造，他渴望在流逝中捕捉永恒。怀表的构造并不复杂，真正的难点在于为其注入“停滞”的本质。传闻整个仪式必须在月相最黯淡之夜进行，四周环绕以安静的时空晶体与沉默的金属，施术者的每一缕意念都必须精确控制，否则整个注魔仪式会使时间本身反噬施法者。若仪式成功，便可暂时将世界之流冻结于此刻，但切记：时间从不会真正被掌控，它只是在等待反扑的时机。
+tc.research_text.gtnl.timeStopPocketWatch.0=在古老的时间学派手稿中，有关「岁月静滞怀表」的记载寥寥无几。据说，它最早是由一位厌倦战争与喧嚣的炼金术士打造，他渴望在流逝中捕捉永恒。怀表的构造并不复杂，真正的难点在于为其注入“停滞”的本质。传闻整个仪式必须在月相最黯淡之夜进行，四周环绕以安静的时空晶体与沉默的金属，施术者的每一缕意念都必须精确控制，否则整个注魔仪式会使时间本身反噬施法者。若仪式成功，便可暂时将世界之流冻结于此刻，但切记：时间从不会真正被掌控，它只是在等待反扑的时机。
+
+tc.research_name.gtnl.largeEssentiaGenerator=奥术世界的内燃引擎
+tc.research_text.gtnl.largeEssentiaGenerator=它会造成咒波污染吗?
+tc.research_text.gtnl.largeEssentiaGenerator.0=你发现源质内蕴含的能量超乎你的想象.有没有用这些源质发电的方法呢?<BR><BR>LEG(大型源质发电机)可以根据动力仓自动调整其输出电压. 扩散单元决定了LEG可接受的最高仓室等级.
+tc.research_text.gtnl.largeEssentiaGenerator.1=目前只有以下源质可以无需升级,直接转化为能量:<BR><BR>Terra:800EU<BR><BR>Aqua:5000EU<BR><BR>Ordo:12000EU<BR><BR>Lux:13000EU<BR><BR>Tempestas:61200EU<BR><BR>Gelum:3900EU<BR><BR>Vitreus:2000EU<BR><BR>Potentia:25600EU<BR><BR>Permutatio:6000EU<BR><BR>Metallum:2600EU
+tc.research_text.gtnl.largeEssentiaGenerator.2=Tenebrae:9000EU<BR><BR>Praecantatio:36000EU<BR><BR>Herba:2600EU<BR><BR>Arbor:4500EU<BR><BR>Bestia:1000EU<BR><BR>Messis:9800EU<BR><BR>Perfodio:1300EU<BR><BR>Instrumentum:1200EU<BR><BR>Meto:3600EU<BR><BR>Tutamen:6200EU<BR><BR>Fabrico:1100EU
+tc.research_text.gtnl.largeEssentiaGenerator.3=Pannus:600EU<BR><BR>Vinculum:500EU<BR><BR>Magneto:108000EU<BR><BR>Vesania:1EU<BR><BR>Primordium:217000<BR><BR>Gula:64000EU<BR><BR>Tempus:142857EU<BR><BR>如果想用其他源质作为燃料,你需要为你的发电机加装相应升级.
+
+tc.research_name.gtnl.essentiaUpgradeEmpty=升级你的发电机
+tc.research_text.gtnl.essentiaUpgradeEmpty=让我们来试试一些更危险的源质.
+tc.research_text.gtnl.essentiaUpgradeEmpty.0=空白升级!我感觉它有无限可能.<BR><BR>除了几种特殊源质,大部分源质需要额外流体帮助其在单元中扩散或提高燃烧效率.而没有这些特殊流体,源质将阻塞单元的缝隙,造成效率低下甚至无法输出.你可以为一台大型源质发电机安装多种升级.<BR><BR>计算流体消耗速度的公式如下:<BR>基础消耗速度*源质系数*已消耗源质量
+
+tc.research_name.gtnl.essentiaUpgradeAir=源质：AIR
+tc.research_text.gtnl.essentiaUpgradeAir=我可以在风中感受到它.
+tc.research_text.gtnl.essentiaUpgradeAir.0=这类源质与空气具有很高的亲和性,需要空气辅助其扩散.<BR><BR>我们可以使用更浓缩的液态空气以进一步提高源质效率.<BR><BR>基础消耗速度为160L/秒.
+tc.research_text.gtnl.essentiaUpgradeAir.1=可用源质:<BR><BR>Aer:10000EU;系数:x1.0<BR><BR>Motus:20000EU;系数:x0.5<BR><BR>Volatus:56000EU;系数:x2.0<BR><BR>Auram:42000EU;系数:x2.7<BR><BR>需要流体:<BR><BR>空气:效率:x1.0<BR><BR>液态空气:效率:x1.5
+
+tc.research_name.gtnl.essentiaUpgradeThermal=源质：THERMAL
+tc.research_text.gtnl.essentiaUpgradeThermal=熔融.
+tc.research_text.gtnl.essentiaUpgradeThermal.0=来自这类源质的能量无法完全被转化为电能,部分能量会被转化为热能,并加热扩散单元.<BR><BR>所以需要冷却液以保证发电机的稳定运行,而更好的冷却液可以使源质安全地释放更多能量.<BR><BR>基础消耗速度为40L/秒.
+tc.research_text.gtnl.essentiaUpgradeThermal.1=可用源质:<BR><BR>Ignis:16000EU;系数:x1.0<BR><BR>Aequalitas:300000EU;系数:x7.0<BR><BR>Volatus:56000EU;系数:x2.0<BR><BR>Infernus:35700EU;系数:x3.0<BR><BR>Ira:82600EU;系数:x5.0
+tc.research_text.gtnl.essentiaUpgradeThermal.2=需要流体:<BR><BR>水:效率:x0.5<BR><BR>蒸馏水:效率:x1.0<BR><BR>碎冰:效率:x1.2<BR><BR>IC2冷却液:效率:x1.5<BR><BR>极寒之凛冰:效率:x5.0<BR><BR>超级冷却液:效率:x9.0
+
+tc.research_name.gtnl.essentiaUpgradeUnstable=源质：UNSTABLE
+tc.research_text.gtnl.essentiaUpgradeUnstable=混沌之心.
+tc.research_text.gtnl.essentiaUpgradeUnstable.0=这类源质易与空气发生反应,往往会破坏扩散单元.<BR><BR>所以需要使用惰性气体保护扩散单元.<BR><BR>气体惰性越高,源质就能安全地释放越多能量.<BR><BR>基础消耗速度为80L/秒.
+tc.research_text.gtnl.essentiaUpgradeUnstable.1=可用源质:<BR><BR>Perditio:4500EU;系数:x1.0<BR><BR>Vacuos:8200EU;系数:x1.5<BR><BR>Venenum:17000EU;系数:x2.0<BR><BR>Telum:14200EU;系数:x2.5<BR><BR>Terminus:300000EU;系数:x10.0
+tc.research_text.gtnl.essentiaUpgradeUnstable.2=需要流体:<BR><BR>氮:效率:x1.0<BR><BR>氦:效率:x2.0<BR><BR>氖:效率:x2.2<BR><BR>氩:效率:x2.5<BR><BR>氪:效率:x3.0<BR><BR>氙:效率:x4.0
+
+tc.research_name.gtnl.essentiaUpgradeVictus=源质：VICTUS
+tc.research_text.gtnl.essentiaUpgradeVictus=它会流血吗?
+tc.research_text.gtnl.essentiaUpgradeVictus.0=这类源质蕴含生命的本质.<BR><BR>大部分无法直接转化为能量,但你可以为其提供生命本质,大大增强它们的转化率.<BR><BR>基础消耗速度为360L/秒.
+tc.research_text.gtnl.essentiaUpgradeVictus.1=可用源质:<BR><BR>Victus:20000EU;系数:x1.0<BR><BR>Spiritus:37600EU;系数:x0.7<BR><BR>Sano:24600EU;系数:x1.2<BR><BR>Corpus:5200EU;系数:x0.9<BR><BR>Humanus:16700EU;系数:x1.3<BR><BR>Fames:17600EU;系数:x1.1<BR><BR>Gloria:120000EU;系数:x0.6
+tc.research_text.gtnl.essentiaUpgradeVictus.2=可选流体:<BR><BR>液态XP:效率:x2.0<BR><BR>生命本质:效率:x6.0
+
+tc.research_name.gtnl.essentiaUpgradeTainted=源质：TAINTED
+tc.research_text.gtnl.essentiaUpgradeTainted=恶行易施
+tc.research_text.gtnl.essentiaUpgradeTainted.0=这类源质内含黑暗的能量.运行时可能产生咒波污染.<BR><BR>你可以为其提供净化之水或死亡之水...这会产生两种不同的效果.<BR><BR>净化之水可以净化源质,大大提升输出能量,且不会产生咒波污染.<BR><BR>死亡之水无法溶解源质,但将其加入已扩散的源质可以产生很棒的效果:源质的基础燃值越低,释放的黑暗能量越多.
+tc.research_text.gtnl.essentiaUpgradeTainted.1=基础消耗速度为60L/秒.
+tc.research_text.gtnl.essentiaUpgradeTainted.2=可用源质:<BR><BR>Mortuus:7200EU;系数:x1.0<BR><BR>Alienis:9700EU;系数:x1.7<BR><BR>Vitium:4700EU;系数:x10.0<BR><BR>Exanimis:9000EU;系数:x1.2
+tc.research_text.gtnl.essentiaUpgradeTainted.3=可选流体:<BR><BR>净化之水:效率:x60.0<BR><BR>死亡之水:效率:x(25000/基础燃值)^4
+
+tc.research_name.gtnl.essentiaUpgradeMechanics=源质：MECHANICS
+tc.research_text.gtnl.essentiaUpgradeMechanics=由以太驱动.
+tc.research_text.gtnl.essentiaUpgradeMechanics.0=这类源质必须处于快速流动中才能释放能量.<BR><BR>需要润滑油来为源质提供足够的流动性<BR><BR>基础消耗速度为400L/秒.
+tc.research_text.gtnl.essentiaUpgradeMechanics.1=用源质:<BR><BR>Iter:16000EU<BR><BR>Machina:61200EU<BR><BR>Limus:11800EU<BR><BR>系数均为x1.0
+tc.research_text.gtnl.essentiaUpgradeMechanics.2=需要流体:<BR><BR>润滑油:效率:x1.0
+
+tc.research_name.gtnl.essentiaUpgradeSprite=源质：SPRITE
+tc.research_text.gtnl.essentiaUpgradeSprite=机中之脑
+tc.research_text.gtnl.essentiaUpgradeSprite.0=精神类的源质的直接产能很低.只有用水心或虚伪泪水激活后,它们才能展示正在的能量.<BR><BR>当扩散单元的稳定点较低时,虚伪泪水可以从源质中激发出更多能量.而稳定点较高时,只能用水心才能激发出源质的真正能量.<BR><BR>基础消耗速度为40L/秒.
+tc.research_text.gtnl.essentiaUpgradeSprite.1=可用源质:<BR><BR>Cognitio:2200EU;系数:x1.2<BR><BR>Sensus:1400EU;系数:x0.7<BR><BR>Lucrum:6000EU;系数:x2.0<BR><BR>Strontio:200EU;系数:x0.03<BR><BR>Nebrisum:24300EU;系数:x2.0<BR><BR>Luxuria:79200EU;系数:x3.7<BR><BR>Superbia:10900EU;系数:x2.1<BR><BR>Invidia:7700EU;系数:x1.0<BR><BR>Desidia:600EU;系数:x0.1
+tc.research_text.gtnl.essentiaUpgradeSprite.2=可选流体:<BR><BR>虚伪泪水:效率:x15x(1+100/稳定点)<BR><BR>水心:效率:x10x(1+稳定点/100)<BR><BR>简而言之,稳定点超过150后,水心的效率更高.
+
+tc.research_name.gtnl.essentiaUpgradeRadiation=源质：RADIATION
+tc.research_text.gtnl.essentiaUpgradeRadiation=原子之心
+tc.research_text.gtnl.essentiaUpgradeRadiation.0=用这类源质发电类似于用核燃料发电,不同之处在于源质是纯粹的"放射性"属性,而核燃料还有些乱七八糟的东西.<BR><BR>但是,提升核燃料输出的方法同样适用于此,可以直接提升源质释放的能量.<BR><BR>基础消耗速度为120L/秒.
+tc.research_text.gtnl.essentiaUpgradeRadiation.1=可用源质:<BR><BR>Radio:238000EU;系数:x1.0<BR><BR>Astrum:118000EU;系数:x0.5
+tc.research_text.gtnl.essentiaUpgradeRadiation.2=可选流体:<BR><BR>熔融铯:效率:x2.0<BR><BR>熔融铀-235:效率:x3.0<BR><BR>熔融硅岩:效率:x4.0<BR><BR>熔融原子分离催化剂:效率:x16.0
+
+tc.research_name.gtnl.essentiaUpgradeElectric=源质：ELECTRIC
+tc.research_text.gtnl.essentiaUpgradeElectric=以电…生电?
+tc.research_text.gtnl.essentiaUpgradeElectric.0=ELECTRUM源质本身就代表了电力!<BR><BR>发电机的动力仓电压越高,ELECTRUM源质被越强的电势差影响,发电量就越高.
+tc.research_text.gtnl.essentiaUpgradeElectric.1=可用源质:Electrum<BR><BR>能量公式:<BR>8x(3.0^动力仓等级)EU
 
 Tooltip_ResearchStation_00=在GUI内标记物品来指定研究目标
 
@@ -1116,6 +1180,12 @@ tile.lootgames.sdk_master.name=数独
 Info_Sudoku_00=剩余：%d
 Info_Sudoku_01=上次点击时间：%d
 
+tile.EssentiaHatch.name=源质输入仓
+Tooltip_EssentiaHatch_00=手持源质罐子右键以设置过滤
+Tooltip_EssentiaHatch_01=空手Shift右键以重置过滤
+Info_EssentiaHatch_00=成功锁定为 %s
+Info_EssentiaHatch_01=已清除
+
 tile.playerDoll.name=玩偶
 Tooltip_PlayerDoll_00=设置正版玩家名
 Tooltip_PlayerDoll_01=确认
@@ -1402,6 +1472,16 @@ item.MetaItem.126.name=破碎奇点
 item.MetaItem.127.name=超维记忆矩阵
 Tooltip_TransdimensionalMnemonicMatrix_00=支持跨维度记忆稳定的设备。
 Tooltip_TransdimensionalMnemonicMatrix_01=在DTPF上阻挡折扣衰减。
+item.MetaItem.128.name=源质升级：EMPTY
+item.MetaItem.129.name=源质升级：AIR
+item.MetaItem.130.name=源质升级：THERMAL
+item.MetaItem.131.name=源质升级：UNSTABLE
+item.MetaItem.132.name=源质升级：VICTUS
+item.MetaItem.133.name=源质升级：TAINTED
+item.MetaItem.134.name=源质升级：MECHANICS
+item.MetaItem.135.name=源质升级：SPIRIT
+item.MetaItem.136.name=源质升级：RADIATION
+item.MetaItem.137.name=源质升级：ELECTRIC
 
 item.SuspiciousStew.name=迷之炖菜
 
@@ -2865,7 +2945,7 @@ Tooltip_TransliminalOasis_Casing=任意压力抑制机械方块
 NameHighEnergyLaserLathe=高能激光车床
 HighEnergyLaserLatheRecipeType=车床
 Tooltip_HighEnergyLaserLathe_00=每级玻璃等级额外提供5%的加速和耗电减免(乘算叠加)
-Tooltip_HighEnergyLaserLathe_Casing=任意分子机械方块
+Tooltip_HighEnergyLaserLathe_Casing=任意镀铱机械方块
 
 NameSuperconductingElectromagnetism=超导电磁工厂
 SuperconductingElectromagnetismRecipeType=电磁离析机 / 两级磁化机
@@ -3249,7 +3329,7 @@ IncubatorRecipeType=细菌培养缸
 Tooltip_Incubator_00=不再需要保持输出仓半满！
 Tooltip_Incubator_01=固定并行为4
 Tooltip_Incubator_02=玻璃等级限制了能源仓等级，UHV玻璃解锁所有等级
-Tooltip_Incubator_Radio_Hatch=放射仓
+Tooltip_Incubator_RadioHatch=放射仓
 Tooltip_Incubator_Casing=任意塑料混凝土方块
 
 NameLargeIncubator=大型培养缸
@@ -3259,7 +3339,7 @@ Tooltip_LargeIncubator_01=只需要使用配方要求功率的60%
 Tooltip_LargeIncubator_02=不再需要保持输出仓半满
 Tooltip_LargeIncubator_03=无视玻璃等级要求和精确剂量要求
 Tooltip_LargeIncubator_04=并行数：4 * 培养皿数量 + 2 * 电压等级 * 玻璃等级
-Tooltip_LargeIncubator_Radio_Hatch=放射仓
+Tooltip_LargeIncubator_RadioHatch=放射仓
 Tooltip_LargeIncubator_Casing=任意塑料混凝土方块
 
 NameMicroorganismMaster=微生物之主
@@ -3350,6 +3430,17 @@ Tooltip_PetrochemicalPlant_01=最终产出：配方输出 * 线圈等级 * 电�
 Tooltip_PetrochemicalPlant_02=§c§l随着技术的精进，提取不应只有一点点
 Tooltip_PetrochemicalPlant_Casing=任意压力抑制机械方块
 Tooltip_PetrochemicalPlant_Muffler=任意顶部压力抑制机械方块
+
+NameLargeEssentiaGenerator=大型源质发电机
+LargeEssentiaGeneratorRecipeType=源质发电机
+Tooltip_LargeEssentiaGenerator_00=可能某些神秘使会对它感到不安…
+Tooltip_LargeEssentiaGenerator_01=将源质转化为能量！
+Tooltip_LargeEssentiaGenerator_02=扩散单元决定本机器可接受的最高仓室等级
+Tooltip_LargeEssentiaGenerator_03=支持普通动力仓和至多64A的TecTech动力仓，但不支持激光仓
+Tooltip_LargeEssentiaGenerator_04=你可以在魔导手册中读到更多信息.
+Tooltip_LargeEssentiaGenerator_Casing=提示方块：1号
+Tooltip_LargeEssentiaGenerator_EssentiaInputHatch=源质输入仓
+Info_LargeEssentiaGenerator_00= 已安装！
 
 NameLargeCircuitAssembler=大型电路组装设施
 LargeCircuitAssemblerRecipeType=电路组装机
