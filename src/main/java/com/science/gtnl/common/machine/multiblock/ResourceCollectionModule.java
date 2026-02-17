@@ -186,8 +186,8 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     }
 
     @Override
-    public void clearHatches() {
-        super.clearHatches();
+    public void clearHatches_EM() {
+        super.clearHatches_EM();
         this.mParallelControllerHatches.clear();
     }
 
@@ -227,13 +227,14 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
     public int getMaxParallelRecipes() {
         mParallelTier = MultiMachineBase.getParallelTier(getControllerSlot());
-        if (mParallelTier <= 1) {
-            return 8;
-        }
 
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
             mParallelTier = module.mTier;
             return module.getParallel();
+        }
+
+        if (mParallelTier <= 1) {
+            return 8;
         }
 
         return 1 << (2 * (mParallelTier - 2));
@@ -246,11 +247,6 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
             @NotNull
             @Override
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-
-                if (parallelSetting.get() > getMaxParallelRecipes()) {
-                    return CheckRecipeResultRegistry.NO_RECIPE;
-                }
-
                 if (lastRecipe == recipe) {
                     processingLogicEU = recipe.mEUt;
                     setProcessingLogicPower(processingLogic);
