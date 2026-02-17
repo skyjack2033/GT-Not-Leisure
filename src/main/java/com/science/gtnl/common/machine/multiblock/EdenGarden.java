@@ -238,12 +238,6 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
         return tt;
     }
 
-    @Override
-    public String[] getStructureDescription(ItemStack stackSize) {
-        List<String> info = new ArrayList<>(Arrays.asList(super.getStructureDescription(stackSize)));
-        return info.toArray(new String[] {});
-    }
-
     public EdenGarden(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
     }

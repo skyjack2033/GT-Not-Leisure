@@ -5,7 +5,6 @@ import static com.science.gtnl.utils.text.AnimatedTooltipHandler.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
@@ -16,6 +15,7 @@ import com.science.gtnl.common.block.blocks.BlockArtificialStarRender;
 import com.science.gtnl.common.block.blocks.BlockCardboardBox;
 import com.science.gtnl.common.block.blocks.BlockDimensionRespawnAnchor;
 import com.science.gtnl.common.block.blocks.BlockDirePatternEncoder;
+import com.science.gtnl.common.block.blocks.BlockEssentiaHatch;
 import com.science.gtnl.common.block.blocks.BlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.BlockHoneyFluid;
 import com.science.gtnl.common.block.blocks.BlockLaserBeacon;
@@ -31,6 +31,7 @@ import com.science.gtnl.common.block.blocks.tile.TileEntityArtificialStar;
 import com.science.gtnl.common.block.blocks.tile.TileEntityCardboardBox;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDimensionRespawnAnchor;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
+import com.science.gtnl.common.block.blocks.tile.TileEntityEssentiaHatch;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
 import com.science.gtnl.common.block.blocks.tile.TileEntityNanoPhagocytosisPlant;
@@ -71,10 +72,11 @@ public class BlockLoader {
     public static Block nanoPhagocytosisPlantRender;
     public static Block eternalGregTechWorkshopRender;
     public static Block dimensionRespawnAnchor;
+    public static Block essentiaHatch;
 
-    public static BlockFluidBase honeyFluidBlock;
+    public static Block honeyFluidBlock;
     public static Fluid honeyFluid;
-    public static BlockFluidBase shimmerFluidBlock;
+    public static Block shimmerFluidBlock;
     public static Fluid shimmerFluid;
 
     public static Block compressedStargateTier0 = new BlocksCompressedStargate(0);
@@ -131,6 +133,9 @@ public class BlockLoader {
 
         dimensionRespawnAnchor = new BlockDimensionRespawnAnchor();
         GameRegistry.registerTileEntity(TileEntityDimensionRespawnAnchor.class, "DimensionRespawnAnchorTileEntity");
+
+        essentiaHatch = new BlockEssentiaHatch();
+        GameRegistry.registerTileEntity(TileEntityEssentiaHatch.class, "EssentiaHatch");
 
         GameRegistry.registerBlock(metaBlock, ItemBlockBase.class, metaBlock.getUnlocalizedName());
         GameRegistry.registerBlock(metaBlockGlow, ItemBlockGlow.class, metaBlockGlow.getUnlocalizedName());

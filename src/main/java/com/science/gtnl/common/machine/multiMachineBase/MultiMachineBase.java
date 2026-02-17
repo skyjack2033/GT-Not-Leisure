@@ -438,7 +438,7 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         return tier;
     }
 
-    public int getParallelTier(ItemStack inventory) {
+    public static int getParallelTier(ItemStack inventory) {
         if (inventory == null) return 0;
         for (Object2IntMap.Entry<ItemStack> entry : PARALLEL_TIERS.object2IntEntrySet()) {
             if (GTUtility.areStacksEqual(inventory, entry.getKey(), true)) {

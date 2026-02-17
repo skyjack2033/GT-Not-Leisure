@@ -3,7 +3,7 @@ package com.science.gtnl.common.block.blocks;
 import static com.science.gtnl.utils.enums.BlockIcons.LASER_BEACON_TOP;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
@@ -22,7 +22,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Textures;
 
-public class BlockLaserBeacon extends Block implements ITileEntityProvider {
+public class BlockLaserBeacon extends BlockContainer {
 
     public IIcon topBlockIcon;
     public static IIcon[] textures;

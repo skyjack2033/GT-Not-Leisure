@@ -247,7 +247,7 @@ public class ElectricProspectorTool extends Item {
                                 FluidStack fStack = UndergroundOil.undergroundOil(
                                     aWorld.getChunkFromBlockCoords(c.xPosition * 16 + x, c.zPosition * 16 + z),
                                     -1);
-                                if (fStack.amount > 0) {
+                                if (fStack != null && fStack.amount > 0) {
                                     packet.addBlock(
                                         c.xPosition * 16 + x,
                                         1,
@@ -327,9 +327,11 @@ public class ElectricProspectorTool extends Item {
             if (aWorld.getBlock(aX, aY, aZ) == Blocks.bedrock) {
                 if (!aWorld.isRemote) {
                     FluidStack fStack = UndergroundOil.undergroundOil(aWorld.getChunkFromBlockCoords(aX, aZ), -1);
-                    addChatMassageByValue(aPlayer, fStack.amount, fStack.getLocalizedName());
-                    if (!aPlayer.capabilities.isCreativeMode) {
-                        setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts);
+                    if (fStack != null) {
+                        addChatMassageByValue(aPlayer, fStack.amount, fStack.getLocalizedName());
+                        if (!aPlayer.capabilities.isCreativeMode) {
+                            setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts);
+                        }
                     }
                 }
             } else {

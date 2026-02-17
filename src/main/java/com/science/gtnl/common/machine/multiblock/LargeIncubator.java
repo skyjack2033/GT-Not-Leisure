@@ -110,7 +110,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
             .beginStructureBlock(13, 9, 13, false)
             .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)
             .addOtherStructurePart(
-                StatCollector.translateToLocal("Tooltip_LargeIncubator_Radio_Hatch"),
+                StatCollector.translateToLocal("Tooltip_LargeIncubator_RadioHatch"),
                 StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"),
                 1)
             .addInputBus(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)

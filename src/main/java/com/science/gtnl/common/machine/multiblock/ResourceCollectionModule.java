@@ -30,9 +30,9 @@ import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.DynamicTextWidget;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
+import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
@@ -175,7 +175,12 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
         if (!structureCheck_EM(STRUCTURE_PIECE_MAIN, 0, 1, 0)) return false;
 
-        mParallelTier = getParallelTier(aStack);
+        mParallelTier = MultiMachineBase.getParallelTier(aStack);
+
+        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+            mParallelTier = module.mTier;
+            break;
+        }
 
         return mParallelControllerHatches.size() <= 1;
     }
@@ -184,10 +189,6 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     public void clearHatches() {
         super.clearHatches();
         this.mParallelControllerHatches.clear();
-        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
-            mParallelTier = module.mTier;
-            break;
-        }
     }
 
     @Override
@@ -225,7 +226,7 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     }
 
     public int getMaxParallelRecipes() {
-        mParallelTier = getParallelTier(getControllerSlot());
+        mParallelTier = MultiMachineBase.getParallelTier(getControllerSlot());
         if (mParallelTier <= 1) {
             return 8;
         }
@@ -371,40 +372,6 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
             .addOutputHatch(StatCollector.translateToLocal("Tooltip_ResourceCollectionModule_Casing"), 1)
             .toolTipFinisher();
         return tt;
-    }
-
-    public int getParallelTier(ItemStack inventory) {
-        if (inventory == null) return 0;
-        if (inventory.isItemEqual(GTNLItemList.LVParallelControllerCore.getInternalStack_unsafe())) {
-            return 1;
-        } else if (inventory.isItemEqual(GTNLItemList.MVParallelControllerCore.getInternalStack_unsafe())) {
-            return 2;
-        } else if (inventory.isItemEqual(GTNLItemList.HVParallelControllerCore.getInternalStack_unsafe())) {
-            return 3;
-        } else if (inventory.isItemEqual(GTNLItemList.EVParallelControllerCore.getInternalStack_unsafe())) {
-            return 4;
-        } else if (inventory.isItemEqual(GTNLItemList.IVParallelControllerCore.getInternalStack_unsafe())) {
-            return 5;
-        } else if (inventory.isItemEqual(GTNLItemList.LuVParallelControllerCore.getInternalStack_unsafe())) {
-            return 6;
-        } else if (inventory.isItemEqual(GTNLItemList.ZPMParallelControllerCore.getInternalStack_unsafe())) {
-            return 7;
-        } else if (inventory.isItemEqual(GTNLItemList.UVParallelControllerCore.getInternalStack_unsafe())) {
-            return 8;
-        } else if (inventory.isItemEqual(GTNLItemList.UHVParallelControllerCore.getInternalStack_unsafe())) {
-            return 9;
-        } else if (inventory.isItemEqual(GTNLItemList.UEVParallelControllerCore.getInternalStack_unsafe())) {
-            return 10;
-        } else if (inventory.isItemEqual(GTNLItemList.UIVParallelControllerCore.getInternalStack_unsafe())) {
-            return 11;
-        } else if (inventory.isItemEqual(GTNLItemList.UMVParallelControllerCore.getInternalStack_unsafe())) {
-            return 12;
-        } else if (inventory.isItemEqual(GTNLItemList.UXVParallelControllerCore.getInternalStack_unsafe())) {
-            return 13;
-        } else if (inventory.isItemEqual(GTNLItemList.MAXParallelControllerCore.getInternalStack_unsafe())) {
-            return 14;
-        }
-        return 0;
     }
 
     public boolean addAllHatchToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {

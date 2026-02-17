@@ -48,6 +48,7 @@ public enum GTNLItemList implements IItemContainer {
     DirePatternEncoder,
     AEChisel,
     DimensionRespawnAnchor,
+    EssentiaHatch,
 
     BronzeBrickCasing,
     SteelBrickCasing,
@@ -271,6 +272,16 @@ public enum GTNLItemList implements IItemContainer {
     ExoticRAMWafer,
     ShatteredSingularity,
     TransdimensionalMnemonicMatrix,
+    EssentiaUpgradeEmpty,
+    EssentiaUpgradeAir,
+    EssentiaUpgradeThermal,
+    EssentiaUpgradeUnstable,
+    EssentiaUpgradeVictus,
+    EssentiaUpgradeTainted,
+    EssentiaUpgradeMechanics,
+    EssentiaUpgradeSpirit,
+    EssentiaUpgradeRadiation,
+    EssentiaUpgradeElectric,
 
     LVWirelessEnergyCover,
     MVWirelessEnergyCover,
@@ -637,6 +648,7 @@ public enum GTNLItemList implements IItemContainer {
     PCBFactory,
     FurnaceArray,
     FOGSolarMuonCatalystModule,
+    LargeEssentiaGenerator,
 
     EnergyHatchLV,
     EnergyHatchLV4A,

@@ -121,7 +121,6 @@ import com.science.gtnl.common.recipe.gtnl.SteamManufacturerRecipes;
 import com.science.gtnl.common.recipe.gtnl.SteamWeatherModuleRecipes;
 import com.science.gtnl.common.recipe.gtnl.SteamWoodcutterRecipes;
 import com.science.gtnl.common.recipe.gtnl.TheTwilightForestRecipes;
-import com.science.gtnl.common.recipe.thaumcraft.TCRecipePool;
 import com.science.gtnl.common.recipe.thaumcraft.TCResearches;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.utils.enums.ModList;
@@ -184,18 +183,17 @@ public class RecipeLoader {
             loadBuffTargetChamberRecipe();
         }
 
-        IRecipePool[] recipePools = new IRecipePool[] { new BotaniaManaInfusionRecipes(), new TCRecipePool(),
-            new ChemicalRecipes(), new ElectrolyzerRecipes(), new MixerRecipes(), new AssemblerRecipes(),
-            new AutoclaveRecipes(), new AlloyBlastSmelterRecipes(), new CompressorRecipes(),
-            new ReFusionReactorRecipes(), new RealArtificialStarRecipes(), new PortalToAlfheimRecipes(),
-            new NatureSpiritArrayRecipes(), new ManaInfusionRecipes(), new TranscendentPlasmaMixerRecipes(),
-            new PlasmaForgeRecipes(), new CraftingTableRecipes(), new ChemicalBathRecipes(), new SteamCrackerRecipes(),
-            new DesulfurizerRecipes(), new PetrochemicalPlantRecipes(), new FusionReactorRecipes(),
-            new SmeltingMixingFurnaceRecipes(), new FluidExtraction(), new DigesterRecipes(),
-            new DissolutionTankRecipes(), new CentrifugeRecipes(), new ChemicalDehydratorRecipes(),
-            new ChemicalPlantRecipes(), new RareEarthCentrifugalRecipes(), new MatterFabricatorRecipes(),
-            new TheTwilightForestRecipes(), new IsaMillRecipes(), new CellRegulatorRecipes(),
-            new VacuumFurnaceRecipes(), new FishingGroundRecipes(), new DistilleryRecipes(),
+        IRecipePool[] recipePools = new IRecipePool[] { new BotaniaManaInfusionRecipes(), new ChemicalRecipes(),
+            new ElectrolyzerRecipes(), new MixerRecipes(), new AssemblerRecipes(), new AutoclaveRecipes(),
+            new AlloyBlastSmelterRecipes(), new CompressorRecipes(), new ReFusionReactorRecipes(),
+            new RealArtificialStarRecipes(), new PortalToAlfheimRecipes(), new NatureSpiritArrayRecipes(),
+            new ManaInfusionRecipes(), new TranscendentPlasmaMixerRecipes(), new PlasmaForgeRecipes(),
+            new CraftingTableRecipes(), new ChemicalBathRecipes(), new SteamCrackerRecipes(), new DesulfurizerRecipes(),
+            new PetrochemicalPlantRecipes(), new FusionReactorRecipes(), new SmeltingMixingFurnaceRecipes(),
+            new FluidExtraction(), new DigesterRecipes(), new DissolutionTankRecipes(), new CentrifugeRecipes(),
+            new ChemicalDehydratorRecipes(), new ChemicalPlantRecipes(), new RareEarthCentrifugalRecipes(),
+            new MatterFabricatorRecipes(), new TheTwilightForestRecipes(), new IsaMillRecipes(),
+            new CellRegulatorRecipes(), new VacuumFurnaceRecipes(), new FishingGroundRecipes(), new DistilleryRecipes(),
             new ElementCopyingRecipes(), new AlloySmelterRecipes(), new MolecularTransformerRecipes(),
             new NaquadahReactorRecipes(), new DragonEvolutionFusionCraftingRecipes(), new LaserEngraverRecipes(),
             new BacterialVatRecipes(), new CuttingRecipes(), new BlastFurnaceRecipes(), new FluidExtractorRecipes(),

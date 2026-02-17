@@ -138,7 +138,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
             .beginStructureBlock(5, 5, 5, false)
             .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)
             .addOtherStructurePart(
-                StatCollector.translateToLocal("Tooltip_Incubator_Radio_Hatch"),
+                StatCollector.translateToLocal("Tooltip_Incubator_RadioHatch"),
                 StatCollector.translateToLocal("Tooltip_Incubator_Casing"),
                 1)
             .addInputBus(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)

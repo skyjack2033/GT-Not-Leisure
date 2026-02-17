@@ -1,0 +1,590 @@
+package com.science.gtnl.common.machine.multiblock;
+
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
+import static gregtech.api.enums.HatchElement.*;
+import static gregtech.api.enums.Textures.BlockIcons.*;
+import static gregtech.api.util.GTStructureUtility.*;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+
+import com.google.common.collect.ImmutableList;
+import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
+import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
+import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
+import com.gtnewhorizon.structurelib.structure.StructureDefinition;
+import com.science.gtnl.common.block.blocks.tile.TileEntityEssentiaHatch;
+import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.utils.enums.GTNLItemList;
+import com.science.gtnl.utils.machine.LargeEssentiaEnergyData;
+
+import bartworks.system.material.WerkstoffLoader;
+import goodgenerator.items.GGMaterial;
+import goodgenerator.loader.Loaders;
+import gregtech.api.enums.Materials;
+import gregtech.api.enums.Textures;
+import gregtech.api.interfaces.ITexture;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.metatileentity.implementations.MTEHatch;
+import gregtech.api.metatileentity.implementations.MTEHatchDynamo;
+import gregtech.api.metatileentity.implementations.MTEHatchInput;
+import gregtech.api.objects.XSTR;
+import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.render.TextureFactory;
+import gregtech.api.util.GTModHandler;
+import gregtech.api.util.GTUtility;
+import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.misc.GTStructureChannels;
+import gtPlusPlus.core.fluids.GTPPFluids;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.common.config.ConfigBlocks;
+
+public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenerator> implements ISurvivalConstructable {
+
+    public int mStableValue = 0;
+    public int mTierLimit = -1;
+    public int tierMachine = -1;
+    public long mLeftEnergy;
+    public int mUpgrade = 1;
+    public final XSTR random = new XSTR();
+    public List<TileEntityEssentiaHatch> mEssentiaHatch = new ArrayList<>();
+
+    private static final int HORIZONTAL_OFF_SET = 4;
+    private static final int VERTICAL_OFF_SET = 0;
+    private static final int DEPTH_OFF_SET = 4;
+
+    public static final Fluid XPJUICE = FluidRegistry.getFluid("xpjuice");
+    public static final Fluid LIFEESSENCE = FluidRegistry.getFluid("lifeessence");
+    public static final Fluid PURE = FluidRegistry.getFluid("fluidpure");
+    public static final Fluid DEATH = FluidRegistry.getFluid("fluiddeath");
+    public static final Fluid SPIRIT = FluidRegistry.getFluid("witchery:fluidspirit");
+    public static final Fluid HOLLOW_TEARS = FluidRegistry.getFluid("witchery:hollowtears");
+
+    public static final Object2IntMap<GTUtility.ItemId> ESSENTIA_UPGRADE = new Object2IntOpenHashMap<>();
+
+    static {
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeEmpty.get(1)), 0);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeAir.get(1)), 1);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeThermal.get(1)), 2);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeUnstable.get(1)), 3);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeVictus.get(1)), 4);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeTainted.get(1)), 5);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeMechanics.get(1)), 6);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeSpirit.get(1)), 7);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeRadiation.get(1)), 8);
+        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeElectric.get(1)), 9);
+    }
+
+    public LargeEssentiaGenerator(int id, String name, String nameRegional) {
+        super(id, name, nameRegional);
+    }
+
+    public LargeEssentiaGenerator(String name) {
+        super(name);
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeEssentiaGenerator(this.mName);
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return 1536;
+    }
+
+    @Override
+    public void clearHatches() {
+        super.clearHatches();
+        mEssentiaHatch.clear();
+        tierMachine = -1;
+        mStableValue = 0;
+    }
+
+    @Override
+    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
+        return checkPiece(mName, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) && checkHatch();
+    }
+
+    @Override
+    public void setupParameters() {
+        for (TileEntityEssentiaHatch hatch : mEssentiaHatch) {
+            hatch.mState = mUpgrade;
+        }
+        switch (tierMachine) {
+            case 0 -> {
+                ++mStableValue;
+                mTierLimit = Math.max(mTierLimit, 4);
+            }
+            case 1 -> {
+                mStableValue += 2;
+                mTierLimit = Math.max(mTierLimit, 6);
+            }
+            case 2 -> {
+                mStableValue += 5;
+                mTierLimit = Math.max(mTierLimit, 8);
+            }
+            case 3 -> {
+                mStableValue += 10;
+                mTierLimit = Math.max(mTierLimit, 10);
+            }
+        }
+    }
+
+    @Override
+    public boolean checkHatch() {
+        setupParameters();
+        if (mDynamoHatches.size() + mExoticDynamoHatches.size() != 1) return false;
+        for (MTEHatchInput tHatch : mInputHatches) {
+            if (tHatch.mTier > mTierLimit) return false;
+        }
+        for (MTEHatchDynamo tHatch : mDynamoHatches) {
+            if (tHatch.mTier > mTierLimit) return false;
+        }
+        for (MTEHatch tHatch : mExoticDynamoHatches) {
+            if (tHatch.mTier > mTierLimit) return false;
+            int maxAmp = 64 << (Integer.bitCount(mUpgrade) + Math.max(0, GTUtility.getTier(tHatch.maxEUOutput()) - 5));
+            if (tHatch.maxAmperesOut() > maxAmp) return false;
+        }
+        return super.checkHatch();
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        this.mStableValue = aNBT.getInteger("mStableValue");
+        this.mLeftEnergy = aNBT.getLong("mLeftEnergy");
+        this.mUpgrade = aNBT.getInteger("mUpgrade");
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setInteger("mStableValue", this.mStableValue);
+        aNBT.setLong("mLeftEnergy", this.mLeftEnergy);
+        aNBT.setInteger("mUpgrade", this.mUpgrade);
+    }
+
+    @Override
+    public boolean onRightclick(IGregTechTileEntity aBaseMetaTileEntity, EntityPlayer aPlayer) {
+        if (!getBaseMetaTileEntity().isServerSide()) return super.onRightclick(aBaseMetaTileEntity, aPlayer);
+        var itemstack = aPlayer.inventory.getCurrentItem();
+        if (itemstack == null) return super.onRightclick(aBaseMetaTileEntity, aPlayer);
+        var tCurrentItem = GTUtility.ItemId.createWithoutNBT(itemstack);
+        int upgrade = ESSENTIA_UPGRADE.getOrDefault(tCurrentItem, -1);
+        if (upgrade != -1) {
+            if ((mUpgrade & (1 << upgrade)) == 0 && upgrade != 0) {
+                itemstack.stackSize--;
+                mUpgrade = mUpgrade | (1 << upgrade);
+                GTUtility.sendChatToPlayer(
+                    aPlayer,
+                    itemstack.getDisplayName() + StatCollector.translateToLocal("Info_LargeEssentiaGenerator_00"));
+            }
+            setupParameters();
+            return true;
+        }
+        return super.onRightclick(aBaseMetaTileEntity, aPlayer);
+    }
+
+    @Override
+    public IStructureDefinition<LargeEssentiaGenerator> getStructureDefinition() {
+        return StructureDefinition.<LargeEssentiaGenerator>builder()
+            .addShape(
+                mName,
+                transpose(
+                    new String[][] {
+                        { "A       A", "         ", "         ", "         ", "    ~    ", "         ", "         ",
+                            "         ", "A       A" },
+                        { "T   C   T", "   CEC   ", "  CEEEC  ", " CEEEEEC ", "CEEEEEEEC", " CEEEEEC ", "  CEEEC  ",
+                            "   CEC   ", "T   C   T" },
+                        { "T  TXT  T", "  TCXCT  ", " TCCXCCT ", "TCCCXCCCT", "XXXXXXXXX", "TCCCXCCCT", " TCCXCCT ",
+                            "  TCXCT  ", "T  TXT  T" } }))
+            .addElement('A', ofBlock(ConfigBlocks.blockCosmeticOpaque, 1))
+            .addElement('T', ofBlock(ConfigBlocks.blockCosmeticSolid, 7))
+            .addElement('C', ofBlock(Loaders.magicCasing, 0))
+            .addElement(
+                'E',
+                GTStructureChannels.TIER_MACHINE_CASING.use(
+                    ofBlocksTiered(
+                        LargeEssentiaGenerator::getTierCasing,
+                        ImmutableList.of(
+                            Pair.of(Loaders.essentiaCell, 0),
+                            Pair.of(Loaders.essentiaCell, 1),
+                            Pair.of(Loaders.essentiaCell, 2),
+                            Pair.of(Loaders.essentiaCell, 3)),
+                        -1,
+                        (t, m) -> t.tierMachine = m,
+                        t -> t.tierMachine)))
+            .addElement(
+                'X',
+                ofChain(
+                    buildHatchAdder(LargeEssentiaGenerator.class)
+                        .atLeast(Dynamo.or(ExoticDynamo), Maintenance, InputHatch)
+                        .casingIndex(getCasingTextureID())
+                        .dot(1)
+                        .build(),
+                    ofBlock(Loaders.magicCasing, 0),
+                    ofSpecificTileAdder(
+                        LargeEssentiaGenerator::addEssentiaHatch,
+                        TileEntityEssentiaHatch.class,
+                        Loaders.magicCasing,
+                        0)))
+            .build();
+    }
+
+    @Nullable
+    public static Integer getTierCasing(Block block, int meta) {
+        if (block == null) return null;
+        if (block == Loaders.essentiaCell) return meta;
+        return null;
+    }
+
+    public boolean addEssentiaHatch(TileEntityEssentiaHatch aTileEntity) {
+        return this.mEssentiaHatch.add(aTileEntity);
+    }
+
+    @NotNull
+    @Override
+    public CheckRecipeResult checkProcessing() {
+        this.mEfficiency = 10000;
+        this.mMaxProgresstime = 20;
+        setEssentiaToEUVoltageAndAmp(getVoltageLimit(), getAmpLimit());
+        return CheckRecipeResultRegistry.GENERATING;
+    }
+
+    public long getVoltageLimit() {
+        long voltage = 0;
+        for (MTEHatch tHatch : this.mExoticDynamoHatches) {
+            voltage += tHatch.maxEUOutput();
+        }
+        for (MTEHatchDynamo tHatch : this.mDynamoHatches) {
+            voltage += tHatch.maxEUOutput();
+        }
+        return voltage;
+    }
+
+    public long getAmpLimit() {
+        long amp = 0;
+        for (MTEHatch tHatch : this.mExoticDynamoHatches) {
+            amp += tHatch.maxAmperesOut();
+        }
+        for (MTEHatchDynamo tHatch : this.mDynamoHatches) {
+            amp += tHatch.maxAmperesOut();
+        }
+        return amp;
+    }
+
+    public long getPerAspectEnergy(Aspect aspect) {
+        int type = LargeEssentiaEnergyData.getAspectTypeIndex(aspect);
+        if (!isValidEssentia(aspect)) return 0;
+        return switch (type) {
+            case 0 -> normalEssentia(aspect);
+            case 1 -> airEssentia(aspect);
+            case 2 -> thermalEssentia(aspect);
+            case 3 -> unstableEssentia(aspect);
+            case 4 -> victusEssentia(aspect);
+            case 5 -> taintedEssentia(aspect);
+            case 6 -> mechanicEssentia(aspect);
+            case 7 -> spiritEssentia(aspect);
+            case 8 -> radiationEssentia(aspect);
+            case 9 -> electricEssentia(aspect);
+            default -> 0;
+        };
+    }
+
+    public long normalEssentia(Aspect aspect) {
+        return LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+    }
+
+    public long airEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 0;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 8;
+        if (depleteInput(Materials.LiquidAir.getFluid(ceoInput))) {
+            ceoOutput = 1.5D;
+        } else if (depleteInput(Materials.Air.getGas(ceoInput))) {
+            ceoOutput = 1.0D;
+        }
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long thermalEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 0;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
+        if (depleteInput(Materials.SuperCoolant.getFluid(ceoInput))) {
+            ceoOutput = 9.0D;
+        } else if (depleteInput(new FluidStack(GTPPFluids.Cryotheum, ceoInput))) {
+            ceoOutput = 5.0D;
+        } else if (depleteInput(GTModHandler.getIC2Coolant(ceoInput))) {
+            ceoOutput = 1.5D;
+        } else if (depleteInput(Materials.Ice.getSolid(ceoInput))) {
+            ceoOutput = 1.2D;
+        } else if (depleteInput(GTModHandler.getDistilledWater(ceoInput))) {
+            ceoOutput = 1.0D;
+        } else if (depleteInput(Materials.Water.getFluid(ceoInput))) {
+            ceoOutput = 0.5D;
+        }
+
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long unstableEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 0;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 4;
+        if (depleteInput(WerkstoffLoader.Xenon.getFluidOrGas(ceoInput))) {
+            ceoOutput = 4.0D;
+        } else if (depleteInput(WerkstoffLoader.Krypton.getFluidOrGas(ceoInput))) {
+            ceoOutput = 3.0D;
+        } else if (depleteInput(Materials.Argon.getFluid(ceoInput))) {
+            ceoOutput = 2.5D;
+        } else if (depleteInput(WerkstoffLoader.Neon.getFluidOrGas(ceoInput))) {
+            ceoOutput = 2.2D;
+        } else if (depleteInput(Materials.Helium.getFluid(ceoInput))) {
+            ceoOutput = 2.0D;
+        } else if (depleteInput(Materials.Nitrogen.getFluid(ceoInput))) {
+            ceoOutput = 1.0D;
+        }
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long victusEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 1.0D;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 18;
+        if (depleteInput(new FluidStack(XPJUICE, ceoInput))) {
+            ceoOutput = 2.0D;
+        } else if (depleteInput(new FluidStack(LIFEESSENCE, ceoInput))) {
+            ceoOutput = 6.0D;
+        }
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long taintedEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 1.0D;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 3;
+        int chance = 2000;
+        if (depleteInput(new FluidStack(PURE, ceoInput))) {
+            ceoOutput = 60.0D;
+            chance = 0;
+        } else if (depleteInput(new FluidStack(DEATH, ceoInput))) {
+            ceoOutput = Math.pow(25000D / baseValue, 4);
+            chance = 4000;
+        }
+
+        if (random.nextInt(10000) < chance) {
+            World world = getBaseMetaTileEntity().getWorld();
+            int tX = random.nextInt(4);
+            int tZ = random.nextInt(4);
+            if (world.isAirBlock(tX, 0, tZ)) world.setBlock(tX, 0, tZ, ConfigBlocks.blockFluxGas, random.nextInt(8), 3);
+        }
+
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long mechanicEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 0;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 20;
+        if (depleteInput(Materials.Lubricant.getFluid(ceoInput))) {
+            ceoOutput = 1.0D;
+        }
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long spiritEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 1.0D;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
+        if (depleteInput(new FluidStack(SPIRIT, ceoInput))) {
+            ceoOutput = 10D * (1 + mStableValue / 100D);
+        } else if (depleteInput(new FluidStack(HOLLOW_TEARS, ceoInput))) {
+            ceoOutput = 15D * (1 + 100D / mStableValue);
+        }
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long radiationEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = 1.0D;
+        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 6;
+        if (depleteInput(Materials.Caesium.getMolten(ceoInput))) {
+            ceoOutput = 2.0D;
+        } else if (depleteInput(Materials.Uranium235.getMolten(ceoInput))) {
+            ceoOutput = 3.0D;
+        } else if (depleteInput(Materials.Naquadah.getMolten(ceoInput))) {
+            ceoOutput = 4.0D;
+        } else if (depleteInput(GGMaterial.atomicSeparationCatalyst.getMolten(ceoInput))) {
+            ceoOutput = 16.0D;
+        }
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public long electricEssentia(Aspect aspect) {
+        long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
+        double ceoOutput = Math.pow(3.0, GTUtility.getTier(getVoltageLimit()));
+        return (long) (baseValue * ceoOutput);
+    }
+
+    public void setEssentiaToEUVoltageAndAmp(long voltageLimit, long ampLimit) {
+        long eut = mLeftEnergy;
+        long euVoltage = voltageLimit;
+        long euAmp = 1;
+
+        long maxEU;
+        if (voltageLimit > 0 && ampLimit > Long.MAX_VALUE / voltageLimit) {
+            maxEU = Long.MAX_VALUE;
+        } else {
+            maxEU = voltageLimit * ampLimit;
+        }
+
+        if (eut <= 0) {
+            for (TileEntityEssentiaHatch hatch : this.mEssentiaHatch) {
+                AspectList aspects = hatch.getAspects();
+                Iterator<Aspect> iterator = aspects.aspects.keySet()
+                    .iterator();
+
+                while (iterator.hasNext()) {
+                    Aspect aspect = iterator.next();
+                    if (!isValidEssentia(aspect)) continue;
+
+                    long perEU = getPerAspectEnergy(aspect) * mStableValue / 25;
+                    if (perEU <= 0) continue;
+
+                    long needEU = maxEU - eut;
+                    if (needEU <= 0) break;
+
+                    int amount = aspects.getAmount(aspect);
+                    if (amount <= 0) {
+                        iterator.remove();
+                        continue;
+                    }
+
+                    long canConsume = needEU / perEU;
+
+                    if (canConsume <= 0) {
+                        if (eut == 0) {
+                            canConsume = 1;
+                        } else continue;
+                    }
+
+                    if (canConsume > amount) canConsume = amount;
+                    long add = canConsume * perEU;
+
+                    if (Long.MAX_VALUE - eut < add) {
+                        eut = Long.MAX_VALUE;
+                    } else {
+                        eut += add;
+                    }
+
+                    aspects.reduce(aspect, (int) canConsume);
+
+                    if (aspects.getAmount(aspect) <= 0) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+
+        if (eut <= voltageLimit * 20) {
+            euVoltage = eut / 20;
+            mLeftEnergy = 0;
+
+        } else {
+            euAmp = Math.min(ampLimit, eut / euVoltage / 20);
+            if (euAmp < 1) euAmp = 1;
+            mLeftEnergy = eut - (euVoltage * euAmp * 20);
+        }
+
+        this.lEUt = euVoltage * euAmp;
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        final MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeEssentiaGeneratorRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_06"))
+            .beginStructureBlock(9, 3, 9, true)
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"))
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"))
+            .addDynamoHatch(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"))
+            .addOtherStructurePart(
+                StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_EssentiaInputHatch"),
+                StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"),
+                1)
+            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
+        int colorIndex, boolean aActive, boolean aRedstone) {
+        if (side == facing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.of(MACHINE_CASING_DRAGONEGG), TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.MACHINE_CASING_DRAGONEGG_GLOW)
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.of(MACHINE_CASING_DRAGONEGG) };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    public boolean isValidEssentia(Aspect aspect) {
+        int type = LargeEssentiaEnergyData.getAspectTypeIndex(aspect);
+        return type != -1 && (mUpgrade & (1 << type)) != 0;
+    }
+
+    @Override
+    public void construct(ItemStack stackSize, boolean hintsOnly) {
+        buildPiece(mName, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
+    }
+
+    @Override
+    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+        if (mMachine) return -1;
+        return survivalBuildPiece(
+            mName,
+            stackSize,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            elementBudget,
+            env,
+            false,
+            true);
+    }
+}

@@ -673,6 +673,16 @@ public class ItemLoader {
                 127,
                 new String[] { StatCollector.translateToLocal("Tooltip_TransdimensionalMnemonicMatrix_00"),
                     StatCollector.translateToLocal("Tooltip_TransdimensionalMnemonicMatrix_01") }));
+        GTNLItemList.EssentiaUpgradeEmpty.set(MetaItemAdder.initItem(128));
+        GTNLItemList.EssentiaUpgradeAir.set(MetaItemAdder.initItem(129));
+        GTNLItemList.EssentiaUpgradeThermal.set(MetaItemAdder.initItem(130));
+        GTNLItemList.EssentiaUpgradeUnstable.set(MetaItemAdder.initItem(131));
+        GTNLItemList.EssentiaUpgradeVictus.set(MetaItemAdder.initItem(132));
+        GTNLItemList.EssentiaUpgradeTainted.set(MetaItemAdder.initItem(133));
+        GTNLItemList.EssentiaUpgradeMechanics.set(MetaItemAdder.initItem(134));
+        GTNLItemList.EssentiaUpgradeSpirit.set(MetaItemAdder.initItem(135));
+        GTNLItemList.EssentiaUpgradeRadiation.set(MetaItemAdder.initItem(136));
+        GTNLItemList.EssentiaUpgradeElectric.set(MetaItemAdder.initItem(137));
 
         GTNLItemList.ManaElectricProspectorTool.set(ElectricProspectorTool.initItem(0, 10, 9999));
         GTNLItemList.DebugElectricProspectorTool.set(ElectricProspectorTool.initItem(1, 50, Integer.MAX_VALUE));

@@ -91,6 +91,7 @@ import com.science.gtnl.common.machine.multiblock.LapotronChip;
 import com.science.gtnl.common.machine.multiblock.LargeBioLab;
 import com.science.gtnl.common.machine.multiblock.LargeBrewer;
 import com.science.gtnl.common.machine.multiblock.LargeCircuitAssembler;
+import com.science.gtnl.common.machine.multiblock.LargeEssentiaGenerator;
 import com.science.gtnl.common.machine.multiblock.LargeGasCollector;
 import com.science.gtnl.common.machine.multiblock.LargeIncubator;
 import com.science.gtnl.common.machine.multiblock.LibraryOfRuina;
@@ -1730,6 +1731,13 @@ public class MachineLoader {
         addItemTooltip(GTNLItemList.FOGSolarMuonCatalystModule.get(1), AnimatedText.TIDAL);
         addItemTooltip(GTNLItemList.FOGSolarMuonCatalystModule.get(1), AnimatedText.WAVE);
         addItemTooltip(GTNLItemList.FOGSolarMuonCatalystModule.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+
+        GTNLItemList.LargeEssentiaGenerator.set(
+            new LargeEssentiaGenerator(
+                LARGE_ESSENTIA_GENERATOR.ID,
+                "NameLargeEssentiaGenerator",
+                StatCollector.translateToLocal("NameLargeEssentiaGenerator")));
+        addItemTooltip(GTNLItemList.LargeEssentiaGenerator.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
         // Special Machine
         GTNLItemList.CheatOreProcessingFactory.set(
