@@ -13,7 +13,6 @@ import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.TickrateAPI;
-import com.science.gtnl.common.block.blocks.tile.TileEntityEssentiaHatch;
 import com.science.gtnl.common.entity.EntitySteamRocket;
 import com.science.gtnl.common.item.items.MilledOre;
 import com.science.gtnl.common.item.steamRocket.SchematicSteamRocket;
@@ -39,7 +38,6 @@ import gregtech.api.util.GTModHandler;
 import gregtech.common.misc.WirelessNetworkManager;
 import micdoodle8.mods.galacticraft.api.recipe.RocketFuels;
 import micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry;
-import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
 
 public class MaterialLoader {
 
@@ -94,9 +92,6 @@ public class MaterialLoader {
         if (Mods.InventoryBogoSorter.isModLoaded()) {
             loadCraftTweak();
         }
-
-        EssentiaTileContainerHelper.INSTANCE.perms
-            .addAspectStorageTileToInjectPermissions(TileEntityEssentiaHatch.class);
 
         OrePrefixes.nugget.addFamiliarPrefix(OrePrefixes.ingotHot);
         OrePrefixes.ingot.addFamiliarPrefix(OrePrefixes.ingotHot);

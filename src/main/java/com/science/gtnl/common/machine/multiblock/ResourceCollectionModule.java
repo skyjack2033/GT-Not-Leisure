@@ -80,12 +80,12 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String SM_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/space_module";
     private static final String[][] shape = StructureUtils.readStructureFromFile(SM_STRUCTURE_FILE_PATH);
-    public final ItemStack MiningDroneMkVIII = ItemList.MiningDroneUV.get(16);
-    public final ItemStack MiningDroneMkIX = ItemList.MiningDroneUHV.get(16);
-    public final ItemStack MiningDroneMkX = ItemList.MiningDroneUEV.get(16);
-    public final ItemStack MiningDroneMkXI = ItemList.MiningDroneUIV.get(16);
-    public final ItemStack MiningDroneMkXII = ItemList.MiningDroneUMV.get(16);
-    public final ItemStack MiningDroneMkXIII = ItemList.MiningDroneUXV.get(16);
+    public static final ItemStack MiningDroneMkVIII = ItemList.MiningDroneUV.get(16);
+    public static final ItemStack MiningDroneMkIX = ItemList.MiningDroneUHV.get(16);
+    public static final ItemStack MiningDroneMkX = ItemList.MiningDroneUEV.get(16);
+    public static final ItemStack MiningDroneMkXI = ItemList.MiningDroneUIV.get(16);
+    public static final ItemStack MiningDroneMkXII = ItemList.MiningDroneUMV.get(16);
+    public static final ItemStack MiningDroneMkXIII = ItemList.MiningDroneUXV.get(16);
 
     public ArrayList<ParallelControllerHatch> mParallelControllerHatches = new ArrayList<>();
 
@@ -228,9 +228,11 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     public int getMaxParallelRecipes() {
         mParallelTier = MultiMachineBase.getParallelTier(getControllerSlot());
 
-        for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
-            mParallelTier = module.mTier;
-            return module.getParallel();
+        if (mParallelControllerHatches != null) {
+            for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
+                mParallelTier = module.mTier;
+                return module.getParallel();
+            }
         }
 
         if (mParallelTier <= 1) {
