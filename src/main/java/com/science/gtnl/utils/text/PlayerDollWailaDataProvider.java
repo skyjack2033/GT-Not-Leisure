@@ -45,14 +45,19 @@ public class PlayerDollWailaDataProvider implements IWailaDataProvider {
             }
         }
 
-        if (tag.hasKey("enableElytra")) {
-            boolean enableElytra = tag.getBoolean("enableElytra");
-            String elytraStatus = enableElytra ? StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_On")
-                : StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Off");
+        if (tag.hasKey("RenderCapeMode", 1)) {
+            byte renderMode = tag.getByte("RenderCapeMode");
+
+            String renderStatus = switch (renderMode) {
+                case 1 -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Cape");
+                case 2 -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Elytra");
+                default -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Off");
+            };
+
             currentTip.add(
                 EnumChatFormatting.AQUA + StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03")
                     + EnumChatFormatting.GOLD
-                    + elytraStatus);
+                    + renderStatus);
         }
 
         if (tag.hasKey("SkinHttp", 8)) {
@@ -100,7 +105,7 @@ public class PlayerDollWailaDataProvider implements IWailaDataProvider {
             if (playerDoll.getCapeHttp() != null) {
                 tag.setString("CapeHttp", playerDoll.getCapeHttp());
             }
-            tag.setBoolean("enableElytra", playerDoll.isEnableElytra());
+            tag.setByte("RenderCapeMode", playerDoll.getRenderCapeMode());
 
         }
         return tag;

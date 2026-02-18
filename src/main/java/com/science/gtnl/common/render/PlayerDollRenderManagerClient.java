@@ -7,16 +7,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 
@@ -31,389 +27,242 @@ import org.lwjgl.opengl.GL11;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class PlayerDollRenderManagerClient {
 
-    public static boolean isSteveModel = false;
-    public static Object2ObjectMap<String, ResourceLocation> textureCache = new Object2ObjectOpenHashMap<>();
-    public static Object2ObjectMap<String, BufferedImage> pendingTextures = new Object2ObjectOpenHashMap<>();
-    public static Object2IntMap<String> uploadedTextureIds = new Object2IntOpenHashMap<>();
-    public static ResourceLocation DEFAULT_SKIN = new ResourceLocation(RESOURCE_ROOT_ID + ":" + "model/skin.png");
-    public static ResourceLocation DEFAULT_CAPE = new ResourceLocation(RESOURCE_ROOT_ID + ":" + "model/cape.png");
-    public static ResourceLocation MODEL_STEVE = new ResourceLocation(
-        RESOURCE_ROOT_ID + ":" + "model/PlayerDollSteve.obj");
-    public static ResourceLocation MODEL_ALEX = new ResourceLocation(
-        RESOURCE_ROOT_ID + ":" + "model/PlayerDollAlex.obj");
-    public static ResourceLocation MODEL_STEVE_ELYTRA = new ResourceLocation(
-        RESOURCE_ROOT_ID + ":" + "model/PlayerDollSteve.obj");
-    public static ResourceLocation MODEL_ALEX_ELYTRA = new ResourceLocation(
-        RESOURCE_ROOT_ID + ":" + "model/PlayerDollAlexElytra.obj");
-    public static IModelCustom modelSteve = AdvancedModelLoader.loadModel(MODEL_STEVE);
-    public static IModelCustom modelAlex = AdvancedModelLoader.loadModel(MODEL_ALEX);
-    public static IModelCustom modelSteveElytra = AdvancedModelLoader.loadModel(MODEL_STEVE_ELYTRA);
-    public static IModelCustom modelAlexElytra = AdvancedModelLoader.loadModel(MODEL_ALEX_ELYTRA);
+    public static final Map<String, ResourceLocation> TEXTURE_SKIN_CACHE = new ConcurrentHashMap<>();
+    public static final Map<String, ResourceLocation> TEXTURE_CAPE_CACHE = new ConcurrentHashMap<>();
+    public static final Map<String, BufferedImage> TEXTURE_PENDING = new ConcurrentHashMap<>();
+    public static final Map<String, Boolean> SKIN_MODEL = new ConcurrentHashMap<>();
+    public static final Map<String, Integer> UPLOADED_TEXTURE_ID = new ConcurrentHashMap<>();
 
-    public static File SKIN_DIR = new File("config/GTNotLeisure/skin");
-    public static File CUSTOM_SKIN_DIR = new File("config/GTNotLeisure/custom_skin");
-    public static File CUSTOM_CAPE_DIR = new File("config/GTNotLeisure/custom_cape");
+    public static final ResourceLocation DEFAULT_SKIN = new ResourceLocation(RESOURCE_ROOT_ID + ":model/skin.png");
+    public static final ResourceLocation DEFAULT_CAPE = new ResourceLocation(RESOURCE_ROOT_ID + ":model/cape.png");
+
+    public static final IModelCustom MODEL = AdvancedModelLoader
+        .loadModel(new ResourceLocation(RESOURCE_ROOT_ID + ":model/PlayerDoll.obj"));
+
+    public static final File SKIN_DIR = new File("config/GTNotLeisure/skin");
+    public static final File CAPE_DIR = new File("config/GTNotLeisure/cape");
+    public static final File CUSTOM_SKIN_DIR = new File("config/GTNotLeisure/custom_skin");
+    public static final File CUSTOM_CAPE_DIR = new File("config/GTNotLeisure/custom_cape");
 
     static {
-        if (!SKIN_DIR.exists()) SKIN_DIR.mkdirs();
-        if (!CUSTOM_SKIN_DIR.exists()) CUSTOM_SKIN_DIR.mkdirs();
-        if (!CUSTOM_CAPE_DIR.exists()) CUSTOM_CAPE_DIR.mkdirs();
+        SKIN_DIR.mkdirs();
+        CAPE_DIR.mkdirs();
+        CUSTOM_SKIN_DIR.mkdirs();
+        CUSTOM_CAPE_DIR.mkdirs();
+        SKIN_MODEL.put("model/skin.png", false);
     }
 
-    public static void renderModel(ResourceLocation skinTexture, ResourceLocation capeTexture, boolean enableElytra) {
-        bindTexture(skinTexture);
-        if (isSteveModel) {
-            if (enableElytra) {
-                modelSteveElytra.renderPart("Body");
-                modelSteveElytra.renderPart("Body_Layer");
-                modelSteveElytra.renderPart("Hat");
-                modelSteveElytra.renderPart("Hat_Layer");
-                modelSteveElytra.renderPart("Head");
-                modelSteveElytra.renderPart("Left_Arm");
-                modelSteveElytra.renderPart("Left_Arm_Layer");
-                modelSteveElytra.renderPart("Left_Leg");
-                modelSteveElytra.renderPart("Left_Leg_Layer");
-                modelSteveElytra.renderPart("Right_Arm");
-                modelSteveElytra.renderPart("Right_Arm_Layer");
-                modelSteveElytra.renderPart("Right_Leg");
-                modelSteveElytra.renderPart("Right_Leg_Layer");
-                bindTexture(capeTexture);
-                modelSteveElytra.renderPart("ElytraRight");
-                modelSteveElytra.renderPart("ElytraLeft");
-            } else {
-                modelSteve.renderPart("Body");
-                modelSteve.renderPart("Body_Layer");
-                modelSteve.renderPart("Hat");
-                modelSteve.renderPart("Hat_Layer");
-                modelSteve.renderPart("Head");
-                modelSteve.renderPart("Left_Arm");
-                modelSteve.renderPart("Left_Arm_Layer");
-                modelSteve.renderPart("Left_Leg");
-                modelSteve.renderPart("Left_Leg_Layer");
-                modelSteve.renderPart("Right_Arm");
-                modelSteve.renderPart("Right_Arm_Layer");
-                modelSteve.renderPart("Right_Leg");
-                modelSteve.renderPart("Right_Leg_Layer");
-                bindTexture(capeTexture);
-                modelSteve.renderPart("cape");
-            }
+    public static void renderModel(ResourceLocation skin, ResourceLocation cape, byte mode) {
+        bindTexture(skin);
+        boolean steve = getOrPutSkinModel(
+            skin.getResourcePath()
+                .replace("texture_", "")
+                .replace("skin_", ""));
+
+        MODEL.renderPart("Body");
+        MODEL.renderPart("Body_Layer");
+        MODEL.renderPart("Head");
+        MODEL.renderPart("Head_Layer");
+        MODEL.renderPart("Left_Leg");
+        MODEL.renderPart("Left_Leg_Layer");
+        MODEL.renderPart("Right_Leg");
+        MODEL.renderPart("Right_Leg_Layer");
+
+        if (steve) {
+            MODEL.renderPart("Left_Arm");
+            MODEL.renderPart("Left_Arm_Layer");
+            MODEL.renderPart("Right_Arm");
+            MODEL.renderPart("Right_Arm_Layer");
         } else {
-            if (enableElytra) {
-                modelAlexElytra.renderPart("Body");
-                modelAlexElytra.renderPart("Body_Layer");
-                modelAlexElytra.renderPart("Hat");
-                modelAlexElytra.renderPart("Hat_Layer");
-                modelAlexElytra.renderPart("Head");
-                modelAlexElytra.renderPart("Left_Arm");
-                modelAlexElytra.renderPart("Left_Arm_Layer");
-                modelAlexElytra.renderPart("Left_Leg");
-                modelAlexElytra.renderPart("Left_Leg_Layer");
-                modelAlexElytra.renderPart("Right_Arm");
-                modelAlexElytra.renderPart("Right_Arm_Layer");
-                modelAlexElytra.renderPart("Right_Leg");
-                modelAlexElytra.renderPart("Right_Leg_Layer");
-                bindTexture(capeTexture);
-                modelAlexElytra.renderPart("ElytraRight");
-                modelAlexElytra.renderPart("ElytraLeft");
-            } else {
-                modelAlex.renderPart("Body");
-                modelAlex.renderPart("Body_Layer");
-                modelAlex.renderPart("Hat");
-                modelAlex.renderPart("Hat_Layer");
-                modelAlex.renderPart("Head");
-                modelAlex.renderPart("Left_Arm");
-                modelAlex.renderPart("Left_Arm_Layer");
-                modelAlex.renderPart("Left_Leg");
-                modelAlex.renderPart("Left_Leg_Layer");
-                modelAlex.renderPart("Right_Arm");
-                modelAlex.renderPart("Right_Arm_Layer");
-                modelAlex.renderPart("Right_Leg");
-                modelAlex.renderPart("Right_Leg_Layer");
-                bindTexture(capeTexture);
-                modelAlex.renderPart("cape");
-            }
+            MODEL.renderPart("Left_Arm_Alex");
+            MODEL.renderPart("Left_Arm_Alex_Layer");
+            MODEL.renderPart("Right_Arm_Alex");
+            MODEL.renderPart("Right_Arm_Alex_Layer");
+        }
+
+        bindTexture(cape == null ? DEFAULT_CAPE : cape);
+
+        if (mode == 2) {
+            MODEL.renderPart("Elytra_Right");
+            MODEL.renderPart("Elytra_Left");
+        } else if (mode == 1) {
+            MODEL.renderPart("Cape");
         }
     }
 
-    public static String fetchSkinUrl(String uuid) {
+    public static ResourceLocation loadProfileTexture(String uuid, TextureType type) {
+        if (uuid == null || BLACKLISTED_UUIDS.contains(uuid)) return type == TextureType.SKIN ? DEFAULT_SKIN : null;
+
+        Map<String, ResourceLocation> cache = type == TextureType.SKIN ? TEXTURE_SKIN_CACHE : TEXTURE_CAPE_CACHE;
+
+        ResourceLocation cached = cache.get(uuid);
+        if (cached != null) return cached;
+
+        File local = new File(type == TextureType.SKIN ? SKIN_DIR : CAPE_DIR, uuid + ".png");
+        if (local.exists()) {
+            ResourceLocation tex = getLocalTextureFromFile(local, type);
+            if (tex != null) {
+                cache.put(uuid, tex);
+                return tex;
+            }
+        }
+
+        String url = fetchTextureUrl(uuid, type);
+        if (url == null) return type == TextureType.SKIN ? DEFAULT_SKIN : null;
+
+        return downloadAndCacheTexture(url, uuid, type, false);
+    }
+
+    public static ResourceLocation downloadAndCacheCustomSkin(String url) {
+        return downloadAndCacheTexture(url, Integer.toHexString(url.hashCode()), TextureType.SKIN, true);
+    }
+
+    public static ResourceLocation downloadAndCacheCustomCape(String url) {
+        return downloadAndCacheTexture(url, Integer.toHexString(url.hashCode()), TextureType.CAPE, true);
+    }
+
+    private static ResourceLocation downloadAndCacheTexture(String url, String key, TextureType type, boolean custom) {
+
+        if (url == null) return type == TextureType.SKIN ? DEFAULT_SKIN : null;
+
+        Map<String, ResourceLocation> cache = type == TextureType.SKIN ? TEXTURE_SKIN_CACHE : TEXTURE_CAPE_CACHE;
+
+        ResourceLocation cached = cache.get(key);
+        if (cached != null) return cached;
+
+        File dir = type == TextureType.SKIN ? (custom ? CUSTOM_SKIN_DIR : SKIN_DIR)
+            : (custom ? CUSTOM_CAPE_DIR : CAPE_DIR);
+
+        File target = new File(dir, key + ".png");
+
+        if (target.exists()) return getLocalTextureFromFile(target, type);
+
+        return AsyncDownloader.getTexture(key, () -> {
+            try (InputStream in = new URL(url).openStream(); FileOutputStream out = new FileOutputStream(target)) {
+
+                byte[] buf = new byte[8192];
+                int len;
+                while ((len = in.read(buf)) != -1) out.write(buf, 0, len);
+
+                if (!isValidImage(target)) {
+                    target.delete();
+                    return type == TextureType.SKIN ? DEFAULT_SKIN : null;
+                }
+
+                ResourceLocation tex = getLocalTextureFromFile(target, type);
+                if (tex != null) cache.put(key, tex);
+                return tex;
+
+            } catch (IOException e) {
+                target.delete();
+                return type == TextureType.SKIN ? DEFAULT_SKIN : null;
+            }
+        });
+    }
+
+    public static String fetchTextureUrl(String uuid, TextureType type) {
         try {
-            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(3000);
+            HttpURLConnection conn = (HttpURLConnection) new URL(
+                "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid).openConnection();
 
-            if (connection.getResponseCode() != 200) {
-                BLACKLISTED_UUIDS.add(uuid);
-                return null;
-            }
+            conn.setConnectTimeout(3000);
+            if (conn.getResponseCode() != 200) return null;
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            reader.close();
+            String json = readAll(conn.getInputStream());
 
-            String json = response.toString();
-            if (json.contains("\"errorMessage\"")) {
-                BLACKLISTED_UUIDS.add(uuid);
-                return null;
-            }
-
-            JsonObject profileJson = new JsonParser().parse(json)
+            JsonObject profile = new JsonParser().parse(json)
                 .getAsJsonObject();
-            String value = profileJson.getAsJsonArray("properties")
+
+            String value = profile.getAsJsonArray("properties")
                 .get(0)
                 .getAsJsonObject()
                 .get("value")
                 .getAsString();
-            String decoded = new String(
-                Base64.getDecoder()
-                    .decode(value));
-            JsonObject texturesJson = new JsonParser().parse(decoded)
-                .getAsJsonObject();
-            return texturesJson.getAsJsonObject("textures")
-                .getAsJsonObject("SKIN")
+
+            JsonObject textures = new JsonParser().parse(
+                new String(
+                    Base64.getDecoder()
+                        .decode(value)))
+                .getAsJsonObject()
+                .getAsJsonObject("textures");
+
+            if (type == TextureType.SKIN && textures.has("SKIN")) return textures.getAsJsonObject("SKIN")
                 .get("url")
                 .getAsString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            BLACKLISTED_UUIDS.add(uuid);
-            return null;
-        }
-    }
 
-    public static ResourceLocation downloadAndCacheSkinFromUrl(String url, String uuid) {
+            if (type == TextureType.CAPE && textures.has("CAPE")) return textures.getAsJsonObject("CAPE")
+                .get("url")
+                .getAsString();
 
-        if (BLACKLISTED_SKIN_URLS.contains(url)) {
-            return DEFAULT_SKIN;
-        }
-        File targetFile = new File(SKIN_DIR, uuid + ".png");
-
-        if (targetFile.exists()) {
-            return getLocalTextureFromFile(targetFile);
-        }
-
-        ResourceLocation result = AsyncDownloader.getTexture(uuid, () -> {
-            if (BLACKLISTED_SKIN_URLS.contains(url)) return DEFAULT_SKIN;
-
-            try (InputStream in = new URL(url).openStream(); FileOutputStream out = new FileOutputStream(targetFile)) {
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-
-                if (isValidImage(targetFile)) {
-                    ResourceLocation texture = getLocalTextureFromFile(targetFile);
-                    if (texture != null) {
-                        textureCache.put(uuid, texture);
-                    }
-                    return texture;
-                }
-            } catch (IOException e) {
-                targetFile.delete();
-            }
-            BLACKLISTED_SKIN_URLS.add(url);
-            return DEFAULT_SKIN;
-        });
-
-        return result != null ? result : DEFAULT_SKIN;
-    }
-
-    public static ResourceLocation downloadAndCacheCustomSkin(String skinHttp) {
-
-        if (BLACKLISTED_SKIN_URLS.contains(skinHttp)) {
-            return null;
-        }
-
-        String fileName = Integer.toHexString(skinHttp.hashCode()) + ".png";
-        File targetFile = new File(CUSTOM_SKIN_DIR, fileName);
-
-        ResourceLocation cached = textureCache.get(Integer.toHexString(skinHttp.hashCode()));
-        if (cached != null) return cached;
-
-        if (targetFile.exists()) {
-            return getLocalTextureFromFile(targetFile);
-        }
-
-        ResourceLocation result = AsyncDownloader.getTexture(Integer.toHexString(skinHttp.hashCode()), () -> {
-            try (InputStream in = new URL(skinHttp).openStream();
-                FileOutputStream out = new FileOutputStream(targetFile)) {
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-
-                if (isValidImage(targetFile)) {
-                    ResourceLocation texture = getLocalTextureFromFile(targetFile);
-                    if (texture != null) {
-                        textureCache.put(Integer.toHexString(skinHttp.hashCode()), texture);
-                    }
-                    return texture;
-                }
-            } catch (IOException e) {
-                targetFile.delete();
-            }
-            BLACKLISTED_SKIN_URLS.add(skinHttp);
-            return null;
-        });
-
-        return result != null ? result : DEFAULT_SKIN;
-    }
-
-    public static ResourceLocation downloadAndCacheCustomCape(String capeHttp) {
-        String fileName = Integer.toHexString(capeHttp.hashCode()) + ".png";
-        File targetFile = new File(CUSTOM_CAPE_DIR, fileName);
-
-        if (BLACKLISTED_CAPE_URLS.contains(capeHttp)) {
-            return null;
-        }
-
-        ResourceLocation cached = textureCache.get(Integer.toHexString(capeHttp.hashCode()));
-        if (cached != null) return cached;
-
-        if (targetFile.exists()) {
-            return getLocalTextureFromFile(targetFile);
-        }
-
-        ResourceLocation result = AsyncDownloader.getTexture(Integer.toHexString(capeHttp.hashCode()), () -> {
-            try (InputStream in = new URL(capeHttp).openStream();
-                FileOutputStream out = new FileOutputStream(targetFile)) {
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-
-                if (isValidImage(targetFile)) {
-                    ResourceLocation texture = getLocalTextureFromFile(targetFile);
-                    if (texture != null) {
-                        textureCache.put(Integer.toHexString(capeHttp.hashCode()), texture);
-                    }
-                    return texture;
-                }
-            } catch (IOException e) {
-                targetFile.delete();
-            }
-            BLACKLISTED_CAPE_URLS.add(capeHttp);
-            return null;
-        });
-
-        return result != null ? result : DEFAULT_CAPE;
-    }
-
-    public static ResourceLocation getLocalTextureFromFile(File file) {
-        if (file == null || !file.exists()) return null;
-
-        String fileName = file.getName();
-
-        if (textureCache.containsKey(fileName)) {
-            return textureCache.get(fileName);
-        }
-
-        try {
-            BufferedImage image = ImageIO.read(file);
-            if (image != null) {
-                image = processSkinFormat(image);
-
-                pendingTextures.put(fileName, image);
-
-                ResourceLocation textureLocation = new ResourceLocation("custom", "texture_" + fileName);
-                textureCache.put(fileName, textureLocation);
-
-                return textureLocation;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) {}
 
         return null;
     }
 
-    public static boolean isValidImage(File file) {
-        try (InputStream in = new FileInputStream(file)) {
-            byte[] header = new byte[8];
-            if (in.read(header) != 8) {
-                return false;
-            }
+    public static String readAll(InputStream in) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            String s;
+            while ((s = br.readLine()) != null) sb.append(s);
+        }
+        return sb.toString();
+    }
 
-            boolean isPng = header[0] == (byte) 0x89 && header[1] == (byte) 0x50
-                && header[2] == (byte) 0x4E
-                && header[3] == (byte) 0x47
-                && header[4] == (byte) 0x0D
-                && header[5] == (byte) 0x0A
-                && header[6] == (byte) 0x1A
-                && header[7] == (byte) 0x0A;
+    public static ResourceLocation getLocalTextureFromFile(File file, TextureType type) {
+        if (!file.exists()) return null;
 
-            boolean isJpg = header[0] == (byte) 0xFF && header[1] == (byte) 0xD8 && header[2] == (byte) 0xFF;
+        String name = file.getName()
+            .replace(".png", "");
+        Map<String, ResourceLocation> cache = type == TextureType.SKIN ? TEXTURE_SKIN_CACHE : TEXTURE_CAPE_CACHE;
 
-            if (!isPng && !isJpg) {
-                return false;
-            }
+        ResourceLocation cached = cache.get(name);
+        if (cached != null) return cached;
 
-            BufferedImage image = ImageIO.read(file);
-            if (image == null) {
-                return false;
-            }
+        try {
+            BufferedImage img = ImageIO.read(file);
+            if (img == null) return null;
 
-            int width = image.getWidth();
-            int height = image.getHeight();
+            img = processSkinFormat(img);
 
-            if (width > 1024 || height > 1024) {
-                return false;
-            }
+            String key = (type == TextureType.SKIN ? "skin_" : "cape_") + name;
+            TEXTURE_PENDING.put(key, img);
 
-            int pixel = image.getRGB(54, 20);
-            boolean isTransparent = (pixel >> 24) == 0x00;
-            isSteveModel = !isTransparent;
+            ResourceLocation rl = new ResourceLocation("custom", "texture_" + key);
+            cache.put(name, rl);
+            return rl;
 
-            return true;
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
-    public static void bindTexture(ResourceLocation texture) {
-        if (texture == null) {
-            texture = DEFAULT_SKIN;
+    public static void bindTexture(ResourceLocation tex) {
+        if (tex == null) tex = DEFAULT_SKIN;
+
+        if (!"custom".equals(tex.getResourceDomain())) {
+            Minecraft.getMinecraft().renderEngine.bindTexture(tex);
+            return;
         }
 
-        if (texture.getResourceDomain()
-            .equals("custom")) {
-            String key = texture.getResourcePath()
-                .replace("texture_", "");
+        String key = tex.getResourcePath()
+            .replace("texture_", "");
 
-            if (!uploadedTextureIds.containsKey(key)) {
-                BufferedImage image = pendingTextures.remove(key);
-                if (image != null) {
-                    int textureId = TextureUtil.uploadTextureImage(GL11.glGenTextures(), image);
-                    uploadedTextureIds.put(key, textureId);
-                } else {
-                    return;
-                }
-            }
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, uploadedTextureIds.get(key));
-        } else {
-            Minecraft.getMinecraft().renderEngine.bindTexture(texture);
-        }
-    }
+        Integer id = UPLOADED_TEXTURE_ID.get(key);
+        if (id == null) {
+            BufferedImage img = TEXTURE_PENDING.remove(key);
+            if (img == null) return;
 
-    public static boolean isValidUsername(String username) {
-        if (username == null || username.length() < 3 || username.length() > 16) {
-            return false;
+            id = TextureUtil.uploadTextureImage(GL11.glGenTextures(), img);
+            UPLOADED_TEXTURE_ID.put(key, id);
         }
-        return username.matches("^[a-zA-Z0-9_\\-]+$");
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
     }
 
     public static BufferedImage processSkinFormat(BufferedImage image) {
@@ -463,31 +312,110 @@ public class PlayerDollRenderManagerClient {
         return result;
     }
 
-    public static void setAreaTransparent(int[] imageData, int imageWidth, int x, int y, int width, int height) {
-        if (!hasTransparency(imageData, imageWidth, x, y, width, height)) {
-            for (int i = x; i < width; ++i) {
-                for (int j = y; j < height; ++j) {
-                    imageData[i + j * imageWidth] &= 16777215;
-                }
-            }
-        }
+    public static void setAreaTransparent(int[] data, int w, int x, int y, int x2, int y2) {
+        if (!hasTransparency(data, w, x, y, x2, y2))
+            for (int i = x; i < x2; i++) for (int j = y; j < y2; j++) data[i + j * w] &= 0xFFFFFF;
     }
 
-    public static void setAreaOpaque(int[] imageData, int imageWidth, int x, int y, int width, int height) {
-        for (int i = x; i < width; ++i) {
-            for (int j = y; j < height; ++j) {
-                imageData[i + j * imageWidth] |= -16777216;
-            }
-        }
+    public static void setAreaOpaque(int[] data, int w, int x, int y, int x2, int y2) {
+        for (int i = x; i < x2; i++) for (int j = y; j < y2; j++) data[i + j * w] |= 0xFF000000;
     }
 
-    public static boolean hasTransparency(int[] imageData, int imageWidth, int x, int y, int width, int height) {
-        for (int i = x; i < width; ++i) {
-            for (int j = y; j < height; ++j) {
-                if ((imageData[i + j * imageWidth] >> 24 & 255) < 128) return true;
-            }
-        }
+    public static boolean hasTransparency(int[] data, int w, int x, int y, int x2, int y2) {
+        for (int i = x; i < x2; i++) for (int j = y; j < y2; j++) if ((data[i + j * w] >>> 24) < 128) return true;
         return false;
     }
 
+    public static boolean getOrPutSkinModel(String skinFileName) {
+        if (skinFileName == null || skinFileName.isEmpty()) return true;
+
+        if (SKIN_MODEL.containsKey(skinFileName)) {
+            return SKIN_MODEL.get(skinFileName);
+        }
+
+        String key = skinFileName + ".png";
+
+        File file = new File(SKIN_DIR, key);
+        if (!file.exists()) {
+            file = new File(CUSTOM_SKIN_DIR, key);
+        }
+
+        if (!file.exists()) {
+            SKIN_MODEL.put(skinFileName, true);
+            return true;
+        }
+
+        try {
+            BufferedImage image = ImageIO.read(file);
+            if (image == null) {
+                SKIN_MODEL.put(skinFileName, true);
+                return true;
+            }
+
+            int pixel = image.getRGB(54, 20);
+            boolean isSteve = (pixel >> 24) != 0x00;
+            SKIN_MODEL.put(skinFileName, isSteve);
+            return isSteve;
+        } catch (IOException e) {
+            e.printStackTrace();
+            SKIN_MODEL.put(skinFileName, true);
+            return true;
+        }
+    }
+
+    public static boolean isValidUsername(String username) {
+        if (username == null || username.length() < 3 || username.length() > 16) {
+            return false;
+        }
+        return username.matches("^[a-zA-Z0-9_\\-]+$");
+    }
+
+    public static boolean isValidImage(File file) {
+        try (InputStream in = new FileInputStream(file)) {
+            byte[] header = new byte[8];
+            if (in.read(header) != 8) {
+                return false;
+            }
+
+            boolean isPng = header[0] == (byte) 0x89 && header[1] == (byte) 0x50
+                && header[2] == (byte) 0x4E
+                && header[3] == (byte) 0x47
+                && header[4] == (byte) 0x0D
+                && header[5] == (byte) 0x0A
+                && header[6] == (byte) 0x1A
+                && header[7] == (byte) 0x0A;
+
+            boolean isJpg = header[0] == (byte) 0xFF && header[1] == (byte) 0xD8 && header[2] == (byte) 0xFF;
+
+            if (!isPng && !isJpg) {
+                return false;
+            }
+
+            BufferedImage image = ImageIO.read(file);
+            if (image == null) {
+                return false;
+            }
+
+            int width = image.getWidth();
+            int height = image.getHeight();
+
+            if (width > 1024 || height > 1024) {
+                return false;
+            }
+
+            int pixel = image.getRGB(54, 20);
+            boolean isTransparent = (pixel >> 24) == 0x00;
+            SKIN_MODEL.put(file.getName(), !isTransparent);
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public enum TextureType {
+        SKIN,
+        CAPE
+    }
 }

@@ -79,9 +79,9 @@ public class BlockPlayerDoll extends BlockContainer {
                     tileEntityPlayerDoll.setCapeHttp(capeHttp);
                 }
 
-                if (nbt.hasKey("enableElytra", 1)) {
-                    boolean enableElytra = nbt.getBoolean("enableElytra");
-                    tileEntityPlayerDoll.setEnableElytra(enableElytra);
+                if (nbt.hasKey("RenderCapeMode", 1)) {
+                    byte renderCapeMode = nbt.getByte("RenderCapeMode");
+                    tileEntityPlayerDoll.setRenderCapeMode(renderCapeMode);
                 }
 
                 if (nbt.hasKey("SkullOwner", 8)) {
@@ -163,7 +163,7 @@ public class BlockPlayerDoll extends BlockContainer {
             if (tileEntityPlayerDoll.hasCapeHttp()) {
                 nbt.setString("CapeHttp", tileEntityPlayerDoll.getCapeHttp());
             }
-            nbt.setBoolean("enableElytra", tileEntityPlayerDoll.isEnableElytra());
+            nbt.setByte("RenderCapeMode", tileEntityPlayerDoll.getRenderCapeMode());
 
             if (!nbt.hasNoTags()) {
                 drop.setTagCompound(nbt);

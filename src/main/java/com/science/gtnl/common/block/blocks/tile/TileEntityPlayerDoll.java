@@ -25,7 +25,7 @@ public class TileEntityPlayerDoll extends TileEntity {
     public String capeHttp;
     @Setter
     @Getter
-    public boolean enableElytra;
+    public byte renderCapeMode;
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
@@ -45,8 +45,8 @@ public class TileEntityPlayerDoll extends TileEntity {
         if (nbt.hasKey("CapeHttp", 8)) {
             this.capeHttp = nbt.getString("CapeHttp");
         }
-        if (nbt.hasKey("enableElytra")) {
-            enableElytra = nbt.getBoolean("enableElytra");
+        if (nbt.hasKey("RenderCapeMode")) {
+            renderCapeMode = nbt.getByte("RenderCapeMode");
         }
     }
 
@@ -68,7 +68,7 @@ public class TileEntityPlayerDoll extends TileEntity {
             nbt.setString("CapeHttp", this.capeHttp);
         }
 
-        nbt.setBoolean("enableElytra", enableElytra);
+        nbt.setByte("RenderCapeMode", renderCapeMode);
     }
 
     @Override

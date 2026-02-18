@@ -2,7 +2,7 @@ package com.science.gtnl.utils;
 
 import static com.science.gtnl.ScienceNotLeisure.*;
 import static com.science.gtnl.common.packet.client.SoundHandler.PLAYING_SOUNDS;
-import static com.science.gtnl.common.render.PlayerDollRenderManagerClient.textureCache;
+import static com.science.gtnl.common.render.PlayerDollRenderManagerClient.*;
 import static com.science.gtnl.common.render.tile.MeteorMinerRenderer.visualStateMap;
 
 import java.util.Map;
@@ -263,7 +263,6 @@ public class SubscribeEventClientUtils {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-        textureCache.clear();
         visualStateMap.clear();
     }
 

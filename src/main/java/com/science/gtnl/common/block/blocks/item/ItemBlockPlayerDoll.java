@@ -1,9 +1,12 @@
 package com.science.gtnl.common.block.blocks.item;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,14 +29,18 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.VanillaButtonWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
+import com.science.gtnl.utils.enums.GTNLItemList;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.enums.SoundResource;
 import gregtech.api.gui.modularui.GTUIInfos;
 import gregtech.api.gui.modularui.GTUITextures;
 
 public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI {
+
+    public static final byte RENDER_OFF = 0;
+    public static final byte RENDER_CAPE = 1;
+    public static final byte RENDER_ELYTRA = 2;
 
     public ItemBlockPlayerDoll(Block block) {
         super(block);
@@ -56,14 +63,19 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
             }
         }
 
-        if (tag.hasKey("enableElytra")) {
-            boolean enableElytra = tag.getBoolean("enableElytra");
-            String elytraStatus = enableElytra ? StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_On")
-                : StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Off");
+        if (tag.hasKey("RenderCapeMode", 1)) {
+            byte renderMode = tag.getByte("RenderCapeMode");
+
+            String renderStatus = switch (renderMode) {
+                case 1 -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Cape");
+                case 2 -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Elytra");
+                default -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Off");
+            };
+
             toolTip.add(
                 EnumChatFormatting.AQUA + StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03")
                     + EnumChatFormatting.GOLD
-                    + elytraStatus);
+                    + renderStatus);
         }
 
         if (tag.hasKey("SkinHttp", 8)) {
@@ -89,6 +101,17 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
     }
 
     @Override
+    public void getSubItems(Item item, CreativeTabs creativeTabs, List<ItemStack> itemStacks) {
+        super.getSubItems(item, creativeTabs, itemStacks);
+        itemStacks.add(
+            PlayerDollData.create()
+                .skullOwner("Huan_F")
+                .displayName("幻方")
+                .renderCapeMode(RENDER_CAPE)
+                .build());
+    }
+
+    @Override
     public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
         float hitX, float hitY, float hitZ, int metadata) {
         return super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata);
@@ -108,34 +131,73 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
         return new PlayerDollUIFactory(buildContext).createWindow();
     }
 
+    public static class PlayerDollData {
+
+        private final ItemStack stack = GTNLItemList.PlayerDoll.get(1);
+        private final NBTTagCompound nbt;
+
+        public PlayerDollData() {
+            NBTTagCompound tag = stack.getTagCompound();
+            if (tag == null) {
+                tag = new NBTTagCompound();
+                stack.setTagCompound(tag);
+            }
+            this.nbt = tag;
+        }
+
+        public static PlayerDollData create() {
+            return new PlayerDollData();
+        }
+
+        public PlayerDollData skullOwner(String name) {
+            nbt.setString("SkullOwner", name);
+            return this;
+        }
+
+        public PlayerDollData skinHttp(String url) {
+            nbt.setString("SkinHttp", url);
+            return this;
+        }
+
+        public PlayerDollData capeHttp(String url) {
+            nbt.setString("CapeHttp", url);
+            return this;
+        }
+
+        public PlayerDollData renderCapeMode(byte value) {
+            nbt.setByte("RenderCapeMode", value);
+            return this;
+        }
+
+        public PlayerDollData displayName(String name) {
+            stack.setStackDisplayName(name);
+            return this;
+        }
+
+        public ItemStack build() {
+            return stack;
+        }
+    }
+
     @Desugar
     public record PlayerDollUIFactory(UIBuildContext buildContext) {
 
         public ModularWindow createWindow() {
             ModularWindow.Builder builder = ModularWindow.builder(300, 97);
-            builder.widget(
-                new FakeSyncWidget.StringSyncer(
-                    () -> getSkullOwner(getCurrentItem()),
-                    val -> setSkullOwner(getCurrentItem(), val)));
-            builder.widget(
-                new FakeSyncWidget.StringSyncer(
-                    () -> getSkinHttp(getCurrentItem()),
-                    val -> setSkinHttp(getCurrentItem(), val)));
-            builder.widget(
-                new FakeSyncWidget.StringSyncer(
-                    () -> getCapeHttp(getCurrentItem()),
-                    val -> setCapeHttp(getCurrentItem(), val)));
-            builder.widget(
-                new FakeSyncWidget.BooleanSyncer(
-                    () -> getEnableElytra(getCurrentItem()),
-                    val -> setEnableElytra(getCurrentItem(), val)));
+            ItemStack stack = buildContext.getPlayer().inventory.getCurrentItem();
+
+            builder
+                .widget(new FakeSyncWidget.StringSyncer(() -> getSkullOwner(stack), val -> setSkullOwner(stack, val)));
+            builder.widget(new FakeSyncWidget.StringSyncer(() -> getSkinHttp(stack), val -> setSkinHttp(stack, val)));
+            builder.widget(new FakeSyncWidget.StringSyncer(() -> getCapeHttp(stack), val -> setCapeHttp(stack, val)));
+            builder.widget(new FakeSyncWidget.ByteSyncer(() -> getRenderMode(stack), val -> setRenderMode(stack, val)));
 
             builder.setBackground(ModularUITextures.VANILLA_BACKGROUND);
 
-            TextFieldWidget playerNameField = new TextFieldWidget();
+            TextFieldWidget playerNameText = new TextFieldWidget();
             builder.widget(
-                playerNameField.setGetter(() -> getSkullOwner(getCurrentItem()))
-                    .setSetter(value -> setSkullOwner(getCurrentItem(), value))
+                playerNameText.setGetter(() -> getSkullOwner(stack))
+                    .setSetter(value -> setSkullOwner(stack, value))
                     .setTextColor(Color.WHITE.dark(1))
                     .setTextAlignment(Alignment.CenterLeft)
                     .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD.withOffset(-1, -1, 2, 2))
@@ -143,10 +205,10 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
                     .setSize(77, 12))
                 .widget(new TextWidget(StatCollector.translateToLocal("Tooltip_PlayerDoll_00")).setPos(88, 10));
 
-            TextFieldWidget skinHttpField = new TextFieldWidget();
+            TextFieldWidget skinHttpText = new TextFieldWidget();
             builder.widget(
-                skinHttpField.setGetter(() -> getSkinHttp(getCurrentItem()))
-                    .setSetter(value -> setSkinHttp(getCurrentItem(), value))
+                skinHttpText.setGetter(() -> getSkinHttp(stack))
+                    .setSetter(value -> setSkinHttp(stack, value))
                     .setTextColor(Color.WHITE.dark(1))
                     .setTextAlignment(Alignment.CenterLeft)
                     .setScrollBar()
@@ -155,10 +217,10 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
                     .setSize(197, 12))
                 .widget(new TextWidget(StatCollector.translateToLocal("Tooltip_PlayerDoll_02")).setPos(208, 28));
 
-            TextFieldWidget capeHttpField = new TextFieldWidget();
+            TextFieldWidget capeHttpText = new TextFieldWidget();
             builder.widget(
-                capeHttpField.setGetter(() -> getCapeHttp(getCurrentItem()))
-                    .setSetter(value -> setCapeHttp(getCurrentItem(), value))
+                capeHttpText.setGetter(() -> getCapeHttp(stack))
+                    .setSetter(value -> setCapeHttp(stack, value))
                     .setTextColor(Color.WHITE.dark(1))
                     .setTextAlignment(Alignment.CenterLeft)
                     .setScrollBar()
@@ -167,26 +229,26 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
                     .setSize(197, 12))
                 .widget(new TextWidget(StatCollector.translateToLocal("Tooltip_PlayerDoll_04")).setPos(208, 46));
 
+            ButtonWidget renderCapeModeButton = new ButtonWidget();
             builder.widget(
-                new ButtonWidget().setOnClick(
-                    (clickData, widget) -> { setEnableElytra(getCurrentItem(), !getEnableElytra(getCurrentItem())); })
-                    .setPlayClickSoundResource(
-                        () -> getEnableElytra(getCurrentItem()) ? SoundResource.GUI_BUTTON_UP.resourceLocation
-                            : SoundResource.GUI_BUTTON_DOWN.resourceLocation)
+                renderCapeModeButton.setOnClick((clickData, widget) -> cycleRenderMode(stack))
                     .setBackground(() -> {
-                        if (getEnableElytra(getCurrentItem())) {
-                            return new IDrawable[] { GTUITextures.BUTTON_STANDARD_PRESSED,
-                                GTUITextures.OVERLAY_BUTTON_POWER_SWITCH_ON };
-                        } else {
+                        byte mode = getRenderMode(stack);
+                        if (mode == RENDER_CAPE) {
                             return new IDrawable[] { GTUITextures.BUTTON_STANDARD,
-                                GTUITextures.OVERLAY_BUTTON_POWER_SWITCH_OFF };
+                                GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER };
                         }
+
+                        if (mode == RENDER_ELYTRA) {
+                            return new IDrawable[] { GTUITextures.BUTTON_STANDARD,
+                                GTUITextures.OVERLAY_BUTTON_MACHINEMODE_UNPACKAGER };
+                        }
+
+                        return new IDrawable[] { GTUITextures.BUTTON_STANDARD,
+                            GTUITextures.OVERLAY_BUTTON_MACHINEMODE_DEFAULT };
                     })
-                    .attachSyncer(
-                        new FakeSyncWidget.BooleanSyncer(
-                            () -> getEnableElytra(getCurrentItem()),
-                            val -> { setEnableElytra(getCurrentItem(), val); }),
-                        builder)
+                    .dynamicTooltip(() -> Collections.singletonList(getRenderModeTooltip(stack)))
+                    .setUpdateTooltipEveryTick(true)
                     .setPos(64, 66)
                     .setSize(16, 16))
                 .widget(new TextWidget(StatCollector.translateToLocal("Tooltip_PlayerDoll_03")).setPos(85, 68));
@@ -194,17 +256,57 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
             builder.widget(
                 new VanillaButtonWidget().setDisplayString(StatCollector.translateToLocal("Tooltip_PlayerDoll_01"))
                     .setOnClick((clickData, widget) -> {
-                        playerNameField.onRemoveFocus();
-                        skinHttpField.onRemoveFocus();
-                        capeHttpField.onRemoveFocus();
+                        playerNameText.onRemoveFocus();
+                        skinHttpText.onRemoveFocus();
+                        capeHttpText.onRemoveFocus();
                         widget.getWindow()
                             .tryClose();
                     })
-                    .setSynced(false, false)
+                    .setSynced(true, false)
                     .setPos(8, 62)
                     .setSize(48, 20));
 
             return builder.build();
+        }
+
+        public NBTTagCompound getOrCreateTag(ItemStack stack) {
+            NBTTagCompound nbt = stack.getTagCompound();
+            if (nbt == null) {
+                nbt = new NBTTagCompound();
+                stack.setTagCompound(nbt);
+            }
+            return nbt;
+        }
+
+        public void cycleRenderMode(ItemStack stack) {
+            byte mode = getRenderMode(stack);
+            mode++;
+            if (mode > RENDER_ELYTRA) {
+                mode = RENDER_OFF;
+            }
+            setRenderMode(stack, mode);
+        }
+
+        public String getRenderModeTooltip(ItemStack stack) {
+            return switch (getRenderMode(stack)) {
+                case RENDER_CAPE -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Cape");
+                case RENDER_ELYTRA -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Elytra");
+                default -> StatCollector.translateToLocal("Waila_TileEntityPlayerDoll_03_Off");
+            };
+        }
+
+        public byte getRenderMode(ItemStack stack) {
+            if (stack.hasTagCompound()) {
+                NBTTagCompound nbt = stack.getTagCompound();
+                if (nbt.hasKey("RenderCapeMode", 1)) {
+                    return nbt.getByte("RenderCapeMode");
+                }
+            }
+            return RENDER_OFF;
+        }
+
+        public void setRenderMode(ItemStack stack, byte mode) {
+            getOrCreateTag(stack).setByte("RenderCapeMode", mode);
         }
 
         public String getSkullOwner(ItemStack stack) {
@@ -218,11 +320,7 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
         }
 
         public void setSkullOwner(ItemStack stack, String playerName) {
-            NBTTagCompound nbt = stack.getTagCompound();
-            if (nbt == null) {
-                stack.setTagCompound(nbt = new NBTTagCompound());
-            }
-            nbt.setString("SkullOwner", playerName);
+            getOrCreateTag(stack).setString("SkullOwner", playerName);
         }
 
         public String getSkinHttp(ItemStack stack) {
@@ -236,11 +334,7 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
         }
 
         public void setSkinHttp(ItemStack stack, String skinHttp) {
-            NBTTagCompound nbt = stack.getTagCompound();
-            if (nbt == null) {
-                stack.setTagCompound(nbt = new NBTTagCompound());
-            }
-            nbt.setString("SkinHttp", skinHttp);
+            getOrCreateTag(stack).setString("SkinHttp", skinHttp);
         }
 
         public String getCapeHttp(ItemStack stack) {
@@ -254,33 +348,7 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
         }
 
         public void setCapeHttp(ItemStack stack, String skinHttp) {
-            NBTTagCompound nbt = stack.getTagCompound();
-            if (nbt == null) {
-                stack.setTagCompound(nbt = new NBTTagCompound());
-            }
-            nbt.setString("CapeHttp", skinHttp);
-        }
-
-        public boolean getEnableElytra(ItemStack stack) {
-            if (stack.hasTagCompound()) {
-                NBTTagCompound nbt = stack.getTagCompound();
-                if (nbt.hasKey("enableElytra", 1)) {
-                    return nbt.getBoolean("enableElytra");
-                }
-            }
-            return false;
-        }
-
-        public void setEnableElytra(ItemStack stack, boolean enableElytra) {
-            NBTTagCompound nbt = stack.getTagCompound();
-            if (nbt == null) {
-                stack.setTagCompound(nbt = new NBTTagCompound());
-            }
-            nbt.setBoolean("enableElytra", enableElytra);
-        }
-
-        public ItemStack getCurrentItem() {
-            return buildContext.getPlayer().inventory.getCurrentItem();
+            getOrCreateTag(stack).setString("CapeHttp", skinHttp);
         }
     }
 }
