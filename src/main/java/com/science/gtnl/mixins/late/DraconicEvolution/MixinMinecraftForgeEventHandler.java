@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.brandon3055.draconicevolution.common.handler.MinecraftForgeEventHandler;
-import com.reavaritia.common.item.InfinitySword;
+import com.reavaritia.common.items.InfinitySword;
 import com.science.gtnl.config.MainConfig;
 
 @Mixin(value = MinecraftForgeEventHandler.class, remap = false)

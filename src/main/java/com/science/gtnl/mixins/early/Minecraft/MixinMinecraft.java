@@ -48,7 +48,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.reavaritia.common.render.CustomEntityRenderer;
+import com.reavaritia.client.render.CustomEntityRenderer;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
 import com.science.gtnl.utils.ClientUtils;
 

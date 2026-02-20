@@ -21,7 +21,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.MultiChildWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotGroup;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
-import com.reavaritia.common.item.ToolHelper;
+import com.reavaritia.utils.item.ToolHelper;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopUI;
 
 import gregtech.api.gui.modularui.GTUITextures;

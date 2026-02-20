@@ -7,14 +7,14 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.reavaritia.client.gui.GuiHandler;
+import com.reavaritia.common.BlockLoader;
 import com.reavaritia.common.ItemLoader;
-import com.reavaritia.common.SubscribeEventUtils;
-import com.reavaritia.common.block.BlockRegister;
-import com.reavaritia.common.block.GuiHandler;
-import com.reavaritia.common.block.extremeAnvil.EntityExtremeAnvil;
-import com.reavaritia.common.block.extremeAnvil.ExtremeAnvilPacket;
-import com.reavaritia.common.item.BlazeSword;
-import com.reavaritia.common.item.ChronarchsClock;
+import com.reavaritia.common.entity.EntityExtremeAnvil;
+import com.reavaritia.common.items.BlazeSword;
+import com.reavaritia.common.items.ChronarchsClock;
+import com.reavaritia.common.packet.ExtremeAnvilPacket;
+import com.reavaritia.utils.SubscribeEventUtils;
 import com.science.gtnl.utils.enums.ModList;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -69,13 +69,13 @@ public class ReAvaritia {
             .bus()
             .register(new SubscribeEventUtils());
 
-        BlockRegister.registryBlocks();
+        BlockLoader.registryBlocks();
         ItemLoader.registerItems();
-        BlockRegister.registryAnotherData();
+        BlockLoader.registryAnotherData();
         BlazeSword.registerEntity();
         ChronarchsClock.registerEntity();
         EntityExtremeAnvil.registerEntity();
 
-        network.registerMessage(ExtremeAnvilPacket.Handler.class, ExtremeAnvilPacket.class, 0, Side.SERVER);
+        network.registerMessage(ExtremeAnvilPacket.class, ExtremeAnvilPacket.class, 0, Side.SERVER);
     }
 }

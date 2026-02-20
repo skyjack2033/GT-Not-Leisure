@@ -16,7 +16,7 @@ import net.minecraftforge.fluids.FluidStack;
 import com.dreammaster.block.BlockList;
 import com.dreammaster.gthandler.CustomItemList;
 import com.dreammaster.item.NHItemList;
-import com.reavaritia.ReAvaItemList;
+import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;

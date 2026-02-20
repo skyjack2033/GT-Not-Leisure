@@ -3,14 +3,14 @@ package com.reavaritia;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.reavaritia.client.render.RenderChronarchClock;
+import com.reavaritia.client.render.RenderExtremeAnvil;
+import com.reavaritia.client.render.RenderFallingBlockExtremeAnvil;
 import com.reavaritia.common.ItemLoader;
-import com.reavaritia.common.SubscribeEventClientUtils;
-import com.reavaritia.common.block.extremeAnvil.EntityExtremeAnvil;
-import com.reavaritia.common.block.extremeAnvil.RenderExtremeAnvil;
-import com.reavaritia.common.block.extremeAnvil.RenderFallingBlockExtremeAnvil;
-import com.reavaritia.common.block.extremeAnvil.TileEntityExtremeAnvil;
+import com.reavaritia.common.blocks.tile.TileEntityExtremeAnvil;
 import com.reavaritia.common.entity.EntityChronarchClock;
-import com.reavaritia.common.render.RenderChronarchClock;
+import com.reavaritia.common.entity.EntityExtremeAnvil;
+import com.reavaritia.utils.SubscribeEventClientUtils;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;

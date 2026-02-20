@@ -34,7 +34,7 @@ import com.google.common.collect.Iterables;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.reavaritia.common.item.InfinityTotem;
+import com.reavaritia.common.items.InfinityTotem;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.packet.WirelessPickBlock;
 import com.science.gtnl.utils.enums.GTNLItemList;

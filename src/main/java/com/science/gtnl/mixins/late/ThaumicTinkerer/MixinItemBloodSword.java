@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.reavaritia.common.item.InfinitySword;
+import com.reavaritia.common.items.InfinitySword;
 import com.science.gtnl.config.MainConfig;
 
 import thaumic.tinkerer.common.item.ItemBloodSword;

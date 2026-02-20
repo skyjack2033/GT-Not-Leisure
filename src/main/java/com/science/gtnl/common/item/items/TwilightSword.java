@@ -26,7 +26,7 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
-import com.reavaritia.common.PlaySound;
+import com.reavaritia.utils.item.PlaySound;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.entity.EntityArrowCustom;
 import com.science.gtnl.utils.Utils;

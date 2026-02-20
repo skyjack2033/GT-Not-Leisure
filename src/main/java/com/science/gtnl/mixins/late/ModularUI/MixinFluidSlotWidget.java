@@ -14,7 +14,7 @@ import com.gtnewhorizons.modularui.api.widget.Widget;
 import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
 import com.gtnewhorizons.modularui.common.widget.SyncedWidget;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.reavaritia.common.item.InfinityBucket;
+import com.reavaritia.common.items.InfinityBucket;
 
 @Mixin(value = FluidSlotWidget.class, remap = false)
 public abstract class MixinFluidSlotWidget extends SyncedWidget {

@@ -2,7 +2,6 @@ package com.science.gtnl.utils;
 
 import static com.science.gtnl.ScienceNotLeisure.*;
 import static com.science.gtnl.common.packet.client.SoundHandler.PLAYING_SOUNDS;
-import static com.science.gtnl.common.render.PlayerDollRenderManagerClient.*;
 import static com.science.gtnl.common.render.tile.MeteorMinerRenderer.visualStateMap;
 
 import java.util.Map;
@@ -31,7 +30,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import com.reavaritia.common.render.CustomEntityRenderer;
+import com.reavaritia.client.render.CustomEntityRenderer;
 import com.science.gtnl.common.item.items.NullPointerException;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
 import com.science.gtnl.common.packet.NBTUpdatePacket;

@@ -15,7 +15,7 @@ import net.minecraftforge.fluids.FluidStack;
 import com.dreammaster.item.NHItemList;
 import com.dreammaster.scripts.IScriptLoader;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.reavaritia.ReAvaItemList;
+import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 

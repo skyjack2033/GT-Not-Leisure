@@ -32,8 +32,8 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.github.bsideup.jabel.Desugar;
-import com.reavaritia.common.SubtitleDisplay;
-import com.reavaritia.common.item.ItemStackWrapper;
+import com.reavaritia.utils.item.ItemStackWrapper;
+import com.reavaritia.utils.item.SubtitleDisplay;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.ItemLoader;
