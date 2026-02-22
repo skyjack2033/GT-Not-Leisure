@@ -6,13 +6,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-import com.science.gtnl.asm.GTNLEarlyCoreMod;
+import com.science.gtnl.api.TickrateAPI;
 
 @Mixin(value = MinecraftServer.class)
 public abstract class MixinMinecraftServer {
 
     @ModifyConstant(method = "run", constant = @Constant(longValue = 50L))
     long modifyTickrate(long constant) {
-        return GTNLEarlyCoreMod.MILISECONDS_PER_TICK;
+        return TickrateAPI.MILISECONDS_PER_TICK;
     }
 }

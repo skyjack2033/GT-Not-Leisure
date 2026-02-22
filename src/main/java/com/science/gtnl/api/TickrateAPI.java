@@ -6,16 +6,27 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Timer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-import com.science.gtnl.asm.GTNLEarlyCoreMod;
+import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.packet.TickratePacket;
+import com.science.gtnl.config.MainConfig;
+import com.science.gtnl.mixins.early.Minecraft.AccessorMinecraft;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TickrateAPI {
+
+    public static final String GAME_RULE = "tickrate";
+
+    // Stored client-side tickrate
+    public static float TICKS_PER_SECOND = 20;
+    // Server-side tickrate in miliseconds
+    public static long MILISECONDS_PER_TICK = 50L;
 
     /**
      * Let you change the client & server tickrate
@@ -35,7 +46,7 @@ public class TickrateAPI {
      * @param ticksPerSecond Tickrate to be set
      */
     public static void changeServerTickrate(float ticksPerSecond) {
-        GTNLEarlyCoreMod.INSTANCE.updateServerTickrate(ticksPerSecond);
+        updateServerTickrate(ticksPerSecond);
     }
 
     /**
@@ -68,7 +79,7 @@ public class TickrateAPI {
             if (FMLCommonHandler.instance()
                 .getSide() != Side.CLIENT) return;
             if ((player != null) && (player != Minecraft.getMinecraft().thePlayer)) return;
-            GTNLEarlyCoreMod.INSTANCE.updateClientTickrate(ticksPerSecond);
+            updateClientTickrate(ticksPerSecond);
         } else { // Server
             network.sendTo(new TickratePacket(ticksPerSecond), (EntityPlayerMP) player);
         }
@@ -85,7 +96,7 @@ public class TickrateAPI {
         World world = MinecraftServer.getServer()
             .getEntityWorld();
         world.getGameRules()
-            .setOrCreateGameRule(GTNLEarlyCoreMod.GAME_RULE, ticksPerSecond + "");
+            .setOrCreateGameRule(GAME_RULE, ticksPerSecond + "");
     }
 
     /**
@@ -94,7 +105,7 @@ public class TickrateAPI {
      * @return The server tickrate or the client server tickrate if it doesn't have access to the real tickrate.
      */
     public static float getServerTickrate() {
-        return 1000F / GTNLEarlyCoreMod.MILISECONDS_PER_TICK;
+        return 1000F / MILISECONDS_PER_TICK;
     }
 
     /**
@@ -103,7 +114,7 @@ public class TickrateAPI {
      * @return The client tickrate
      */
     public static float getClientTickrate() {
-        return GTNLEarlyCoreMod.TICKS_PER_SECOND;
+        return TICKS_PER_SECOND;
     }
 
     /**
@@ -115,8 +126,8 @@ public class TickrateAPI {
         GameRules rules = MinecraftServer.getServer()
             .getEntityWorld()
             .getGameRules();
-        if (rules.hasRule(GTNLEarlyCoreMod.GAME_RULE)) {
-            return Float.parseFloat(rules.getGameRuleStringValue(GTNLEarlyCoreMod.GAME_RULE));
+        if (rules.hasRule(GAME_RULE)) {
+            return Float.parseFloat(rules.getGameRuleStringValue(GAME_RULE));
         }
         return getServerTickrate();
     }
@@ -128,5 +139,27 @@ public class TickrateAPI {
      */
     public static boolean isValidTickrate(float ticksPerSecond) {
         return ticksPerSecond > 0F;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void updateClientTickrate(float tickrate) {
+        if (!TickrateAPI.isValidTickrate(tickrate)) {
+            ScienceNotLeisure.LOG.info("Ignoring invalid tickrate: {}", tickrate);
+            return;
+        }
+        if (MainConfig.enableDebugMode) ScienceNotLeisure.LOG.info("Updating client tickrate to {}", tickrate);
+        TICKS_PER_SECOND = tickrate;
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc == null) return; // Oops!
+        ((AccessorMinecraft) mc).setTimer(new Timer(TICKS_PER_SECOND));
+    }
+
+    public static void updateServerTickrate(float tickrate) {
+        if (!TickrateAPI.isValidTickrate(tickrate)) {
+            ScienceNotLeisure.LOG.info("Ignoring invalid tickrate: {}", tickrate);
+            return;
+        }
+        if (MainConfig.enableDebugMode) ScienceNotLeisure.LOG.info("Updating server tickrate to {}", tickrate);
+        MILISECONDS_PER_TICK = (long) (1000L / tickrate);
     }
 }

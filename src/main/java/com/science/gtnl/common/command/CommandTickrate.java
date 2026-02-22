@@ -17,7 +17,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.GameRules;
 
 import com.science.gtnl.api.TickrateAPI;
-import com.science.gtnl.asm.GTNLEarlyCoreMod;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
 import com.science.gtnl.config.MainConfig;
 
@@ -105,8 +104,8 @@ public class CommandTickrate extends CommandBase {
                 GameRules rules = MinecraftServer.getServer()
                     .getEntityWorld()
                     .getGameRules();
-                if (rules.hasRule(GTNLEarlyCoreMod.GAME_RULE)) {
-                    float tickrate = Float.parseFloat(rules.getGameRuleStringValue(GTNLEarlyCoreMod.GAME_RULE));
+                if (rules.hasRule(TickrateAPI.GAME_RULE)) {
+                    float tickrate = Float.parseFloat(rules.getGameRuleStringValue(TickrateAPI.GAME_RULE));
                     chat(sender, c("Current Map Tickrate: ", 'f', 'l'), c(tickrate + " ticks per second", 'a'));
                 }
             } catch (Exception ignored) {}
