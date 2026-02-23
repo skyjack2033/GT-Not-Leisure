@@ -13,7 +13,7 @@ import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
 import com.gtnewhorizons.angelica.api.ThreadSafeISBRH;
-import com.science.gtnl.common.block.blocks.BlockWaterCandle;
+import com.science.gtnl.ClientProxy;
 import com.science.gtnl.common.render.model.WaterCandleModel;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -28,7 +28,7 @@ public class WaterCandleRenderer extends TileEntitySpecialRenderer implements IS
 
     @Override
     public int getRenderId() {
-        return BlockWaterCandle.waterCandleRenderID;
+        return ClientProxy.waterCandleRenderID;
     }
 
     @Override
