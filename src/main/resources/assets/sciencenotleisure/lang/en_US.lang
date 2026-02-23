@@ -2903,7 +2903,16 @@ Tooltip_LapotronChip_00=Work in progress.
 Tooltip_LapotronChip_01=Can be used to quickly build a basic base.
 Tooltip_LapotronChip_Casing=Any Radiant Naquadah Alloy Machine Block
 
-gtnl.recipe.ExtremeExtremeEntityCrusherRecipes=Extreme Entity Crusher
+NameHighwayToHell=Highway To Hell
+gtnl.recipe.ExtremeExtremeEntityCrusherRecipes=Extreme Extreme Entity Crusher
+HighwayToHellRecipeType=Extreme Entity Crusher
+Tooltip_HighwayToHell_00=§2Cloning was once merely the delusion of the ambitious,
+Tooltip_HighwayToHell_01=§2but now, it has become a nightmarish reality.
+Tooltip_HighwayToHell_02=Glass tier limits Energy Hatch tier, UMV glass unlocks all tiers.
+Tooltip_HighwayToHell_03=Each increase in turbine tier increases the output chance by 1%.
+Info_HighwayToHell_00=Using Static Turbine Texture.
+Info_HighwayToHell_01=Using Animated Turbine Texture.
+Tooltip_HighwayToHell_Casing=Any Radiant Naquadah Alloy Machine Block
 
 NameSupercomputingCenter=Supercomputing Center
 SupercomputingCenterRecipeType=Quantum Computer
@@ -3180,7 +3189,7 @@ Tooltip_ComponentAssembler_02=Bulk assembles basic components (motors, pumps, et
 Tooltip_ComponentAssembler_03=§eComponent Assembly Line Casing§r tier capped at UV.
 Tooltip_ComponentAssembler_04=Supports overvolting and overclocking.
 Tooltip_ComponentAssembler_05=Maximum of 2 Energy Hatches!
-Tooltip_ComponentAssembler_06=Glass tier limits Energy Hatch tier, UMV glass unlocks all tiers.
+Tooltip_ComponentAssembler_06=Glass tier limits Energy Hatch tier, UV glass unlocks all tiers.
 Tooltip_ComponentAssembler_07=§oEfficiency crushes other assemblers/assembly lines!
 Tooltip_ComponentAssembler_Casing=Any Deoxidized Steel Machine Block
 
