@@ -138,7 +138,7 @@ public class MissingMappingsHandler {
 
     public static void handleMappings(List<FMLMissingMappingsEvent.MissingMapping> mappings) {
         for (FMLMissingMappingsEvent.MissingMapping mapping : mappings) {
-            if (REMAPPER.ignoreMappings.contains(mapping.name) || mapping.name.startsWith("Australia:")) {
+            if (REMAPPER.ignoreMappings.contains(mapping.name)) {
                 mapping.ignore();
                 continue;
             }
@@ -157,7 +157,7 @@ public class MissingMappingsHandler {
         }
     }
 
-    private static class Remapper {
+    public static class Remapper {
 
         private final Map<String, Item> itemRemappings = new HashMap<>();
         private final Map<String, Block> blockRemappings = new HashMap<>();

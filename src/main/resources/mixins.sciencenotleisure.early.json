@@ -20,7 +20,6 @@
     "Minecraft.MixinEntityItem",
     "Minecraft.MixinEntityLiving",
     "Minecraft.MixinEntityPlayer",
-    "Minecraft.MixinEntityPlayerMP",
     "Minecraft.MixinExplosion",
     "Minecraft.MixinGuiContainer",
     "Minecraft.MixinInventoryCrafting",

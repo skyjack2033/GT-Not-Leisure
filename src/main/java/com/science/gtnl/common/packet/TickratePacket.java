@@ -1,6 +1,7 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.asm.GTNLEarlyCoreMod;
+import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.api.TickrateAPI;
 import com.science.gtnl.config.MainConfig;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -36,7 +37,7 @@ public class TickratePacket implements IMessage, IMessageHandler<TickratePacket,
     public IMessage onMessage(TickratePacket msg, MessageContext context) {
         float tickrate = msg.getTickrate();
         if (tickrate < MainConfig.minTickrate) {
-            GTNLEarlyCoreMod.LOGGER.info(
+            ScienceNotLeisure.LOG.info(
                 "Tickrate forced to change from " + tickrate
                     + " to "
                     + MainConfig.minTickrate
@@ -44,7 +45,7 @@ public class TickratePacket implements IMessage, IMessageHandler<TickratePacket,
                     + " (You can change the minimum tickrate in the config file)");
             tickrate = MainConfig.minTickrate;
         } else if (tickrate > MainConfig.maxTickrate) {
-            GTNLEarlyCoreMod.LOGGER.info(
+            ScienceNotLeisure.LOG.info(
                 "Tickrate forced to change from " + tickrate
                     + " to "
                     + MainConfig.maxTickrate
@@ -55,7 +56,7 @@ public class TickratePacket implements IMessage, IMessageHandler<TickratePacket,
 
         if (FMLCommonHandler.instance()
             .getSide() != Side.SERVER) {
-            GTNLEarlyCoreMod.INSTANCE.updateClientTickrate(tickrate);
+            TickrateAPI.updateClientTickrate(tickrate);
         }
         return null;
     }

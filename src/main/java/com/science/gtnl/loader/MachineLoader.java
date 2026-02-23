@@ -242,6 +242,7 @@ import com.science.gtnl.common.machine.multiblock.wireless.GiantFlotationTank;
 import com.science.gtnl.common.machine.multiblock.wireless.HandOfJohnDavisonRockefeller;
 import com.science.gtnl.common.machine.multiblock.wireless.HeavyRolling;
 import com.science.gtnl.common.machine.multiblock.wireless.HighEnergyLaserLathe;
+import com.science.gtnl.common.machine.multiblock.wireless.HighwayToHell;
 import com.science.gtnl.common.machine.multiblock.wireless.HorizontalCompressor;
 import com.science.gtnl.common.machine.multiblock.wireless.IntegratedAssemblyFacility;
 import com.science.gtnl.common.machine.multiblock.wireless.KerrNewmanHomogenizer;
@@ -1738,6 +1739,13 @@ public class MachineLoader {
                 "NameLargeEssentiaGenerator",
                 StatCollector.translateToLocal("NameLargeEssentiaGenerator")));
         addItemTooltip(GTNLItemList.LargeEssentiaGenerator.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+
+        GTNLItemList.HighwayToHell.set(
+            new HighwayToHell(
+                HIGHWAY_TO_HELL.ID,
+                "NameHighwayToHell",
+                StatCollector.translateToLocal("NameHighwayToHell")));
+        addItemTooltip(GTNLItemList.HighwayToHell.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
         // Special Machine
         GTNLItemList.CheatOreProcessingFactory.set(

@@ -2903,7 +2903,16 @@ Tooltip_LapotronChip_00=正在制作中
 Tooltip_LapotronChip_01=可以用于迅速搭建基础基地
 Tooltip_LapotronChip_Casing=任意放射硅岩合金机械方块
 
+NameHighwayToHell=超生高速
 gtnl.recipe.ExtremeExtremeEntityCrusherRecipes=极·工业屠宰场
+HighwayToHellRecipeType=工业屠宰场
+Tooltip_HighwayToHell_00=§2克隆曾只是野心家的妄想，
+Tooltip_HighwayToHell_01=§2而如今，已成为噩梦般的现实。
+Tooltip_HighwayToHell_02=玻璃等级限制了能源仓等级，UMV玻璃解锁所有等级
+Tooltip_HighwayToHell_03=每提高一级涡轮等级，产出概率+1%
+Info_HighwayToHell_00=正在使用静态涡轮纹理
+Info_HighwayToHell_01=正在使用动态涡轮纹理
+Tooltip_HighwayToHell_Casing=任意放射硅岩合金机械方块
 
 NameSupercomputingCenter=运算中心
 SupercomputingCenterRecipeType=量子计算机

@@ -475,7 +475,7 @@ public class GTNLRecipeMaps {
         .progressBar(GTUITextures.PROGRESSBAR_COMPRESS)
         .frontend(ExtremeExtremeEntityCrusherFrontend::new)
         .neiHandlerInfo(
-            builder -> builder.setDisplayStack(GTNLItemList.PrimitiveDistillationTower.get(1))
+            builder -> builder.setDisplayStack(GTNLItemList.HighwayToHell.get(1))
                 .setMaxRecipesPerPage(1))
         .build();
 

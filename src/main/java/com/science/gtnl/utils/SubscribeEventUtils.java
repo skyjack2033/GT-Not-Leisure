@@ -41,7 +41,6 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 import com.science.gtnl.api.TickrateAPI;
-import com.science.gtnl.asm.GTNLEarlyCoreMod;
 import com.science.gtnl.common.command.CommandTickrate;
 import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
@@ -184,8 +183,8 @@ public class SubscribeEventUtils {
                 GameRules rules = MinecraftServer.getServer()
                     .getEntityWorld()
                     .getGameRules();
-                if (rules.hasRule(GTNLEarlyCoreMod.GAME_RULE)) {
-                    tickrate = Float.parseFloat(rules.getGameRuleStringValue(GTNLEarlyCoreMod.GAME_RULE));
+                if (rules.hasRule(TickrateAPI.GAME_RULE)) {
+                    tickrate = Float.parseFloat(rules.getGameRuleStringValue(TickrateAPI.GAME_RULE));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -224,8 +223,8 @@ public class SubscribeEventUtils {
                 GameRules rules = MinecraftServer.getServer()
                     .getEntityWorld()
                     .getGameRules();
-                if (rules.hasRule(GTNLEarlyCoreMod.GAME_RULE)) {
-                    tickrate = Float.parseFloat(rules.getGameRuleStringValue(GTNLEarlyCoreMod.GAME_RULE));
+                if (rules.hasRule(TickrateAPI.GAME_RULE)) {
+                    tickrate = Float.parseFloat(rules.getGameRuleStringValue(TickrateAPI.GAME_RULE));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
