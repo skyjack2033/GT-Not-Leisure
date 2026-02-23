@@ -649,6 +649,7 @@ public enum GTNLItemList implements IItemContainer {
     FurnaceArray,
     FOGSolarMuonCatalystModule,
     LargeEssentiaGenerator,
+    HighwayToHell,
 
     EnergyHatchLV,
     EnergyHatchLV4A,
