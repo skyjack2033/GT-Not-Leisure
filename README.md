@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./src/main/resources/assets/sciencenotleisure/textures/logo.png" width="225" height="225" alt="GT-Not-Leisure Logo">
+  <img src="./src/main/resources/assets/sciencenotleisure/textures/logo.svg" width="225" height="225" alt="GT-Not-Leisure Logo">
 
   <h1>GT: Not Leisure</h1>
   <h2><em>Science Not Leisure</em></h2>
