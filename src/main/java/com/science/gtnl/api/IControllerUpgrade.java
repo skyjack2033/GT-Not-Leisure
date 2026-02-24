@@ -200,8 +200,11 @@ public interface IControllerUpgrade {
             if (!widget.isClient()) {
                 if (tryConsumeItems()) {
                     setUpgradeConsumed(true);
+                    widget.getWindow()
+                        .closeWindow();
+                } else {
+                    EternalGregTechWorkshopUI.reopenWindow(widget, getUpgradeWindowId());
                 }
-                EternalGregTechWorkshopUI.reopenWindow(widget, getUpgradeWindowId());
             }
         })
             .setPlayClickSound(true)
