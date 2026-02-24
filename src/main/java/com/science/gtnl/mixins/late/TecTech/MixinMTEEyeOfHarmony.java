@@ -58,7 +58,6 @@ public abstract class MixinMTEEyeOfHarmony extends TTMultiblockBase implements I
     @Final
     @Shadow
     @Getter
-    @Setter
     private Map<Fluid, Long> validFluidMap;
 
     @Shadow
