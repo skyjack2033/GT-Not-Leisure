@@ -304,7 +304,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     @Override
     public boolean checkHatch() {
         for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV & mEnergyHatch.mTier > mGlassTier) {
+            if (mGlassTier < VoltageIndex.UHV && mEnergyHatch.mTier > mGlassTier) {
                 return false;
             }
         }
@@ -315,13 +315,10 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
         }
         return super.checkHatch() && checkEnergyHatch()
             && this.mRadHatches.size() <= 1
-            && this.mOutputHatches.size() == 1
-            && this.mMaintenanceHatches.size() == 1
-            && !this.mInputHatches.isEmpty()
-            && (!this.mEnergyHatches.isEmpty() || !this.mExoticEnergyHatches.isEmpty());
+            && this.mOutputHatches.size() == 1;
     }
 
-    public int reCalculateFluidAmmount() {
+    public int reCalculateFluidAmount() {
         return this.getStoredFluids()
             .stream()
             .mapToInt(fluidStack -> fluidStack.amount)
@@ -329,8 +326,8 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     }
 
     public int reCalculateHeight() {
-        return this.reCalculateFluidAmmount() > this.getCapacity() / 4 - 1
-            ? this.reCalculateFluidAmmount() >= this.getCapacity() / 2 ? 3 : 2
+        return this.reCalculateFluidAmount() > this.getCapacity() / 4 - 1
+            ? this.reCalculateFluidAmount() >= this.getCapacity() / 2 ? 3 : 2
             : 1;
     }
 
@@ -450,7 +447,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
 
     public void sendAllRequiredRendererPackets() {
         int height = this.reCalculateHeight();
-        if (this.mFluid != null && height > 1 && this.reCalculateFluidAmmount() > 0) {
+        if (this.mFluid != null && height > 1 && this.reCalculateFluidAmount() > 0) {
             for (int x = -1; x < 2; x++) for (int y = 2; y < height + 1; y++) // Y轴提高1格
                 for (int z = -1; z < 2; z++) this.sendPackagesOrRenewRenderer(x, y, z, this.mCulture);
         }
@@ -460,7 +457,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
         int xDir = this.getXDir();
         int zDir = this.getZDir();
 
-        Incubator.staticColorMap.remove(
+        Incubator.staticColorMap.removeInt(
             new Coords(
                 xDir + x
                     + this.getBaseMetaTileEntity()
@@ -539,7 +536,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
         this.needsVisualUpdate = true;
     }
 
-    public void check_Chunk() {
+    public void checkChunk() {
         World aWorld = this.getBaseMetaTileEntity()
             .getWorld();
         if (!aWorld.isRemote) {
@@ -571,7 +568,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
         int xDir = this.getXDir();
         int zDir = this.getZDir();
         this.height = this.reCalculateHeight();
-        if (this.mFluid != null && this.height > 1 && this.reCalculateFluidAmmount() > 0) {
+        if (this.mFluid != null && this.height > 1 && this.reCalculateFluidAmount() > 0) {
             for (int x = -1; x < 2; x++) {
                 for (int y = 1; y < this.height + 1; y++) { // Y轴提高1格
                     for (int z = -1; z < 2; z++) {
@@ -729,7 +726,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
 
                 if (this.getBaseMetaTileEntity()
                     .getTimer() % 200 == 0) {
-                    this.check_Chunk();
+                    this.checkChunk();
                 }
 
                 if (this.needsVisualUpdate && this.getBaseMetaTileEntity()
@@ -754,7 +751,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
                 }
 
                 this.height = this.reCalculateHeight();
-                if (this.mFluid != null && this.height > 1 && this.reCalculateFluidAmmount() > 0) {
+                if (this.mFluid != null && this.height > 1 && this.reCalculateFluidAmount() > 0) {
                     if (!BWUtil.areStacksEqualOrNull(aStack, this.mStack)
                         || this.needsVisualUpdate && this.getBaseMetaTileEntity()
                             .getTimer() % Incubator.TIMERDIVIDER == 1) {
