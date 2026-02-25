@@ -28,7 +28,7 @@ public class BlockNanoPhagocytosisPlantRender extends Block {
         this.setHardness(-1.0f);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
         this.setBlockName("NanoPhagocytosisPlantRenderer");
-        this.setLightLevel(100.0f);
+        this.setLightLevel(1.0f);
         GameRegistry.registerBlock(this, ItemBlockNanoPhagocytosisPlantRender.class, getUnlocalizedName());
         GTNLItemList.NanoPhagocytosisPlantRender.set(new ItemStack(this, 1));
     }
