@@ -3830,3 +3830,5 @@ text.AssemblerMatrix.tooltip.0=网络已有类似的合成样板,已跳过上传
 
 text.CraftComplete.tooltip.0=§5自动合成完毕！
 text.CraftComplete.tooltip.1=%s %s, 用时 %s
+gtnl.ui.controllerUpgrade.previewNext=查看下一阶段材料
+gtnl.ui.controllerUpgrade.backToCurrent=返回当前阶段材料
