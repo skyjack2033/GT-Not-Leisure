@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import com.science.gtnl.utils.SubscribeEventClientUtils;
+import com.science.gtnl.utils.event.SubscribeEventClientUtils;
 
 import cpw.mods.fml.common.Loader;
 import fox.spiteful.avaritia.render.CosmicRenderShenanigans;

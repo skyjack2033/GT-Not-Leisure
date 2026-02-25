@@ -1,4 +1,4 @@
-package com.science.gtnl.utils;
+package com.science.gtnl.utils.event;
 
 import static com.science.gtnl.ScienceNotLeisure.*;
 import static com.science.gtnl.common.packet.client.SoundHandler.PLAYING_SOUNDS;
@@ -40,6 +40,7 @@ import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.EffectLoader;
 import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.mixins.early.Minecraft.AccessorGuiChat;
+import com.science.gtnl.utils.ClientUtils;
 import com.science.gtnl.utils.enums.ModList;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

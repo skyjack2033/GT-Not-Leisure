@@ -20,7 +20,7 @@ public class ItemBlockArtificialStarRender implements IItemRenderer {
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-        if (item.getItem() != Item.getItemFromBlock(BlockLoader.blockArtificialStarRender)) {
+        if (item.getItem() != Item.getItemFromBlock(BlockLoader.artificialStarRender)) {
             return false;
         }
         return switch (type) {
@@ -36,7 +36,7 @@ public class ItemBlockArtificialStarRender implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        if (item.getItem() != Item.getItemFromBlock(BlockLoader.blockArtificialStarRender)) return;
+        if (item.getItem() != Item.getItemFromBlock(BlockLoader.artificialStarRender)) return;
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_TEXTURE_2D);

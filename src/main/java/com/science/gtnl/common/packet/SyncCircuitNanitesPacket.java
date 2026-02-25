@@ -1,6 +1,6 @@
 package com.science.gtnl.common.packet;
 
-import static com.science.gtnl.utils.SubscribeEventUtils.*;
+import static com.science.gtnl.utils.event.SubscribeEventUtils.*;
 
 import com.science.gtnl.loader.RecipeLoader;
 

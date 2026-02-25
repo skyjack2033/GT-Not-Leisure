@@ -15,6 +15,7 @@ import com.science.gtnl.common.block.blocks.BlockArtificialStarRender;
 import com.science.gtnl.common.block.blocks.BlockCardboardBox;
 import com.science.gtnl.common.block.blocks.BlockDimensionRespawnAnchor;
 import com.science.gtnl.common.block.blocks.BlockDirePatternEncoder;
+import com.science.gtnl.common.block.blocks.BlockEnderElevator;
 import com.science.gtnl.common.block.blocks.BlockEssentiaHatch;
 import com.science.gtnl.common.block.blocks.BlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.BlockHoneyFluid;
@@ -31,6 +32,7 @@ import com.science.gtnl.common.block.blocks.tile.TileEntityArtificialStar;
 import com.science.gtnl.common.block.blocks.tile.TileEntityCardboardBox;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDimensionRespawnAnchor;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
+import com.science.gtnl.common.block.blocks.tile.TileEntityEnderElevator;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEssentiaHatch;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
@@ -61,7 +63,7 @@ public class BlockLoader {
 
     public static Block saplingBrickuoia;
     public static Block cardboardBox;
-    public static Block blockArtificialStarRender;
+    public static Block artificialStarRender;
     public static Block laserBeacon;
     public static Block playerDoll;
     public static Block waterCandle;
@@ -73,6 +75,7 @@ public class BlockLoader {
     public static Block eternalGregTechWorkshopRender;
     public static Block dimensionRespawnAnchor;
     public static Block essentiaHatch;
+    public static Block enderElevatorBlock, enderElevatorSlab, enderElevatorCarpet;
 
     public static Block honeyFluidBlock;
     public static Fluid honeyFluid;
@@ -107,7 +110,7 @@ public class BlockLoader {
         GameRegistry.registerTileEntity(TileEntityDirePatternEncoder.class, "DirePatternEncoderTileEntity");
 
         aeChisel = new BlockAEChisel();
-        GameRegistry.registerTileEntity(TileEntityAEChisel.class, "AEChisel");
+        GameRegistry.registerTileEntity(TileEntityAEChisel.class, "AEChiselTileEntity");
 
         cardboardBox = new BlockCardboardBox();
         GameRegistry.registerTileEntity(TileEntityCardboardBox.class, "CardboardBoxTileEntity");
@@ -119,7 +122,7 @@ public class BlockLoader {
         nanoPhagocytosisPlantRender = new BlockNanoPhagocytosisPlantRender();
         GameRegistry.registerTileEntity(TileEntityNanoPhagocytosisPlant.class, "NanoPhagocytosisPlantRenderTileEntity");
 
-        blockArtificialStarRender = new BlockArtificialStarRender();
+        artificialStarRender = new BlockArtificialStarRender();
         GameRegistry.registerTileEntity(TileEntityArtificialStar.class, "ArtificialStarRenderTileEntity");
 
         playerDoll = new BlockPlayerDoll();
@@ -135,7 +138,15 @@ public class BlockLoader {
         GameRegistry.registerTileEntity(TileEntityDimensionRespawnAnchor.class, "DimensionRespawnAnchorTileEntity");
 
         essentiaHatch = new BlockEssentiaHatch();
-        GameRegistry.registerTileEntity(TileEntityEssentiaHatch.class, "EssentiaHatch");
+        GameRegistry.registerTileEntity(TileEntityEssentiaHatch.class, "EssentiaHatchTileEntity");
+
+        enderElevatorBlock = new BlockEnderElevator(0);
+        enderElevatorSlab = new BlockEnderElevator(1);
+        enderElevatorCarpet = new BlockEnderElevator(2);
+        GTNLItemList.EnderElevatorBlock.set(new ItemStack(enderElevatorBlock));
+        GTNLItemList.EnderElevatorSlab.set(new ItemStack(enderElevatorSlab));
+        GTNLItemList.EnderElevatorCarpet.set(new ItemStack(enderElevatorCarpet));
+        GameRegistry.registerTileEntity(TileEntityEnderElevator.class, "EnderElevatorTileEntity");
 
         GameRegistry.registerBlock(metaBlock, ItemBlockBase.class, metaBlock.getUnlocalizedName());
         GameRegistry.registerBlock(metaBlockGlow, ItemBlockGlow.class, metaBlockGlow.getUnlocalizedName());

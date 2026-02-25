@@ -25,8 +25,8 @@ import com.science.gtnl.container.portableWorkbench.ContainerPortableEnderChest;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableFurnace;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableInfinityChest;
 import com.science.gtnl.loader.MaterialLoader;
-import com.science.gtnl.utils.SubscribeEventUtils;
 import com.science.gtnl.utils.enums.GuiType;
+import com.science.gtnl.utils.event.SubscribeEventUtils;
 import com.science.gtnl.utils.machine.VMTweakHelper;
 import com.science.gtnl.utils.recipes.CraftingUnitHandler;
 
