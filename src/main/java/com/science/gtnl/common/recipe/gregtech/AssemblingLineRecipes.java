@@ -32,6 +32,7 @@ import gregtech.api.enums.MaterialsBotania;
 import gregtech.api.enums.MaterialsKevlar;
 import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.MetaTileEntityIDs;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.IRecipeMap;
@@ -2586,27 +2587,29 @@ public class AssemblingLineRecipes implements IRecipePool {
             100 * SECONDS,
             (int) TierEU.RECIPE_UHV);
 
-        TTRecipeAdder.addResearchableAssemblylineRecipe(
-            kubatech.api.enums.ItemList.ExtremeEntityCrusher.get(1),
-            6660000,
-            666,
-            (int) TierEU.RECIPE_UEV,
-            1,
-            new Object[] { kubatech.api.enums.ItemList.ExtremeEntityCrusher.get(64),
-                GTModHandler.getModItem(EnderIO.ID, "blockPoweredSpawner", 64),
-                ItemList.UltraHighStrengthConcrete.get(64),
-                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.StellarAlloy, 64),
-                GTModHandler.getModItem(BloodMagic.ID, "daggerOfSacrifice", 1), ItemList.Electric_Motor_UEV.get(64),
-                ItemList.Robot_Arm_UEV.get(16), ItemList.Conveyor_Module_UEV.get(32),
-                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UIV, 8), ItemList.NuclearStar.get(48),
-                GTModHandler.getModItem(EnderIO.ID, "itemMaterial", 64, 9), ItemRefer.HiC_T5.get(64),
-                GTNLItemList.EnhancementCore.get(16), GregtechItemList.Laser_Lens_Special.get(2),
-                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Neutronium, 12) },
-            new FluidStack[] { MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(96000),
-                Materials.Lubricant.getFluid(128000), GTNLMaterials.Polyetheretherketone.getMolten(36864),
-                new FluidStack(GTPPFluids.Pyrotheum, 512000) },
-            GTNLItemList.HighwayToHell.get(1),
-            60 * SECONDS,
-            (int) TierEU.RECIPE_UIV);
+        if (Mods.MobsInfo.isModLoaded()) {
+            TTRecipeAdder.addResearchableAssemblylineRecipe(
+                kubatech.api.enums.ItemList.ExtremeEntityCrusher.get(1),
+                6660000,
+                666,
+                (int) TierEU.RECIPE_UEV,
+                1,
+                new Object[] { kubatech.api.enums.ItemList.ExtremeEntityCrusher.get(64),
+                    GTModHandler.getModItem(EnderIO.ID, "blockPoweredSpawner", 64),
+                    ItemList.UltraHighStrengthConcrete.get(64),
+                    GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.StellarAlloy, 64),
+                    GTModHandler.getModItem(BloodMagic.ID, "daggerOfSacrifice", 1), ItemList.Electric_Motor_UEV.get(64),
+                    ItemList.Robot_Arm_UEV.get(16), ItemList.Conveyor_Module_UEV.get(32),
+                    GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UIV, 8), ItemList.NuclearStar.get(48),
+                    GTModHandler.getModItem(EnderIO.ID, "itemMaterial", 64, 9), ItemRefer.HiC_T5.get(64),
+                    GTNLItemList.EnhancementCore.get(16), GregtechItemList.Laser_Lens_Special.get(2),
+                    GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Neutronium, 12) },
+                new FluidStack[] { MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(96000),
+                    Materials.Lubricant.getFluid(128000), GTNLMaterials.Polyetheretherketone.getMolten(36864),
+                    new FluidStack(GTPPFluids.Pyrotheum, 512000) },
+                GTNLItemList.HighwayToHell.get(1),
+                60 * SECONDS,
+                (int) TierEU.RECIPE_UIV);
+        }
     }
 }
