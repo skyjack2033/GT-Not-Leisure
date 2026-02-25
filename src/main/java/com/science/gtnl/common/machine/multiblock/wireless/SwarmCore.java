@@ -211,6 +211,35 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     }
 
     @Override
+    public ItemStack[] getPreviewUpgradeRequiredItems() {
+        return getPreviewUpgradeRequiredItems(1);
+    }
+
+    @Override
+    public int getMaxPreviewUpgradeLevel() {
+        return Math.max(0, REQUIRED_ITEMS.length - machineTier);
+    }
+
+    @Override
+    public ItemStack[] getPreviewUpgradeRequiredItems(int previewLevel) {
+        int previewIndex = machineTier - 1 + previewLevel;
+        if (previewIndex >= REQUIRED_ITEMS.length) return new ItemStack[0];
+        return REQUIRED_ITEMS[previewIndex];
+    }
+
+    @Override
+    public int[] getPreviewUpgradePaidCosts() {
+        return getPreviewUpgradePaidCosts(1);
+    }
+
+    @Override
+    public int[] getPreviewUpgradePaidCosts(int previewLevel) {
+        int previewIndex = machineTier - 1 + previewLevel;
+        if (previewIndex >= upgradePaidCosts.length) return new int[0];
+        return upgradePaidCosts[previewIndex];
+    }
+
+    @Override
     public String getUpgradeButtonTooltip() {
         return StatCollector.translateToLocal("Info_SwarmCore_00");
     }

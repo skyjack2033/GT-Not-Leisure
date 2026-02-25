@@ -125,6 +125,14 @@ public interface IControllerUpgrade {
         return UPGRADE_WINDOW_ID;
     }
 
+    default int getPreviewUpgradeWindowId() {
+        return getPreviewUpgradeWindowId(1);
+    }
+
+    default int getPreviewUpgradeWindowId(int previewLevel) {
+        return getUpgradeWindowId() + previewLevel;
+    }
+
     String getUpgradeButtonTooltip();
 
     default int getUpgradeInputSlotsPerRow() {
@@ -147,10 +155,70 @@ public interface IControllerUpgrade {
     }
 
     default ModularWindow createConsumeWindow(EntityPlayer player) {
-        final int WIDTH = getConsumeWindowWidth();
-        final int HEIGHT = getConsumeWindowHeight();
+        return createUpgradeWindow(player, 0);
+    }
+
+    default ModularWindow createPreviewConsumeWindow(EntityPlayer player) {
+        return createUpgradeWindow(player, 1);
+    }
+
+    default ModularWindow createPreviewConsumeWindow(EntityPlayer player, int previewLevel) {
+        return createUpgradeWindow(player, previewLevel);
+    }
+
+    default ItemStack[] getPreviewUpgradeRequiredItems() {
+        return new ItemStack[0];
+    }
+
+    default int[] getPreviewUpgradePaidCosts() {
+        return new int[getPreviewUpgradeRequiredItems().length];
+    }
+
+    default ItemStack[] getPreviewUpgradeRequiredItems(int previewLevel) {
+        if (previewLevel == 1) return getPreviewUpgradeRequiredItems();
+        return new ItemStack[0];
+    }
+
+    default int[] getPreviewUpgradePaidCosts(int previewLevel) {
+        if (previewLevel == 1) return getPreviewUpgradePaidCosts();
+        return new int[getPreviewUpgradeRequiredItems(previewLevel).length];
+    }
+
+    default int getMaxPreviewUpgradeLevel() {
+        int maxLevel = 0;
+        for (int level = 1; level <= 64; level++) {
+            ItemStack[] previewItems = getPreviewUpgradeRequiredItems(level);
+            if (previewItems == null || previewItems.length == 0) break;
+            maxLevel = level;
+        }
+        return maxLevel;
+    }
+
+    default boolean hasPreviewUpgradeWindow() {
+        return getMaxPreviewUpgradeLevel() > 0;
+    }
+
+    default ModularWindow createUpgradeWindow(EntityPlayer player, int previewLevel) {
+        final boolean previewMode = previewLevel > 0;
         final int PARENT_WIDTH = getGUIWidth();
         final int PARENT_HEIGHT = getGUIHeight();
+
+        ItemStackHandler inputHandler = getUpgradeInputSlotHandler();
+        int totalSlots = inputHandler.getSlots();
+        int costPerRow = getUpgradeCostItemsPerRow();
+        int inputSlotsPerRow = getUpgradeInputSlotsPerRow();
+        int maxPreviewLevel = getMaxPreviewUpgradeLevel();
+
+        int[] upgradePaidCosts = previewMode ? getPreviewUpgradePaidCosts(previewLevel) : getUpgradePaidCosts();
+        ItemStack[] upgradeItems = previewMode ? getPreviewUpgradeRequiredItems(previewLevel)
+            : getUpgradeRequiredItems();
+        if (upgradePaidCosts == null) upgradePaidCosts = new int[0];
+        if (upgradeItems == null) upgradeItems = new ItemStack[0];
+
+        final int WIDTH = Math.min(upgradeItems.length, costPerRow) * 36 + costPerRow * 18;
+        int rows = (int) Math.ceil(upgradeItems.length / (double) costPerRow);
+        int slotRows = previewMode ? 0 : (int) Math.ceil(totalSlots / (double) inputSlotsPerRow);
+        final int HEIGHT = 60 + Math.max(0, Math.max(rows, slotRows) - 1) * 18;
 
         ModularWindow.Builder builder = ModularWindow.builder(WIDTH, HEIGHT);
         builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
@@ -162,61 +230,100 @@ public interface IControllerUpgrade {
                 .subtract(5, 0)
                 .add(0, 4));
 
-        ItemStack[] storedItems = getStoredUpgradeWindowItems();
-        ItemStackHandler inputHandler = getUpgradeInputSlotHandler();
-        int totalSlots = inputHandler.getSlots();
-        for (int i = 0; i < totalSlots; i++) {
-            if (i < storedItems.length && storedItems[i] != null) {
-                inputHandler.insertItem(i, storedItems[i], false);
-                storedItems[i] = null;
+        if (!previewMode) {
+            ItemStack[] storedItems = getStoredUpgradeWindowItems();
+            for (int i = 0; i < totalSlots; i++) {
+                if (i < storedItems.length && storedItems[i] != null) {
+                    inputHandler.insertItem(i, storedItems[i], false);
+                    storedItems[i] = null;
+                }
             }
         }
 
-        int[] upgradePaidCosts = getUpgradePaidCosts();
-        ItemStack[] upgradeItems = getUpgradeRequiredItems();
-        int costPerRow = getUpgradeCostItemsPerRow();
-        int inputSlotsPerRow = getUpgradeInputSlotsPerRow();
-
         int slotX = 5 + Math.min(upgradeItems.length, costPerRow) * 36;
 
-        builder.widget(
-            SlotGroup.ofItemHandler(inputHandler, inputSlotsPerRow)
-                .startFromSlot(0)
-                .endAtSlot(totalSlots - 1)
-                .phantom(false)
-                .background(getGUITextureSet().getItemSlot())
-                .build()
-                .setPos(slotX, 6));
+        if (!previewMode) {
+            builder.widget(
+                SlotGroup.ofItemHandler(inputHandler, inputSlotsPerRow)
+                    .startFromSlot(0)
+                    .endAtSlot(totalSlots - 1)
+                    .phantom(false)
+                    .background(getGUITextureSet().getItemSlot())
+                    .build()
+                    .setPos(slotX, 6));
+        }
 
         for (int i = 0; i < upgradeItems.length; i++) {
             ItemStack stack = upgradeItems[i];
-            int stackCost = upgradePaidCosts[i];
+            int stackCost = i < upgradePaidCosts.length ? upgradePaidCosts[i] : 0;
             Widget costWidget = EternalGregTechWorkshopUI.createExtraCostWidget(stack, () -> stackCost);
             costWidget.setPos(5 + 36 * (i % costPerRow), 6 + 18 * (i / costPerRow));
             builder.widget(costWidget);
         }
 
-        builder.widget(new MultiChildWidget().addChild(new ButtonWidget().setOnClick((clickData, widget) -> {
-            if (!widget.isClient()) {
-                if (tryConsumeItems()) {
-                    setUpgradeConsumed(true);
+        int costRows = Math.max(1, rows);
+        int switchButtonX = 5;
+        int previousButtonX = switchButtonX;
+        int nextButtonX = previewMode ? switchButtonX + 18 : switchButtonX;
+        int switchButtonY = 6 + 18 * costRows + 2;
+
+        if (previewLevel < maxPreviewLevel) {
+            final int targetPreviewLevel = previewLevel + 1;
+            builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
+                if (!widget.isClient()) {
                     widget.getWindow()
                         .closeWindow();
-                } else {
-                    EternalGregTechWorkshopUI.reopenWindow(widget, getUpgradeWindowId());
+                    widget.getContext()
+                        .openSyncedWindow(getPreviewUpgradeWindowId(targetPreviewLevel));
                 }
-            }
-        })
-            .setPlayClickSound(true)
-            .setBackground(GTUITextures.BUTTON_STANDARD)
-            .setSize(WIDTH - 20, 20))
-            .addChild(
-                new TextWidget(StatCollector.translateToLocal("gt.blockmachines.multimachine.FOG.consumeUpgradeMats"))
-                    .setTextAlignment(Alignment.Center)
-                    .setScale(0.75f)
-                    .setSize(WIDTH - 20, 20))
-            .setPos(10, HEIGHT - 30)
-            .setSize(WIDTH - 20, 20));
+            })
+                .setBackground(ModularUITextures.VANILLA_BACKGROUND, new Text(">"))
+                .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.previewNext"))
+                .setPos(nextButtonX, switchButtonY)
+                .setSize(16, 16));
+        }
+
+        if (previewMode) {
+            final int previousWindowId = previewLevel == 1 ? getUpgradeWindowId()
+                : getPreviewUpgradeWindowId(previewLevel - 1);
+            builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
+                if (!widget.isClient()) {
+                    widget.getWindow()
+                        .closeWindow();
+                    widget.getContext()
+                        .openSyncedWindow(previousWindowId);
+                }
+            })
+                .setBackground(ModularUITextures.VANILLA_BACKGROUND, new Text("<"))
+                .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.backToCurrent"))
+                .setPos(previousButtonX, switchButtonY)
+                .setSize(16, 16));
+        }
+
+        if (!previewMode) {
+            builder.widget(new MultiChildWidget().addChild(new ButtonWidget().setOnClick((clickData, widget) -> {
+                if (!widget.isClient()) {
+                    if (tryConsumeItems()) {
+                        setUpgradeConsumed(true);
+                        widget.getWindow()
+                            .closeWindow();
+                    } else {
+                        EternalGregTechWorkshopUI.reopenWindow(widget, getUpgradeWindowId());
+                    }
+                }
+            })
+                .setPlayClickSound(true)
+                .setBackground(GTUITextures.BUTTON_STANDARD)
+                .setSize(WIDTH - 20, 20))
+                .addChild(
+                    new TextWidget(
+                        StatCollector.translateToLocal("gt.blockmachines.multimachine.FOG.consumeUpgradeMats"))
+                            .setTextAlignment(Alignment.Center)
+                            .setScale(0.75f)
+                            .setSize(WIDTH - 20, 20))
+                .setPos(10, HEIGHT - 30)
+                .setSize(WIDTH - 20, 20));
+        }
 
         builder.widget(
             new ButtonWidget().setOnClick(
@@ -233,6 +340,13 @@ public interface IControllerUpgrade {
 
     default void createUpgradeButton(ModularWindow.Builder builder, UIBuildContext buildContext) {
         buildContext.addSyncedWindow(getUpgradeWindowId(), this::createConsumeWindow);
+        int maxPreviewLevel = getMaxPreviewUpgradeLevel();
+        for (int level = 1; level <= maxPreviewLevel; level++) {
+            final int previewLevel = level;
+            buildContext.addSyncedWindow(
+                getPreviewUpgradeWindowId(previewLevel),
+                player -> createPreviewConsumeWindow(player, previewLevel));
+        }
         builder.widget(new FakeSyncWidget.BooleanSyncer(this::isUpgradeConsumed, this::setUpgradeConsumed));
 
         builder.widget(new ButtonWidget().setOnClick((click, widget) -> {
