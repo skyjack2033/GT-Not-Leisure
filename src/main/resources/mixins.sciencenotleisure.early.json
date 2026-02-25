@@ -18,6 +18,7 @@
     "Minecraft.MixinCommandTeleport",
     "Minecraft.MixinEntity",
     "Minecraft.MixinEntityItem",
+    "Minecraft.MixinEntityLivingBase",
     "Minecraft.MixinEntityLiving",
     "Minecraft.MixinEntityPlayer",
     "Minecraft.MixinExplosion",
