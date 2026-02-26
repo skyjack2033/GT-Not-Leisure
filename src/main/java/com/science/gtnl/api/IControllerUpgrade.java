@@ -278,7 +278,7 @@ public interface IControllerUpgrade {
         })
             .setBackground(
                 (previewLevel < maxPreviewLevel) ? GTUITextures.BUTTON_STANDARD : GTUITextures.BUTTON_STANDARD_DISABLED,
-                new Text(">"))
+                ModularUITextures.ARROW_RIGHT)
             .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.previewNext"))
             .setPos(nextButtonX, switchButtonY)
             .setSize(16, 16));
@@ -296,7 +296,7 @@ public interface IControllerUpgrade {
         })
             .setBackground(
                 previewMode ? GTUITextures.BUTTON_STANDARD : GTUITextures.BUTTON_STANDARD_DISABLED,
-                new Text("<"))
+                ModularUITextures.ARROW_LEFT)
             .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.backToCurrent"))
             .setPos(previousButtonX, switchButtonY)
             .setSize(16, 16));
@@ -371,6 +371,7 @@ public interface IControllerUpgrade {
 
         for (int i = 0; i < getUpgradeRequiredItems().length; i++) {
             ItemStack required = getUpgradeRequiredItems()[i];
+            if (required == null) continue;
             int requiredAmount = required.stackSize;
             int alreadyPaid = getUpgradePaidCosts()[i];
 
