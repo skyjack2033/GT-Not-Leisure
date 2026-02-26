@@ -3831,4 +3831,4 @@ text.AssemblerMatrix.tooltip.0=A similar pattern exists. Upload skipped and blan
 text.CraftComplete.tooltip.0=§5Auto-Crafting Complete
 text.CraftComplete.tooltip.1=%s %s, took %s
 gtnl.ui.controllerUpgrade.previewNext=View next stage materials
-gtnl.ui.controllerUpgrade.backToCurrent=Back to current stage materials
+gtnl.ui.controllerUpgrade.backToCurrent=Back to previous stage materials
