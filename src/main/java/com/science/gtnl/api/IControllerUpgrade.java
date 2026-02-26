@@ -266,38 +266,40 @@ public interface IControllerUpgrade {
         int nextButtonX = previousButtonX + 160;
         int switchButtonY = 6 + 18 * costRows + 2;
 
-        if (previewLevel < maxPreviewLevel) {
-            final int targetPreviewLevel = previewLevel + 1;
-            builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                if (!widget.isClient()) {
-                    widget.getWindow()
-                        .closeWindow();
-                    widget.getContext()
-                        .openSyncedWindow(getPreviewUpgradeWindowId(targetPreviewLevel));
-                }
-            })
-                .setBackground(ModularUITextures.VANILLA_BACKGROUND, new Text(">"))
-                .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.previewNext"))
-                .setPos(nextButtonX, switchButtonY)
-                .setSize(16, 16));
-        }
+        final int targetPreviewLevel = previewLevel + 1;
+        builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
+            if (previewLevel >= maxPreviewLevel) return;
+            if (!widget.isClient()) {
+                widget.getWindow()
+                    .closeWindow();
+                widget.getContext()
+                    .openSyncedWindow(getPreviewUpgradeWindowId(targetPreviewLevel));
+            }
+        })
+            .setBackground(
+                (previewLevel < maxPreviewLevel) ? GTUITextures.BUTTON_STANDARD : GTUITextures.BUTTON_STANDARD_DISABLED,
+                new Text(">"))
+            .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.previewNext"))
+            .setPos(nextButtonX, switchButtonY)
+            .setSize(16, 16));
 
-        if (previewMode) {
-            final int previousWindowId = previewLevel == 1 ? getUpgradeWindowId()
-                : getPreviewUpgradeWindowId(previewLevel - 1);
-            builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                if (!widget.isClient()) {
-                    widget.getWindow()
-                        .closeWindow();
-                    widget.getContext()
-                        .openSyncedWindow(previousWindowId);
-                }
-            })
-                .setBackground(ModularUITextures.VANILLA_BACKGROUND, new Text("<"))
-                .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.backToCurrent"))
-                .setPos(previousButtonX, switchButtonY)
-                .setSize(16, 16));
-        }
+        final int previousWindowId = previewLevel == 1 ? getUpgradeWindowId()
+            : getPreviewUpgradeWindowId(previewLevel - 1);
+        builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
+            if (!previewMode) return;
+            if (!widget.isClient()) {
+                widget.getWindow()
+                    .closeWindow();
+                widget.getContext()
+                    .openSyncedWindow(previousWindowId);
+            }
+        })
+            .setBackground(
+                previewMode ? GTUITextures.BUTTON_STANDARD : GTUITextures.BUTTON_STANDARD_DISABLED,
+                new Text("<"))
+            .addTooltip(StatCollector.translateToLocal("gtnl.ui.controllerUpgrade.backToCurrent"))
+            .setPos(previousButtonX, switchButtonY)
+            .setSize(16, 16));
 
         if (!previewMode) {
             builder.widget(new MultiChildWidget().addChild(new ButtonWidget().setOnClick((clickData, widget) -> {
