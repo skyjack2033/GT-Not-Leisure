@@ -89,7 +89,7 @@ public class NaquadahReactorRecipes implements IRecipePool {
             .addTo(NRR);
 
         RecipeBuilder.builder()
-            .fluidInputs(GGMaterial.naquadahBasedFuelMkV.getFluidOrGas(16), MaterialsUEVplus.SpaceTime.getMolten(144))
+            .fluidInputs(GGMaterial.naquadahBasedFuelMkV.getFluidOrGas(16), GGMaterial.shirabon.getMolten(36))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkVDepleted.getFluidOrGas(16))
             .duration(2000)
             .eut(0)

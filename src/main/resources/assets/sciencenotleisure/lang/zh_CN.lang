@@ -28,8 +28,8 @@ Info_Render_Disabled=关闭渲染
 Info_ShowPattern_Enabled=§a在接口终端显示
 Info_ShowPattern_Disabled=§c在接口终端隐藏
 
-GT5U.gui.text.parallel_overflow=§7并行溢出
-GT5U.gui.text.parallel_zero=§7并行不足，检查你的输入是否满足配方或机器要求
+GT5U.gui.text.parallel_overflow=§4并行溢出
+GT5U.gui.text.parallel_zero=§4并行不足，检查你的输入是否满足配方或机器要求
 
 gtnl_config.machine=机器
 gtnl_config.machine.tooltip=调整部分机器的配置

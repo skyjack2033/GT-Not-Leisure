@@ -28,7 +28,7 @@ public class BlockEternalGregTechWorkshopRender extends Block {
         this.setHardness(-1.0f);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
         this.setBlockName("EternalGregTechWorkshopRenderer");
-        this.setLightLevel(100.0f);
+        this.setLightLevel(1.0f);
         GameRegistry.registerBlock(this, ItemBlockEternalGregTechWorkshopRender.class, getUnlocalizedName());
         GTNLItemList.EternalGregTechWorkshopRender.set(new ItemStack(this, 1));
     }

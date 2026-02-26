@@ -30,6 +30,7 @@ import com.science.gtnl.common.block.blocks.item.ItemBlockNanoPhagocytosisPlantR
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
 import com.science.gtnl.common.block.blocks.tile.TileEntityArtificialStar;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
+import com.science.gtnl.common.block.blocks.tile.TileEntityEnderElevator;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
 import com.science.gtnl.common.block.blocks.tile.TileEntityNanoPhagocytosisPlant;
@@ -51,6 +52,7 @@ import com.science.gtnl.common.render.item.ItemNullPointerExceptionRender;
 import com.science.gtnl.common.render.item.ItemPlayerDollRenderer;
 import com.science.gtnl.common.render.item.ItemSteamRocketRenderer;
 import com.science.gtnl.common.render.item.ItemTwilightSwordRender;
+import com.science.gtnl.common.render.tile.EnderElevatorRenderer;
 import com.science.gtnl.common.render.tile.EternalGregTechWorkshopRenderer;
 import com.science.gtnl.common.render.tile.LaserBeconRenderer;
 import com.science.gtnl.common.render.tile.NanoPhagocytosisPlantRenderer;
@@ -61,9 +63,9 @@ import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAdvancedWorkbench;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.loader.ItemLoader;
-import com.science.gtnl.utils.SubscribeEventClientUtils;
 import com.science.gtnl.utils.detrav.DetravScannerGUI;
 import com.science.gtnl.utils.enums.GuiType;
+import com.science.gtnl.utils.event.SubscribeEventClientUtils;
 import com.science.gtnl.utils.gui.NotificationTickHandler;
 
 import Forge.NullPointerException;
@@ -87,6 +89,7 @@ import micdoodle8.mods.galacticraft.core.proxy.ClientProxyCore;
 public class ClientProxy extends CommonProxy {
 
     public static int waterCandleRenderID;
+    public static int enderElevatorRenderID;
 
     @Override
     public void init(FMLInitializationEvent event) {
@@ -95,6 +98,10 @@ public class ClientProxy extends CommonProxy {
         ClientCommandHandler.instance.registerCommand(new CommandSpoce());
 
         waterCandleRenderID = RenderingRegistry.getNextAvailableRenderId();
+        enderElevatorRenderID = RenderingRegistry.getNextAvailableRenderId();
+
+        RenderingRegistry.registerBlockHandler(new EnderElevatorRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEnderElevator.class, new EnderElevatorRenderer());
 
         RenderingRegistry.registerBlockHandler(new WaterCandleRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWaterCandle.class, new WaterCandleRenderer());
@@ -112,7 +119,7 @@ public class ClientProxy extends CommonProxy {
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArtificialStar.class, new RealArtificialStarRenderer());
         MinecraftForgeClient.registerItemRenderer(
-            Item.getItemFromBlock(BlockLoader.blockArtificialStarRender),
+            Item.getItemFromBlock(BlockLoader.artificialStarRender),
             new ItemBlockArtificialStarRender());
 
         MinecraftForgeClient.registerItemRenderer(ItemLoader.twilightSword, new ItemTwilightSwordRender());

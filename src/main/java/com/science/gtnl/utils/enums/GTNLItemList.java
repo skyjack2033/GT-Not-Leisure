@@ -49,6 +49,9 @@ public enum GTNLItemList implements IItemContainer {
     AEChisel,
     DimensionRespawnAnchor,
     EssentiaHatch,
+    EnderElevatorBlock,
+    EnderElevatorSlab,
+    EnderElevatorCarpet,
 
     BronzeBrickCasing,
     SteelBrickCasing,

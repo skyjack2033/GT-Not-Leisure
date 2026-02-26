@@ -1,4 +1,4 @@
-package com.science.gtnl.utils;
+package com.science.gtnl.utils.event;
 
 import static com.science.gtnl.ScienceNotLeisure.*;
 import static com.science.gtnl.common.render.PlayerDollRenderManager.*;

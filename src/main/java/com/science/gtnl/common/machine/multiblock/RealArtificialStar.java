@@ -688,11 +688,7 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
             .setBlock((int) (x + xOffset), (int) (y + yOffset), (int) (z + zOffset), Blocks.air);
         this.getBaseMetaTileEntity()
             .getWorld()
-            .setBlock(
-                (int) (x + xOffset),
-                (int) (y + yOffset),
-                (int) (z + zOffset),
-                BlockLoader.blockArtificialStarRender);
+            .setBlock((int) (x + xOffset), (int) (y + yOffset), (int) (z + zOffset), BlockLoader.artificialStarRender);
     }
 
     public void destroyRenderBlock() {

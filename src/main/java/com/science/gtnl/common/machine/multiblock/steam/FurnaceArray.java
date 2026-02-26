@@ -33,7 +33,7 @@ import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
-import com.science.gtnl.utils.SubscribeEventUtils;
+import com.science.gtnl.utils.event.SubscribeEventUtils;
 
 import gregtech.api.enums.StructureError;
 import gregtech.api.enums.Textures;

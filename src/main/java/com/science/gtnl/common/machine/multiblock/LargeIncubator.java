@@ -22,8 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +39,6 @@ import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import bartworks.API.recipe.BartWorksRecipeMaps;
 import bartworks.common.tileentities.tiered.MTERadioHatch;
 import bartworks.util.BWUtil;
-import bartworks.util.BioCulture;
 import bartworks.util.ResultWrongSievert;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Textures;
@@ -69,13 +66,9 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
 
     public int itemQuantity;
     public ArrayList<MTERadioHatch> mRadHatches = new ArrayList<>();
-    public int height = 1;
-    public Fluid mFluid = FluidRegistry.LAVA;
-    public BioCulture mCulture;
     public int mSievert;
     public int mNeededSievert;
-    public boolean isVisibleFluid = false;
-    public Sievert defaultSievertData = new Sievert(0, false);
+    public static Sievert defaultSievertData = new Sievert(0, false);
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String L_INCUBATOR_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/large_incubator";
     private static final String[][] shape = StructureUtils.readStructureFromFile(L_INCUBATOR_STRUCTURE_FILE_PATH);
@@ -335,10 +328,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && this.mRadHatches.size() <= 1
-            && !this.mOutputHatches.isEmpty()
-            && !this.mInputHatches.isEmpty()
-            && !(this.mEnergyHatches.isEmpty() && this.mExoticEnergyHatches.isEmpty());
+        return super.checkHatch() && this.mRadHatches.size() <= 1 && !this.mOutputHatches.isEmpty();
     }
 
     @Override
@@ -379,31 +369,16 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
 
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
-        aNBT.setInteger("mFluidHeight", this.height);
-        if (this.mCulture != null && !this.mCulture.getName()
-            .isEmpty()) aNBT.setString("mCulture", this.mCulture.getName());
-        else if ((this.mCulture == null || this.mCulture.getName()
-            .isEmpty()) && !aNBT.getString("mCulture")
-                .isEmpty()) {
-                    aNBT.removeTag("mCulture");
-                }
-        if (this.mFluid != null) aNBT.setString("mFluid", this.mFluid.getName());
         aNBT.setInteger("mSievert", this.mSievert);
         aNBT.setInteger("mNeededSievert", this.mNeededSievert);
-        aNBT.setBoolean("isVisibleFluid", this.isVisibleFluid);
         super.saveNBTData(aNBT);
     }
 
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
-        this.height = aNBT.getInteger("mFluidHeight");
-        this.mCulture = BioCulture.getBioCulture(aNBT.getString("mCulture"));
-        if (!aNBT.getString("mFluid")
-            .isEmpty()) this.mFluid = FluidRegistry.getFluid(aNBT.getString("mFluid"));
         this.mSievert = aNBT.getInteger("mSievert");
         this.mNeededSievert = aNBT.getInteger("mNeededSievert");
         super.loadNBTData(aNBT);
-        this.isVisibleFluid = aNBT.getBoolean("isVisibleFluid");
     }
 
     @Override

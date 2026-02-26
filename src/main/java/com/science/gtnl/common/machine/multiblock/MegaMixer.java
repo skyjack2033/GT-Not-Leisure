@@ -207,7 +207,7 @@ public class MegaMixer extends GTMMultiMachineBase<MegaMixer> implements ISurviv
 
     @Override
     public double getDurationModifier() {
-        return Math.min(0.005, 1.0 / (5 + runningSpeedBoost) - (Math.max(0, mParallelTier - 1) / 50.0));
+        return Math.max(0.005, 1.0 / (5 + runningSpeedBoost) - (Math.max(0, mParallelTier - 1) / 50.0));
     }
 
     @Override
