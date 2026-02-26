@@ -3,11 +3,20 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
 import static com.science.gtnl.ScienceNotLeisure.*;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
+import static com.science.gtnl.utils.Utils.*;
 import static gregtech.api.GregTechAPI.*;
 import static gregtech.api.enums.HatchElement.*;
 import static gregtech.api.enums.Mods.*;
 import static gregtech.api.util.GTStructureUtility.*;
+import static gregtech.api.util.GTUtility.areStacksEqual;
+import static gregtech.common.misc.WirelessNetworkManager.*;
 import static gtnhlanth.common.register.LanthItemList.*;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -30,7 +39,10 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 import tectech.thing.casing.TTCasingsContainer;
@@ -195,6 +207,97 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
     @Override
     public RecipeMap<?> getRecipeMap() {
         return GTNLRecipeMaps.WoodcutterRecipes;
+    }
+
+    @Nonnull
+    @Override
+    public CheckRecipeResult checkProcessing() {
+        maxParallelStored = -1;
+        mParallelTier = 0;
+        mParallelTier = Math.max(mParallelTier, getParallelTier(getControllerSlot()));
+        costingEU = BigInteger.ZERO;
+        costingEUText = ZERO_STRING;
+        totalOverclockedDuration = 0;
+        cycleNow = 0;
+
+        if (!wirelessMode) return super.checkProcessing();
+
+        List<ItemStack> original = getAllStoredInputs();
+        List<ItemStack> merged = new ArrayList<>();
+
+        outer: for (ItemStack stack : original) {
+            if (stack == null) continue;
+
+            for (ItemStack existing : merged) {
+                if (areStacksEqual(existing, stack)) {
+                    continue outer;
+                }
+            }
+
+            ItemStack copy = stack.copy();
+            copy.stackSize = 1;
+            merged.add(copy);
+        }
+
+        if (merged.isEmpty()) return CheckRecipeResultRegistry.NO_RECIPE;
+
+        boolean succeeded = false;
+        CheckRecipeResult finalResult = CheckRecipeResultRegistry.SUCCESSFUL;
+        for (ItemStack stack : merged) {
+            CheckRecipeResult r = wirelessModeProcessOnce(stack);
+
+            if (!r.wasSuccessful()) {
+                finalResult = r;
+                break;
+            }
+            succeeded = true;
+        }
+
+        if (!succeeded) {
+            return finalResult;
+        }
+        updateSlots();
+        costingEUText = GTUtility.formatNumbers(costingEU);
+
+        mEfficiency = 10000;
+        mEfficiencyIncrease = 10000;
+        mMaxProgresstime = totalOverclockedDuration;
+        return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
+
+    public CheckRecipeResult wirelessModeProcessOnce(ItemStack stack) {
+        if (!isRecipeProcessing) startRecipeProcessing();
+        setupProcessingLogic(processingLogic);
+
+        CheckRecipeResult result = doCheckRecipe(stack);
+        if (!result.wasSuccessful()) {
+            return result;
+        }
+
+        BigInteger costEU = BigInteger.valueOf(processingLogic.getCalculatedEut())
+            .multiply(BigInteger.valueOf(processingLogic.getDuration()));
+
+        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(NEGATIVE_ONE))) {
+            return CheckRecipeResultRegistry.insufficientPower(costEU.longValue());
+        }
+
+        costingEU = costingEU.add(costEU);
+        mOutputItems = mergeArray(mOutputItems, processingLogic.getOutputItems());
+        mOutputFluids = mergeArray(mOutputFluids, processingLogic.getOutputFluids());
+        totalOverclockedDuration += processingLogic.getDuration();
+
+        endRecipeProcessing();
+        return result;
+    }
+
+    @Nonnull
+    public CheckRecipeResult doCheckRecipe(ItemStack stack) {
+        CheckRecipeResult result = CheckRecipeResultRegistry.NO_RECIPE;
+        processingLogic.setInputItems(stack);
+        CheckRecipeResult foundResult = processingLogic.process();
+        if (foundResult.wasSuccessful()) return foundResult;
+        if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
+        return result;
     }
 
     @Override

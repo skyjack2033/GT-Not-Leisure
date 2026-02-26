@@ -2611,5 +2611,29 @@ public class AssemblingLineRecipes implements IRecipePool {
                 60 * SECONDS,
                 (int) TierEU.RECIPE_UIV);
         }
+
+        TTRecipeAdder.addResearchableAssemblylineRecipe(
+            GregtechItemList.Controller_ElementalDuplicator.get(1),
+            22331100,
+            32767,
+            (int) TierEU.RECIPE_UIV,
+            1,
+            new Object[] { GregtechItemList.Controller_ElementalDuplicator.get(64),
+                ItemRefer.ProtomatterActivationCoil.get(64), GTNLItemList.AssemblerMatrixSingularityCrafterCore.get(8),
+                GTNLItemList.DebugDataAccessHatch.get(1), ItemRefer.Fluid_Storage_Core_T10.get(64),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UMV, 64), ItemList.Field_Generator_UIV.get(16),
+                ItemList.Electric_Pump_UIV.get(24), ItemList.Quark_Creation_Catalyst_Strange.get(8),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.ProtoHalkonite, 32),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Mellion, 16),
+                GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUIV, 64),
+                GregtechItemList.Laser_Lens_Special.get(64),
+                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.TranscendentMetal, 32) },
+            new FluidStack[] { MaterialsUEVplus.ExcitedDTEC.getFluid(1200000), Materials.UUMatter.getFluid(20000000),
+                GTNLMaterials.SuperMutatedLivingSolder.getFluidOrGas(256000),
+                MaterialsUEVplus.PhononMedium.getFluid(128000) },
+            GTNLItemList.ElementCopying.get(1),
+            1000 * SECONDS,
+            (int) TierEU.RECIPE_UMV);
+
     }
 }
