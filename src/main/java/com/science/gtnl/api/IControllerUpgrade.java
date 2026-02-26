@@ -263,7 +263,7 @@ public interface IControllerUpgrade {
 
         int costRows = Math.max(1, rows);
         int previousButtonX = 5;
-        int nextButtonX = previousButtonX + 18;
+        int nextButtonX = previousButtonX + 160;
         int switchButtonY = 6 + 18 * costRows + 2;
 
         if (previewLevel < maxPreviewLevel) {
