@@ -357,9 +357,8 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     public void setProcessingLogicPower(ProcessingLogic logic) {
         if (wirelessMode) {
             logic.setAvailableVoltage(
-                machineMode == MACHINEMODE_DTPF ? Integer.MAX_VALUE : V[Math.min(mParallelTier + 1, 14)]);
-            logic
-                .setAvailableAmperage(((8L << (2 * mParallelTier)) - 2L) * (machineMode == MACHINEMODE_DTPF ? 128 : 1));
+                machineMode == MACHINEMODE_DTPF ? Integer.MAX_VALUE * 8L : V[Math.min(mParallelTier + 1, 14)]);
+            logic.setAvailableAmperage(8L << (2L * mParallelTier) - 2L);
             logic.setAmperageOC(true);
             logic.enablePerfectOverclock();
         } else {
