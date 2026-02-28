@@ -3,13 +3,7 @@ plugins {
 }
 
 minecraft {
-    extraRunJvmArguments.addAll("-Xmx8G", "-Xms8G")
-}
-
-dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.32")
-    annotationProcessor("org.projectlombok:lombok:1.18.32")
-    implementation("org.ow2.asm:asm-commons:9.2")
+    extraRunJvmArguments.addAll("-Xmx8G", "-Xms8G", "-Dgtnhlib.dumpkeys=true")
 }
 
 tasks.withType<JavaCompile>().configureEach {
