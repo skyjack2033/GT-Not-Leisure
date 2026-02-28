@@ -208,7 +208,7 @@ public class AnimatedTooltipHandler {
     @SuppressWarnings("unused")
     public static void renderTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.itemStack;
-        if (stack.getItem() instanceof Stick stick && !stick.isShiftDown() && MainConfig.enableStickItem) {
+        if (stack.getItem() instanceof Stick stick && !stick.isShiftDown() && MainConfig.item.stick.enableStickItem) {
             stack = Stick.getDisguisedStack(stack);
             if (stack == null) return;
         }

@@ -41,7 +41,7 @@ public abstract class MixinMTEHatchCraftingInputSlave extends MTEHatchInputBus
         if (tag.hasKey("masterName")) {
             currenttip.add(
                 EnumChatFormatting.GOLD
-                    + (MainConfig.enableHatchInterfaceTerminalEnhance
+                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
                         ? Utils.getExtraInterfaceName(tag.getString("masterName"))
                         : tag.getString("masterName"))
                     + EnumChatFormatting.RESET);

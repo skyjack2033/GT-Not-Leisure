@@ -15,12 +15,12 @@ public class SchematicSteamRocket extends SchematicPage {
 
     @Override
     public int getPageID() {
-        return MainConfig.idSchematicRocketSteam;
+        return MainConfig.item.steam_rocket.idSchematicRocketSteam;
     }
 
     @Override
     public int getGuiID() {
-        return MainConfig.NASA_WORKBENCH_STEAM_ROCKET;
+        return MainConfig.item.steam_rocket.nasaWorkbenchSteamRocket;
     }
 
     @Override

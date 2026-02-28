@@ -37,7 +37,7 @@ public class MixinBehaviourScanner {
     private void GTNotLeisure$addScanInfo(MetaBaseItem aItem, ItemStack aStack, EntityPlayer aPlayer, World aWorld,
         int aX, int aY, int aZ, ForgeDirection side, float hitX, float hitY, float hitZ,
         CallbackInfoReturnable<Boolean> cir, @Local ArrayList<String> tList) {
-        if (ModList.Overpowered.isModLoaded() || !MainConfig.enableRecipeOutputChance) return;
+        if (ModList.Overpowered.isModLoaded() || !MainConfig.machine.enableRecipeOutputChance) return;
         TileEntity tile = aWorld.getTileEntity(aX, aY, aZ);
         if (!(tile instanceof BaseMetaTileEntity baseMetaTileEntity)) {
             return;
@@ -55,7 +55,7 @@ public class MixinBehaviourScanner {
 
         int tier = GTUtility.getTier(mte.getMaxInputVoltage());
         int baseTier = GTUtility.getTier(recipe.mEUt);
-        double bonus = tier <= baseTier ? 0.0 : (tier - baseTier) * MainConfig.recipeOutputChance;
+        double bonus = tier <= baseTier ? 0.0 : (tier - baseTier) * MainConfig.machine.recipeOutputChance;
 
         String debugMessage = String.format(
             StatCollector.translateToLocal("Info_VoltageChanceBonus_00"),

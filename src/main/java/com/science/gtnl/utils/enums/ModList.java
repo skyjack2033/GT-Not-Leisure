@@ -4,9 +4,16 @@ import java.util.Locale;
 
 import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.common.Loader;
+import org.jetbrains.annotations.NotNull;
 
-public enum ModList {
+import com.gtnewhorizon.gtnhmixins.builders.ITargetMod;
+import com.gtnewhorizon.gtnhmixins.builders.TargetModBuilder;
+
+import cpw.mods.fml.common.Loader;
+import lombok.Getter;
+
+@Getter
+public enum ModList implements ITargetMod {
 
     ScienceNotLeisure(ModIds.SCIENCE_NOT_LEISURE, Names.SCIENCE_NOT_LEISURE),
     TakoTech(ModIds.TAKO_TECH, Names.TAKO_TECH),
@@ -26,7 +33,9 @@ public enum ModList {
     Sudoku(ModIds.SUDOKU, Names.SUDOKU),
     GiveCount(ModIds.GIVE_COUNT, Names.GIVECOUNT),
     ChromaticTooltips(ModIds.CHROMATIC_TOOLTIPS, Names.CHROMATIC_TOOLTIPS),
-    ChromaticTooltipsCompat(ModIds.CHROMATIC_TOOLTIPS_COMPAT, Names.CHROMATIC_TOOLTIPS_COMPAT);
+    ChromaticTooltipsCompat(ModIds.CHROMATIC_TOOLTIPS_COMPAT, Names.CHROMATIC_TOOLTIPS_COMPAT),
+
+    ;
 
     public static class ModIds {
 
@@ -77,12 +86,25 @@ public enum ModList {
     public final String ID;
     public final String resourceDomain;
     public final String displayName;
+    private final TargetModBuilder targetBuilder;
     private Boolean modLoaded;
 
     ModList(String ID, String displayName) {
+        this(ID, displayName, null);
+    }
+
+    ModList(String ID, String displayName, String coreModClass) {
         this.ID = ID;
         this.resourceDomain = ID.toLowerCase(Locale.ENGLISH);
         this.displayName = displayName;
+        this.targetBuilder = new TargetModBuilder().setModId(ID)
+            .setCoreModClass(coreModClass);
+    }
+
+    @NotNull
+    @Override
+    public TargetModBuilder getBuilder() {
+        return targetBuilder;
     }
 
     public boolean isModLoaded() {

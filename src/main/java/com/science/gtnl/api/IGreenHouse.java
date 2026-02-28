@@ -333,7 +333,7 @@ public interface IGreenHouse extends IVoidable {
             if (remaining <= 0) break;
         }
 
-        if (!drainPartial && remaining > 0 && !MainConfig.enableDebugMode) return false;
+        if (!drainPartial && remaining > 0 && !MainConfig.debug.enableDebugMode) return false;
         return remaining <= 0;
     }
 

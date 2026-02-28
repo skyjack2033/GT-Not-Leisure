@@ -30,7 +30,7 @@ public class PreciseAssemblerRecipes implements IRecipePool {
     @Override
     public void loadRecipes() {
 
-        if (MainConfig.enableDeleteRecipe) {
+        if (MainConfig.recipe.enableDeleteRecipe) {
             RecipeBuilder.builder()
                 .setNEIDesc("Remove Change by GTNotLeisure")
                 .itemInputs(

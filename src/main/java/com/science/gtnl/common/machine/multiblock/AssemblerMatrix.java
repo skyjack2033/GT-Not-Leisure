@@ -1546,7 +1546,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         }
 
         StringBuilder name = new StringBuilder();
-        if (MainConfig.enableHatchInterfaceTerminalEnhance) {
+        if (MainConfig.machine.enableHatchInterfaceTerminalEnhance) {
 
             if (getCrafterIcon() != null) {
                 name.append(getCrafterIcon().getUnlocalizedName());

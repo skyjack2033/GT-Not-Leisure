@@ -432,7 +432,7 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
         if (tag.hasKey("superMasterName")) {
             currenttip.add(
                 EnumChatFormatting.GOLD
-                    + (MainConfig.enableHatchInterfaceTerminalEnhance
+                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
                         ? Utils.getExtraInterfaceName(tag.getString("superMasterName"))
                         : tag.getString("superMasterName"))
                     + EnumChatFormatting.RESET);
@@ -440,7 +440,7 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
         if (tag.hasKey("craftingMasterName")) {
             currenttip.add(
                 EnumChatFormatting.GOLD
-                    + (MainConfig.enableHatchInterfaceTerminalEnhance
+                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
                         ? Utils.getExtraInterfaceName(tag.getString("craftingMasterName"))
                         : tag.getString("craftingMasterName"))
                     + EnumChatFormatting.RESET);

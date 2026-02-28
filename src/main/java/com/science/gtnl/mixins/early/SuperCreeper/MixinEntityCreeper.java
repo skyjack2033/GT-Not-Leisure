@@ -57,19 +57,19 @@ public abstract class MixinEntityCreeper extends EntityMob {
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void onDeath(DamageSource source, CallbackInfo ci) {
         if (source.isExplosion() && source.getSourceOfDamage() instanceof EntityCreeper
-            && MainConfig.enableCreeperKilledByCreeperExplosion) {
+            && MainConfig.super_creeper.enableCreeperKilledByCreeperExplosion) {
             this.func_146077_cc();
         }
 
         if (this.timeSinceIgnited > 0 && this.timeSinceIgnited < this.fuseTime
-            && MainConfig.enableCreeperIgnitedDeathExplosion) {
+            && MainConfig.super_creeper.enableCreeperIgnitedDeathExplosion) {
             this.func_146077_cc();
         }
     }
 
     @Inject(method = "onUpdate", at = @At("TAIL"))
     private void onUpdate(CallbackInfo ci) {
-        if (gtnl$isCreeperExplosionDelayed && MainConfig.enableCreeperHurtByCreeperExplosion) {
+        if (gtnl$isCreeperExplosionDelayed && MainConfig.super_creeper.enableCreeperHurtByCreeperExplosion) {
             gtnl$delayedExplosionTimer--;
             if (gtnl$delayedExplosionTimer <= 0) {
                 this.func_146077_cc();
@@ -78,9 +78,9 @@ public abstract class MixinEntityCreeper extends EntityMob {
             }
         }
 
-        if (this.isBurning() && MainConfig.enableCreeperBurningExplosion) {
+        if (this.isBurning() && MainConfig.super_creeper.enableCreeperBurningExplosion) {
             gtnl$burningExplosionTimer++;
-            if (gtnl$burningExplosionTimer >= MainConfig.burningExplosionTimer) {
+            if (gtnl$burningExplosionTimer >= MainConfig.super_creeper.burningExplosionTimer) {
                 this.func_146077_cc();
                 this.extinguish();
                 gtnl$burningExplosionTimer = 0;
@@ -97,7 +97,7 @@ public abstract class MixinEntityCreeper extends EntityMob {
             target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;DDDFZ)Lnet/minecraft/world/Explosion;",
             shift = At.Shift.BEFORE))
     private void preCreateExplosion(CallbackInfo ci) {
-        if (!this.worldObj.isRemote && MainConfig.allowCreeperExplosionBypassGamerule) {
+        if (!this.worldObj.isRemote && MainConfig.super_creeper.allowCreeperExplosionBypassGamerule) {
             if (this.getPowered()) {
                 this.worldObj
                     .createExplosion(this, this.posX, this.posY, this.posZ, (float) (this.explosionRadius * 2), true);

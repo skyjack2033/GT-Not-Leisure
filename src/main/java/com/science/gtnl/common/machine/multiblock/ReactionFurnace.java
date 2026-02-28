@@ -262,11 +262,10 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
             if (remainingToSmelt <= 0) break;
 
             long totalOutput = (long) smeltedOutput.stackSize * remainingToSmelt;
-            int maxStackSize = smeltedOutput.getMaxStackSize();
 
             while (totalOutput > 0) {
 
-                long splitLong = Math.min(totalOutput, maxStackSize);
+                long splitLong = Math.min(totalOutput, Integer.MAX_VALUE);
                 int splitSize = (int) splitLong;
 
                 ItemStack splitStack = smeltedOutput.copy();

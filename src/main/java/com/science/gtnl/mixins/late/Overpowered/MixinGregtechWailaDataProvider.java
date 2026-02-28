@@ -37,7 +37,7 @@ public class MixinGregtechWailaDataProvider {
         cancellable = true)
     private void injectGetNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y,
         int z, CallbackInfoReturnable<NBTTagCompound> cir) {
-        if (ModList.Overpowered.isModLoaded() || !MainConfig.enableRecipeOutputChance) return;
+        if (ModList.Overpowered.isModLoaded() || !MainConfig.machine.enableRecipeOutputChance) return;
         if (tile instanceof BaseMetaTileEntity baseMetaTileEntity) {
             IMetaTileEntity meta = baseMetaTileEntity.getMetaTileEntity();
             if (meta instanceof MTEMultiBlockBase mte) {
@@ -45,7 +45,7 @@ public class MixinGregtechWailaDataProvider {
                 if (recipe != null) {
                     int tier = GTUtility.getTier(mte.getMaxInputVoltage());
                     int baseTier = GTUtility.getTier(recipe.mEUt);
-                    double bonus = tier <= baseTier ? 0.0 : (tier - baseTier) * MainConfig.recipeOutputChance;
+                    double bonus = tier <= baseTier ? 0.0 : (tier - baseTier) * MainConfig.machine.recipeOutputChance;
                     tag.setInteger("tier", tier);
                     tag.setInteger("baseTier", baseTier);
                     tag.setDouble("bonus", bonus);
@@ -58,7 +58,7 @@ public class MixinGregtechWailaDataProvider {
     @Inject(method = "getWailaBody", at = @At("RETURN"), cancellable = true)
     private void injectGetWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
         IWailaConfigHandler config, CallbackInfoReturnable<List<String>> cir) {
-        if (ModList.Overpowered.isModLoaded() || !MainConfig.enableRecipeOutputChance) return;
+        if (ModList.Overpowered.isModLoaded() || !MainConfig.machine.enableRecipeOutputChance) return;
         NBTTagCompound tag = accessor.getNBTData();
 
         if (tag.hasKey("tier") && tag.hasKey("baseTier") && tag.hasKey("bonus")) {

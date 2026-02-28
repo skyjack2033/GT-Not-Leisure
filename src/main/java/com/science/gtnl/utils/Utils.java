@@ -1,7 +1,5 @@
 package com.science.gtnl.utils;
 
-import static com.science.gtnl.config.MainConfig.targetBlockSpecs;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -51,6 +49,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.mojang.authlib.GameProfile;
+import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.mixins.early.Minecraft.AccessorStringTranslate;
 import com.science.gtnl.mixins.late.Gregtech.AccessorGTLanguageManager;
 import com.science.gtnl.utils.machine.FluidTankG;
@@ -778,7 +777,8 @@ public class Utils {
     }
 
     public static boolean isTargetBlock(Block block, int meta) {
-        if (targetBlockSpecs == null) return false;
+        if (MainConfig.super_creeper.defaultTargetBlocks == null
+            || MainConfig.super_creeper.defaultTargetBlocks.length == 0) return false;
         if (block == null) {
             return false;
         }
@@ -787,7 +787,7 @@ public class Utils {
             return false;
         }
 
-        for (String spec : targetBlockSpecs) {
+        for (String spec : MainConfig.super_creeper.defaultTargetBlocks) {
             String[] parts = spec.split(":");
             if (parts.length == 2) {
                 if (spec.equals(blockId)) {

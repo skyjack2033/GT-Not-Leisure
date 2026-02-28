@@ -67,7 +67,7 @@ public class PlayerDollRenderer extends TileEntitySpecialRenderer {
             }
         }
 
-        if (MainConfig.enableCustomPlayerDoll && !offlineMode) {
+        if (MainConfig.item.player_doll.enableCustomSkin && !offlineMode) {
             String ownerUUID = null;
             String playerName;
 

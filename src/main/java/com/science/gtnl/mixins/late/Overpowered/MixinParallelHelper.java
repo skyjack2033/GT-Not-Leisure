@@ -48,7 +48,7 @@ public abstract class MixinParallelHelper {
      */
     @Inject(method = "determineParallel", at = @At("HEAD"), remap = false)
     private void opDetermineParallel(CallbackInfo ci) {
-        if (!ModList.Overpowered.isModLoaded() && MainConfig.enableRecipeOutputChance) {
+        if (!ModList.Overpowered.isModLoaded() && MainConfig.machine.enableRecipeOutputChance) {
             // Compute optional bonus based on machine and current EU/t
             OptionalDouble bonusOptional = ChanceBonusManager
                 .getChanceBonusOptional(machine, GTUtility.getTier(recipe.mEUt), chanceMultiplier, recipe);

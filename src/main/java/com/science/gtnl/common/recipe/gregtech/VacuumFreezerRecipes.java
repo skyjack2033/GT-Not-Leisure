@@ -26,7 +26,7 @@ public class VacuumFreezerRecipes implements IRecipePool {
             .addTo(VFR)
             .addTo(AFR);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

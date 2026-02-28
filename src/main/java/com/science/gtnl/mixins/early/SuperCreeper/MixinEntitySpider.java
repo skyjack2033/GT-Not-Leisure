@@ -19,15 +19,15 @@ import com.science.gtnl.config.MainConfig;
 @Mixin(EntitySpider.class)
 public abstract class MixinEntitySpider extends EntityMob {
 
-    public MixinEntitySpider(World p_i1738_1_) {
-        super(p_i1738_1_);
+    public MixinEntitySpider(World world) {
+        super(world);
     }
 
     @Inject(method = "onUpdate", at = @At("HEAD"))
     private void onUpdate_creeperRidingEffects(CallbackInfo ci) {
         if (this.riddenByEntity instanceof EntityCreeper) {
             this.getEntityAttribute(SharedMonsterAttributes.movementSpeed)
-                .setBaseValue(0.8D * MainConfig.spiderMoveSpeed);
+                .setBaseValue(0.8D * MainConfig.super_creeper.spiderMoveSpeed);
         } else {
             this.getEntityAttribute(SharedMonsterAttributes.movementSpeed)
                 .setBaseValue(0.8D);
@@ -37,7 +37,7 @@ public abstract class MixinEntitySpider extends EntityMob {
     @Inject(method = "isBesideClimbableBlock", at = @At("HEAD"), cancellable = true)
     public void isBesideClimbableBlock_increasedRange(CallbackInfoReturnable<Boolean> cir) {
 
-        if (this.riddenByEntity instanceof EntityCreeper && MainConfig.enableCreeperFindSpider) {
+        if (this.riddenByEntity instanceof EntityCreeper && MainConfig.super_creeper.enableCreeperFindSpider) {
             int blockX = MathHelper.floor_double(this.posX);
             int blockY = MathHelper.floor_double(this.boundingBox.minY);
             int blockZ = MathHelper.floor_double(this.posZ);

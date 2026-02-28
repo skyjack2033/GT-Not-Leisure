@@ -63,7 +63,7 @@ public class AlloyBlastSmelterRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_LV)
             .addTo(aBS);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

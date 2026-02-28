@@ -18,7 +18,7 @@ public abstract class MixinMinecraftForgeEventHandler {
 
     @Inject(method = "onLivingDeath", at = @At(value = "HEAD"), cancellable = true)
     private void injectDeath(LivingDeathEvent event, CallbackInfo ci) {
-        if (!MainConfig.enableInfinitySwordBypassMechanism) return;
+        if (!MainConfig.re_avaritia.infinity_sword.enableBypass) return;
         Entity entity = event.source.getSourceOfDamage();
         if (!(entity instanceof EntityPlayer player)) return;
         if (!player.isSneaking()) return;

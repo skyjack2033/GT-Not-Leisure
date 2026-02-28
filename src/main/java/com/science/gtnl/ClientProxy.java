@@ -1,5 +1,7 @@
 package com.science.gtnl;
 
+import java.time.LocalDate;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelSlime;
 import net.minecraft.client.renderer.entity.RenderLeashKnot;
@@ -59,7 +61,6 @@ import com.science.gtnl.common.render.tile.NanoPhagocytosisPlantRenderer;
 import com.science.gtnl.common.render.tile.PlayerDollRenderer;
 import com.science.gtnl.common.render.tile.RealArtificialStarRenderer;
 import com.science.gtnl.common.render.tile.WaterCandleRenderer;
-import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAdvancedWorkbench;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.loader.ItemLoader;
@@ -87,6 +88,16 @@ import micdoodle8.mods.galacticraft.core.client.model.ModelRocketTier1;
 import micdoodle8.mods.galacticraft.core.proxy.ClientProxyCore;
 
 public class ClientProxy extends CommonProxy {
+
+    public static boolean enableAprilFool = false;
+
+    static {
+        LocalDate today = LocalDate.now();
+        if (today.getMonthValue() == 4 && today.getDayOfMonth() == 1) {
+            enableAprilFool = true;
+        }
+
+    }
 
     public static int waterCandleRenderID;
     public static int enderElevatorRenderID;
@@ -140,7 +151,7 @@ public class ClientProxy extends CommonProxy {
         MinecraftForgeClient.registerItemRenderer(ItemLoader.testItem, new FancyHaloRenderer());
         MinecraftForgeClient.registerItemRenderer(ItemLoader.metaItem, new FancyHaloRenderer());
 
-        if (MainConfig.enableAprilFool) {
+        if (enableAprilFool) {
             MinecraftForgeClient.registerItemRenderer(
                 Item.getItemFromBlock(GregTechAPI.sBlockMachines),
                 new ItemMeteorMinerMachineRender());

@@ -550,9 +550,9 @@ public class BlockLoader {
                 metaCasing02,
                 new String[] { StatCollector.translateToLocalFormatted(
                     "Tooltip_QuantumComputerCasing_00",
-                    MainConfig.quantumComputerMaximumMultiblockSize,
-                    MainConfig.quantumComputerMaximumMultiblockSize,
-                    MainConfig.quantumComputerMaximumMultiblockSize) }));
+                    MainConfig.machine.quantum_computer.maxMultiblockSize,
+                    MainConfig.machine.quantum_computer.maxMultiblockSize,
+                    MainConfig.machine.quantum_computer.maxMultiblockSize) }));
         GTNLItemList.QuantumComputerUnit.set(MetaItemBlockCasing.initMetaBlockCasing(11, metaCasing02));
         GTNLItemList.QuantumComputerCraftingStorage128M.set(MetaItemBlockCasing.initMetaBlockCasing(12, metaCasing02));
         GTNLItemList.QuantumComputerCraftingStorage256M.set(MetaItemBlockCasing.initMetaBlockCasing(13, metaCasing02));
@@ -562,7 +562,7 @@ public class BlockLoader {
                 metaCasing02,
                 new String[] { StatCollector.translateToLocalFormatted(
                     "Tooltip_QuantumComputerDataEntangler_00",
-                    MainConfig.quantumComputerMaximumQuantumDataEntangler) }));
+                    MainConfig.machine.quantum_computer.maxDataEntangler) }));
         GTNLItemList.QuantumComputerAccelerator.set(
             MetaItemBlockCasing.initMetaBlockCasing(
                 15,
@@ -574,7 +574,7 @@ public class BlockLoader {
                 metaCasing02,
                 new String[] { StatCollector.translateToLocalFormatted(
                     "Tooltip_QuantumComputerMultiThreader_00",
-                    MainConfig.quantumComputerMaximumQuantumComputerMultiThreader) }));
+                    MainConfig.machine.quantum_computer.maxMultiThreader) }));
         GTNLItemList.QuantumComputerCore.set(
             MetaItemBlockCasing.initMetaBlockCasing(
                 17,

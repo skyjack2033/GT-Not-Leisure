@@ -20,7 +20,7 @@ public abstract class MixinInterfaceTerminalEntry {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void gtnl$onInit(GuiInterfaceTerminal init, long id, String name, int rows, int rowSize, boolean online,
         boolean p2pOutput, CallbackInfo ci) {
-        if (!MainConfig.enableHatchInterfaceTerminalEnhance) return;
+        if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
         if (name == null) return;
         this.dispName = Utils.getExtraInterfaceName(name);
     }

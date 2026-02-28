@@ -24,7 +24,7 @@ public class MixinDualityInterface {
         cancellable = true)
     private void gtnl$injectBeforeItemReturn(CallbackInfoReturnable<String> cir,
         @Local(name = "item") ItemStack itemStack) {
-        if (!MainConfig.enableHatchInterfaceTerminalEnhance) return;
+        if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
         if (!itemStack.hasDisplayName()) return;
         String name = itemStack.getDisplayName();
         if (!name.startsWith("gt_circuit_") && !name.contains("extra_start_")) return;

@@ -151,7 +151,7 @@ public class RecipeLoader {
     public static boolean recipesAdded;
 
     public static void loadPostInit() {
-        if (MainConfig.enableDeleteRecipe) {
+        if (MainConfig.recipe.enableDeleteRecipe) {
             RemoveRecipes.removeCircuitAssemblerRecipes();
         }
 
@@ -169,7 +169,7 @@ public class RecipeLoader {
         RecipeUtil
             .removeMatchingRecipes(GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes, RecipeMaps.circuitAssemblerRecipes);
         if (recipesAdded) return;
-        if (MainConfig.enableDeleteRecipe) {
+        if (MainConfig.recipe.enableDeleteRecipe) {
             RemoveRecipes.removeRecipes();
         }
 
@@ -179,7 +179,7 @@ public class RecipeLoader {
         CrackRecipeAdder.reAddBlastRecipe(GTNLMaterials.HSLASteel, 1000, 480, 1711, true);
         CrackRecipeAdder.reAddBlastRecipe(GTNLMaterials.Germaniumtungstennitride, 800, 30720, 8200, true);
 
-        if (MainConfig.enableChamberRecipesBuff) {
+        if (MainConfig.recipe.enableChamberRecipesBuff) {
             loadBuffTargetChamberRecipe();
         }
 

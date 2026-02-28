@@ -86,7 +86,7 @@ public class AutoclaveRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_LuV)
             .addTo(AR);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

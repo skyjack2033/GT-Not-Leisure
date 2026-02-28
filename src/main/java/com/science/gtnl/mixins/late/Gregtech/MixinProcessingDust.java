@@ -38,7 +38,7 @@ public abstract class MixinProcessingDust {
             .eut(calculateRecipeEU(aMaterial, 8))
             .addTo(fluidSolidifierRecipes);
 
-        if (MainConfig.enableDebugMode) ScienceNotLeisure.LOG
+        if (MainConfig.debug.enableDebugMode) ScienceNotLeisure.LOG
             .warn("GTNL: 144l fluid molder for 1 dust Recipe: {} - Success", aMaterial.mLocalizedName);
     }
 }

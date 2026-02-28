@@ -37,7 +37,7 @@ public abstract class MixinRecipeGenFluids {
             .eut(material.vVoltageMultiplier)
             .addTo(RecipeMaps.fluidSolidifierRecipes);
 
-        if (MainConfig.enableDebugMode) ScienceNotLeisure.LOG
+        if (MainConfig.debug.enableDebugMode) ScienceNotLeisure.LOG
             .warn("GTNL: 144l fluid molder for 1 dust Recipe: {} - Success", material.getLocalizedName());
     }
 }

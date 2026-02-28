@@ -87,7 +87,7 @@ public class ItemPlayerDollRenderer implements IItemRenderer {
             }
         }
 
-        if (MainConfig.enableCustomPlayerDoll && !offlineMode) {
+        if (MainConfig.item.player_doll.enableCustomSkin && !offlineMode) {
             String ownerUUID = null;
             String playerName;
 

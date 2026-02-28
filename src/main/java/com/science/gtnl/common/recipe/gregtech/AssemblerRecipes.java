@@ -3406,7 +3406,7 @@ public class AssemblerRecipes implements IRecipePool {
         loadWirelessHatch();
         loadLaserHatch();
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadLamp() {

@@ -63,7 +63,7 @@ public class EternalGregTechWorkshopRenderer extends TileEntitySpecialRenderer {
         GL11.glTranslated(x + 0.5f, y + 0.5f, z + 0.5f);
 
         int renderCount = tile.getRenderCount();
-        boolean spiralEnabled = MainConfig.enableEternalGregTechWorkshopSpiralRender;
+        boolean spiralEnabled = MainConfig.machine.eternal_gregtech_workshop.spiralRender;
 
         float rotAngle = tile.getRotAngle();
         float rotAxisX = tile.getRotAxisX();

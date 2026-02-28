@@ -51,7 +51,7 @@ public abstract class MixinMoltenCellLoader {
                     .getMass() > 128 ? 64 : 30)
             .addTo(fluidSolidifierRecipes);
 
-        if (MainConfig.enableDebugMode) ScienceNotLeisure.LOG
+        if (MainConfig.debug.enableDebugMode) ScienceNotLeisure.LOG
             .warn("GTNL: 144l fluid molder for 1 dust Recipe: {} - Success", material.mRegularLocalName);
     }
 }

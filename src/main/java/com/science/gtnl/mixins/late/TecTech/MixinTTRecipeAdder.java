@@ -17,7 +17,7 @@ public abstract class MixinTTRecipeAdder {
         argsOnly = true,
         ordinal = 4)
     private static int modifyAssemblyLineDuration(int assDuration) {
-        if (!MainConfig.enableAssemblingLineRecipesTimeChange) return assDuration;
+        if (!MainConfig.recipe.enableAssemblingLineRecipesTimeChange) return assDuration;
         int modified = assDuration;
 
         if (assDuration >= 200000) {
@@ -39,7 +39,7 @@ public abstract class MixinTTRecipeAdder {
         argsOnly = true,
         ordinal = 4)
     private static int modifyAssemblyLineDurationObject(int assDuration) {
-        if (!MainConfig.enableAssemblingLineRecipesTimeChange) return assDuration;
+        if (!MainConfig.recipe.enableAssemblingLineRecipesTimeChange) return assDuration;
         int modified = assDuration;
 
         if (assDuration >= 200000) {

@@ -1,43 +1,12 @@
 {
   "required": true,
-  "minVersion": "0.8.5-GTNH",
+  "minVersion": "0.8.3-GTNH",
   "package": "com.science.gtnl.mixins.early",
   "refmap": "mixins.sciencenotleisure.refmap.json",
   "target": "@env(DEFAULT)",
+  "injectors":{
+    "maxShiftBy": 2
+  },
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "Forge.MixinFMLProxyPacket",
-    "Forge.MixinForgeHook",
-    "Gregtech.AccessorMTETieredMachineBlock",
-    "Minecraft.AccessorStringTranslate",
-    "Minecraft.AccessorContainerRepair",
-    "Minecraft.AccessorEntityLivingBase",
-    "Minecraft.AccessorFoodStats",
-    "Minecraft.AccessorGuiChat",
-    "Minecraft.AccessorMinecraft",
-    "Minecraft.MixinCommandTeleport",
-    "Minecraft.MixinEntity",
-    "Minecraft.MixinEntityItem",
-    "Minecraft.MixinEntityLivingBase",
-    "Minecraft.MixinEntityLiving",
-    "Minecraft.MixinEntityPlayer",
-    "Minecraft.MixinExplosion",
-    "Minecraft.MixinGuiContainer",
-    "Minecraft.MixinInventoryCrafting",
-    "Minecraft.MixinItem",
-    "Minecraft.MixinItemStack",
-    "Minecraft.MixinMinecraftServer",
-    "Minecraft.MixinNBTTagList",
-    "Minecraft.MixinPotion",
-    "Minecraft.MixinPotionEffect",
-    "Minecraft.MixinServerConfigurationManager",
-    "Minecraft.MixinWorld",
-    "Minecraft.MixinWorldServer"
-  ],
-  "client": [
-    "Minecraft.AccessorEntityRenderer",
-    "Minecraft.MixinMinecraft",
-    "Minecraft.MixinWorldClient"
-  ],
-  "server": []
+  "mixinextras": {"minVersion": "0.5.0"}
 }

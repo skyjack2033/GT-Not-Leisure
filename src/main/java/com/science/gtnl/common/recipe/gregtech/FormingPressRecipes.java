@@ -313,7 +313,7 @@ public class FormingPressRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_UEV)
             .addTo(FPR);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

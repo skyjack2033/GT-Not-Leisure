@@ -410,7 +410,7 @@ public class ElectricProspectorTool extends Item {
                         break;
                     }
                 }
-                if (MainConfig.enableDebugMode) aPlayer.addChatMessage(
+                if (MainConfig.debug.enableDebugMode) aPlayer.addChatMessage(
                     new ChatComponentText(
                         EnumChatFormatting.YELLOW + "Chunk at "
                             + aX
@@ -609,7 +609,7 @@ public class ElectricProspectorTool extends Item {
             }
 
         } else {
-            if (MainConfig.enableDebugMode)
+            if (MainConfig.debug.enableDebugMode)
                 aPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + " Failed on this chunk"));
             if (!aPlayer.capabilities.isCreativeMode) {
                 setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts / 4);
@@ -620,7 +620,7 @@ public class ElectricProspectorTool extends Item {
     public void addOreToHashMap(String orename, EntityPlayer aPlayer) {
         String oreDistance = orename + StatCollector.translateToLocal("detrav.scanner.distance.texts." + distTextIndex); // orename
         if (!ores.containsKey(oreDistance)) {
-            if (MainConfig.enableDebugMode) aPlayer
+            if (MainConfig.debug.enableDebugMode) aPlayer
                 .addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + " Adding to oremap " + oreDistance));
             ores.put(oreDistance, 1);
         } else {

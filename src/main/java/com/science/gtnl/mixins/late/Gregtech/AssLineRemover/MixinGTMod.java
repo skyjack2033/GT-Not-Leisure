@@ -16,7 +16,7 @@ public class MixinGTMod {
 
     @Inject(method = "onPreInitialization", at = @At("HEAD"))
     public void science$loadHook(FMLPreInitializationEvent aEvent, CallbackInfo ci) {
-        if (MainConfig.enableDeleteRecipe) {
+        if (MainConfig.recipe.enableDeleteRecipe) {
             AssLineRecipeHook.loadAndInit();
         }
     }

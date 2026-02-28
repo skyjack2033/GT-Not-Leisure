@@ -334,7 +334,7 @@ public abstract class MixinCraftingCPUCluster {
 
     @Inject(method = "translateFromNetwork", at = @At("HEAD"), cancellable = true)
     private static void injectTranslateFromNetwork(String name, CallbackInfoReturnable<String> cir) {
-        if (!MainConfig.enableHatchInterfaceTerminalEnhance) return;
+        if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
         if (name == null) return;
         cir.setReturnValue(Utils.getExtraInterfaceName(name));
     }

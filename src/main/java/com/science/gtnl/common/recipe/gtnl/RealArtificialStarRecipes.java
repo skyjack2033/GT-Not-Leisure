@@ -8,6 +8,7 @@ import net.minecraft.util.StatCollector;
 
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
+import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import gregtech.api.recipe.RecipeMap;
@@ -21,7 +22,7 @@ public class RealArtificialStarRecipes implements IRecipePool {
     public void loadRecipes() {
         RecipeBuilder.builder()
             .itemInputs(EnhancementCore.get(1))
-            .specialValue(euEveryEnhancementCore)
+            .specialValue(MainConfig.machine.artificial_star.euEveryEnhancementCore)
             .eut(0)
             .duration(0)
             .fake()
@@ -29,7 +30,7 @@ public class RealArtificialStarRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(DepletedExcitedNaquadahFuelRod.get(1))
-            .specialValue(euEveryDepletedExcitedNaquadahFuelRod)
+            .specialValue(MainConfig.machine.artificial_star.euEveryDepletedExcitedNaquadahFuelRod)
             .eut(0)
             .duration(0)
             .fake()

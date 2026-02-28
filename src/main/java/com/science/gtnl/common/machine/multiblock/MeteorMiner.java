@@ -40,6 +40,7 @@ import com.gtnewhorizons.modularui.api.math.Pos2d;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
+import com.science.gtnl.ClientProxy;
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.render.tile.MeteorMinerRenderer;
@@ -114,8 +115,8 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     public static final int SCAN_WIDTH = 100;
     public static final int SCAN_HEIGHT = 150;
     public static final int SCAN_DEPTH = 100;
-    public static final int MAX_BLOCKS_PER_CYCLE = MainConfig.meteorMinerMaxBlockPerCycle;
-    public static final int MAX_ROWS_PER_CYCLE = MainConfig.meteorMinerMaxRowPerCycle;
+    public static final int MAX_BLOCKS_PER_CYCLE = MainConfig.machine.meteor_miner.meteorMinerMaxBlockPerCycle;
+    public static final int MAX_ROWS_PER_CYCLE = MainConfig.machine.meteor_miner.meteorMinerMaxRowPerCycle;
 
     @Getter
     public float renderAngle = 0f;
@@ -136,16 +137,17 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     @SideOnly(Side.CLIENT)
     @Override
     public boolean renderInWorld(ISBRWorldContext ctx) {
-        if (MainConfig.enableAprilFool) {
+        if (ClientProxy.enableAprilFool) {
             return true;
         } else {
             return super.renderInWorld(ctx);
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
-        if (MainConfig.enableAprilFool) {
+        if (ClientProxy.enableAprilFool) {
             MeteorMinerRenderer.renderTileEntity(this, x, y, z, timeSinceLastTick);
         }
     }

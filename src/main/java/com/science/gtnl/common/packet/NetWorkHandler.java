@@ -13,7 +13,6 @@ public class NetWorkHandler {
         registerMessage(SoundPacket.class, i++, Side.CLIENT);
         registerMessage(TitlePacket.class, i++, Side.CLIENT);
         registerMessage(TickratePacket.class, i++, Side.CLIENT);
-        registerMessage(SyncConfigPacket.class, i++, Side.CLIENT);
         registerMessage(ProspectingPacket.class, i++, Side.CLIENT);
         registerMessage(TileEntityNBTPacket.class, i++, Side.CLIENT);
         registerMessage(SyncHPCAVariablesPacket.class, i++, Side.CLIENT);

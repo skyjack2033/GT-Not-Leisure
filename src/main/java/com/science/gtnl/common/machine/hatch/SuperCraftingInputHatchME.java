@@ -687,7 +687,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
 
         StringBuilder name = new StringBuilder();
 
-        if (MainConfig.enableHatchInterfaceTerminalEnhance) {
+        if (MainConfig.machine.enableHatchInterfaceTerminalEnhance) {
             if (mInventory[SLOT_CIRCUIT] != null) {
                 name.append("gt_circuit_")
                     .append(mInventory[SLOT_CIRCUIT].getItemDamage())
@@ -1169,7 +1169,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
         if (tag.hasKey("name")) {
             currenttip.add(
                 EnumChatFormatting.AQUA
-                    + (MainConfig.enableHatchInterfaceTerminalEnhance
+                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
                         ? Utils.getExtraInterfaceName(tag.getString("name"))
                         : tag.getString("name"))
                     + EnumChatFormatting.RESET);

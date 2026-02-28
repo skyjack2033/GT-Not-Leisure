@@ -20,7 +20,7 @@ public class SubscribeEventClientUtils {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onRenderPlayer(RenderPlayerEvent.Pre event) {
-        if (MainConfig.enableRenderInfinitySwordSpecial) {
+        if (MainConfig.re_avaritia.infinity_sword.enableSpecialRender) {
             EntityPlayer player = event.entityPlayer;
             ItemStack heldItem = player.getHeldItem();
 
@@ -40,7 +40,7 @@ public class SubscribeEventClientUtils {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderPlayerPost(RenderPlayerEvent.Post event) {
-        if (MainConfig.enableRenderInfinitySwordSpecial) {
+        if (MainConfig.re_avaritia.infinity_sword.enableSpecialRender) {
             EntityPlayer player = event.entityPlayer;
             ItemStack heldItem = player.getHeldItem();
 

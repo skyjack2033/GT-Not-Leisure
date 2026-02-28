@@ -20,7 +20,7 @@ public class AssLineRecipeHook {
     // 必须在此处移除装配线配方, 不能调用对象获取name, 因为本方法执行在gt pre load 阶段开始
     public static void loadAndInit() {
 
-        if (MainConfig.enableDeleteRecipe) {
+        if (MainConfig.recipe.enableDeleteRecipe) {
             // 移除 生物处理器单元
             Builder.newBuilder()
                 .addOutputItem("gregtech:gt.metaitem.03", 1, 32077)

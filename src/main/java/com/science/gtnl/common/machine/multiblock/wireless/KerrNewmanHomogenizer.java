@@ -107,6 +107,7 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         return tt;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
         if (!mMachine || !enableRender) return;

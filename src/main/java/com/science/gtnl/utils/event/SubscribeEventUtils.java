@@ -48,7 +48,6 @@ import com.science.gtnl.common.machine.hatch.ExplosionDynamoHatch;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.packet.SoundPacket;
 import com.science.gtnl.common.packet.SyncCircuitNanitesPacket;
-import com.science.gtnl.common.packet.SyncConfigPacket;
 import com.science.gtnl.common.packet.SyncRecipePacket;
 import com.science.gtnl.common.packet.TitlePacket;
 import com.science.gtnl.config.MainConfig;
@@ -62,7 +61,6 @@ import com.science.gtnl.utils.gui.recipe.RocketAssemblerFrontend;
 import com.science.gtnl.utils.recipes.data.CircuitNanitesRecipeData;
 
 import bartworks.API.SideReference;
-import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -105,12 +103,12 @@ public class SubscribeEventUtils {
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player instanceof EntityPlayerMP player) {
             player.triggerAchievement(AchievementsLoader.welcome);
-            network.sendTo(new SyncConfigPacket(), player);
             network.sendTo(new SoundPacket(true), player);
             network.sendTo(new SyncCircuitNanitesPacket(player.worldObj.getSeed()), player);
 
-            SchematicRegistry
-                .addUnlockedPage(player, SchematicRegistry.getMatchingRecipeForID(MainConfig.idSchematicRocketSteam));
+            SchematicRegistry.addUnlockedPage(
+                player,
+                SchematicRegistry.getMatchingRecipeForID(MainConfig.item.steam_rocket.idSchematicRocketSteam));
 
             TimeStopPocketWatch.setTimeStopped(false);
 
@@ -124,9 +122,9 @@ public class SubscribeEventUtils {
                 player.triggerAchievement(AchievementsLoader.installAllCommunityMod);
             }
 
-            if (MainConfig.enableShowJoinMessage || MainConfig.enableDebugMode) {
+            if (MainConfig.message.enableShowJoinMessage || MainConfig.debug.enableDebugMode) {
 
-                if (MainConfig.enableShowAddMods) {
+                if (MainConfig.message.enableShowAddMods) {
                     for (ModList mod : ModList.values()) {
                         if (mod.isModLoaded() && !MOD_BLACKLIST.contains(mod.getModId())) {
                             String translatedPrefix = StatCollector.translateToLocal("Welcome_GTNL_ModInstall");
@@ -150,35 +148,35 @@ public class SubscribeEventUtils {
                     new ChatComponentTranslation("Welcome_GTNL_03")
                         .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GREEN)));
 
-                if (MainConfig.enableDeleteRecipe) {
+                if (MainConfig.recipe.enableDeleteRecipe) {
                     player.addChatMessage(
                         new ChatComponentTranslation("Welcome_GTNL_DeleteRecipe")
                             .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.YELLOW)));
                 }
 
-                if (!ModList.Overpowered.isModLoaded() && MainConfig.enableRecipeOutputChance) {
+                if (!ModList.Overpowered.isModLoaded() && MainConfig.machine.enableRecipeOutputChance) {
                     player.addChatMessage(
                         new ChatComponentTranslation("Welcome_GTNL_RecipeOutputChance_00")
                             .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GOLD)));
                     player.addChatMessage(
                         new ChatComponentTranslation(
                             "Welcome_GTNL_RecipeOutputChance_01",
-                            MainConfig.recipeOutputChance + "%")
+                            MainConfig.machine.recipeOutputChance + "%")
                                 .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GOLD)));
                 }
 
-                if (MainConfig.enableShowDelRecipeTitle) {
+                if (MainConfig.recipe.enableShowDelRecipeTitle) {
                     TitlePacket.sendTitleToPlayer(player, "Welcome_GTNL_DeleteRecipe", 200, 0xFFFF55, 2);
                 }
             }
 
-            if (MainConfig.enableDebugMode) {
+            if (MainConfig.debug.enableDebugMode) {
                 player.addChatMessage(
                     new ChatComponentTranslation("Welcome_GTNL_Debug")
                         .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
             }
 
-            float tickrate = MainConfig.defaultTickrate;
+            float tickrate = MainConfig.tickrate.defaultTickrate;
             try {
                 GameRules rules = MinecraftServer.getServer()
                     .getEntityWorld()
@@ -211,14 +209,12 @@ public class SubscribeEventUtils {
         if (Minecraft.getMinecraft().thePlayer != null) {
             BaubleItem.removePlayer(Minecraft.getMinecraft().thePlayer.getUniqueID());
         }
-        // reload the config from disk (undoing the server push)
-        MainConfig.reloadConfig();
     }
 
     @SubscribeEvent
     public void connect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         if (event.isLocal) {
-            float tickrate = MainConfig.defaultTickrate;
+            float tickrate = MainConfig.tickrate.defaultTickrate;
             try {
                 GameRules rules = MinecraftServer.getServer()
                     .getEntityWorld()
@@ -238,8 +234,8 @@ public class SubscribeEventUtils {
 
     @SubscribeEvent
     public void disconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        TickrateAPI.changeServerTickrate(MainConfig.defaultTickrate);
-        TickrateAPI.changeClientTickrate(null, MainConfig.defaultTickrate);
+        TickrateAPI.changeServerTickrate(MainConfig.tickrate.defaultTickrate);
+        TickrateAPI.changeClientTickrate(null, MainConfig.tickrate.defaultTickrate);
     }
 
     @SubscribeEvent
@@ -280,8 +276,8 @@ public class SubscribeEventUtils {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.player.worldObj.isRemote || !MainConfig.enableSaturationHeal)
-            return;
+        if (event.phase != TickEvent.Phase.END || event.player.worldObj.isRemote
+            || !MainConfig.other.enableSaturationHeal) return;
 
         EntityPlayer player = event.player;
         FoodStats stats = player.getFoodStats();
@@ -504,14 +500,6 @@ public class SubscribeEventUtils {
 
         if (didSomething) {
             event.setCanceled(true);
-        }
-    }
-
-    // Config
-    @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.modID.equals(ModList.ScienceNotLeisure.ID)) {
-            MainConfig.reloadConfig();
         }
     }
 

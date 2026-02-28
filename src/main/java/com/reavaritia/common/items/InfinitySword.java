@@ -325,7 +325,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
                 target.setHealth(newHealth);
             }
 
-            if (MainConfig.enableInfinitySwordExplosion) {
+            if (MainConfig.re_avaritia.infinity_sword.enableExplosion) {
                 world.newExplosion(target, target.posX, target.posY, target.posZ, 250.0F, true, true);
             }
         } else {

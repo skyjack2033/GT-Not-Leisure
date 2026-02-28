@@ -70,7 +70,7 @@ public abstract class MixinMTEVoidMinerBase extends MTEEnhancedMultiBlockBase<Mi
     private float totalWeight;
 
     @Unique
-    private static boolean gtnl$enableMixin = !ModList.VMTweak.isModLoaded() && MainConfig.enableVoidMinerTweak;
+    private static boolean gtnl$enableMixin = !ModList.VMTweak.isModLoaded() && MainConfig.machine.enableVoidMinerTweak;
 
     public MixinMTEVoidMinerBase(String aName) {
         super(aName);

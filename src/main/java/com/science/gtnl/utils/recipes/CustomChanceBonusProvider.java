@@ -19,7 +19,7 @@ public class CustomChanceBonusProvider implements ChanceBonusManager.ChanceBonus
             recipeMap.put(mte, recipe);
             int machineTier = GTUtility.getTier(mte.getMaxInputVoltage());
             int baseTier = GTUtility.getTier(recipe.mEUt);
-            double bonusPerTier = MainConfig.recipeOutputChance / 100.0;
+            double bonusPerTier = MainConfig.machine.recipeOutputChance / 100.0;
             return getTierChanceBonus(machineTier, baseTier, bonusPerTier);
         }
         return null;

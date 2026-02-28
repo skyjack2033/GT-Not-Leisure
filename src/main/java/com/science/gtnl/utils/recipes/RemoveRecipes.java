@@ -265,7 +265,7 @@ public class RemoveRecipes {
         removeRecipeByOutputDelayed(ItemList.Machine_EV_LightningRod.get(1));
         removeRecipeByOutputDelayed(ItemList.Machine_IV_LightningRod.get(1));
 
-        if (MainConfig.enableDebugMode) {
+        if (MainConfig.debug.enableDebugMode) {
             removedRecipeCounts.put("Autoclave", recipesToRemoveFromAutoClave.size());
             removedRecipeCounts.put("Circuit Assembler", recipesToRemoveFromCircuitAssembler);
             removedRecipeCounts.put("Forming Press", recipesToRemoveFromFormingPress.size());

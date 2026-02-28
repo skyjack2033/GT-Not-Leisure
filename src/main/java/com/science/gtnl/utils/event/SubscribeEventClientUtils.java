@@ -103,7 +103,8 @@ public class SubscribeEventClientUtils {
             }
 
             if (newRange < -1) newRange = -1;
-            if (newRange > MainConfig.veinMiningPickaxeMaxRange) newRange = MainConfig.veinMiningPickaxeMaxRange;
+            if (newRange > MainConfig.item.vein_miner_pickaxe.maxRange)
+                newRange = MainConfig.item.vein_miner_pickaxe.maxRange;
 
             if (newRange != oldRange) {
                 nbt.setInteger("range", newRange);
@@ -125,7 +126,8 @@ public class SubscribeEventClientUtils {
             }
 
             if (newAmount < 0) newAmount = 0;
-            if (newAmount > MainConfig.veinMiningPickaxeMaxAmount) newAmount = MainConfig.veinMiningPickaxeMaxAmount;
+            if (newAmount > MainConfig.item.vein_miner_pickaxe.maxRange)
+                newAmount = MainConfig.item.vein_miner_pickaxe.maxRange;
 
             if (newAmount != oldAmount) {
                 nbt.setInteger("amount", newAmount);
@@ -138,7 +140,7 @@ public class SubscribeEventClientUtils {
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END && !MainConfig.enableDeathIncompleteMessage) return;
+        if (event.phase != TickEvent.Phase.END && !MainConfig.other.enableDeathIncompleteMessage) return;
 
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer == null || mc.theWorld == null) return;

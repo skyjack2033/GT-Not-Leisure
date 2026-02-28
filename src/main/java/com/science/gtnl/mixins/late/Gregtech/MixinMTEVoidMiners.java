@@ -42,7 +42,7 @@ public abstract class MixinMTEVoidMiners extends MTEVoidMinerBase<MixinMTEVoidMi
             target = "Lgregtech/api/util/HatchElementBuilder;atLeast([Lgregtech/api/interfaces/IHatchElement;)Lgregtech/api/util/HatchElementBuilder;"),
         index = 0)
     private static IHatchElement<?>[] modifyAtLeastArgs(IHatchElement<?>[] elements) {
-        if (!MainConfig.enableVoidMinerTweak) return elements;
+        if (!MainConfig.machine.enableVoidMinerTweak) return elements;
         for (IHatchElement<?> e : elements) {
             if (e == Energy) {
                 return new IHatchElement<?>[] { InputHatch, OutputBus, InputBus, Maintenance, Energy.or(ExoticEnergy) };

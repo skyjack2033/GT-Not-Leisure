@@ -19,7 +19,7 @@ public abstract class MixinItemBloodSword {
 
     @Inject(method = "onDamageTaken", at = @At("HEAD"), cancellable = true)
     public void onDamageTaken(LivingAttackEvent event, CallbackInfo ci) {
-        if (!MainConfig.enableInfinitySwordBypassMechanism) return;
+        if (!MainConfig.re_avaritia.infinity_sword.enableBypass) return;
         Entity entity = event.source.getSourceOfDamage();
         if (!(entity instanceof EntityPlayer player)) return;
         if (!player.isSneaking()) return;

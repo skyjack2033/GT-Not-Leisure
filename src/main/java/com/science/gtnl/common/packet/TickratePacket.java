@@ -36,22 +36,22 @@ public class TickratePacket implements IMessage, IMessageHandler<TickratePacket,
     @Override
     public IMessage onMessage(TickratePacket msg, MessageContext context) {
         float tickrate = msg.getTickrate();
-        if (tickrate < MainConfig.minTickrate) {
+        if (tickrate < MainConfig.tickrate.minTickrate) {
             ScienceNotLeisure.LOG.info(
                 "Tickrate forced to change from " + tickrate
                     + " to "
-                    + MainConfig.minTickrate
+                    + MainConfig.tickrate.minTickrate
                     + ", because the value is too low"
                     + " (You can change the minimum tickrate in the config file)");
-            tickrate = MainConfig.minTickrate;
-        } else if (tickrate > MainConfig.maxTickrate) {
+            tickrate = MainConfig.tickrate.minTickrate;
+        } else if (tickrate > MainConfig.tickrate.maxTickrate) {
             ScienceNotLeisure.LOG.info(
                 "Tickrate forced to change from " + tickrate
                     + " to "
-                    + MainConfig.maxTickrate
+                    + MainConfig.tickrate.maxTickrate
                     + ", because the value is too high"
                     + " (You can change the maximum tickrate in the config file)");
-            tickrate = MainConfig.maxTickrate;
+            tickrate = MainConfig.tickrate.maxTickrate;
         }
 
         if (FMLCommonHandler.instance()

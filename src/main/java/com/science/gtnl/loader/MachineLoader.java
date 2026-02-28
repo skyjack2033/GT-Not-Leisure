@@ -4976,7 +4976,7 @@ public class MachineLoader {
         GTOreDictUnificator
             .registerOre("blockGlass" + GTValues.VN[13], GTNLItemList.ShirabonReinforcedBoronSilicateGlass.get(1));
 
-        if (MainConfig.enableRegisterPlayerDollGlass) {
+        if (MainConfig.item.player_doll.enableRegisterMAXTierGlass) {
             GlassTier.addCustomGlass(BlockLoader.playerDoll, 1, 14, 1);
             GlassTier.addCustomGlass(BlockLoader.playerDoll, 2, 14, 1);
             GlassTier.addCustomGlass(BlockLoader.playerDoll, 3, 14, 1);
@@ -5021,17 +5021,17 @@ public class MachineLoader {
         registerBasicMachine();
         registerCovers();
 
-        if (MainConfig.enableIntegratedOreFactoryChange) {
+        if (MainConfig.machine.enableIntegratedOreFactoryChange) {
             addItemTooltip(ItemList.Ore_Processor.get(1), AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
         }
 
-        if (MainConfig.enableVoidMinerTweak) {
+        if (MainConfig.machine.enableVoidMinerTweak) {
             addItemTooltip(ItemRegistry.voidminer[0], AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
             addItemTooltip(ItemRegistry.voidminer[1], AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
             addItemTooltip(ItemRegistry.voidminer[2], AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
         }
 
-        if (MainConfig.enablePurificationPlantBuff) {
+        if (MainConfig.machine.enablePurificationPlantBuff) {
             addItemTooltip(
                 ItemList.Machine_Multi_PurificationPlant.get(1),
                 () -> StatCollector.translateToLocal("Tooltip_PurificationPlant_00"));

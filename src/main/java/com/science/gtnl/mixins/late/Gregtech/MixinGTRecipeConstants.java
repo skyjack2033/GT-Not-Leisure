@@ -15,7 +15,7 @@ public abstract class MixinGTRecipeConstants {
     @ModifyVariable(method = "lambda$static$6", at = @At(value = "STORE"), ordinal = 0)
     private static GTRecipe.GTRecipe_WithAlt modifyAssemblyLineRecipe(GTRecipe.GTRecipe_WithAlt original) {
         int assDuration = original.mDuration;
-        if (!MainConfig.enableAssemblingLineRecipesTimeChange) return original;
+        if (!MainConfig.recipe.enableAssemblingLineRecipesTimeChange) return original;
         int modified = assDuration;
 
         if (assDuration >= 200000) {

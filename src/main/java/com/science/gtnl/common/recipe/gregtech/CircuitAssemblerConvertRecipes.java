@@ -303,7 +303,7 @@ public class CircuitAssemblerConvertRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_UV)
             .addTo(CAR);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

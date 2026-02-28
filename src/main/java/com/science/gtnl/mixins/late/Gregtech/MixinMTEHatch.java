@@ -50,7 +50,7 @@ public abstract class MixinMTEHatch extends MTEBasicTank implements IMultiblockR
 
     @ModifyVariable(method = "updateCraftingIcon", at = @At("HEAD"), argsOnly = true, index = 1)
     private ItemStack gtnl$modifyCraftingIcon(ItemStack value) {
-        if (!MainConfig.enableHatchInterfaceTerminalEnhance) return value;
+        if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return value;
         if (value.hasDisplayName()) return value;
         MTEHatch hatch = (MTEHatch) (Object) this;
         StringBuilder sb = null;

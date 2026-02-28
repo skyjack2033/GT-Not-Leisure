@@ -133,7 +133,7 @@ public class BlockExtremeAnvil extends BlockContainer {
         int[] oreIDs = OreDictionary.getOreIDs(stack);
         for (int id : oreIDs) {
             if (OreDictionary.getOreName(id)
-                .equalsIgnoreCase(MainConfig.unbreakOre)) {
+                .equalsIgnoreCase(MainConfig.re_avaritia.unbreakOre)) {
                 return true;
             }
         }

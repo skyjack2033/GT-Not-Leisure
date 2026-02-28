@@ -59,7 +59,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @SideOnly(Side.CLIENT)
     public void onTooltip(ItemTooltipEvent event) {
-        if (!MainConfig.enableStickItem) return;
+        if (!MainConfig.item.stick.enableStickItem) return;
         val item = event.itemStack;
         if (item.getItem() == this && !isShiftDown()) {
             val fake = getDisguisedStack(item);
@@ -120,7 +120,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(ItemStack stack, int pass) {
-        if (isShiftDown() || !MainConfig.enableStickItem) return defaultIcon;
+        if (isShiftDown() || !MainConfig.item.stick.enableStickItem) return defaultIcon;
         ItemStack disguised = getDisguisedStack(stack);
         if (disguised != null) {
             return disguised.getIconIndex();
@@ -131,7 +131,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIconIndex(ItemStack stack) {
-        if (isShiftDown() || !MainConfig.enableStickItem) return defaultIcon;
+        if (isShiftDown() || !MainConfig.item.stick.enableStickItem) return defaultIcon;
         ItemStack disguised = getDisguisedStack(stack);
         if (disguised != null) {
             return disguised.getIconIndex();
@@ -148,7 +148,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public int getColorFromItemStack(ItemStack stack, int p_82790_2_) {
-        if (isShiftDown() || !MainConfig.enableStickItem) {
+        if (isShiftDown() || !MainConfig.item.stick.enableStickItem) {
             return super.getColorFromItemStack(stack, p_82790_2_);
         }
         ItemStack disguised = getDisguisedStack(stack);
@@ -161,7 +161,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        if (isShiftDown() || !MainConfig.enableStickItem) {
+        if (isShiftDown() || !MainConfig.item.stick.enableStickItem) {
             return super.getItemStackDisplayName(stack);
         }
         ItemStack disguised = getDisguisedStack(stack);
@@ -173,7 +173,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
 
     @Override
     public int getDamage(ItemStack stack) {
-        if (isShiftDown() || !MainConfig.enableStickItem) {
+        if (isShiftDown() || !MainConfig.item.stick.enableStickItem) {
             return super.getDamage(stack);
         }
         ItemStack disguised = getDisguisedStack(stack);
@@ -185,7 +185,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
 
     @Override
     public EnumRarity getRarity(ItemStack stack) {
-        if (isShiftDown() || !MainConfig.enableStickItem) {
+        if (isShiftDown() || !MainConfig.item.stick.enableStickItem) {
             return super.getRarity(stack);
         }
         ItemStack disguised = getDisguisedStack(stack);
@@ -198,7 +198,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public int getSpriteNumberExtra(ItemStack stack) {
-        if (isShiftDown() || !MainConfig.enableStickItem) {
+        if (isShiftDown() || !MainConfig.item.stick.enableStickItem) {
             return super.getSpriteNumber();
         }
         ItemStack disguised = getDisguisedStack(stack);
@@ -211,7 +211,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean adv) {
-        if (stack.hasTagCompound() && isShiftDown() && MainConfig.enableStickItem) {
+        if (stack.hasTagCompound() && isShiftDown() && MainConfig.item.stick.enableStickItem) {
             ItemStack disguised = getDisguisedStack(stack);
             if (disguised != null) {
                 boolean enchanted = stack.getTagCompound()

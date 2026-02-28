@@ -75,11 +75,11 @@ public class BlockLoader {
         ItemStack EndPortalFrame = new ItemStack(Blocks.end_portal_frame, 1, 0);
         ItemStack CommandBlock = new ItemStack(Blocks.command_block, 1, 0);
 
-        OreDictionary.registerOre(MainConfig.unbreakOre, CommandBlock);
-        OreDictionary.registerOre(MainConfig.unbreakOre, EndPortal);
-        OreDictionary.registerOre(MainConfig.unbreakOre, EndPortalFrame);
-        OreDictionary.registerOre(MainConfig.unbreakOre, Bedrock);
-        OreDictionary.registerOre(MainConfig.unbreakOre, ExtremeAnvilBlock);
+        OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, CommandBlock);
+        OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, EndPortal);
+        OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, EndPortalFrame);
+        OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, Bedrock);
+        OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, ExtremeAnvilBlock);
 
     }
 

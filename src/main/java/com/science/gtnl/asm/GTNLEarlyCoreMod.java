@@ -2,20 +2,22 @@ package com.science.gtnl.asm;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.science.gtnl.mixins.EarlyMixinLoader;
+import com.gtnewhorizon.gtnhlib.config.ConfigException;
+import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
+import com.gtnewhorizon.gtnhmixins.IEarlyMixinLoader;
+import com.gtnewhorizon.gtnhmixins.builders.IMixins;
+import com.science.gtnl.config.MainConfig;
+import com.science.gtnl.mixins.Mixins;
 
-import cpw.mods.fml.relauncher.IFMLCallHook;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import io.github.tox1cozz.mixinbooterlegacy.IEarlyMixinLoader;
 
 @IFMLLoadingPlugin.MCVersion("1.7.10")
-@IFMLLoadingPlugin.TransformerExclusions({ "com.science.gtnl.asm" })
-@IFMLLoadingPlugin.Name("GTNL core plugin")
-public class GTNLEarlyCoreMod implements IFMLLoadingPlugin, IEarlyMixinLoader, IFMLCallHook {
+public class GTNLEarlyCoreMod implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     public static Logger LOGGER = LogManager.getLogger("GTNL Asm Core Mod");
 
@@ -33,6 +35,12 @@ public class GTNLEarlyCoreMod implements IFMLLoadingPlugin, IEarlyMixinLoader, I
         } catch (Throwable t) {
             LOGGER.error("Failed to patch ObfuscationRun", t);
         }
+
+        try {
+            ConfigurationManager.registerConfig(MainConfig.class);
+        } catch (ConfigException e) {
+            LOGGER.error("Failed to register config", e);
+        }
     }
 
     @Override
@@ -47,7 +55,7 @@ public class GTNLEarlyCoreMod implements IFMLLoadingPlugin, IEarlyMixinLoader, I
 
     @Override
     public String getSetupClass() {
-        return "com.science.gtnl.asm.GTNLEarlyCoreMod";
+        return null;
     }
 
     @Override
@@ -59,17 +67,12 @@ public class GTNLEarlyCoreMod implements IFMLLoadingPlugin, IEarlyMixinLoader, I
     }
 
     @Override
-    public Void call() throws Exception {
-        return null;
+    public String getMixinConfig() {
+        return "mixins.sciencenotleisure.early.json";
     }
 
     @Override
-    public List<String> getMixinConfigs() {
-        return EarlyMixinLoader.getMixinConfigs();
-    }
-
-    @Override
-    public boolean shouldMixinConfigQueue(final String mixinConfig) {
-        return EarlyMixinLoader.shouldMixinConfigQueue(mixinConfig);
+    public List<String> getMixins(Set<String> loadedCoreMods) {
+        return IMixins.getEarlyMixins(Mixins.class, loadedCoreMods);
     }
 }

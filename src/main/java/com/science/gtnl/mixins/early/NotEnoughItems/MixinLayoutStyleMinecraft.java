@@ -25,10 +25,11 @@ public class MixinLayoutStyleMinecraft {
         Image icon = b.getRenderIcon();
         if (icon instanceof AccessorDrawableResource accessor && icon instanceof IDrawableResourceAccessor dr) {
             ResourceLocation rl = accessor.getResourceLocation();
-            if ("nei:textures/items/cheat_speical.png".equals(rl.toString()) && MainConfig.enableSpecialCheatIcon) {
+            if ("nei:textures/items/cheat_speical.png".equals(rl.toString())
+                && MainConfig.other.not_enough_items.enableSpecialCheatIcon) {
                 final int iconX = b.x + (b.w - icon.width) / 2;
                 final int iconY = b.y + (b.h - icon.height) / 2;
-                dr.gtnl$draw(iconX, iconY, MainConfig.specialIconType);
+                dr.gtnl$draw(iconX, iconY, MainConfig.other.not_enough_items.specialIconType);
                 ci.cancel();
             }
         }

@@ -96,7 +96,7 @@ public class ChanceBonusManager {
                 try {
                     int machineTier = GTUtility.getTier(Math.min(Integer.MAX_VALUE, mte.getMaxInputVoltage()));
                     int baseTier = GTUtility.getTier(recipe.mEUt);
-                    double bonusPerTier = MainConfig.recipeOutputChance / 100.0;
+                    double bonusPerTier = MainConfig.machine.recipeOutputChance / 100.0;
 
                     return getTierChanceBonus(Math.min(16, machineTier), baseTier, bonusPerTier);
                 } catch (Exception e) {

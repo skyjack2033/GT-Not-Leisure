@@ -2042,7 +2042,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         }
                     })
                     .setPos(282, 4));
-        if (MainConfig.enableDebugMode) {
+        if (MainConfig.debug.enableDebugMode) {
             builder.widget(
                 new MultiChildWidget()
                     .addChild(

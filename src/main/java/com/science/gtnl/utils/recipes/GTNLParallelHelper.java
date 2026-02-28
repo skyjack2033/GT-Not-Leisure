@@ -409,7 +409,7 @@ public class GTNLParallelHelper extends ParallelHelper {
      */
     @Override
     public void determineParallel() {
-        if (!ModList.Overpowered.isModLoaded() && MainConfig.enableRecipeOutputChance) {
+        if (!ModList.Overpowered.isModLoaded() && MainConfig.machine.enableRecipeOutputChance) {
             // Compute optional bonus based on machine and current EU/t
             OptionalDouble bonusOptional = ChanceBonusManager
                 .getChanceBonusOptional(machine, GTUtility.getTier(recipe.mEUt), chanceMultiplier, recipe);

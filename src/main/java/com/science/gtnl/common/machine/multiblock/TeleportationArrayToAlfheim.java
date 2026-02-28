@@ -329,7 +329,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     }
 
     public void triggerExplosion(IGregTechTileEntity aBaseMetaTileEntity, float strength) {
-        if (MainConfig.enablePortalToAlfheimBigBoom) {
+        if (MainConfig.machine.portal_to_alfheim.bigBoom) {
             ProcessHandler.addProcess(
                 new PortalToAlfheimExplosion(
                     aBaseMetaTileEntity.getWorld(),

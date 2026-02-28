@@ -73,6 +73,8 @@ import com.science.gtnl.utils.StructureUtils;
 import appeng.api.util.DimensionalCoord;
 import appeng.client.render.highlighter.BlockPosHighlighter;
 import appeng.core.localization.PlayerMessages;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsUEVplus;
@@ -134,6 +136,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         super(aName);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
         if (!mMachine || !enableRender || mTotalRunTime <= 0) return;

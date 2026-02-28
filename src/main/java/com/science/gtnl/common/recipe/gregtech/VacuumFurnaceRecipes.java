@@ -44,7 +44,7 @@ public class VacuumFurnaceRecipes implements IRecipePool {
             .duration(2400)
             .addTo(VFR);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

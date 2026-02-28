@@ -42,6 +42,8 @@ import com.science.gtnl.common.render.tile.HighPerformanceComputationArrayRender
 import com.science.gtnl.utils.enums.HPCAModifier;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
@@ -622,6 +624,7 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
         return data.toArray(new String[] {});
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
         HighPerformanceComputationArrayRenderer.renderTileEntity(this, x, y, z, timeSinceLastTick);

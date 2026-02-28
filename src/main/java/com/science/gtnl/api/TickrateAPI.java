@@ -147,7 +147,7 @@ public class TickrateAPI {
             ScienceNotLeisure.LOG.info("Ignoring invalid tickrate: {}", tickrate);
             return;
         }
-        if (MainConfig.enableDebugMode) ScienceNotLeisure.LOG.info("Updating client tickrate to {}", tickrate);
+        if (MainConfig.debug.enableDebugMode) ScienceNotLeisure.LOG.info("Updating client tickrate to {}", tickrate);
         TICKS_PER_SECOND = tickrate;
         Minecraft mc = Minecraft.getMinecraft();
         if (mc == null) return; // Oops!
@@ -159,7 +159,7 @@ public class TickrateAPI {
             ScienceNotLeisure.LOG.info("Ignoring invalid tickrate: {}", tickrate);
             return;
         }
-        if (MainConfig.enableDebugMode) ScienceNotLeisure.LOG.info("Updating server tickrate to {}", tickrate);
+        if (MainConfig.debug.enableDebugMode) ScienceNotLeisure.LOG.info("Updating server tickrate to {}", tickrate);
         MILISECONDS_PER_TICK = (long) (1000L / tickrate);
     }
 }

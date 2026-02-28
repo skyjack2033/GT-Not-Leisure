@@ -74,8 +74,8 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String RAS_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/real_artificial_star";
     private static final String[][] shape = StructureUtils.readStructureFromFile(RAS_STRUCTURE_FILE_PATH);
-    public static long MaxOfDepletedExcitedNaquadahFuelRod = MainConfig.euEveryDepletedExcitedNaquadahFuelRod;
-    public static long MaxOfEnhancementCore = MainConfig.euEveryEnhancementCore;
+    public static long MaxOfDepletedExcitedNaquadahFuelRod = MainConfig.machine.artificial_star.euEveryDepletedExcitedNaquadahFuelRod;
+    public static long MaxOfEnhancementCore = MainConfig.machine.artificial_star.euEveryEnhancementCore;
     public static long MaxOfAntimatter = 3;
     public static long MaxOfAntimatterFuelRod = 1024;
     public static long MaxOfStrangeAnnihilationFuelRod = 32768;
@@ -91,7 +91,7 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
     public BigInteger currentOutputEU = BigInteger.ZERO;
     public final DecimalFormat decimalFormat = new DecimalFormat("#.0");
     public boolean isRendering = false;
-    public static boolean configEnableDefaultRender = MainConfig.enableRenderDefaultArtificialStar;
+    public static boolean configEnableDefaultRender = MainConfig.machine.artificial_star.enableRenderDefaultArtificialStar;
     public boolean enableRender = configEnableDefaultRender;
 
     public RealArtificialStar(int aID, String aName, String aNameRegional) {
@@ -129,7 +129,7 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
                     + " * 2147483647"
                     + EnumChatFormatting.RESET
                     + " EU / "
-                    + MainConfig.secondsOfArtificialStarProgressCycleTime
+                    + MainConfig.machine.artificial_star.secondsOfArtificialStarProgressCycleTime
                     + " s");
         }
     }
@@ -276,7 +276,7 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
         }
 
         // set progress time with cfg
-        mMaxProgresstime = (int) (20 * MainConfig.secondsOfArtificialStarProgressCycleTime);
+        mMaxProgresstime = (int) (20 * MainConfig.machine.artificial_star.secondsOfArtificialStarProgressCycleTime);
         // chance to recover FrameMaterial
         if (recoveryChance == 1000) {
             if (recoveryAmount > 0) {

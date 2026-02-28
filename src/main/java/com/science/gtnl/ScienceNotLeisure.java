@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import com.science.gtnl.common.command.CommandEnergyNetwork;
 import com.science.gtnl.common.command.CommandItemInfo;
 import com.science.gtnl.common.command.CommandPlaySound;
-import com.science.gtnl.common.command.CommandReloadConfig;
 import com.science.gtnl.common.command.CommandSteamNetwork;
 import com.science.gtnl.common.command.CommandSudo;
 import com.science.gtnl.common.command.CommandTickrate;
@@ -55,7 +54,6 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
         + "required-after:structurelib;"
         + "required-after:Thaumcraft;"
         + "before:TwistSpaceTechnology;",
-    guiFactory = "com.science.gtnl.config.ConfigGuiFactory",
     acceptedMinecraftVersions = "1.7.10")
 public class ScienceNotLeisure {
 
@@ -107,7 +105,6 @@ public class ScienceNotLeisure {
     // register server commands in this event handler (Remove if not needed)
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandReloadConfig());
         event.registerServerCommand(new CommandTitle());
         event.registerServerCommand(new CommandTickrate());
         event.registerServerCommand(new CommandSteamNetwork());

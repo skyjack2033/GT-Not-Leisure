@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -30,7 +31,8 @@ import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
-public class AdvancedMassFabricator extends WirelessEnergyMultiMachineBase<AdvancedMassFabricator> {
+public class AdvancedMassFabricator extends WirelessEnergyMultiMachineBase<AdvancedMassFabricator>
+    implements ISurvivalConstructable {
 
     private static final int HORIZONTAL_OFF_SET = 6;
     private static final int VERTICAL_OFF_SET = 6;

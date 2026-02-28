@@ -46,7 +46,7 @@ public abstract class MixinMTEHatchCraftingInputME extends MTEHatchInputBus
 
     @Inject(method = "getName", at = @At("HEAD"), cancellable = true)
     private void gtnl$overrideGetName(CallbackInfoReturnable<String> cir) {
-        if (!MainConfig.enableHatchInterfaceTerminalEnhance) return;
+        if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
         MTEHatchCraftingInputME self = (MTEHatchCraftingInputME) (Object) this;
 
         if (self.hasCustomName()) {
@@ -106,7 +106,7 @@ public abstract class MixinMTEHatchCraftingInputME extends MTEHatchInputBus
         if (tag.hasKey("name")) {
             currenttip.add(
                 EnumChatFormatting.AQUA
-                    + (MainConfig.enableHatchInterfaceTerminalEnhance
+                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
                         ? Utils.getExtraInterfaceName(tag.getString("name"))
                         : tag.getString("name"))
                     + EnumChatFormatting.RESET);

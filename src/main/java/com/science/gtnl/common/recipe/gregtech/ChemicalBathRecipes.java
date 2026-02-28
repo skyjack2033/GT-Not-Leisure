@@ -102,7 +102,7 @@ public class ChemicalBathRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_LV)
             .addTo(cBR);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

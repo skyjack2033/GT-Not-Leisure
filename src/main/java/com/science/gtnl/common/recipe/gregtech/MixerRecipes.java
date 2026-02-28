@@ -347,7 +347,7 @@ public class MixerRecipes implements IRecipePool {
             .addTo(MCR)
             .addTo(MNCR);
 
-        if (MainConfig.enableDeleteRecipe) loadDeleteRecipe();
+        if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {

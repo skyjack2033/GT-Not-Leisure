@@ -1,0 +1,235 @@
+package com.science.gtnl.mixins;
+
+import com.gtnewhorizon.gtnhmixins.builders.IMixins;
+import com.gtnewhorizon.gtnhmixins.builders.MixinBuilder;
+import com.science.gtnl.config.MainConfig;
+import com.science.gtnl.utils.enums.ModList;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public enum Mixins implements IMixins {
+
+    FORGE_CORE(Side.COMMON, "Forge.MixinFMLProxyPacket", "Forge.MixinForgeHook"),
+
+    GREGTECH_ACCESSORS(Side.COMMON, "Gregtech.AccessorMTETieredMachineBlock"),
+
+    MINECRAFT_COMMON(Side.COMMON, "Minecraft.AccessorStringTranslate", "Minecraft.AccessorContainerRepair",
+        "Minecraft.AccessorEntityLivingBase", "Minecraft.AccessorFoodStats", "Minecraft.AccessorGuiChat",
+        "Minecraft.AccessorMinecraft", "Minecraft.MixinCommandTeleport", "Minecraft.MixinEntity",
+        "Minecraft.MixinEntityItem", "Minecraft.MixinEntityLivingBase", "Minecraft.MixinEntityLiving",
+        "Minecraft.MixinEntityPlayer", "Minecraft.MixinExplosion", "Minecraft.MixinGuiContainer",
+        "Minecraft.MixinInventoryCrafting", "Minecraft.MixinItem", "Minecraft.MixinItemStack",
+        "Minecraft.MixinMinecraftServer", "Minecraft.MixinNBTTagList", "Minecraft.MixinPotion",
+        "Minecraft.MixinPotionEffect", "Minecraft.MixinServerConfigurationManager", "Minecraft.MixinWorld",
+        "Minecraft.MixinWorldServer"),
+
+    MINECRAFT_CLIENT(Side.CLIENT, "Minecraft.AccessorEntityRenderer", "Minecraft.MixinMinecraft",
+        "Minecraft.MixinWorldClient"),
+
+    SUPER_CREEPER(new MixinBuilder("Mixins for Super Creeper logic")
+        .addCommonMixins(
+            "SuperCreeper.AccessorEntityCreeper",
+            "SuperCreeper.MixinEntityAICreeperSwell",
+            "SuperCreeper.MixinEntityCreeper",
+            "SuperCreeper.MixinEntitySpider")
+        .setPhase(Phase.EARLY)
+        .setApplyIf(() -> MainConfig.super_creeper.enableSuperCreeper)),
+
+    NEI_CHEAT_ICON(new MixinBuilder("Mixins for NEI Special Cheat Icon")
+        .addCommonMixins(
+            "NotEnoughItems.AccessorDrawableBuilder",
+            "NotEnoughItems.AccessorDrawableResource",
+            "NotEnoughItems.MixinDrawableResource",
+            "NotEnoughItems.MixinLayoutManager",
+            "NotEnoughItems.MixinLayoutStyleMinecraft")
+        .setPhase(Phase.EARLY)
+        .setApplyIf(() -> MainConfig.other.not_enough_items.enableSpecialCheatIcon)),
+
+    STICK_RENDER(new MixinBuilder("Mixins for Stick item rendering")
+        .addClientMixins(
+            "Stick.MixinAnimatedTooltipHandler",
+            "Stick.MixinItemRenderer",
+            "Stick.MixinLayoutManager",
+            "Stick.MixinRenderItem")
+        .setPhase(Phase.EARLY)
+        .setApplyIf(() -> MainConfig.item.stick.enableStickItem)),
+
+    LATE_COMMON(new MixinBuilder("General Late Mixins")
+        .addCommonMixins(
+            "AEFluidCraft.MixinItemFluidPacket",
+            "AppliedEnergistics.MixinAdaptorIInventory",
+            "AppliedEnergistics.MixinDualityInterface",
+            "AppliedEnergistics.MixinInterfaceTerminalEntry",
+            "AppliedEnergistics.MixinEntityTinyTNTPrimed",
+            "AppliedEnergistics.MixinTileIOPort",
+            "AppliedEnergistics.MixinToolQuartzCuttingKnife",
+            "AppliedEnergistics.assembler.AccessorContainerPatternTerm",
+            "AppliedEnergistics.assembler.AccessorFCContainerEncodeTerminal",
+            "AppliedEnergistics.assembler.AccessorInvTracker",
+            "AppliedEnergistics.assembler.MixinContainerInterfaceTerminal",
+            "AppliedEnergistics.MixinCraftingCPUCluster",
+            "AppliedEnergistics.MixinCraftingCPUCluster$AccessorTaskProgress",
+            "AppliedEnergistics.QuamtumComputer.MixinCraftingCPUCluster",
+            "AppliedEnergistics.QuamtumComputer.MixinCraftingGridCache",
+            "Bartwork.MixinCircuitImprintLoader",
+            "Bartwork.MixinItemRegistry",
+            "Bartwork.MixinMultipleMetalLoader",
+            "Bartwork.MixinSimpleMetalLoader",
+            "Bartwork.MixinWerkstoff",
+            "Bartwork.MixinWerkstoffLoader",
+            "Bartwork.MixinMoltenCellLoader",
+            "Botania.AccessorEntityDoppleganger",
+            "DraconicEvolution.AccessorCustomArmorHandler",
+            "DraconicEvolution.MixinMinecraftForgeEventHandler",
+            "DraconicEvolution.MixinReactorExplosion",
+            "EnhancedLootBags.AccessorItemLootBag",
+            "GalaxySpace.MixinRocketRecipeHandler",
+            "Gregtech.AccessorEyeOfHarmonyRecipe",
+            "Gregtech.AccessorGTRecipe",
+            "Gregtech.AccessorGTRecipeBuilder",
+            "Gregtech.AccessorGTLanguageManager",
+            "Gregtech.AccessorCommonMetaTileEntity",
+            "Gregtech.AccessorMetaTileEntity",
+            "Gregtech.AccessorMTEHatch",
+            "Gregtech.AccessorProcessingLogic",
+            "Gregtech.AccessorRecipeDisplayInfo",
+            "Gregtech.MixinBaseMetaTileEntity",
+            "Gregtech.MixinEyeOfHarmonyRecipeStorage",
+            "Gregtech.MixinGodForgeMath",
+            "Gregtech.MixinGTOreDictUnificator",
+            "Gregtech.MixinGTRecipeConstants",
+            "Gregtech.MixinGTPPRecipeMaps",
+            "Gregtech.MixinGTShapedRecipe",
+            "Gregtech.MixinGTShapelessRecipe",
+            "Gregtech.MixinGTUtility",
+            "Gregtech.MixinGTUtil",
+            "Gregtech.MixinMTEBetterJukebox",
+            "Gregtech.MixinMTEForgeOfGods",
+            "Gregtech.MixinMTEHatch",
+            "Gregtech.MixinMTEHatchOutputBusME",
+            "Gregtech.MixinMTEHatchOutputME",
+            "Gregtech.MixinMTEHatchAirIntake",
+            "Gregtech.MixinMTEHatchCraftingInputME",
+            "Gregtech.MixinMTEHatchCraftingInputSlave",
+            "Gregtech.MixinMTEHatchOutputBeamline",
+            "Gregtech.MixinMTEDigitalTankBase",
+            "Gregtech.MixinMTEHatchDataAccess",
+            "Gregtech.MixinMTEHatchSteamBusOutput",
+            "Gregtech.MixinMTELightningRod",
+            "Gregtech.MixinMTEPlasmaForge",
+            "Gregtech.MixinMTEMultiBlockBase",
+            "Gregtech.MixinMTEMultiBlockBaseRecipeProcessing",
+            "Gregtech.MixinMTETreeFarm",
+            "Gregtech.MixinMTEVoidMinerBase",
+            "Gregtech.MixinMTEVoidMiners",
+            "Gregtech.MixinProcessingLogic",
+            "Gregtech.MixinRecipeGenFluids",
+            "Gregtech.MixinProcessingDust",
+            "Gregtech.MixinTTMultiblockBase",
+            "Gregtech.AssLineRemover.MixinGTMod",
+            "Gregtech.AssLineRemover.MixinGTRecipeBuilder",
+            "Gregtech.AssLineRemover.MixinTTRecipeAdder",
+            "InventoryBogoSorter.MixinShortcutHandler",
+            "InventoryBogoSorter.MixinSortHandler",
+            "ModularUI.MixinFluidSlotWidget",
+            "NEICustomDiagram.AccessorNeiCustomDiagram",
+            "NEICustomDiagram.MixinNeiCustomDiagram",
+            "NHCoreMod.MixinBacteriaRegistry",
+            "NotEnoughItems.MixinGuiContainerManager",
+            "NotEnoughEnergistics.MixinNEEPatternTerminalHandler",
+            "NotEnoughEnergistics.MixinFluidPatternTerminalRecipeTransferHandler",
+            "TConstruct.MixinSmelteryLogic",
+            "TecTech.MixinMTEEyeOfHarmony",
+            "TecTech.MixinMTEResearchStation",
+            "TecTech.MixinTTRecipeAdder",
+            "ThaumicTinkerer.AccessorAspectCropLootManager",
+            "ThaumicTinkerer.MixinItemBloodSword",
+            "VisualProspecting.AccessorVeinTypeCaching")
+        .addClientMixins(
+            "AppliedEnergistics.assembler.MixinGuiFluidPatternTerminal",
+            "AppliedEnergistics.assembler.MixinGuiMEMonitorable",
+            "AppliedEnergistics.assembler.MixinGuiPatternTerm")
+        .setPhase(Phase.LATE)),
+
+    AE_RANDOM_COMPLEMENT(new MixinBuilder("AE2 Random Complement Mixins")
+        .addCommonMixins(
+            "RandomComplement.MixinAEBaseContainer",
+            "RandomComplement.MixinBlockCraftingUnit",
+            "RandomComplement.MixinContainerCraftAmount",
+            "RandomComplement.MixinContainerCraftConfirm",
+            "RandomComplement.MixinContainerMEMonitorable",
+            "RandomComplement.MixinCPacketCraftRequest",
+            "RandomComplement.MixinGuiBridge",
+            "RandomComplement.MixinQuantumCluster",
+            "RandomComplement.MixinTileQuantumBridge",
+            "RandomComplement.MixinWirelessTerminalGuiObject")
+        .addClientMixins(
+            "RandomComplement.MixinFCGuiAmount",
+            "RandomComplement.MixinGuiAmount",
+            "RandomComplement.MixinGuiCraftAmount",
+            "RandomComplement.MixinGuiCraftConfirm",
+            "RandomComplement.MixinGuiFluidCraftAmount")
+        .setPhase(Phase.LATE)),
+
+    OVERPOWERED_CHANGE(new MixinBuilder("Overpowered Mixin Changes")
+        .addCommonMixins(
+            "Overpowered.MixinBehaviourScanner",
+            "Overpowered.MixinGregtechWailaDataProvider",
+            "Overpowered.MixinParallelHelper")
+        .setPhase(Phase.LATE)
+        .setApplyIf(() -> MainConfig.machine.enableRecipeOutputChance)
+        .addExcludedMod(ModList.Overpowered)),
+
+    NO_NHU_MIXINS(new MixinBuilder("Mixins when NHUtilities is absent")
+        .addCommonMixins(
+            "NoNHU.MixinAbstractPoweredMachineEntity",
+            "NoNHU.MixinBaseMetaTileEntity",
+            "NoNHU.MixinBlockItemCapBank",
+            "NoNHU.MixinMTEAdvAssLineAcceleration",
+            "NoNHU.MixinResearchStationAcceleration",
+            "NoNHU.MixinTileEntityEnder")
+        .setPhase(Phase.LATE)
+        .addExcludedMod(ModList.NHUtilities)),
+
+    TST_MIXINS(new MixinBuilder("Twist Space Technology Mixins")
+        .addCommonMixins(
+            "TwistSpaceTechnology.MixinRecipeLoader",
+            "TwistSpaceTechnology.MixinTST_OreProcessingFactory",
+            "TwistSpaceTechnology.MixinMM_DimensionallyTranscendentMatterPlasmaForgePrototypeMK2")
+        .setPhase(Phase.LATE)
+        .addRequiredMod(ModList.TwistSpaceTechnology)),
+
+    PP_CHANGE(new MixinBuilder("Purification Plant Changes")
+        .addCommonMixins(
+            "Gregtech.MixinMTEPurificationPlant",
+            "Gregtech.MixinMTEPurificationUnitBaryonicPerfection",
+            "Gregtech.MixinMTEPurificationUnitBase",
+            "Gregtech.MixinMTEPurificationUnitOzonation",
+            "Gregtech.MixinMTEPurificationUnitPhAdjustment",
+            "Gregtech.MixinMTEPurificationUnitPlasmaHeater",
+            "Gregtech.MixinMTEPurificationUnitUVTreatment",
+            "Gregtech.MixinMTEPurificationUnitDegasser")
+        .setPhase(Phase.LATE)
+        .setApplyIf(() -> MainConfig.machine.enablePurificationPlantBuff)),
+
+    OP_CHANGE(
+        new MixinBuilder("Integrated Ore Factory Changes").addCommonMixins("Gregtech.MixinMTEIntegratedOreFactory")
+            .setPhase(Phase.LATE)
+            .setApplyIf(() -> MainConfig.machine.enableIntegratedOreFactoryChange)),
+
+    STICK_LATE(new MixinBuilder("Stick Late Mixins").addCommonMixins("Stick.MixinTooltipHandlerWaila")
+        .setPhase(Phase.LATE)
+        .setApplyIf(() -> MainConfig.item.stick.enableStickItem)),
+
+    ;
+
+    private final MixinBuilder builder;
+
+    Mixins(Side side, String... mixins) {
+        this.builder = new MixinBuilder().addSidedMixins(side, mixins)
+            .setPhase(Phase.EARLY);
+    }
+}

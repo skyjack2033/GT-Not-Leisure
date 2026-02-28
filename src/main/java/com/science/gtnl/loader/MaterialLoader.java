@@ -44,7 +44,7 @@ public class MaterialLoader {
     public static void loadPreInit() {
         EffectLoader.registry();
         EntityLoader.registry();
-        if (Mods.BetterQuesting.isModLoaded() && MainConfig.enableQuest) {
+        if (Mods.BetterQuesting.isModLoaded() && MainConfig.debug.enableQuest) {
             QuestLoader.registry();
         }
 
@@ -65,7 +65,7 @@ public class MaterialLoader {
     public static void loadInit() {
         MachineLoader.registerGlasses();
         WailaLoader.register();
-        TickrateAPI.changeTickrate(MainConfig.defaultTickrate);
+        TickrateAPI.changeTickrate(MainConfig.tickrate.defaultTickrate);
 
         GTNLStructureChannels.register();
 
@@ -108,7 +108,7 @@ public class MaterialLoader {
 
         loadCardBoardBoxBlackList();
 
-        if (MainConfig.enableStickItem) {
+        if (MainConfig.item.stick.enableStickItem) {
             RecipeLoader.loadVillageTrade();
         }
 

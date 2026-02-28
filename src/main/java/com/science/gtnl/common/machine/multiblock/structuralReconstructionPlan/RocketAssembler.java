@@ -34,6 +34,8 @@ import com.science.gtnl.utils.gui.recipe.RocketAssemblerBackend;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.StructureError;
 import gregtech.api.enums.Textures;
@@ -76,6 +78,7 @@ public class RocketAssembler extends GTMMultiMachineBase<RocketAssembler>
         return new RocketAssembler(this.mName);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
         if (!mMachine || !enableRender) return;

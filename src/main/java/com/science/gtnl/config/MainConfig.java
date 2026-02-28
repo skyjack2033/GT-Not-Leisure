@@ -1,777 +1,479 @@
 package com.science.gtnl.config;
 
-import java.io.File;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.gtnewhorizon.gtnhlib.config.Config;
+import com.gtnewhorizon.gtnhlib.config.Config.Comment;
+import com.gtnewhorizon.gtnhlib.config.Config.DefaultBoolean;
+import com.gtnewhorizon.gtnhlib.config.Config.DefaultDouble;
+import com.gtnewhorizon.gtnhlib.config.Config.DefaultFloat;
+import com.gtnewhorizon.gtnhlib.config.Config.DefaultInt;
+import com.gtnewhorizon.gtnhlib.config.Config.DefaultString;
+import com.gtnewhorizon.gtnhlib.config.Config.DefaultStringList;
+import com.gtnewhorizon.gtnhlib.config.Config.Name;
+import com.gtnewhorizon.gtnhlib.config.Config.RangeInt;
+import com.gtnewhorizon.gtnhlib.config.Config.RequiresMcRestart;
+import com.gtnewhorizon.gtnhlib.config.Config.Sync;
+import com.science.gtnl.ScienceNotLeisure;
 
-import net.minecraftforge.common.config.Configuration;
-
+@Config(modid = ScienceNotLeisure.MODID, configSubDirectory = "GTNotLeisure", filename = "GTNotLeisure")
+@Config.LangKeyPattern(pattern = "gtnl.gui.config.%cat.%field", fullyQualified = true)
+@Comment("General section")
 public class MainConfig {
 
-    public static final String CATEGORY_MACHINE = "machine";
-    public static final String CATEGORY_RE_AVARITIA = "re_avaritia";
-    public static final String CATEGORY_RECIPE = "recipe";
-    public static final String CATEGORY_TICK_RATE = "tickrate";
-    public static final String CATEGORY_SUPER_CREEPER = "super_creeper";
-    public static final String CATEGORY_MESSAGE = "message";
-    public static final String CATEGORY_EFFECT = "effect";
-    public static final String CATEGORY_OTHER = "other";
-    public static final String CATEGORY_ITEM = "item";
-    public static final String CATEGORY_DEBUG = "debug";
+    public static final Debug debug = new Debug();
 
-    // --- Sub-Categories (direct children of gtnl_config, or deeper nested) ---
-    public static final String SUB_CATEGORY_QUANTUM_COMPUTER = CATEGORY_MACHINE + Configuration.CATEGORY_SPLITTER
-        + "quantum_computer";
-    public static final String SUB_CATEGORY_METEOR_MINER = CATEGORY_MACHINE + Configuration.CATEGORY_SPLITTER
-        + "meteor_miner";
-    public static final String SUB_CATEGORY_ARTIFICIAL_STAR = CATEGORY_MACHINE + Configuration.CATEGORY_SPLITTER
-        + "artificial_star";
-    public static final String SUB_CATEGORY_ETERNAL_GREGTECH_WORKSHOP = CATEGORY_MACHINE
-        + Configuration.CATEGORY_SPLITTER
-        + "eternal_gregtech_workshop";
-    public static final String SUB_CATEGORY_PORTAL_TO_ALFHEIM = CATEGORY_MACHINE + Configuration.CATEGORY_SPLITTER
-        + "portal_to_alfheim";
-    public static final String SUB_CATEGORY_INFINITY_SWORD = CATEGORY_RE_AVARITIA + Configuration.CATEGORY_SPLITTER
-        + "infinity_sword";
-    public static final String SUB_CATEGORY_CHRONARCHS_CLOCK = CATEGORY_RE_AVARITIA + Configuration.CATEGORY_SPLITTER
-        + "chronarch_clock";
-    public static final String SUB_CATEGORY_VEIN_MINER_PICKAXE = CATEGORY_ITEM + Configuration.CATEGORY_SPLITTER
-        + "vein_miner_pickaxe";
-    public static final String SUB_CATEGORY_STICK = CATEGORY_ITEM + Configuration.CATEGORY_SPLITTER + "stick";
-    public static final String SUB_CATEGORY_PLAYER_DOLL = CATEGORY_ITEM + Configuration.CATEGORY_SPLITTER
-        + "player_doll";
-    public static final String SUB_CATEGORY_NOT_ENOUGH_ITEMS = CATEGORY_OTHER + Configuration.CATEGORY_SPLITTER
-        + "not_enough_items";
+    @Comment("Debug section")
+    public static class Debug {
 
-    // Machine
-    public static boolean enableRecipeOutputChance = true;
-    public static boolean enableMachineAmpLimit = true;
-    public static double recipeOutputChance = 2.5;
+        @Comment("Enable Debug Print Log")
+        @DefaultBoolean(false)
+        @RequiresMcRestart
+        public boolean enableDebugMode = false;
 
-    public static int meteorMinerMaxBlockPerCycle = 1;
-    public static int meteorMinerMaxRowPerCycle = 1;
-
-    public static int euEveryEnhancementCore = 250;
-    public static int euEveryDepletedExcitedNaquadahFuelRod = 7500000;
-    public static double secondsOfArtificialStarProgressCycleTime = 6.4;
-    public static boolean enableRenderDefaultArtificialStar = true;
-
-    public static boolean enablePortalToAlfheimBigBoom = true;
-    public static boolean enableEternalGregTechWorkshopSpiralRender = false;
-    public static boolean enableVoidMinerTweak = true;
-    public static boolean enableIntegratedOreFactoryChange = true;
-    public static boolean enablePurificationPlantBuff = false;
-
-    public static boolean enableHatchInterfaceTerminalEnhance = true;
-
-    // Recipe
-    public static boolean enableDeleteRecipe = true;
-    public static boolean enableShowDelRecipeTitle = true;
-    public static boolean enableSomethingRecipe = true;
-    public static boolean enableAssemblingLineRecipesTimeChange = false;
-    public static boolean enableChamberRecipesBuff = true;
-
-    // Tickrate
-    public static float defaultTickrate = 20.0f;
-    public static float minTickrate = 0.1f;
-    public static float maxTickrate = 1000f;
-
-    // Quantum Computer
-    public static int quantumComputerMaximumMultiblockSize = 15;
-    public static int quantumComputerMaximumQuantumDataEntangler = 1;
-    public static int quantumComputerMaximumQuantumComputerMultiThreader = 1;
-
-    // Player Doll
-    public static boolean enableCustomPlayerDoll = true;
-    public static boolean enableRegisterPlayerDollGlass = true;
-
-    // Extreme Anvil
-    public static String unbreakOre = "neutronUnbreak";
-
-    // Infinity Sword
-    public static boolean enableInfinitySwordBypassMechanism = true;
-    public static boolean enableInfinitySwordExplosion = true;
-    public static boolean enableRenderInfinitySwordSpecial = true;
-
-    // Chronarch's Clock
-    public static int chronarchsClockRadius = 3;
-    public static int chronarchsClockSpeedMultiplier = 256;
-    public static int chronarchsClockDurationTicks = 200;
-    public static int chronarchsClockCooldown = 600;
-
-    // Vein Mining Pickaxe
-    public static int veinMiningPickaxeMaxRange = 32;
-    public static int veinMiningPickaxeMaxAmount = 327670;
-
-    // Stick
-    public static boolean enableStickItem = true;
-
-    // NotEnoughItems
-    public static boolean enableSpecialCheatIcon = false;
-    public static int specialIconType = 0;
-
-    // SuperCreeper
-    public static List<String> targetBlockSpecs = new CopyOnWriteArrayList<>();
-    public static String[] defaultTargetBlocks = { "minecraft:chest", "appliedenergistics2:tile.BlockDrive",
-        "gregtech:gt.blockmachines", "appliedenergistics2:tile.BlockController" };
-    public static boolean enableSuperCreeper = false;
-    public static int blockTargetInterval = 30;
-    public static int playerTargetInterval = 10;
-    public static int blockFindRadius = 16;
-    public static int playerFindRadius = 16;
-    public static int explosionPower = 3;
-    public static double moveSpeed = 1.0;
-    public static double explosionTriggerRange = 2.5;
-    public static double creeperSpeedBonusScale = 3.0;
-    public static boolean enableCreeperBurningExplosion = true;
-    public static int burningExplosionTimer = 30;
-    public static boolean enableCreeperIgnitedDeathExplosion = true;
-    public static boolean enableCreeperHurtByCreeperExplosion = true;
-    public static boolean enableCreeperKilledByCreeperExplosion = true;
-    public static boolean enableCreeperFindSpider = true;
-    public static boolean allowCreeperExplosionBypassGamerule = false;
-    public static double spiderMoveSpeed = 1.3;
-    public static int spiderFindRadius = 16;
-    public static int spiderTargetInterval = 20;
-
-    // Effect
-    public static int aweEffectID = 80;
-    public static int perfectPhysiqueEffect = 81;
-    public static int shimmerEffect = 82;
-    public static int ghostlyShapeEffect = 83;
-    public static int battleEffect = 84;
-
-    public static boolean enableGhostlyShape = true;
-
-    // Steam Rocket
-    public static int idSchematicRocketSteam = 114514;
-    public static final int NASA_WORKBENCH_STEAM_ROCKET = 114514;
-
-    // Other
-    public static boolean enableSaturationHeal = true;
-    public static boolean enableDeathIncompleteMessage = true;
-
-    // Message
-    public static boolean enableShowJoinMessage = true;
-    public static boolean enableShowAddMods = true;
-
-    // Debug
-    public static boolean enableQuest = false;
-    public static boolean enableDebugMode = false;
-
-    public static boolean enableAprilFool = false;
-
-    public static Configuration config;
-
-    static {
-        File configDir = new File("config/GTNotLeisure");
-        if (!configDir.exists()) {
-            configDir.mkdirs();
-        }
-
-        File mainConfigFile = new File(configDir, "main.cfg");
-
-        if (config == null) {
-            config = new Configuration(mainConfigFile);
-            loadConfig();
-        }
-
-        LocalDate today = LocalDate.now();
-        if (today.getMonthValue() == 4 && today.getDayOfMonth() == 1) {
-            enableAprilFool = true;
-        }
-
+        @Sync
+        @Comment("Enable GTNL Quest, add more quest")
+        @DefaultBoolean(false)
+        @RequiresMcRestart
+        public boolean enableQuest = false;
     }
 
-    public static void reloadConfig() {
-        if (config != null) {
-            if (config.hasChanged()) {
-                config.save();
-            }
-            if (targetBlockSpecs != null) targetBlockSpecs.clear();
-            config.load();
-            loadConfig();
-            targetBlockSpecs.addAll(Arrays.asList(defaultTargetBlocks));
+    public static final Effect effect = new Effect();
+
+    @Sync
+    @Comment("Effect section")
+    public static class Effect {
+
+        @Comment("When the player dies and respawns, give the player Ghost Shape effect")
+        @DefaultBoolean(true)
+        public boolean enableGhostlyShape = true;
+    }
+
+    public static final Item item = new Item();
+
+    @Sync
+    @Comment("Item section")
+    public static class Item {
+
+        @Name("player_doll")
+        public final PlayerDoll player_doll = new PlayerDoll();
+
+        @Comment("Player Doll")
+        public static class PlayerDoll {
+
+            @Comment("Enable Custom Player Skin for Player Doll")
+            @DefaultBoolean(true)
+            @RequiresMcRestart
+            public boolean enableCustomSkin = true;
+
+            @Comment("Make Play Doll to MAX Tier Glass")
+            @DefaultBoolean(true)
+            @RequiresMcRestart
+            public boolean enableRegisterMAXTierGlass = true;
+        }
+
+        @Name("vein_miner_pickaxe")
+        public final VeinMinerPickaxe vein_miner_pickaxe = new VeinMinerPickaxe();
+
+        @Comment("Vein Miner Pickaxe")
+        public static class VeinMinerPickaxe {
+
+            @Comment("Set maximum number of chained blocks for Vein Mining Pickaxe")
+            @DefaultInt(327670)
+            public int maxAmount = 327670;
+
+            @Comment("Set maximum block distance for Vein Mining Pickaxe")
+            @DefaultInt(32)
+            public int maxRange = 32;
+        }
+
+        @Name("stick")
+        public final Stick stick = new Stick();
+
+        @Comment("Stick")
+        public static class Stick {
+
+            @Comment("Enable stick fake item and block")
+            @DefaultBoolean(true)
+            @RequiresMcRestart
+            public boolean enableStickItem = true;
+        }
+
+        @Name("steam_rocket")
+        public final SteamRocket steam_rocket = new SteamRocket();
+
+        @Comment("Steam Rocket")
+        public static class SteamRocket {
+
+            @Comment("The Page ID for the Steam Rocket Schematic")
+            @DefaultInt(114514)
+            public int idSchematicRocketSteam = 114514;
+
+            @Comment("The GUI ID for the NASA Workbench when using Steam Rocket Schematic")
+            @DefaultInt(114514)
+            public int nasaWorkbenchSteamRocket = 114514;
         }
     }
 
-    public static void loadConfig() {
-        config.setCategoryLanguageKey(CATEGORY_MACHINE, "gtnl_config." + CATEGORY_MACHINE);
-        config.setCategoryLanguageKey(CATEGORY_RE_AVARITIA, "gtnl_config." + CATEGORY_RE_AVARITIA);
-        config.setCategoryLanguageKey(CATEGORY_RECIPE, "gtnl_config." + CATEGORY_RECIPE);
-        config.setCategoryLanguageKey(CATEGORY_TICK_RATE, "gtnl_config." + CATEGORY_TICK_RATE);
-        config.setCategoryLanguageKey(CATEGORY_SUPER_CREEPER, "gtnl_config." + CATEGORY_SUPER_CREEPER);
-        config.setCategoryLanguageKey(CATEGORY_MESSAGE, "gtnl_config." + CATEGORY_MESSAGE);
-        config.setCategoryLanguageKey(CATEGORY_OTHER, "gtnl_config." + CATEGORY_OTHER);
-        config.setCategoryLanguageKey(CATEGORY_ITEM, "gtnl_config." + CATEGORY_ITEM);
-        config.setCategoryLanguageKey(CATEGORY_DEBUG, "gtnl_config." + CATEGORY_DEBUG);
-
-        config.setCategoryLanguageKey(SUB_CATEGORY_QUANTUM_COMPUTER, "gtnl_config." + SUB_CATEGORY_QUANTUM_COMPUTER);
-        config.setCategoryLanguageKey(SUB_CATEGORY_METEOR_MINER, "gtnl_config." + SUB_CATEGORY_METEOR_MINER);
-        config.setCategoryLanguageKey(SUB_CATEGORY_ARTIFICIAL_STAR, "gtnl_config." + SUB_CATEGORY_ARTIFICIAL_STAR);
-        config.setCategoryLanguageKey(
-            SUB_CATEGORY_ETERNAL_GREGTECH_WORKSHOP,
-            "gtnl_config." + SUB_CATEGORY_ETERNAL_GREGTECH_WORKSHOP);
-        config.setCategoryLanguageKey(SUB_CATEGORY_PORTAL_TO_ALFHEIM, "gtnl_config." + SUB_CATEGORY_PORTAL_TO_ALFHEIM);
-        config.setCategoryLanguageKey(SUB_CATEGORY_INFINITY_SWORD, "gtnl_config." + SUB_CATEGORY_INFINITY_SWORD);
-        config.setCategoryLanguageKey(SUB_CATEGORY_CHRONARCHS_CLOCK, "gtnl_config." + SUB_CATEGORY_CHRONARCHS_CLOCK);
-        config
-            .setCategoryLanguageKey(SUB_CATEGORY_VEIN_MINER_PICKAXE, "gtnl_config." + SUB_CATEGORY_VEIN_MINER_PICKAXE);
-        config.setCategoryLanguageKey(SUB_CATEGORY_STICK, "gtnl_config." + SUB_CATEGORY_STICK);
-        config.setCategoryLanguageKey(SUB_CATEGORY_PLAYER_DOLL, "gtnl_config." + SUB_CATEGORY_PLAYER_DOLL);
-        config.setCategoryLanguageKey(SUB_CATEGORY_NOT_ENOUGH_ITEMS, "gtnl_config." + SUB_CATEGORY_NOT_ENOUGH_ITEMS);
-
-        // Machine
-        enableRecipeOutputChance = config.getBoolean(
-            "enableRecipeOutputChance",
-            CATEGORY_MACHINE,
-            enableRecipeOutputChance,
-            "Enable Output Change Function",
-            "config.machine.enableRecipeOutputChance");
-
-        enableMachineAmpLimit = config.getBoolean(
-            "enableLaserHatch",
-            CATEGORY_MACHINE,
-            enableMachineAmpLimit,
-            "Set Machine Can't Use Laser Hatch",
-            "config.machine.enableLaserHatch");
-
-        recipeOutputChance = config.getFloat(
-            "recipeOutputChance",
-            CATEGORY_MACHINE,
-            (float) recipeOutputChance,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Change Recipe Item Output, like QFT",
-            "config.machine.recipeOutputChance");
-
-        meteorMinerMaxBlockPerCycle = config.getInt(
-            "meteorMinerMaxBlockPerCycle",
-            SUB_CATEGORY_METEOR_MINER,
-            meteorMinerMaxBlockPerCycle,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Set the Meteor Miner how many every cycle break a block",
-            "config.meteor_miner.meteorMinerMaxBlockPerCycle");
-
-        meteorMinerMaxRowPerCycle = config.getInt(
-            "meteorMinerMaxRowPerCycle",
-            SUB_CATEGORY_METEOR_MINER,
-            meteorMinerMaxRowPerCycle,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Set the Meteor Miner how many every cycle break row blocks",
-            "config.meteor_miner.meteorMinerMaxRowPerCycle");
-
-        euEveryEnhancementCore = config.getInt(
-            "euEveryEnhancementCore",
-            SUB_CATEGORY_ARTIFICIAL_STAR,
-            euEveryEnhancementCore,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Set the power generation of EU Every Enhancement Core",
-            "config.artificial_star.euEveryEnhancementCore");
-
-        euEveryDepletedExcitedNaquadahFuelRod = config.getInt(
-            "EUEveryDepletedExcitedNaquadahFuelRod",
-            SUB_CATEGORY_ARTIFICIAL_STAR,
-            euEveryDepletedExcitedNaquadahFuelRod,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Set the power generation of EU Every Depleted Excited Naquadah FuelRod",
-            "config.artificial_star.euEveryDepletedExcitedNaquadahFuelRod");
-
-        secondsOfArtificialStarProgressCycleTime = config.getFloat(
-            "secondsOfArtificialStarProgressCycleTime",
-            SUB_CATEGORY_ARTIFICIAL_STAR,
-            (float) secondsOfArtificialStarProgressCycleTime,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Set secondsOfArtificialStarProgressCycleTime running time",
-            "config.artificial_star.secondsOfArtificialStarProgressCycleTime");
-
-        enableRenderDefaultArtificialStar = config.getBoolean(
-            "EnableDefaultRender",
-            SUB_CATEGORY_ARTIFICIAL_STAR,
-            enableRenderDefaultArtificialStar,
-            "Open RenderDefaultArtificialStar rendering",
-            "config.artificial_star.enableRenderDefaultArtificialStar");
-
-        enableEternalGregTechWorkshopSpiralRender = config.getBoolean(
-            "spiralRender",
-            SUB_CATEGORY_ETERNAL_GREGTECH_WORKSHOP,
-            enableEternalGregTechWorkshopSpiralRender,
-            "Enable Eternal GregTech Workshop Spiral Render, like DNA",
-            "config.eternal_gregtech_workshop.spiralRender");
-
-        enablePortalToAlfheimBigBoom = config.getBoolean(
-            "bigBoom",
-            SUB_CATEGORY_PORTAL_TO_ALFHEIM,
-            enablePortalToAlfheimBigBoom,
-            "Setting this to false will reduce the Portal To Alfheim explosion to little more then a tnt blast",
-            "config.portal_to_alfheim.bigBoom");
-
-        enableVoidMinerTweak = config.getBoolean(
-            "enableVoidMinerTweak",
-            CATEGORY_MACHINE,
-            enableVoidMinerTweak,
-            "Enable Void Miner Tweak, allows you to override target dimension that Void Miner mines",
-            "config.machine.enableVoidMinerTweak");
-
-        enableIntegratedOreFactoryChange = config.getBoolean(
-            "enableIntegratedOreFactoryChange",
-            CATEGORY_MACHINE,
-            enableIntegratedOreFactoryChange,
-            "Enable Integrated Ore Factory Change, change parallel to 65536 and can use Laser Energy Hatch",
-            "config.machine.enableIntegratedOreFactoryChange");
-
-        enablePurificationPlantBuff = config.getBoolean(
-            "enablePurificationPlantBuff",
-            CATEGORY_MACHINE,
-            enablePurificationPlantBuff,
-            "Enable Purification Plant Buff, add Wireless mode and max long parallels",
-            "config.machine.enablePurificationPlantBuff");
-
-        enableHatchInterfaceTerminalEnhance = config.getBoolean(
-            "enableHatchInterfaceTerminalEnhance",
-            CATEGORY_MACHINE,
-            enableHatchInterfaceTerminalEnhance,
-            "Enhance the display of input hatch bus in interface terminal to support the machine current recipe map and virtual programming circuit",
-            "config.machine.enableHatchInterfaceTerminalEnhance");
-
-        // Recipe
-        enableDeleteRecipe = config.getBoolean(
-            "enableDeleteRecipe",
-            CATEGORY_RECIPE,
-            enableDeleteRecipe,
-            "Enable Delete Recipe",
-            "config.recipe.enableDeleteRecipe");
-
-        enableSomethingRecipe = config.getBoolean(
-            "enableSomethingRecipe",
-            CATEGORY_RECIPE,
-            enableSomethingRecipe,
-            "Enable Something Cheap Recipe",
-            "config.recipe.enableSomethingRecipe");
-
-        enableAssemblingLineRecipesTimeChange = config.getBoolean(
-            "enableAssemblingLineRecipesTimeChange",
-            CATEGORY_RECIPE,
-            enableAssemblingLineRecipesTimeChange,
-            "Significantly reduce the time required for crafting recipes",
-            "config.recipe.enableAssemblingLineRecipesTimeChange");
-
-        enableChamberRecipesBuff = config.getBoolean(
-            "enableChamberRecipesBuff",
-            CATEGORY_RECIPE,
-            enableChamberRecipesBuff,
-            "Buff all chamber recipes",
-            "config.recipe.enableChamberRecipesBuff");
-
-        enableShowDelRecipeTitle = config.getBoolean(
-            "enableShowDelRecipeTitle",
-            CATEGORY_RECIPE,
-            enableShowDelRecipeTitle,
-            "Enable when player join world, Show Big Title",
-            "config.recipe.enableShowDelRecipeTitle");
-
-        // Tick Rate
-        defaultTickrate = config.getFloat(
-            "defaultTickrate",
-            CATEGORY_TICK_RATE,
-            defaultTickrate,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Default tickrate. The game will always initialize with this value.",
-            "config.tickrate.defaultTickrate");
-
-        minTickrate = config.getFloat(
-            "minTickrate",
-            CATEGORY_TICK_RATE,
-            minTickrate,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Minimum tickrate from servers. Prevents really low tickrate values.",
-            "config.tickrate.minTickrate");
-
-        maxTickrate = config.getFloat(
-            "maxTickrate",
-            CATEGORY_TICK_RATE,
-            maxTickrate,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Maximum tickrate from servers. Prevents really high tickrate values.",
-            "config.tickrate.maxTickrate");
-
-        // Quantum Computer
-        quantumComputerMaximumQuantumDataEntangler = config.getInt(
-            "quantumComputerMaximumQuantumDataEntangler",
-            SUB_CATEGORY_QUANTUM_COMPUTER,
-            quantumComputerMaximumQuantumDataEntangler,
-            1,
-            Integer.MAX_VALUE,
-            "Maximum number of data entangler allowed in a Quantum Computer",
-            "config.quantum_computer.quantumComputerMaximumQuantumDataEntangler");
-
-        quantumComputerMaximumQuantumComputerMultiThreader = config.getInt(
-            "quantumComputerMaximumQuantumComputerMultiThreader",
-            SUB_CATEGORY_QUANTUM_COMPUTER,
-            quantumComputerMaximumQuantumComputerMultiThreader,
-            1,
-            Integer.MAX_VALUE,
-            "Maximum number of multi threader allowed in a Quantum Computer",
-            "config.quantum_computer.quantumComputerMaximumQuantumComputerMultiThreader");
-
-        quantumComputerMaximumMultiblockSize = config.getInt(
-            "quantumComputerMaximumMultiblockSize",
-            SUB_CATEGORY_QUANTUM_COMPUTER,
-            quantumComputerMaximumMultiblockSize,
-            3,
-            Integer.MAX_VALUE,
-            "Maximum size allowed for a Quantum Computer multiblock structure",
-            "config.quantum_computer.quantumComputerMaximumMultiblockSize");
-
-        // Player Doll
-        enableCustomPlayerDoll = config.getBoolean(
-            "enableCustomSkin",
-            SUB_CATEGORY_PLAYER_DOLL,
-            enableCustomPlayerDoll,
-            "Enable Custom Player Skin for Player Doll",
-            "config.player_doll.enableCustomPlayerDoll");
-
-        enableRegisterPlayerDollGlass = config.getBoolean(
-            "enableRegisterMAXGlass",
-            SUB_CATEGORY_PLAYER_DOLL,
-            enableRegisterPlayerDollGlass,
-            "Make Play Doll to MAX Tier Glass",
-            "config.player_doll.enableRegisterPlayerDollGlass");
-
-        // Infinity Sword
-        enableInfinitySwordBypassMechanism = config.getBoolean(
-            "enableBypass",
-            SUB_CATEGORY_INFINITY_SWORD,
-            enableInfinitySwordBypassMechanism,
-            "Enable Infinity Sword bypass against Blood Sword and Draconic Armor",
-            "config.infinity_sword.enableInfinitySwordBypassMechanism");
-
-        enableInfinitySwordExplosion = config.getBoolean(
-            "enableExplosion",
-            SUB_CATEGORY_INFINITY_SWORD,
-            enableInfinitySwordExplosion,
-            "Enable when Infinity Sword hit Infinity Suit create Explosion",
-            "config.infinity_sword.enableInfinitySwordExplosion");
-
-        enableRenderInfinitySwordSpecial = config.getBoolean(
-            "enableSpecialRender",
-            SUB_CATEGORY_INFINITY_SWORD,
-            enableRenderInfinitySwordSpecial,
-            "Enable Player Special Render",
-            "config.infinity_sword.enableRenderInfinitySwordSpecial");
-
-        // Chronarch's Clock
-        chronarchsClockRadius = config.getInt(
-            "chronarchsClockRadius",
-            SUB_CATEGORY_CHRONARCHS_CLOCK,
-            chronarchsClockRadius,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Effective radius in blocks",
-            "config.chronarchsClockRadius");
-
-        chronarchsClockSpeedMultiplier = config.getInt(
-            "chronarchsClockSpeedMultiplier",
-            SUB_CATEGORY_CHRONARCHS_CLOCK,
-            chronarchsClockSpeedMultiplier,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Speed multiplier for the clock",
-            "config.chronarchsClockSpeedMultiplier");
-
-        chronarchsClockDurationTicks = config.getInt(
-            "chronarchsClockDurationTicks",
-            SUB_CATEGORY_CHRONARCHS_CLOCK,
-            chronarchsClockDurationTicks,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Duration of the clock's effect in ticks",
-            "config.chronarchsClockDurationTicks");
-
-        chronarchsClockCooldown = config.getInt(
-            "chronarchsClockCooldown",
-            SUB_CATEGORY_CHRONARCHS_CLOCK,
-            chronarchsClockCooldown,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Change Chronarchs Clock Cooldown",
-            "config.chronarchsClockCooldown");
-
-        // Vein Mining Pickaxe
-        veinMiningPickaxeMaxRange = config.getInt(
-            "veinMiningPickaxeMaxRange",
-            SUB_CATEGORY_VEIN_MINER_PICKAXE,
-            veinMiningPickaxeMaxRange,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Set maximum block distance for Vein Mining Pickaxe",
-            "config.vein_miner_pickaxe.veinMiningPickaxeMaxRange");
-
-        veinMiningPickaxeMaxAmount = config.getInt(
-            "veinMiningPickaxeMaxAmount",
-            SUB_CATEGORY_VEIN_MINER_PICKAXE,
-            veinMiningPickaxeMaxAmount,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Set maximum number of chained blocks for Vein Mining Pickaxe",
-            "config.vein_miner_pickaxe.veinMiningPickaxeMaxAmount");
-
-        // Stick
-        enableStickItem = config.getBoolean(
-            "enableStickItem",
-            SUB_CATEGORY_STICK,
-            enableStickItem,
-            "Enable stick fake item and block",
-            "config.stick.enableStickItem");
-
-        // Not Enough Items
-        enableSpecialCheatIcon = config.getBoolean(
-            "enableSpecialCheatIcon",
-            SUB_CATEGORY_NOT_ENOUGH_ITEMS,
-            enableSpecialCheatIcon,
-            "Enable a special icon for cheat mode",
-            "config.not_enough_items.enableSpecialCheatIcon");
-
-        specialIconType = config.getInt(
-            "specialIconType",
-            SUB_CATEGORY_NOT_ENOUGH_ITEMS,
-            specialIconType,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Specify the type of the special cheat icon",
-            "config.not_enough_items.specialIconType");
-
-        // Super Creeper
-        defaultTargetBlocks = config.getStringList(
-            "defaultTargetBlocks",
-            CATEGORY_SUPER_CREEPER,
-            defaultTargetBlocks,
-            "List of target block IDs. Format: 'modid:blockname' or 'modid:blockname:meta'.",
-            null,
-            "config.super_creeper.defaultTargetBlocks");
-
-        enableSuperCreeper = config.getBoolean(
-            "enableSuperCreeper",
-            CATEGORY_SUPER_CREEPER,
-            enableSuperCreeper,
-            "Enable super creeper, can find you chest and more",
-            "config.super_creeper.enableSuperCreeper");
-
-        blockTargetInterval = config.getInt(
-            "blockTargetInterval",
-            CATEGORY_SUPER_CREEPER,
-            blockTargetInterval,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Interval in ticks between block targeting scans",
-            "config.super_creeper.blockTargetInterval");
-
-        playerTargetInterval = config.getInt(
-            "playerTargetInterval",
-            CATEGORY_SUPER_CREEPER,
-            playerTargetInterval,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Interval in ticks between player targeting scans",
-            "config.super_creeper.playerTargetInterval");
-
-        blockFindRadius = config.getInt(
-            "blockFindRadius",
-            CATEGORY_SUPER_CREEPER,
-            blockFindRadius,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Search radius for blocks",
-            "config.super_creeper.blockFindRadius");
-
-        playerFindRadius = config.getInt(
-            "playerFindRadius",
-            CATEGORY_SUPER_CREEPER,
-            playerFindRadius,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Search radius for players",
-            "config.super_creeper.playerFindRadius");
-
-        explosionPower = config.getInt(
-            "explosionPower",
-            CATEGORY_SUPER_CREEPER,
-            explosionPower,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Power of the explosion caused by Super Creeper",
-            "config.super_creeper.explosionPower");
-
-        moveSpeed = config.getFloat(
-            "MoveSpeed",
-            CATEGORY_SUPER_CREEPER,
-            (float) moveSpeed,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Movement speed multiplier for Super Creeper",
-            "config.super_creeper.moveSpeed");
-
-        creeperSpeedBonusScale = config.getFloat(
-            "creeperSpeedBonusScale",
-            CATEGORY_SUPER_CREEPER,
-            (float) creeperSpeedBonusScale,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "The higher this value, the faster the creeper moves as it gets closer to its target",
-            "config.super_creeper.creeperSpeedBonusScale");
-
-        explosionTriggerRange = config.getFloat(
-            "explosionTriggerRange",
-            CATEGORY_SUPER_CREEPER,
-            (float) explosionTriggerRange,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Distance at which the Super Creeper will trigger its explosion.",
-            "config.super_creeper.explosionTriggerRange");
-
-        enableCreeperBurningExplosion = config.getBoolean(
-            "enableCreeperBurningExplosion",
-            CATEGORY_SUPER_CREEPER,
-            enableCreeperBurningExplosion,
-            "Enable Creeper explosion when burning.",
-            "config.super_creeper.enableCreeperBurningExplosion");
-
-        enableCreeperIgnitedDeathExplosion = config.getBoolean(
-            "enableCreeperIgnitedDeathExplosion",
-            CATEGORY_SUPER_CREEPER,
-            enableCreeperIgnitedDeathExplosion,
-            "Enable creeper to explode immediately when killed while already ignited.",
-            "config.super_creeper.enableCreeperIgnitedDeathExplosion");
-
-        enableCreeperHurtByCreeperExplosion = config.getBoolean(
-            "enableCreeperHurtByCreeperExplosion",
-            CATEGORY_SUPER_CREEPER,
-            enableCreeperHurtByCreeperExplosion,
-            "Enable creeper explosion reaction when damaged by another creeper (not only when killed).",
-            "config.super_creeper.enableCreeperHurtByCreeperExplosion");
-
-        enableCreeperKilledByCreeperExplosion = config.getBoolean(
-            "enableCreeperKilledByCreeperExplosion",
-            CATEGORY_SUPER_CREEPER,
-            enableCreeperKilledByCreeperExplosion,
-            "Enable Creeper explosion when killed by another Creeper.",
-            "config.super_creeper.enableCreeperKilledByCreeperExplosion");
-
-        enableCreeperFindSpider = config.getBoolean(
-            "enableCreeperFindSpider",
-            CATEGORY_SUPER_CREEPER,
-            enableCreeperFindSpider,
-            "Enable Creeper to find and mount nearby Spiders.",
-            "config.super_creeper.enableCreeperFindSpider");
-
-        allowCreeperExplosionBypassGamerule = config.getBoolean(
-            "allowCreeperExplosionBypassGamerule",
-            CATEGORY_SUPER_CREEPER,
-            allowCreeperExplosionBypassGamerule,
-            "Allow creeper explosions to ignore mobGriefing gamerule and always break blocks",
-            "config.super_creeper.allowCreeperExplosionBypassGamerule");
-
-        spiderMoveSpeed = config.getFloat(
-            "spiderMoveSpeed",
-            CATEGORY_SUPER_CREEPER,
-            (float) spiderMoveSpeed,
-            Float.MIN_VALUE,
-            Float.MAX_VALUE,
-            "Spider move speed when mounted by a Creeper.",
-            "config.super_creeper.spiderMoveSpeed");
-
-        spiderFindRadius = config.getInt(
-            "spiderFindRadius",
-            CATEGORY_SUPER_CREEPER,
-            spiderFindRadius,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Radius in which Creepers search for Spiders.",
-            "config.super_creeper.spiderFindRadius");
-
-        spiderTargetInterval = config.getInt(
-            "spiderTargetInterval",
-            CATEGORY_SUPER_CREEPER,
-            spiderTargetInterval,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Interval (in ticks) between Creeper spider targeting attempts.",
-            "config.super_creeper.spiderTargetInterval");
-
-        burningExplosionTimer = config.getInt(
-            "burningExplosionTimer",
-            CATEGORY_SUPER_CREEPER,
-            burningExplosionTimer,
-            Integer.MIN_VALUE,
-            Integer.MAX_VALUE,
-            "Ticks before Creeper explodes due to burning.",
-            "config.super_creeper.burningExplosionTimer");
-
-        // Effect
-        enableGhostlyShape = config.getBoolean(
-            "enableGhostlyShape",
-            CATEGORY_EFFECT,
-            enableGhostlyShape,
-            "When the player dies and respawns, give the player Ghost Shape effect",
-            "config.effect.enableGhostlyShape");
-
-        // Other
-        enableSaturationHeal = config.getBoolean(
-            "enableSaturationHeal",
-            CATEGORY_OTHER,
-            enableSaturationHeal,
-            "Enable Saturation Heal Tweak. When hunger is 20, player regenerates health based on saturation / 6, up to 1 HP per 0.5s",
-            "config.other.enableSaturationHeal");
-
-        enableDeathIncompleteMessage = config.getBoolean(
-            "enableDeathIncompleteMessage",
-            CATEGORY_OTHER,
-            enableDeathIncompleteMessage,
-            "Enable sending the unfinished chat message when player dies",
-            "config.other.enableDeathIncompleteMessage");
-
-        // Message
-        enableShowJoinMessage = config.getBoolean(
-            "enableShowJoinMessage",
-            CATEGORY_MESSAGE,
-            enableShowJoinMessage,
-            "Enable welcome message when player joins",
-            "config.message.enableShowJoinMessage");
-
-        enableShowAddMods = config.getBoolean(
-            "enableShowAddMods",
-            CATEGORY_MESSAGE,
-            enableShowAddMods,
-            "Enable showing loaded mods info to player",
-            "config.message.enableShowAddMods");
-
-        // Debug
-        enableQuest = config.getBoolean(
-            "enableQuest",
-            CATEGORY_DEBUG,
-            enableQuest,
-            "Enable GTNL Quest, add more quest",
-            "config.debug.enableQuest");
-
-        enableDebugMode = config.getBoolean(
-            "enableDebugMode",
-            CATEGORY_DEBUG,
-            enableDebugMode,
-            "Enable Debug Print Log",
-            "config.debug.enableDebugMode");
-
-        if (config.hasChanged()) {
-            config.save();
+    public static final Machine machine = new Machine();
+
+    @Sync
+    @Comment("Machine section")
+    public static class Machine {
+
+        @Comment("Enhance the display of input hatch bus in interface terminal to support the machine current recipe map and virtual programming circuit")
+        @DefaultBoolean(true)
+        public boolean enableHatchInterfaceTerminalEnhance = true;
+
+        @Comment("Enable Integrated Ore Factory Change, change parallel to 65536 and can use Laser Energy Hatch")
+        @DefaultBoolean(true)
+        @RequiresMcRestart
+        public boolean enableIntegratedOreFactoryChange = true;
+
+        @Comment("Set Machine Can Use Laser Hatch")
+        @Name("enableLaserHatch")
+        @DefaultBoolean(false)
+        public boolean enableLaserHatch = false;
+
+        @Comment("Enable Purification Plant Buff, add Wireless mode and max long parallels")
+        @DefaultBoolean(false)
+        @RequiresMcRestart
+        public boolean enablePurificationPlantBuff = false;
+
+        @Comment("Enable Output Change Function")
+        @DefaultBoolean(true)
+        @RequiresMcRestart
+        public boolean enableRecipeOutputChance = true;
+
+        @Comment("Enable Void Miner Tweak, allows you to override target dimension that Void Miner mines")
+        @DefaultBoolean(true)
+        public boolean enableVoidMinerTweak = true;
+
+        @Comment("Change Recipe Item Output, like QFT")
+        @DefaultDouble(2.5)
+        public double recipeOutputChance = 2.5;
+
+        @Name("quantum_computer")
+        public final QuantumComputer quantum_computer = new QuantumComputer();
+
+        @Comment("Quantum Computer")
+        public static class QuantumComputer {
+
+            @Comment("Maximum size allowed for a Quantum Computer multiblock structure")
+            @RangeInt(min = 3)
+            @DefaultInt(7)
+            public int maxMultiblockSize = 7;
+
+            @Comment("Maximum number of multi threader allowed in a Quantum Computer")
+            @RangeInt(min = 1)
+            @DefaultInt(1)
+            public int maxMultiThreader = 1;
+
+            @Comment("Maximum number of data entangler allowed in a Quantum Computer")
+            @RangeInt(min = 1)
+            @DefaultInt(1)
+            public int maxDataEntangler = 1;
         }
+
+        @Name("meteor_miner")
+        public final MeteorMiner meteor_miner = new MeteorMiner();
+
+        @Comment("Meteor Miner")
+        public static class MeteorMiner {
+
+            @Comment("Set the Meteor Miner how many every cycle break a block")
+            @DefaultInt(1)
+            @RequiresMcRestart
+            public int meteorMinerMaxBlockPerCycle = 1;
+
+            @Comment("Set the Meteor Miner how many every cycle break row blocks")
+            @DefaultInt(1)
+            @RequiresMcRestart
+            public int meteorMinerMaxRowPerCycle = 1;
+        }
+
+        @Name("artificial_star")
+        public final ArtificialStar artificial_star = new ArtificialStar();
+
+        @Comment("Artificial Star")
+        public static class ArtificialStar {
+
+            @Comment("Set the power generation of EU Every Depleted Excited Naquadah FuelRod")
+            @DefaultInt(4125000)
+            @RequiresMcRestart
+            public int euEveryDepletedExcitedNaquadahFuelRod = 4125000;
+
+            @Comment("Open RenderDefaultArtificialStar rendering")
+            @Name("EnableDefaultRender")
+            @DefaultBoolean(true)
+            public boolean enableRenderDefaultArtificialStar = true;
+
+            @Comment("Set the power generation of EU Every Enhancement Core")
+            @DefaultInt(100)
+            @RequiresMcRestart
+            public int euEveryEnhancementCore = 100;
+
+            @Comment("Set secondsOfArtificialStarProgressCycleTime running time")
+            @DefaultDouble(6.4)
+            public double secondsOfArtificialStarProgressCycleTime = 6.4;
+        }
+
+        @Name("eternal_gregtech_workshop")
+        public final EternalWorkshop eternal_gregtech_workshop = new EternalWorkshop();
+
+        @Comment("Eternal Workshop")
+        public static class EternalWorkshop {
+
+            @Comment("Enable Eternal GregTech Workshop Spiral Render, like DNA")
+            @DefaultBoolean(false)
+            public boolean spiralRender = false;
+        }
+
+        @Name("portal_to_alfheim")
+        public final PortalAlfheim portal_to_alfheim = new PortalAlfheim();
+
+        @Comment("Portal Alfheim")
+        public static class PortalAlfheim {
+
+            @Comment("Setting this to false will reduce the Portal To Alfheim explosion to little more then a tnt blast")
+            @DefaultBoolean(true)
+            public boolean bigBoom = true;
+        }
+    }
+
+    public static final Message message = new Message();
+
+    @Comment("Message section")
+    public static class Message {
+
+        @Comment("Enable showing loaded mods info to player")
+        @DefaultBoolean(true)
+        public boolean enableShowAddMods = true;
+
+        @Comment("Enable welcome message when player joins")
+        @DefaultBoolean(true)
+        public boolean enableShowJoinMessage = true;
+    }
+
+    public static final Other other = new Other();
+
+    @Comment("Other section")
+    public static class Other {
+
+        @Comment("Enable sending the unfinished chat message when player dies")
+        @DefaultBoolean(true)
+        public boolean enableDeathIncompleteMessage = true;
+
+        @Sync
+        @Comment("Enable Saturation Heal Tweak. When hunger is 20, player regenerates health based on saturation / 6, up to 1 HP per 0.5s")
+        @DefaultBoolean(true)
+        public boolean enableSaturationHeal = true;
+
+        @Name("not_enough_items")
+        public final NEI not_enough_items = new NEI();
+
+        public static class NEI {
+
+            @Comment("Enable a special icon for cheat mode")
+            @DefaultBoolean(false)
+            @RequiresMcRestart
+            public boolean enableSpecialCheatIcon = false;
+
+            @Comment("Specify the type of the special cheat icon")
+            @DefaultInt(0)
+            public int specialIconType = 0;
+        }
+    }
+
+    public static final ReAvaritia re_avaritia = new ReAvaritia();
+
+    @Sync
+    @Comment("Re Avaritia section")
+    public static class ReAvaritia {
+
+        @Comment("The OreDict used for unbreakable blocks in the Extreme Anvil")
+        @DefaultString("neutronUnbreak")
+        @RequiresMcRestart
+        public String unbreakOre = "neutronUnbreak";
+
+        @Name("infinity_sword")
+        public final InfinitySword infinity_sword = new InfinitySword();
+
+        @Comment("Infinity Sword")
+        public static class InfinitySword {
+
+            @Comment("Enable Infinity Sword bypass against Blood Sword and Draconic Armor")
+            @DefaultBoolean(true)
+            public boolean enableBypass = true;
+
+            @Comment("Enable when Infinity Sword hit Infinity Suit create Explosion")
+            @DefaultBoolean(true)
+            public boolean enableExplosion = true;
+
+            @Comment("Enable Player Special Render")
+            @DefaultBoolean(true)
+            public boolean enableSpecialRender = true;
+        }
+
+        @Name("chronarch_clock")
+        public final ChronarchClock chronarch_clock = new ChronarchClock();
+
+        @Comment("Chronarch Clock")
+        public static class ChronarchClock {
+
+            @Comment("Change Chronarchs Clock Cooldown")
+            @DefaultInt(600)
+            public int chronarchsClockCooldown = 600;
+
+            @Comment("Duration of the clock's effect in ticks")
+            @DefaultInt(200)
+            public int chronarchsClockDurationTicks = 200;
+
+            @Comment("Effective radius in blocks")
+            @DefaultInt(3)
+            public int chronarchsClockRadius = 3;
+
+            @Comment("Speed multiplier for the clock")
+            @DefaultInt(256)
+            public int chronarchsClockSpeedMultiplier = 256;
+        }
+    }
+
+    public static final Recipe recipe = new Recipe();
+
+    @Sync
+    @Comment("Recipe section")
+    public static class Recipe {
+
+        @Comment("Significantly reduce the time required for crafting recipes")
+        @DefaultBoolean(false)
+        @RequiresMcRestart
+        public boolean enableAssemblingLineRecipesTimeChange = false;
+
+        @Comment("Buff all chamber recipes")
+        @DefaultBoolean(true)
+        @RequiresMcRestart
+        public boolean enableChamberRecipesBuff = true;
+
+        @Comment("Enable Delete Recipe")
+        @DefaultBoolean(true)
+        @RequiresMcRestart
+        public boolean enableDeleteRecipe = true;
+
+        @Comment("Enable when player join world, Show Big Title")
+        @DefaultBoolean(true)
+        public boolean enableShowDelRecipeTitle = true;
+
+        @Comment("Enable Something Cheap Recipe")
+        @DefaultBoolean(true)
+        @RequiresMcRestart
+        public boolean enableSomethingRecipe = true;
+    }
+
+    public static final SuperCreeper super_creeper = new SuperCreeper();
+
+    @Sync
+    @Comment("Super Creeper section")
+    public static class SuperCreeper {
+
+        @Comment("Movement speed multiplier for Super Creeper")
+        @DefaultDouble(1.0)
+        public double moveSpeed = 1.0;
+
+        @Comment("Allow creeper explosions to ignore mobGriefing gamerule and always break blocks")
+        @DefaultBoolean(false)
+        public boolean allowCreeperExplosionBypassGamerule = false;
+
+        @Comment("Search radius for blocks")
+        @DefaultInt(16)
+        public int blockFindRadius = 16;
+
+        @Comment("Interval in ticks between block targeting scans")
+        @DefaultInt(30)
+        public int blockTargetInterval = 30;
+
+        @Comment("Ticks before Creeper explodes due to burning.")
+        @DefaultInt(30)
+        public int burningExplosionTimer = 30;
+
+        @Comment("The higher this value, the faster the creeper moves as it gets closer to its target")
+        @DefaultDouble(3.0)
+        public double creeperSpeedBonusScale = 3.0;
+
+        @Comment("List of target block IDs. Format: 'modid:blockname' or 'modid:blockname:meta'.")
+        @DefaultStringList({ "minecraft:chest", "appliedenergistics2:tile.BlockDrive", "gregtech:gt.blockmachines",
+            "appliedenergistics2:tile.BlockController" })
+        public String[] defaultTargetBlocks = { "minecraft:chest", "appliedenergistics2:tile.BlockDrive",
+            "gregtech:gt.blockmachines", "appliedenergistics2:tile.BlockController" };
+
+        @Comment("Enable Creeper explosion when burning.")
+        @DefaultBoolean(true)
+        public boolean enableCreeperBurningExplosion = true;
+
+        @Comment("Enable Creeper to find and mount nearby Spiders.")
+        @DefaultBoolean(true)
+        public boolean enableCreeperFindSpider = true;
+
+        @Comment("Enable creeper explosion reaction when damaged by another creeper (not only when killed).")
+        @DefaultBoolean(true)
+        public boolean enableCreeperHurtByCreeperExplosion = true;
+
+        @Comment("Enable creeper to explode immediately when killed while already ignited.")
+        @DefaultBoolean(true)
+        public boolean enableCreeperIgnitedDeathExplosion = true;
+
+        @Comment("Enable Creeper explosion when killed by another Creeper.")
+        @DefaultBoolean(true)
+        public boolean enableCreeperKilledByCreeperExplosion = true;
+
+        @Comment("Enable super creeper, can find you chest and more")
+        @DefaultBoolean(false)
+        @RequiresMcRestart
+        public boolean enableSuperCreeper = false;
+
+        @Comment("Power of the explosion caused by Super Creeper")
+        @DefaultInt(3)
+        public int explosionPower = 3;
+
+        @Comment("Distance at which the Super Creeper will trigger its explosion.")
+        @DefaultDouble(2.5)
+        public double explosionTriggerRange = 2.5;
+
+        @Comment("Search radius for players")
+        @DefaultInt(16)
+        public int playerFindRadius = 16;
+
+        @Comment("Interval in ticks between player targeting scans")
+        @DefaultInt(10)
+        public int playerTargetInterval = 10;
+
+        @Comment("Radius in which Creepers search for Spiders.")
+        @DefaultInt(16)
+        public int spiderFindRadius = 16;
+
+        @Comment("Spider move speed when mounted by a Creeper.")
+        @DefaultDouble(1.3)
+        public double spiderMoveSpeed = 1.3;
+
+        @Comment("Interval (in ticks) between Creeper spider targeting attempts.")
+        @DefaultInt(20)
+        public int spiderTargetInterval = 20;
+    }
+
+    public static final Tickrate tickrate = new Tickrate();
+
+    @Sync
+    @Comment("Tickrate section")
+    public static class Tickrate {
+
+        @Comment("Default tickrate. The game will always initialize with this value.")
+        @DefaultFloat(20.0f)
+        public float defaultTickrate = 20.0f;
+
+        @Comment("Maximum tickrate from servers. Prevents really high tickrate values.")
+        @DefaultFloat(1000.0f)
+        public float maxTickrate = 1000.0f;
+
+        @Comment("Minimum tickrate from servers. Prevents really low tickrate values.")
+        @DefaultFloat(0.1f)
+        public float minTickrate = 0.1f;
     }
 }

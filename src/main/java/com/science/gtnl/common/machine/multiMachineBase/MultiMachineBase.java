@@ -769,7 +769,7 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     }
 
     public boolean checkEnergyHatch() {
-        if (MainConfig.enableMachineAmpLimit) {
+        if (MainConfig.machine.enableLaserHatch) {
             for (MTEHatch hatch : getExoticEnergyHatches()) {
                 if (hatch instanceof MTEHatchEnergyTunnel) {
                     return false;

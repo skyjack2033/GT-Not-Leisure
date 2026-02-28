@@ -61,7 +61,7 @@ public class CommandTickrate extends CommandBase {
         List<String> tab = new ArrayList<>();
         if (args.length == 1) {
             tab.addAll(suggestedTickrateValues);
-            float defaultTickrate = MainConfig.defaultTickrate;
+            float defaultTickrate = MainConfig.tickrate.defaultTickrate;
             String defTickrate = defaultTickrate + "";
             if (defaultTickrate == (int) defaultTickrate) defTickrate = (int) defaultTickrate + "";
             if (!tab.contains(defTickrate)) {
@@ -72,7 +72,7 @@ public class CommandTickrate extends CommandBase {
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setmap")) {
                 tab.addAll(suggestedTickrateValues);
-                float defaultTickrate = MainConfig.defaultTickrate;
+                float defaultTickrate = MainConfig.tickrate.defaultTickrate;
                 String defTickrate = defaultTickrate + "";
                 if (defaultTickrate == (int) defaultTickrate) defTickrate = (int) defaultTickrate + "";
                 if (!tab.contains(defTickrate)) {

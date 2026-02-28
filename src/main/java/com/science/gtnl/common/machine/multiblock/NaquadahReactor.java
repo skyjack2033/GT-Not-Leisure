@@ -46,6 +46,8 @@ import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.metadata.NaquadahReactorMetadata;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import goodgenerator.items.GGMaterial;
 import goodgenerator.loader.Loaders;
 import gregtech.api.enums.Materials;
@@ -549,6 +551,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
             return new AdvancedHyperNaquadahReactor(this.mName);
         }
 
+        @SideOnly(Side.CLIENT)
         @Override
         public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
             if (!isRenderActive || !enableRender) return;

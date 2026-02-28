@@ -1314,7 +1314,7 @@ public class CraftingTableRecipes implements IRecipePool {
             new Object[] { "AAA", "ABA", "AAA", 'A', new ItemStack(Blocks.furnace, 1), 'B',
                 new ItemStack(Items.flint, 1) });
 
-        if (MainConfig.enableSomethingRecipe) loadExtraRecipe();
+        if (MainConfig.recipe.enableSomethingRecipe) loadExtraRecipe();
     }
 
     public void loadExtraRecipe() {
