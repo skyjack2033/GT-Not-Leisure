@@ -175,6 +175,6 @@ public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssem
                 return false;
             }
         }
-        return super.checkHatch() && this.mEnergyHatches.size() <= 2;
+        return super.checkHatch() && this.mEnergyHatches.size() + this.mExoticEnergyHatches.size() < 2;
     }
 }
