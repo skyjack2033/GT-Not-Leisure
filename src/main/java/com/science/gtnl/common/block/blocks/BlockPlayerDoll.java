@@ -33,7 +33,7 @@ public class BlockPlayerDoll extends BlockContainer {
         this.setHardness(5f);
         this.setBlockName("playerDoll");
         this.setBlockBounds(0.1F, 0.0F, 0.1F, 0.9F, 1.0F, 0.9F);
-        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
+        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisurePlayerDoll);
         this.setLightLevel(1f);
         this.setStepSound(soundTypeGlass);
         GameRegistry.registerBlock(this, ItemBlockPlayerDoll.class, getUnlocalizedName());

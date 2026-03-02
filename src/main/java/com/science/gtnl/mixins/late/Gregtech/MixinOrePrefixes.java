@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import gregtech.api.enums.OrePrefixes;
 
+@Deprecated
 @Mixin(value = OrePrefixes.class, remap = false)
 public abstract class MixinOrePrefixes {
 

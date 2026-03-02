@@ -37,6 +37,25 @@ public class GTNLCreativeTabs {
         }
     };
 
+    public static CreativeTabs GTNotLeisurePlayerDoll = new CreativeTabs("GTNotLeisurePlayerDoll") {
+
+        @Override
+        public Item getTabIconItem() {
+            return GTNLItemList.PlayerDoll.getItem();
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public String getBackgroundImageName() {
+            return "item_search.png";
+        }
+
+        @Override
+        public boolean hasSearchBar() {
+            return true;
+        }
+    };
+
     private static final List<ItemStack> GTNotLeisureMachineStack = new ArrayList<>();
 
     public static void addToMachineList(ItemStack stack) {
@@ -59,6 +78,17 @@ public class GTNLCreativeTabs {
         public void displayAllReleventItems(List<ItemStack> stackList) {
             stackList.addAll(GTNotLeisureMachineStack);
             super.displayAllReleventItems(stackList);
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public String getBackgroundImageName() {
+            return "item_search.png";
+        }
+
+        @Override
+        public boolean hasSearchBar() {
+            return true;
         }
     };
 

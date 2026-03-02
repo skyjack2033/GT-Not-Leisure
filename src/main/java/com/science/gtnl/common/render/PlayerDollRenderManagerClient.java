@@ -65,6 +65,8 @@ public class PlayerDollRenderManagerClient {
     }
 
     public static void renderModel(ResourceLocation skin, ResourceLocation cape, byte mode) {
+        if (skin == null) skin = DEFAULT_SKIN;
+        if (cape == null) cape = DEFAULT_CAPE;
         bindTexture(skin);
         boolean steve = getOrPutSkinModel(
             skin.getResourcePath()
@@ -107,8 +109,9 @@ public class PlayerDollRenderManagerClient {
 
         Map<String, ResourceLocation> cache = type == TextureType.SKIN ? TEXTURE_SKIN_CACHE : TEXTURE_CAPE_CACHE;
 
-        ResourceLocation cached = cache.get(uuid);
-        if (cached != null) return cached;
+        if (cache.containsKey(uuid)) {
+            return cache.get(uuid);
+        }
 
         File local = new File(type == TextureType.SKIN ? SKIN_DIR : CAPE_DIR, uuid + ".png");
         if (local.exists()) {
@@ -120,7 +123,10 @@ public class PlayerDollRenderManagerClient {
         }
 
         String url = fetchTextureUrl(uuid, type);
-        if (url == null) return type == TextureType.SKIN ? DEFAULT_SKIN : null;
+        if (url == null) {
+            cache.put(uuid, type == TextureType.SKIN ? DEFAULT_SKIN : DEFAULT_CAPE);
+            return null;
+        }
 
         return downloadAndCacheTexture(url, uuid, type, false);
     }

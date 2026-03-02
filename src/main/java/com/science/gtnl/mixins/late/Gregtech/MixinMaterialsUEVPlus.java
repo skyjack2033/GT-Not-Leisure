@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import gregtech.api.enums.MaterialBuilder;
 import gregtech.api.enums.MaterialsUEVplus;
 
+@Deprecated
 @Mixin(value = MaterialsUEVplus.class, remap = false)
 public class MixinMaterialsUEVPlus {
 

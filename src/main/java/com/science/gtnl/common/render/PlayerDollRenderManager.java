@@ -30,12 +30,12 @@ public class PlayerDollRenderManager {
 
     public static class AsyncDownloader {
 
-        public static Map<String, Future<?>> pendingTasks = new ConcurrentHashMap<>();
+        public static Map<String, Future<String>> pendingTasks = new ConcurrentHashMap<>();
         public static ExecutorService executor = Executors.newFixedThreadPool(2);
         public static Map<String, Future<ResourceLocation>> pendingDownloads = new ConcurrentHashMap<>();
 
         public static ResourceLocation getTexture(String key, Callable<ResourceLocation> task) {
-            Future<ResourceLocation> future = pendingDownloads.get(key);
+            var future = pendingDownloads.get(key);
             if (future != null) {
                 try {
                     if (future.isDone()) {
@@ -55,7 +55,7 @@ public class PlayerDollRenderManager {
 
         public static String getUUID(String username, Callable<String> task) {
             String cacheKey = "uuid_" + username.toLowerCase();
-            Future<String> future = (Future<String>) pendingTasks.get(cacheKey);
+            var future = pendingTasks.get(cacheKey);
             if (future != null) {
                 try {
                     if (future.isDone()) {

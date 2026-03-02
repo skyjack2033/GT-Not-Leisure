@@ -49,11 +49,11 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(final ItemStack itemStack, final EntityPlayer player, final List<String> toolTip,
-        final boolean advancedToolTips) {
+    public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> toolTip,
+        boolean advancedToolTips) {
         NBTTagCompound tag = itemStack.getTagCompound();
         if (tag == null) return;
-        if (tag.hasKey("CapeHttp", 8)) {
+        if (advancedToolTips && tag.hasKey("CapeHttp", 8)) {
             String capeUrl = tag.getString("CapeHttp");
             if (!StringUtils.isNullOrEmpty(capeUrl)) {
                 toolTip.add(
@@ -78,7 +78,7 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
                     + renderStatus);
         }
 
-        if (tag.hasKey("SkinHttp", 8)) {
+        if (advancedToolTips && tag.hasKey("SkinHttp", 8)) {
             String skinUrl = tag.getString("SkinHttp");
             if (!StringUtils.isNullOrEmpty(skinUrl)) {
                 toolTip.add(
@@ -89,7 +89,7 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
             }
         }
 
-        if (tag.hasKey("SkullOwner", 8)) {
+        if (advancedToolTips && tag.hasKey("SkullOwner", 8)) {
             String playerName = tag.getString("SkullOwner");
             if (!StringUtils.isNullOrEmpty(playerName)) {
                 toolTip.add(
@@ -103,11 +103,17 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
     @Override
     public void getSubItems(Item item, CreativeTabs creativeTabs, List<ItemStack> itemStacks) {
         super.getSubItems(item, creativeTabs, itemStacks);
-        itemStacks.add(
+        addDoll(itemStacks, "Huan_F", "§r幻方", RENDER_CAPE);
+        addDoll(itemStacks, "Circulation_", "§r流光通明", RENDER_OFF);
+        addDoll(itemStacks, "Psimo", "§r赛莫", RENDER_OFF);
+    }
+
+    public void addDoll(List<ItemStack> list, String owner, String name, byte capeMode) {
+        list.add(
             PlayerDollData.create()
-                .skullOwner("Huan_F")
-                .displayName("幻方")
-                .renderCapeMode(RENDER_CAPE)
+                .skullOwner(owner)
+                .displayName(name)
+                .renderCapeMode(capeMode)
                 .build());
     }
 

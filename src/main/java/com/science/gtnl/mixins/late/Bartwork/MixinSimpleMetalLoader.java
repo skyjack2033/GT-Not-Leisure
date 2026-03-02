@@ -27,7 +27,6 @@ public abstract class MixinSimpleMetalLoader {
                     .itemInputs(ItemList.Shape_Mold_Turbine_Blade.get(0))
                     .itemOutputs(werkstoff.get(turbineBlade, 1))
                     .fluidInputs(werkstoff.getMolten(864))
-
                     .duration(
                         (int) Math.max(
                             werkstoff.getStats()
@@ -42,7 +41,6 @@ public abstract class MixinSimpleMetalLoader {
                     .itemInputs(ItemList.Shape_Mold_Turbine_Blade.get(0))
                     .itemOutputs(werkstoff.get(turbineBlade, 1))
                     .fluidInputs(werkstoff.getFluidOrGas(864))
-
                     .duration(
                         (int) Math.max(
                             werkstoff.getStats()
@@ -57,7 +55,6 @@ public abstract class MixinSimpleMetalLoader {
                     werkstoff.get(ingot, 6),
                     GTUtility.copyAmount(0, ItemList.Shape_Extruder_Turbine_Blade.get(1)))
                 .itemOutputs(werkstoff.get(turbineBlade, 1))
-
                 .duration(
                     (int) Math.max(
                         werkstoff.getStats()
@@ -69,7 +66,6 @@ public abstract class MixinSimpleMetalLoader {
             RecipeBuilder.builder()
                 .itemInputs(werkstoff.get(plateDouble, 3), werkstoff.get(screw, 2))
                 .itemOutputs(werkstoff.get(turbineBlade, 1))
-
                 .duration(
                     (int) Math.max(
                         werkstoff.getStats()

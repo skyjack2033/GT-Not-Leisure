@@ -124,8 +124,6 @@ public class PlayerDollRenderer extends TileEntitySpecialRenderer {
             }
         }
 
-        if (skinTexture == null) skinTexture = DEFAULT_SKIN;
-
         renderModel(skinTexture, capeTexture, renderMode);
         GL11.glPopMatrix();
     }

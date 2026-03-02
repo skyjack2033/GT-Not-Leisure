@@ -137,8 +137,6 @@ public class ItemPlayerDollRenderer implements IItemRenderer {
             }
         }
 
-        if (skinTexture == null) skinTexture = DEFAULT_SKIN;
-
         renderModel(skinTexture, capeTexture, renderMode);
         GL11.glPopMatrix();
     }

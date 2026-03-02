@@ -28,11 +28,11 @@ public class BlockLoader {
 
         ExtremeAnvil = new BlockExtremeAnvil();
         NeutronCollector = new BlockNeutronCollector(
-            "BlockNeutronCollector",
+            "NeutronCollector",
             3600,
             2,
-            "BlockNeutronCollector",
-            "BlockNeutronCollector",
+            "NeutronCollector",
+            "NeutronCollector",
             ItemBlockNeutronCollector.class,
             ReAvaItemList.NeutronCollector);
 

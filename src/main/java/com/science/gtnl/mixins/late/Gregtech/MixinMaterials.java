@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import gregtech.loaders.materials.MaterialsInit1;
 
+@Deprecated
 @Mixin(value = MaterialsInit1.class, remap = false)
 public class MixinMaterials {
 
