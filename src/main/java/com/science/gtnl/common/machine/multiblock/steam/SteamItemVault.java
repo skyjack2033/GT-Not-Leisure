@@ -68,7 +68,7 @@ import lombok.Setter;
 public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
     implements ISurvivalConstructable, IItemVault {
 
-    public static long MAX_DISTINCT_ITEMS = 256;
+    public static long MAX_DISTINCT_ITEMS = 1024;
 
     public static BigInteger MAX_CAPACITY_ITEM = BigInteger.valueOf(640000)
         .multiply(BigInteger.valueOf(MAX_DISTINCT_ITEMS));
