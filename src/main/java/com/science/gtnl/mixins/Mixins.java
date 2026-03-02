@@ -14,7 +14,10 @@ public enum Mixins implements IMixins {
 
     FORGE_CORE(Side.COMMON, "Forge.MixinFMLProxyPacket", "Forge.MixinForgeHook"),
 
-    GREGTECH_ACCESSORS(Side.COMMON, "Gregtech.AccessorMTETieredMachineBlock"),
+    GREGTECH_ACCESSORS(Side.COMMON, "Gregtech.AccessorMTETieredMachineBlock", "Gregtech.AccessorEyeOfHarmonyRecipe",
+        "Gregtech.AccessorGTRecipe", "Gregtech.AccessorGTRecipeBuilder", "Gregtech.AccessorGTLanguageManager",
+        "Gregtech.AccessorCommonMetaTileEntity", "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch",
+        "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo"),
 
     MINECRAFT_COMMON(Side.COMMON, "Minecraft.AccessorStringTranslate", "Minecraft.AccessorContainerRepair",
         "Minecraft.AccessorEntityLivingBase", "Minecraft.AccessorFoodStats", "Minecraft.AccessorGuiChat",
@@ -87,15 +90,6 @@ public enum Mixins implements IMixins {
             "DraconicEvolution.MixinReactorExplosion",
             "EnhancedLootBags.AccessorItemLootBag",
             "GalaxySpace.MixinRocketRecipeHandler",
-            "Gregtech.AccessorEyeOfHarmonyRecipe",
-            "Gregtech.AccessorGTRecipe",
-            "Gregtech.AccessorGTRecipeBuilder",
-            "Gregtech.AccessorGTLanguageManager",
-            "Gregtech.AccessorCommonMetaTileEntity",
-            "Gregtech.AccessorMetaTileEntity",
-            "Gregtech.AccessorMTEHatch",
-            "Gregtech.AccessorProcessingLogic",
-            "Gregtech.AccessorRecipeDisplayInfo",
             "Gregtech.MixinBaseMetaTileEntity",
             "Gregtech.MixinEyeOfHarmonyRecipeStorage",
             "Gregtech.MixinGodForgeMath",

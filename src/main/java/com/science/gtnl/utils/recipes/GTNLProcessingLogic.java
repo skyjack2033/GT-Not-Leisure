@@ -16,7 +16,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.IConfigurationMaintenance;
-import com.science.gtnl.mixins.late.Gregtech.AccessorProcessingLogic;
+import com.science.gtnl.mixins.early.Gregtech.AccessorProcessingLogic;
 
 import gregtech.api.interfaces.tileentity.IRecipeLockable;
 import gregtech.api.interfaces.tileentity.IVoidable;

@@ -15,8 +15,8 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Contract;
 
 import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.mixins.late.Gregtech.AccessorGTRecipe;
-import com.science.gtnl.mixins.late.Gregtech.AccessorGTRecipeBuilder;
+import com.science.gtnl.mixins.early.Gregtech.AccessorGTRecipe;
+import com.science.gtnl.mixins.early.Gregtech.AccessorGTRecipeBuilder;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Mods;

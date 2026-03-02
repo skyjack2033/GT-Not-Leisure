@@ -1,4 +1,4 @@
-package com.science.gtnl.mixins.late.Gregtech;
+package com.science.gtnl.mixins.early.Gregtech;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;

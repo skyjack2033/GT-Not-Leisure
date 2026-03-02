@@ -37,8 +37,8 @@ import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
-import com.science.gtnl.mixins.late.Gregtech.AccessorCommonMetaTileEntity;
-import com.science.gtnl.mixins.late.Gregtech.AccessorMetaTileEntity;
+import com.science.gtnl.mixins.early.Gregtech.AccessorCommonMetaTileEntity;
+import com.science.gtnl.mixins.early.Gregtech.AccessorMetaTileEntity;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 

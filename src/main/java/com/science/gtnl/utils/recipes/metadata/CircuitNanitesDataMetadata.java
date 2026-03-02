@@ -5,7 +5,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.StatCollector;
 
-import com.science.gtnl.mixins.late.Gregtech.AccessorRecipeDisplayInfo;
+import com.science.gtnl.mixins.early.Gregtech.AccessorRecipeDisplayInfo;
 import com.science.gtnl.utils.recipes.data.CircuitNanitesRecipeData;
 
 import gregtech.api.recipe.RecipeMetadataKey;
