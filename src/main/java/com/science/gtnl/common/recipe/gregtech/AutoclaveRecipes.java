@@ -98,7 +98,7 @@ public class AutoclaveRecipes implements IRecipePool {
             .fluidInputs(Materials.RichNetherWaste.getFluid(2_000))
             .itemOutputs(
                 ItemList.Netherite_Scrap_Seed.get(1),
-                GTModHandler.getModItem(EtFuturumRequiem.ID, "netherite_scrap", 2, missing))
+                GTModHandler.getModItem(EtFuturumRequiem.ID, "netherite_scrap", 2))
             .duration(300)
             .eut(TierEU.RECIPE_IV)
             .addTo(AR);

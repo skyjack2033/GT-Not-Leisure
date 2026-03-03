@@ -37,10 +37,12 @@ import com.reavaritia.utils.enums.ReAvaItemList;
 import com.reavaritia.utils.item.SubtitleDisplay;
 import com.reavaritia.utils.item.ToolHelper;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fox.spiteful.avaritia.entity.EntityImmortalItem;
 import fox.spiteful.avaritia.items.LudicrousItems;
+import gregtech.api.enums.Mods;
 
 public class InfinityPickaxe extends ItemPickaxe implements SubtitleDisplay {
 
@@ -211,6 +213,11 @@ public class InfinityPickaxe extends ItemPickaxe implements SubtitleDisplay {
 
     @Override
     public Entity createEntity(World world, Entity location, ItemStack itemstack) {
+        return Mods.Avaritia.isModLoaded() ? createImmortalItem(world, location, itemstack) : null;
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public Entity createImmortalItem(World world, Entity location, ItemStack itemstack) {
         return new EntityImmortalItem(world, location, itemstack);
     }
 

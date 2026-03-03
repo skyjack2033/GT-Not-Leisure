@@ -3,11 +3,14 @@ package com.science.gtnl.common.item;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -21,6 +24,7 @@ import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.utils.SimpleItem;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import fox.spiteful.avaritia.tile.TileEntityDireCrafting;
 import gregtech.api.enums.ItemList;
@@ -31,6 +35,24 @@ import it.unimi.dsi.fastutil.objects.Object2CharLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2CharMap;
 
 public class DebugItem extends Item {
+
+    public static Class<?>[] ITEMLIST;
+
+    static {
+        List<Class<?>> list = new ArrayList<>();
+        list.add(GTNLItemList.class);
+        list.add(ItemList.class);
+        list.add(tectech.thing.CustomItemList.class);
+        list.add(GregtechItemList.class);
+        list.add(kubatech.api.enums.ItemList.class);
+        if (Mods.NewHorizonsCoreMod.isModLoaded()) addNHItemList(list);
+        ITEMLIST = list.toArray(new Class<?>[0]);
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static void addNHItemList(List<Class<?>> list) {
+        list.add(CustomItemList.class);
+    }
 
     public static final char[] placeholder = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz"
         + "0123456789"
@@ -53,8 +75,9 @@ public class DebugItem extends Item {
         if (item == null) return;
         if (item.getItem() == this) {
             if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-                if (world.getTileEntity(event.x, event.y, event.z) instanceof TileEntityDireCrafting dc) {
-                    var inputs = getInputs(dc);
+                TileEntity tile = world.getTileEntity(event.x, event.y, event.z);
+                if (Mods.Avaritia.isModLoaded() && isDireCraftingTile(tile)) {
+                    var inputs = getInputs(tile);
                     var log = getLog(inputs);
                     ScienceNotLeisure.LOG.info(log.toString());
                     player.addChatMessage(new ChatComponentTranslation("打印成功"));
@@ -62,6 +85,11 @@ public class DebugItem extends Item {
                 }
             }
         }
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    private boolean isDireCraftingTile(TileEntity tile) {
+        return tile instanceof TileEntityDireCrafting;
     }
 
     public static @NotNull StringBuilder getLog(SimpleItem[] inputs) {
@@ -118,8 +146,7 @@ public class DebugItem extends Item {
             return OreDictionary.getOreName(oreIDs[0]);
         }
 
-        for (Class<?> clazz : new Class<?>[] { GTNLItemList.class, ItemList.class, tectech.thing.CustomItemList.class,
-            CustomItemList.class, GregtechItemList.class, kubatech.api.enums.ItemList.class }) {
+        for (Class<?> clazz : ITEMLIST) {
             try {
                 for (var field : clazz.getFields()) {
                     Object obj = field.get(null);
@@ -194,7 +221,9 @@ public class DebugItem extends Item {
         }
     }
 
-    public SimpleItem[] getInputs(TileEntityDireCrafting dc) {
+    @Optional.Method(modid = "Avaritia")
+    public SimpleItem[] getInputs(TileEntity te) {
+        var dc = (TileEntityDireCrafting) te;
         var inputs = new SimpleItem[81];
         for (int i = 1; i < dc.getSizeInventory(); i++) {
             ItemStack item = dc.getStackInSlot(i);

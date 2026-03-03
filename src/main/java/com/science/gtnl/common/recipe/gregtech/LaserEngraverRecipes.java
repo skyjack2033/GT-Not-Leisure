@@ -12,6 +12,7 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.system.material.WerkstoffLoader;
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -126,7 +127,8 @@ public class LaserEngraverRecipes implements IRecipePool {
                 GTNLItemList.NeutroniumBoule.get(1L),
                 WerkstoffLoader.MagnetoResonaticDust.get(OrePrefixes.lens, 0),
                 WerkstoffLoader.Fayalit.get(OrePrefixes.lens, 0),
-                com.dreammaster.gthandler.CustomItemList.MysteriousCrystalLens.get(0))
+                Mods.NewHorizonsCoreMod.isModLoaded() ? getMysteriousCrystalLens()
+                    : GTOreDictUnificator.get(OrePrefixes.lens, Materials.GreenSapphire, 0))
             .itemOutputs(ItemList.Circuit_Silicon_Ingot6.get(2))
             .fluidInputs(Materials.UUMatter.getFluid(16000L))
             .duration(30 * SECONDS)
@@ -135,6 +137,11 @@ public class LaserEngraverRecipes implements IRecipePool {
             .addTo(lER);
 
         loadWirelessEnergyCoverRecipes();
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public ItemStack getMysteriousCrystalLens() {
+        return com.dreammaster.gthandler.CustomItemList.MysteriousCrystalLens.get(0);
     }
 
     public void loadWirelessEnergyCoverRecipes() {

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -19,9 +20,11 @@ import com.science.gtnl.mixins.late.EnhancedLootBags.AccessorItemLootBag;
 import com.science.gtnl.utils.enums.BlockIcons;
 import com.science.gtnl.utils.item.ItemUtils;
 
+import cpw.mods.fml.common.Optional;
 import eu.usrv.enhancedlootbags.core.LootGroupsHandler;
 import eu.usrv.enhancedlootbags.core.items.ItemLootBag;
 import eu.usrv.enhancedlootbags.core.serializer.LootGroups;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.ITexture;
@@ -36,6 +39,8 @@ import lombok.extern.log4j.Log4j2;
 public class LootBagRedemption extends MTEBasicMachine {
 
     public static final Random random = new Random();
+    public static final ItemStack coin = Mods.NewHorizonsCoreMod.isModLoaded() ? getCoinTechnician()
+        : new ItemStack(Items.paper);
 
     public LootBagRedemption(int aID, String aName, String aNameRegional, int aTier) {
         super(
@@ -134,9 +139,9 @@ public class LootBagRedemption extends MTEBasicMachine {
         } else {
             return 0;
         }
-        if (slotA != null && GTUtility.areStacksEqual(slotA, CustomItemList.CoinTechnician.get(1))) {
+        if (slotA != null && GTUtility.areStacksEqual(slotA, coin)) {
             coinStack = slotA;
-        } else if (slotB != null && GTUtility.areStacksEqual(slotB, CustomItemList.CoinTechnician.get(1))) {
+        } else if (slotB != null && GTUtility.areStacksEqual(slotB, coin)) {
             coinStack = slotB;
         } else {
             return 0;
@@ -313,5 +318,10 @@ public class LootBagRedemption extends MTEBasicMachine {
                 return null;
             }
         } while (true);
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    private static ItemStack getCoinTechnician() {
+        return CustomItemList.CoinTechnician.get(1);
     }
 }

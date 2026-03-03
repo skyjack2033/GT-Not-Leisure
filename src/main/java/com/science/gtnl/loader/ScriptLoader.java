@@ -9,12 +9,15 @@ import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.recipe.script.ScriptAvaritia;
 import com.science.gtnl.common.recipe.script.ScriptTinkersConstruct;
 
+import gregtech.api.enums.Mods;
+
 public class ScriptLoader {
 
     public static void registry() {
 
-        List<IScriptLoader> scripts = new ArrayList<>(
-            Arrays.asList(new ScriptAvaritia(), new ScriptTinkersConstruct()));
+        List<IScriptLoader> scripts = new ArrayList<>(Arrays.asList(new ScriptTinkersConstruct()));
+
+        if (Mods.Avaritia.isModLoaded()) scripts.add(new ScriptAvaritia());
 
         ArrayList<String> errored = new ArrayList<>();
         final long totalTimeStart = System.currentTimeMillis();

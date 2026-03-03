@@ -3,6 +3,7 @@ package galaxyspace.core.nei;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 import com.dreammaster.gthandler.CustomItemList;
@@ -12,6 +13,7 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
+import cpw.mods.fml.common.Optional;
 import galaxyspace.core.register.GSBlocks;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
@@ -56,7 +58,11 @@ public class NEIGTNLGalaxySpaceConfig implements IConfigureNEI {
         List<PositionedStack> input = new ArrayList<>();
         input.add(
             new PositionedStack(GTModHandler.getModItem(Mods.StevesCarts2.ID, "CartModule", 1, 38), 134 - x, 10 - y));
-        input.add(new PositionedStack(CustomItemList.EngineCore.get(1), 134 - x, 28 - y));
+        input.add(
+            new PositionedStack(
+                Mods.NewHorizonsCoreMod.isModLoaded() ? getEngineCore() : new ItemStack(Items.arrow),
+                134 - x,
+                28 - y));
         input.add(new PositionedStack(GTModHandler.getModItem(Mods.IronTanks.ID, "diamondTank", 1), 117 - x, 19 - y));
         input.add(new PositionedStack(GTModHandler.getModItem(Mods.IronTanks.ID, "diamondTank", 1), 152 - x, 19 - y));
         input.add(
@@ -102,5 +108,10 @@ public class NEIGTNLGalaxySpaceConfig implements IConfigureNEI {
         input2.add(new PositionedStack(new ItemStack(GSBlocks.ironChest, 1, 1), 134 - x, 46 - y));
         recipeHandler
             .addRecipe(input2, new PositionedStack(GTNLItemList.SteamRocket.getWithMeta(1, 3), 134 - x, 73 - y));
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public ItemStack getEngineCore() {
+        return CustomItemList.EngineCore.get(1);
     }
 }

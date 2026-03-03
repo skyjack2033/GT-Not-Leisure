@@ -19,6 +19,10 @@ public enum Mixins implements IMixins {
         "Gregtech.AccessorCommonMetaTileEntity", "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch",
         "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo"),
 
+    NH_CORE_MOD_ACCESSORS(new MixinBuilder().addCommonMixins("NHCoreMod.AccessorBacteriaRegistry")
+        .setPhase(Phase.EARLY)
+        .addRequiredMod(ModList.NewHorizonsCoreMod)),
+
     MINECRAFT_COMMON(Side.COMMON, "Minecraft.AccessorStringTranslate", "Minecraft.AccessorContainerRepair",
         "Minecraft.AccessorEntityLivingBase", "Minecraft.AccessorFoodStats", "Minecraft.AccessorGuiChat",
         "Minecraft.AccessorMinecraft", "Minecraft.MixinCommandTeleport", "Minecraft.MixinEntity",
@@ -88,8 +92,6 @@ public enum Mixins implements IMixins {
             "DraconicEvolution.AccessorCustomArmorHandler",
             "DraconicEvolution.MixinMinecraftForgeEventHandler",
             "DraconicEvolution.MixinReactorExplosion",
-            "EnhancedLootBags.AccessorItemLootBag",
-            "GalaxySpace.MixinRocketRecipeHandler",
             "Gregtech.MixinBaseMetaTileEntity",
             "Gregtech.MixinEyeOfHarmonyRecipeStorage",
             "Gregtech.MixinGodForgeMath",
@@ -129,12 +131,6 @@ public enum Mixins implements IMixins {
             "InventoryBogoSorter.MixinShortcutHandler",
             "InventoryBogoSorter.MixinSortHandler",
             "ModularUI.MixinFluidSlotWidget",
-            "NEICustomDiagram.AccessorNeiCustomDiagram",
-            "NEICustomDiagram.MixinNeiCustomDiagram",
-            "NHCoreMod.MixinBacteriaRegistry",
-            "NotEnoughItems.MixinGuiContainerManager",
-            "NotEnoughEnergistics.MixinNEEPatternTerminalHandler",
-            "NotEnoughEnergistics.MixinFluidPatternTerminalRecipeTransferHandler",
             "TConstruct.MixinSmelteryLogic",
             "TecTech.MixinMTEEyeOfHarmony",
             "TecTech.MixinMTEResearchStation",
@@ -147,6 +143,36 @@ public enum Mixins implements IMixins {
             "AppliedEnergistics.assembler.MixinGuiMEMonitorable",
             "AppliedEnergistics.assembler.MixinGuiPatternTerm")
         .setPhase(Phase.LATE)),
+
+    GALAXY_SPACE(new MixinBuilder("Galaxy Space Mixin").addCommonMixins("GalaxySpace.MixinRocketRecipeHandler")
+        .setPhase(Phase.LATE)
+        .addRequiredMod(ModList.GalaxySpace)),
+
+    NH_CORE_MOD(new MixinBuilder("NH Core Mod Mixin").addCommonMixins("NHCoreMod.MixinBacteriaRegistry")
+        .setPhase(Phase.LATE)
+        .addRequiredMod(ModList.NewHorizonsCoreMod)),
+
+    ENHANCED_LOOT_BAGS(
+        new MixinBuilder("Enhanced Loot Bags Mixin").addCommonMixins("EnhancedLootBags.AccessorItemLootBag")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(ModList.EnhancedLootBags)),
+
+    NOT_ENOUGH_ENERGISTICS(new MixinBuilder("Not Enough Energistics Mixin")
+        .addCommonMixins(
+            "NotEnoughEnergistics.MixinNEEPatternTerminalHandler",
+            "NotEnoughEnergistics.MixinFluidPatternTerminalRecipeTransferHandler")
+        .setPhase(Phase.LATE)
+        .addRequiredMod(ModList.NotEnoughEnergistics)),
+
+    NEI_CUSTOM_DIAGRAM(new MixinBuilder("NEI Custom Diagram Mixin")
+        .addCommonMixins("NEICustomDiagram.AccessorNeiCustomDiagram", "NEICustomDiagram.MixinNeiCustomDiagram")
+        .setPhase(Phase.LATE)
+        .addRequiredMod(ModList.NEICustomDiagrams)),
+
+    NEI_AVARITIA_ADDON(
+        new MixinBuilder("NEI Avaritia Addon Mixin").addCommonMixins("NotEnoughItems.MixinGuiContainerManager")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(ModList.AvaritiaAddons)),
 
     AE_RANDOM_COMPLEMENT(new MixinBuilder("AE2 Random Complement Mixins")
         .addCommonMixins(

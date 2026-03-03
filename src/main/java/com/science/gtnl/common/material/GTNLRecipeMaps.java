@@ -47,6 +47,7 @@ import com.science.gtnl.utils.recipes.metadata.SteamFusionMetadata;
 import goodgenerator.api.recipe.ComponentAssemblyLineFrontend;
 import goodgenerator.client.GUI.GGUITextures;
 import gregtech.api.enums.GTValues;
+import gregtech.api.enums.Mods;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBackend;
@@ -70,31 +71,34 @@ public class GTNLRecipeMaps {
                 .setMaxRecipesPerPage(1))
         .build();
 
-    public static final RecipeMap<RecipeMapBackend> FallingTowerRecipes = RecipeMapBuilder
-        .of("gtnl.recipe.FallingTowerRecipes")
-        .maxIO(1, 81, 0, 0)
-        .progressBar(GTUITextures.PROGRESSBAR_COMPRESS)
-        .frontend(FallingTowerFrontend::new)
-        .neiHandlerInfo(
-            builder -> builder.setDisplayStack(GTNLItemList.BloodSoulSacrificialArray.get(1))
-                .setMaxRecipesPerPage(1))
-        .build();
+    public static final RecipeMap<RecipeMapBackend> FallingTowerRecipes = Mods.BloodMagic.isModLoaded()
+        ? RecipeMapBuilder.of("gtnl.recipe.FallingTowerRecipes")
+            .maxIO(1, 81, 0, 0)
+            .progressBar(GTUITextures.PROGRESSBAR_COMPRESS)
+            .frontend(FallingTowerFrontend::new)
+            .neiHandlerInfo(
+                builder -> builder.setDisplayStack(GTNLItemList.BloodSoulSacrificialArray.get(1))
+                    .setMaxRecipesPerPage(1))
+            .build()
+        : null;
 
-    public static final RecipeMap<RecipeMapBackend> BloodDemonInjectionRecipes = RecipeMapBuilder
-        .of("gtnl.recipe.BloodDemonInjectionRecipes")
-        .maxIO(4, 1, 1, 1)
-        .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
-        .frontend(BloodSoulFrontend::new)
-        .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.BloodSoulSacrificialArray.get(1)))
-        .build();
+    public static final RecipeMap<RecipeMapBackend> BloodDemonInjectionRecipes = Mods.BloodMagic.isModLoaded()
+        ? RecipeMapBuilder.of("gtnl.recipe.BloodDemonInjectionRecipes")
+            .maxIO(4, 1, 1, 1)
+            .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
+            .frontend(BloodSoulFrontend::new)
+            .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.BloodSoulSacrificialArray.get(1)))
+            .build()
+        : null;
 
-    public static final RecipeMap<RecipeMapBackend> AlchemicChemistrySetRecipes = RecipeMapBuilder
-        .of("gtnl.recipe.AlchemicChemistrySetRecipes")
-        .maxIO(5, 1, 1, 1)
-        .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
-        .frontend(BloodSoulFrontend::new)
-        .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.BloodSoulSacrificialArray.get(1)))
-        .build();
+    public static final RecipeMap<RecipeMapBackend> AlchemicChemistrySetRecipes = Mods.BloodMagic.isModLoaded()
+        ? RecipeMapBuilder.of("gtnl.recipe.AlchemicChemistrySetRecipes")
+            .maxIO(5, 1, 1, 1)
+            .progressBar(GTUITextures.PROGRESSBAR_ARROW_MULTIPLE)
+            .frontend(BloodSoulFrontend::new)
+            .neiHandlerInfo(builder -> builder.setDisplayStack(GTNLItemList.BloodSoulSacrificialArray.get(1)))
+            .build()
+        : null;
 
     public static final RecipeMap<RecipeMapBackend> RealArtificialStarRecipes = RecipeMapBuilder
         .of("gtnl.recipe.ArtificialStarGeneratingRecipes")

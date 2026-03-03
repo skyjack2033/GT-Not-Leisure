@@ -15,10 +15,12 @@ import com.reavaritia.utils.SubscribeEventClientUtils;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import fox.spiteful.avaritia.render.CosmicItemRenderer;
+import gregtech.api.enums.Mods;
 
 public class ClientProxy extends CommonProxy {
 
@@ -35,6 +37,15 @@ public class ClientProxy extends CommonProxy {
             .registerEntityRenderingHandler(EntityExtremeAnvil.class, new RenderFallingBlockExtremeAnvil());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityChronarchClock.class, new RenderChronarchClock());
+
+        if (Mods.Avaritia.isModLoaded()) registerItemRenderer();
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public void registerItemRenderer() {
+        CosmicItemRenderer sparkly = new CosmicItemRenderer();
+        MinecraftForgeClient.registerItemRenderer(ItemLoader.InfinitySword, sparkly);
+        MinecraftForgeClient.registerItemRenderer(ItemLoader.MatterCluster, sparkly);
     }
 
     @Override
@@ -49,12 +60,5 @@ public class ClientProxy extends CommonProxy {
             .bus()
             .register(new SubscribeEventClientUtils());
         super.preInit(event);
-    }
-
-    @Override
-    public void makeThingsPretty() {
-        CosmicItemRenderer sparkly = new CosmicItemRenderer();
-        MinecraftForgeClient.registerItemRenderer(ItemLoader.InfinitySword, sparkly);
-        MinecraftForgeClient.registerItemRenderer(ItemLoader.MatterCluster, sparkly);
     }
 }

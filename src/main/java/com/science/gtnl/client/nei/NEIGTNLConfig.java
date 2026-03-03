@@ -64,7 +64,10 @@ public class NEIGTNLConfig implements IConfigureNEI {
         API.addRecipeCatalyst(GTNLItemList.SteamOilDrillModuleI.get(1), "GTOrePluginUndergroundFluid");
         API.addRecipeCatalyst(GTNLItemList.SteamOilDrillModuleII.get(1), "GTOrePluginUndergroundFluid");
         API.addRecipeCatalyst(GTNLItemList.SteamOilDrillModuleIII.get(1), "GTOrePluginUndergroundFluid");
-        API.addRecipeCatalyst(GTNLItemList.LootBagRedemption.get(1), Mods.EnhancedLootBags.ID);
+
+        if (Mods.EnhancedLootBags.isModLoaded()) {
+            API.addRecipeCatalyst(GTNLItemList.LootBagRedemption.get(1), Mods.EnhancedLootBags.ID);
+        }
 
         Werkstoff[] hiddenMaterials = { GTNLMaterials.Polyimide, GTNLMaterials.AcrylonitrileButadieneStyrene,
             GTNLMaterials.Polyetheretherketone, GTNLMaterials.HSLASteel, GTNLMaterials.Actinium,

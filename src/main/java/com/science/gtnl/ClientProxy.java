@@ -83,6 +83,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import fox.spiteful.avaritia.render.FancyHaloRenderer;
 import gregtech.api.GregTechAPI;
+import gregtech.api.enums.Mods;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.client.model.ModelRocketTier1;
 import micdoodle8.mods.galacticraft.core.proxy.ClientProxyCore;
@@ -148,8 +149,7 @@ public class ClientProxy extends CommonProxy {
             TileEntityEternalGregTechWorkshop.class,
             new EternalGregTechWorkshopRenderer());
 
-        MinecraftForgeClient.registerItemRenderer(ItemLoader.testItem, new FancyHaloRenderer());
-        MinecraftForgeClient.registerItemRenderer(ItemLoader.metaItem, new FancyHaloRenderer());
+        if (Mods.Avaritia.isModLoaded()) registerFancyHaloRenderer();
 
         if (enableAprilFool) {
             MinecraftForgeClient.registerItemRenderer(
@@ -297,5 +297,10 @@ public class ClientProxy extends CommonProxy {
             beam.update();
         }
         return beam;
+    }
+
+    public void registerFancyHaloRenderer() {
+        MinecraftForgeClient.registerItemRenderer(ItemLoader.testItem, new FancyHaloRenderer());
+        MinecraftForgeClient.registerItemRenderer(ItemLoader.metaItem, new FancyHaloRenderer());
     }
 }

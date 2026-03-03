@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.StatCollector;
@@ -14,6 +15,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import WayofTime.alchemicalWizardry.AlchemicalWizardry;
+import cpw.mods.fml.common.Optional;
+import gregtech.api.enums.Mods;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
@@ -22,6 +25,8 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
 public class SteamFlightModule extends SteamElevatorModule {
+
+    public static final int POTION_FLIGHT_ID = Mods.BloodMagic.isModLoaded() ? getPotionFlightId() : Potion.jump.id;
 
     public SteamFlightModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional, 1);
@@ -93,7 +98,7 @@ public class SteamFlightModule extends SteamElevatorModule {
             for (EntityPlayer player : playersInRange) {
                 double distance = player.getDistance(x, y, z);
                 if (distance <= getMachineEffectRange()) {
-                    player.addPotionEffect(new PotionEffect(AlchemicalWizardry.customPotionFlightID, 1000, 1));
+                    player.addPotionEffect(new PotionEffect(POTION_FLIGHT_ID, 1000, 1));
                 }
             }
         }
@@ -103,5 +108,10 @@ public class SteamFlightModule extends SteamElevatorModule {
     @Override
     public int getMachineEffectRange() {
         return 64 * Math.max(recipeOcCount, 1);
+    }
+
+    @Optional.Method(modid = "AWWayofTime")
+    public static int getPotionFlightId() {
+        return AlchemicalWizardry.customPotionFlightID;
     }
 }

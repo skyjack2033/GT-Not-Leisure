@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gtnl;
 
-import static fox.spiteful.avaritia.items.LudicrousItems.bigPearl;
 import static thaumcraft.common.config.ConfigItems.*;
 
 import java.util.HashSet;
@@ -14,7 +13,9 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.recipe.thaumcraft.TCRecipeTools;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
+import fox.spiteful.avaritia.items.LudicrousItems;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.IRecipeMap;
@@ -31,24 +32,35 @@ public class InfusionCraftingRecipes implements IRecipePool {
     public static final Set<GTUtility.ItemId> UNCONSUMED_ITEMS = new HashSet<>();
 
     static {
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(new ItemStack(bigPearl)));
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "weakBloodOrb", 1)));
-        UNCONSUMED_ITEMS
-            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "apprenticeBloodOrb", 1)));
-        UNCONSUMED_ITEMS
-            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "magicianBloodOrb", 1)));
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "masterBloodOrb", 1)));
-        UNCONSUMED_ITEMS
-            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "archmageBloodOrb", 1)));
-        UNCONSUMED_ITEMS
-            .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "transcendentBloodOrb", 1)));
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "creativeFiller", 1)));
+        if (Mods.Avaritia.isModLoaded()) addAvaritia();
+
+        if (Mods.BloodMagic.isModLoaded()) {
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "weakBloodOrb", 1)));
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "apprenticeBloodOrb", 1)));
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "magicianBloodOrb", 1)));
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "masterBloodOrb", 1)));
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "archmageBloodOrb", 1)));
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "transcendentBloodOrb", 1)));
+            UNCONSUMED_ITEMS
+                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "creativeFiller", 1)));
+        }
         if (Mods.ForbiddenMagic.isModLoaded()) {
             UNCONSUMED_ITEMS
                 .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.ForbiddenMagic.ID, "EldritchOrb", 1)));
         }
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.Avaritia.ID, "Orb_Armok", 1)));
         UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.Thaumcraft.ID, "FocusWarding", 1)));
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public static void addAvaritia() {
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(new ItemStack(LudicrousItems.bigPearl)));
+        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(new ItemStack(LudicrousItems.armok_orb)));
     }
 
     public static ItemStack[] checkInputSpecial(ItemStack... itemStacks) {

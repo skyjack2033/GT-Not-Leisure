@@ -66,6 +66,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
+import gregtech.api.enums.Mods;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.metatileentity.BaseMetaTileEntity;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -106,14 +107,14 @@ public class SubscribeEventUtils {
             network.sendTo(new SoundPacket(true), player);
             network.sendTo(new SyncCircuitNanitesPacket(player.worldObj.getSeed()), player);
 
-            SchematicRegistry.addUnlockedPage(
-                player,
-                SchematicRegistry.getMatchingRecipeForID(MainConfig.item.steam_rocket.idSchematicRocketSteam));
+            if (Mods.GalaxySpace.isModLoaded() && Mods.GalacticraftCore.isModLoaded()) {
+                addRocketUnlockedPage(player);
+            }
 
             TimeStopPocketWatch.setTimeStopped(false);
 
             boolean giveAchievement = Arrays.stream(ModList.values())
-                .filter(mod -> !MOD_BLACKLIST.contains(mod.getModId()))
+                .filter(mod -> !MOD_BLACKLIST.contains(mod.getID()))
                 .allMatch(ModList::isModLoaded);
 
             if (giveAchievement) {
@@ -126,7 +127,7 @@ public class SubscribeEventUtils {
 
                 if (MainConfig.message.enableShowAddMods) {
                     for (ModList mod : ModList.values()) {
-                        if (mod.isModLoaded() && !MOD_BLACKLIST.contains(mod.getModId())) {
+                        if (mod.isModLoaded() && !MOD_BLACKLIST.contains(mod.getID())) {
                             String translatedPrefix = StatCollector.translateToLocal("Welcome_GTNL_ModInstall");
                             player.addChatMessage(
                                 new ChatComponentText(mod.displayName + translatedPrefix)
@@ -189,6 +190,12 @@ public class SubscribeEventUtils {
             }
             TickrateAPI.changeClientTickrate(event.player, tickrate);
         }
+    }
+
+    public void addRocketUnlockedPage(EntityPlayerMP player) {
+        SchematicRegistry.addUnlockedPage(
+            player,
+            SchematicRegistry.getMatchingRecipeForID(MainConfig.item.steam_rocket.idSchematicRocketSteam));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

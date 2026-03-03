@@ -18,9 +18,11 @@ import com.lootgames.sudoku.sudoku.SudokuOverlayHandler;
 import com.science.gtnl.utils.enums.ModList;
 
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import gregtech.api.enums.Mods;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 
 @Deprecated
@@ -42,6 +44,11 @@ public class Sudoku {
     @Mod.EventHandler
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
     public void init(FMLInitializationEvent event) {
+        if (Mods.LootGames.isModLoaded()) loadInit(event);
+    }
+
+    @Optional.Method(modid = "lootgames")
+    public void loadInit(FMLInitializationEvent event) {
         proxy.init(event);
 
         LootGamesAPI.regServerPacket(SPSSyncCell.class);
@@ -56,6 +63,11 @@ public class Sudoku {
     // GameRegistry." (Remove if not needed)
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        if (Mods.LootGames.isModLoaded()) loadPreInit(event);
+    }
+
+    @Optional.Method(modid = "lootgames")
+    public void loadPreInit(FMLPreInitializationEvent event) {
         proxy.preInit(event);
         SudokuBlocks.register();
         MinecraftForge.EVENT_BUS.register(new SudokuOverlayHandler());

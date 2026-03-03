@@ -1,7 +1,6 @@
 package com.science.gtnl.common.recipe.gregtech;
 
 import static bartworks.common.loaders.ItemRegistry.bw_realglas;
-import static com.dreammaster.scripts.IScriptLoader.missing;
 import static gregtech.api.enums.MetaTileEntityIDs.*;
 import static gregtech.api.enums.Mods.*;
 import static gregtech.api.util.GTRecipeBuilder.*;
@@ -27,6 +26,7 @@ import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.system.material.WerkstoffLoader;
+import cpw.mods.fml.common.Optional;
 import goodgenerator.items.GGMaterial;
 import goodgenerator.util.ItemRefer;
 import gregtech.api.GregTechAPI;
@@ -171,21 +171,6 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                ItemList.Casing_Coil_Superconductor.get(1L),
-                NHItemList.LaserEmitter.getIS(4),
-                GTOreDictUnificator.get(OrePrefixes.lens, Materials.Diamond, 4),
-                GregtechItemList.DehydratorCoilWireLuV.get(8),
-                ItemList.LuV_Coil.get(4L),
-                ItemList.Emitter_IV.get(2L),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.TungstenSteel, 16))
-            .fluidInputs(Materials.SolderingAlloy.getMolten(9216))
-            .itemOutputs(GTNLItemList.LaserBeacon.get(1))
-            .duration(400)
-            .eut(30720)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
                 ItemList.Machine_IV_Assembler.get(4L),
                 ItemRefer.Precise_Assembler.get(2),
@@ -257,19 +242,6 @@ public class AssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.LargeCircuitAssembler.get(1))
             .duration(200)
             .eut(1920)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                ItemList.Hull_HV.get(1),
-                NHItemList.AdsorptionFilter.getIS(1),
-                ItemList.Electric_Pump_HV.get(2),
-                ItemList.Electric_Motor_HV.get(1),
-                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.HV, 2L),
-                GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.Electrum, 2L))
-            .itemOutputs(GTNLItemList.Desulfurizer.get(1))
-            .duration(200)
-            .eut(480)
             .addTo(As);
 
         RecipeBuilder.builder()
@@ -373,7 +345,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
                 GregtechItemList.Industrial_CuttingFactoryController.get(1L),
-                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 4, 0, missing),
+                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 4, 0),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 2L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt04, Materials.Platinum, 4L),
                 WerkstoffLoader.Ruridit.get(OrePrefixes.plateDouble, 4),
@@ -539,7 +511,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(17),
                 GregtechItemList.Industrial_Electrolyzer.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.TungstenSteel, 4L),
-                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 4, 0, missing),
+                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 4, 0),
                 ItemList.Electric_Pump_IV.get(2L),
                 MaterialsAlloy.STELLITE.getPlateDouble(4),
                 MaterialsAlloy.STELLITE.getRotor(8),
@@ -591,7 +563,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(17),
                 GregtechItemList.Industrial_Mixer.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Naquadah, 4L),
-                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 4, 0, missing),
+                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 4, 0),
                 ItemList.Electric_Motor_IV.get(4L),
                 MaterialsAlloy.ZIRCONIUM_CARBIDE.getPlateDouble(4),
                 GTOreDictUnificator.get(OrePrefixes.rotor, Materials.TungstenSteel, 8L),
@@ -718,16 +690,6 @@ public class AssemblerRecipes implements IRecipePool {
             .itemOutputs(ReAvaItemList.NeutronCollector.get(1))
             .duration(200)
             .eut(491520)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTNLMaterials.MolybdenumDisilicide.get(OrePrefixes.ring, 32),
-                NHItemList.MicaInsulatorFoil.getIS(16))
-            .fluidInputs(GTNLMaterials.HSLASteel.getMolten(144))
-            .itemOutputs(GTNLItemList.MolybdenumDisilicideCoil.get(1))
-            .duration(500)
-            .eut(1920)
             .addTo(As);
 
         RecipeBuilder.builder()
@@ -1194,7 +1156,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.NinefoldInputHatchIV.get(1),
                 ItemList.Automation_ChestBuffer_IV.get(4),
                 GTOreDictUnificator.get(OrePrefixes.pipeLarge, Materials.TungstenSteel, 4L),
-                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 1, 0, missing))
+                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 1, 0))
             .itemOutputs(GTNLItemList.HumongousSolidifierHatch.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(576))
             .duration(600)
@@ -1254,7 +1216,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenCarbide, 2L),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.TungstenCarbide, 2L),
-                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 2, 0, missing),
+                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 2, 0),
                 GTOreDictUnificator.get(OrePrefixes.spring, Materials.Europium, 1L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 1L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt01, Materials.Platinum, 1L))
@@ -1267,8 +1229,8 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 ItemUtils
                     .getItemStack(EnderIO.ID, "blockCapBank", 0, 0, "{storedEnergyRF:2500000,type:\"CREATIVE\"}", null),
-                GTModHandler.getModItem(DraconicEvolution.ID, "draconium", 1, 0, missing))
-            .itemOutputs(GTModHandler.getModItem(DraconicEvolution.ID, "draconium", 1, 2, missing))
+                GTModHandler.getModItem(DraconicEvolution.ID, "draconium", 1, 0))
+            .itemOutputs(GTModHandler.getModItem(DraconicEvolution.ID, "draconium", 1, 2))
             .duration(20)
             .eut(TierEU.RECIPE_LV)
             .addTo(As);
@@ -1624,132 +1586,6 @@ public class AssemblerRecipes implements IRecipePool {
             .fluidInputs(Materials.Polybenzimidazole.getMolten(1152))
             .duration(400)
             .eut(TierEU.RECIPE_IV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.magicBeans", 64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.giantSword", 1),
-                GTModHandler.getModItem(TwilightForest.ID, "item.giantPick", 1),
-                GTModHandler.getModItem(TwilightForest.ID, "tile.GiantObsidian", 16))
-            .itemOutputs(GTNLItemList.GiantBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 1),
-                GTModHandler.getModItem(TwilightForest.ID, "item.nagaScale", 64),
-                GTModHandler.getModItem(TwilightForest.ID, "tile.TFSpiralBricks", 64),
-                GTOreDictUnificator.get(OrePrefixes.block, Materials.Steeleaf, 16))
-            .itemOutputs(GTNLItemList.NagaBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 0),
-                GTModHandler.getModItem(TwilightForest.ID, "item.hydraChop", 64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.fieryBlood", 64),
-                GTOreDictUnificator.get(OrePrefixes.block, Materials.FierySteel, 16))
-            .itemOutputs(GTNLItemList.HydraBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 4),
-                GTModHandler.getModItem(TwilightForest.ID, "item.tripleBow", 1),
-                GTModHandler.getModItem(TwilightForest.ID, "tile.TFAuroraBrick", 64),
-                GTModHandler.getModItem(TwilightForest.ID, "tile.AuroraPillar", 64))
-            .itemOutputs(GTNLItemList.SnowQueenBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 6),
-                GTModHandler.getModItem(TwilightForest.ID, "item.phantomHelm", 1),
-                GTModHandler.getModItem(TwilightForest.ID, "item.phantomPlate", 1),
-                GTOreDictUnificator.get(OrePrefixes.block, Materials.Knightmetal, 16))
-            .itemOutputs(GTNLItemList.KnightPhantomBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 3),
-                GTModHandler.getModItem(TwilightForest.ID, "tile.TFTowerDevice", 64, 0),
-                GTModHandler.getModItem(TwilightForest.ID, "tile.TFTowerDevice", 64, 2),
-                GTModHandler.getModItem(TwilightForest.ID, "item.carminite", 32))
-            .itemOutputs(GTNLItemList.UrGhastBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 5),
-                GTModHandler.getModItem(TwilightForest.ID, "item.meefStroganoff", 1),
-                GTModHandler.getModItem(TwilightForest.ID, "item.meefSteak", 64),
-                GTOreDictUnificator.get(OrePrefixes.block, Materials.IronWood, 16))
-            .itemOutputs(GTNLItemList.MinotaurBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 7),
-                GTModHandler.getModItem(TwilightForest.ID, "item.alphaFur", 16),
-                GTModHandler.getModItem(TwilightForest.ID, "item.iceBomb", 16),
-                GTModHandler.getModItem(TwilightForest.ID, "item.arcticFur", 64))
-            .itemOutputs(GTNLItemList.AlphaYetiBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
-                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 2),
-                GTModHandler.getModItem(TwilightForest.ID, "item.scepterLifeDrain", 1),
-                GTModHandler.getModItem(TwilightForest.ID, "item.scepterTwilight", 1),
-                GTModHandler.getModItem(TwilightForest.ID, "item.scepterZombie", 1))
-            .itemOutputs(GTNLItemList.LichBook.get(1))
-            .fluidInputs(Materials.FierySteel.getFluid(4000))
-            .duration(300)
-            .eut(TierEU.RECIPE_ZPM)
             .addTo(As);
 
         RecipeBuilder.builder()
@@ -2583,21 +2419,6 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                ItemList.Hatch_Dynamo_IV.get(1),
-                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 32, 0, missing),
-                GTModHandler.getModItem(IndustrialCraft2.ID, "reactorReflectorThick", 1, 1, missing),
-                BlockList.TungstensteelPlatedReinforcedStone.getIS(2),
-                CustomItemList.ReinforcedTungstenSteelIronPlate.get(2),
-                GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.Tungsten, 2),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.TungstenSteel, 4))
-            .itemOutputs(GTNLItemList.ExplosionDynamoHatch.get(1))
-            .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
-            .duration(15 * SECONDS)
-            .eut(TierEU.RECIPE_IV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
                 ItemList.Hatch_Energy_LV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.Tin, 2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Steel, 2))
@@ -2970,7 +2791,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.SiliconSG, 2L),
-                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2, missing),
+                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2),
                 GTModHandler.getModItem(EnderIO.ID, "itemBasicCapacitor", 1, 0))
             .itemOutputs(GTModHandler.getModItem(EnderIO.ID, "itemFrankenSkull", 1, 0))
             .fluidInputs(Materials.EnergeticAlloy.getMolten(288))
@@ -2981,7 +2802,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.SiliconSG, 2L),
-                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2, missing),
+                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.RedAlloy, 1L))
             .itemOutputs(GTModHandler.getModItem(EnderIO.ID, "itemFrankenSkull", 1, 1))
             .fluidInputs(Materials.Soularium.getMolten(288))
@@ -2993,7 +2814,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTModHandler.getModItem(EnderIO.ID, "itemFrankenSkull", 1, 1),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.VividAlloy, 2L),
-                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2, missing),
+                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2),
                 new ItemStack(Items.rotten_flesh, 64))
             .itemOutputs(GTModHandler.getModItem(EnderIO.ID, "itemFrankenSkull", 1, 2))
             .duration(200)
@@ -3037,7 +2858,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.SiliconSG, 2L),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.VividAlloy, 2L),
-                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2, missing),
+                GTModHandler.getModItem(Minecraft.ID, "skull", 1, 2),
                 new ItemStack(Items.ender_pearl, 16),
                 new ItemStack(Items.ender_eye, 2))
             .itemOutputs(GTModHandler.getModItem(EnderIO.ID, "blockEndermanSkull", 1, 0))
@@ -3132,121 +2953,6 @@ public class AssemblerRecipes implements IRecipePool {
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 1),
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemPaintBall", 64, 10))
             .itemOutputs(GTNLItemList.AssemblerMatrixCrafterCore.get(1))
-            .duration(400)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
-                GTNLItemList.AssemblerMatrixWall.get(1),
-                ItemList.AcceleratorLuV.get(4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 56),
-                CustomItemList.EngineeringProcessorItemAdvEmeraldCore.get(16),
-                ItemList.Field_Generator_LuV.get(2),
-                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemPaintBall", 64, 14))
-            .itemOutputs(GTNLItemList.AssemblerMatrixSpeedCore.get(1))
-            .duration(400)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
-                GTNLItemList.QuantumComputerUnit.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 6, 60),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
-                GTNLItemList.ShatteredSingularity.get(4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 27),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 22),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
-                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
-            .itemOutputs(GTNLItemList.QuantumComputerCraftingStorage128M.get(1))
-            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
-            .duration(400)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
-                GTNLItemList.QuantumComputerUnit.get(1),
-                GTNLItemList.QuantumComputerCraftingStorage128M.get(2),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
-                GTNLItemList.ShatteredSingularity.get(4),
-                CustomItemList.EngravedQuantumChip.get(8),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(16))
-            .itemOutputs(GTNLItemList.QuantumComputerCraftingStorage256M.get(1))
-            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
-            .duration(400)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
-                GTNLItemList.QuantumComputerUnit.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 3, 3),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
-                GTNLItemList.ShatteredSingularity.get(4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 56),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 23),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
-                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
-            .itemOutputs(GTNLItemList.QuantumComputerAccelerator.get(1))
-            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
-            .duration(400)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
-                GTNLItemList.QuantumComputerUnit.get(1),
-                GTNLItemList.QuantumComputerAccelerator.get(1),
-                GTNLItemList.QuantumComputerCraftingStorage256M.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 47),
-                GTNLItemList.ShatteredSingularity.get(2),
-                CustomItemList.EngravedQuantumChip.get(16),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 24),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(4))
-            .itemOutputs(GTNLItemList.QuantumComputerCore.get(1))
-            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
-            .duration(400)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
-                GTNLItemList.QuantumComputerUnit.get(1),
-                GTNLItemList.QuantumComputerCore.get(1),
-                GTNLItemList.ShatteredSingularity.get(16),
-                GTNLItemList.QuantumComputerAccelerator.get(4),
-                ItemList.QuantumStar.get(4),
-                CustomItemList.EngravedQuantumChip.get(16),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
-                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 8))
-            .itemOutputs(GTNLItemList.QuantumComputerMultiThreader.get(1))
-            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
-            .duration(400)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
-                GTUtility.getIntegratedCircuit(11),
-                GTNLItemList.QuantumComputerUnit.get(1),
-                GTNLItemList.QuantumComputerCore.get(1),
-                GTNLItemList.ShatteredSingularity.get(16),
-                GTNLItemList.QuantumComputerCraftingStorage256M.get(3),
-                ItemList.QuantumStar.get(4),
-                CustomItemList.EngravedQuantumChip.get(16),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
-                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 8))
-            .itemOutputs(GTNLItemList.QuantumComputerDataEntangler.get(1))
-            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
             .duration(400)
             .eut(TierEU.RECIPE_LuV)
             .addTo(As);
@@ -3405,6 +3111,8 @@ public class AssemblerRecipes implements IRecipePool {
         loadLamp();
         loadWirelessHatch();
         loadLaserHatch();
+
+        if (NewHorizonsCoreMod.isModLoaded()) loadNHRecipe();
 
         if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
@@ -3576,6 +3284,303 @@ public class AssemblerRecipes implements IRecipePool {
                     .addTo(HOR);
             }
         }
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public void loadNHRecipe() {
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(11),
+                GTNLItemList.AssemblerMatrixWall.get(1),
+                ItemList.AcceleratorLuV.get(4),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 56),
+                CustomItemList.EngineeringProcessorItemAdvEmeraldCore.get(16),
+                ItemList.Field_Generator_LuV.get(2),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 4),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemPaintBall", 64, 14))
+            .itemOutputs(GTNLItemList.AssemblerMatrixSpeedCore.get(1))
+            .duration(400)
+            .eut(TierEU.RECIPE_LuV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(11),
+                GTNLItemList.QuantumComputerUnit.get(1),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 6, 60),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
+                GTNLItemList.ShatteredSingularity.get(4),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 27),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 22),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
+            .itemOutputs(GTNLItemList.QuantumComputerCraftingStorage128M.get(1))
+            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
+            .duration(400)
+            .eut(TierEU.RECIPE_LuV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(11),
+                GTNLItemList.QuantumComputerUnit.get(1),
+                GTNLItemList.QuantumComputerCraftingStorage128M.get(2),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
+                GTNLItemList.ShatteredSingularity.get(4),
+                CustomItemList.EngravedQuantumChip.get(8),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(16))
+            .itemOutputs(GTNLItemList.QuantumComputerCraftingStorage256M.get(1))
+            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
+            .duration(400)
+            .eut(TierEU.RECIPE_LuV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(11),
+                GTNLItemList.QuantumComputerUnit.get(1),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 3, 3),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
+                GTNLItemList.ShatteredSingularity.get(4),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 56),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 23),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
+            .itemOutputs(GTNLItemList.QuantumComputerAccelerator.get(1))
+            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
+            .duration(400)
+            .eut(TierEU.RECIPE_LuV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(11),
+                GTNLItemList.QuantumComputerUnit.get(1),
+                GTNLItemList.QuantumComputerAccelerator.get(1),
+                GTNLItemList.QuantumComputerCraftingStorage256M.get(1),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 47),
+                GTNLItemList.ShatteredSingularity.get(2),
+                CustomItemList.EngravedQuantumChip.get(16),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 24),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(4))
+            .itemOutputs(GTNLItemList.QuantumComputerCore.get(1))
+            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
+            .duration(400)
+            .eut(TierEU.RECIPE_LuV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(11),
+                GTNLItemList.QuantumComputerUnit.get(1),
+                GTNLItemList.QuantumComputerCore.get(1),
+                GTNLItemList.ShatteredSingularity.get(16),
+                GTNLItemList.QuantumComputerAccelerator.get(4),
+                ItemList.QuantumStar.get(4),
+                CustomItemList.EngravedQuantumChip.get(16),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 8))
+            .itemOutputs(GTNLItemList.QuantumComputerMultiThreader.get(1))
+            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
+            .duration(400)
+            .eut(TierEU.RECIPE_LuV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(11),
+                GTNLItemList.QuantumComputerUnit.get(1),
+                GTNLItemList.QuantumComputerCore.get(1),
+                GTNLItemList.ShatteredSingularity.get(16),
+                GTNLItemList.QuantumComputerCraftingStorage256M.get(3),
+                ItemList.QuantumStar.get(4),
+                CustomItemList.EngravedQuantumChip.get(16),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 8))
+            .itemOutputs(GTNLItemList.QuantumComputerDataEntangler.get(1))
+            .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
+            .duration(400)
+            .eut(TierEU.RECIPE_LuV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.magicBeans", 64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.giantSword", 1),
+                GTModHandler.getModItem(TwilightForest.ID, "item.giantPick", 1),
+                GTModHandler.getModItem(TwilightForest.ID, "tile.GiantObsidian", 16))
+            .itemOutputs(GTNLItemList.GiantBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 1),
+                GTModHandler.getModItem(TwilightForest.ID, "item.nagaScale", 64),
+                GTModHandler.getModItem(TwilightForest.ID, "tile.TFSpiralBricks", 64),
+                GTOreDictUnificator.get(OrePrefixes.block, Materials.Steeleaf, 16))
+            .itemOutputs(GTNLItemList.NagaBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 0),
+                GTModHandler.getModItem(TwilightForest.ID, "item.hydraChop", 64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.fieryBlood", 64),
+                GTOreDictUnificator.get(OrePrefixes.block, Materials.FierySteel, 16))
+            .itemOutputs(GTNLItemList.HydraBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 4),
+                GTModHandler.getModItem(TwilightForest.ID, "item.tripleBow", 1),
+                GTModHandler.getModItem(TwilightForest.ID, "tile.TFAuroraBrick", 64),
+                GTModHandler.getModItem(TwilightForest.ID, "tile.AuroraPillar", 64))
+            .itemOutputs(GTNLItemList.SnowQueenBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 6),
+                GTModHandler.getModItem(TwilightForest.ID, "item.phantomHelm", 1),
+                GTModHandler.getModItem(TwilightForest.ID, "item.phantomPlate", 1),
+                GTOreDictUnificator.get(OrePrefixes.block, Materials.Knightmetal, 16))
+            .itemOutputs(GTNLItemList.KnightPhantomBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 3),
+                GTModHandler.getModItem(TwilightForest.ID, "tile.TFTowerDevice", 64, 0),
+                GTModHandler.getModItem(TwilightForest.ID, "tile.TFTowerDevice", 64, 2),
+                GTModHandler.getModItem(TwilightForest.ID, "item.carminite", 32))
+            .itemOutputs(GTNLItemList.UrGhastBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 5),
+                GTModHandler.getModItem(TwilightForest.ID, "item.meefStroganoff", 1),
+                GTModHandler.getModItem(TwilightForest.ID, "item.meefSteak", 64),
+                GTOreDictUnificator.get(OrePrefixes.block, Materials.IronWood, 16))
+            .itemOutputs(GTNLItemList.MinotaurBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 7),
+                GTModHandler.getModItem(TwilightForest.ID, "item.alphaFur", 16),
+                GTModHandler.getModItem(TwilightForest.ID, "item.iceBomb", 16),
+                GTModHandler.getModItem(TwilightForest.ID, "item.arcticFur", 64))
+            .itemOutputs(GTNLItemList.AlphaYetiBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                new ItemStack(Items.book, 64),
+                NHItemList.TwilightCrystal.getIS(64),
+                GTModHandler.getModItem(TwilightForest.ID, "item.trophy", 1, 2),
+                GTModHandler.getModItem(TwilightForest.ID, "item.scepterLifeDrain", 1),
+                GTModHandler.getModItem(TwilightForest.ID, "item.scepterTwilight", 1),
+                GTModHandler.getModItem(TwilightForest.ID, "item.scepterZombie", 1))
+            .itemOutputs(GTNLItemList.LichBook.get(1))
+            .fluidInputs(Materials.FierySteel.getFluid(4000))
+            .duration(300)
+            .eut(TierEU.RECIPE_ZPM)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                ItemList.Hatch_Dynamo_IV.get(1),
+                GTModHandler.getModItem(IndustrialCraft2.ID, "blockAlloyGlass", 32, 0),
+                GTModHandler.getModItem(IndustrialCraft2.ID, "reactorReflectorThick", 1, 1),
+                BlockList.TungstensteelPlatedReinforcedStone.getIS(2),
+                CustomItemList.ReinforcedTungstenSteelIronPlate.get(2),
+                GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.Tungsten, 2),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.TungstenSteel, 4))
+            .itemOutputs(GTNLItemList.ExplosionDynamoHatch.get(1))
+            .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
+            .duration(15 * SECONDS)
+            .eut(TierEU.RECIPE_IV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTNLMaterials.MolybdenumDisilicide.get(OrePrefixes.ring, 32),
+                NHItemList.MicaInsulatorFoil.getIS(16))
+            .fluidInputs(GTNLMaterials.HSLASteel.getMolten(144))
+            .itemOutputs(GTNLItemList.MolybdenumDisilicideCoil.get(1))
+            .duration(500)
+            .eut(1920)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                ItemList.Casing_Coil_Superconductor.get(1L),
+                NHItemList.LaserEmitter.getIS(4),
+                GTOreDictUnificator.get(OrePrefixes.lens, Materials.Diamond, 4),
+                GregtechItemList.DehydratorCoilWireLuV.get(8),
+                ItemList.LuV_Coil.get(4L),
+                ItemList.Emitter_IV.get(2L),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.TungstenSteel, 16))
+            .fluidInputs(Materials.SolderingAlloy.getMolten(9216))
+            .itemOutputs(GTNLItemList.LaserBeacon.get(1))
+            .duration(400)
+            .eut(30720)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                ItemList.Hull_HV.get(1),
+                NHItemList.AdsorptionFilter.getIS(1),
+                ItemList.Electric_Pump_HV.get(2),
+                ItemList.Electric_Motor_HV.get(1),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.HV, 2L),
+                GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.Electrum, 2L))
+            .itemOutputs(GTNLItemList.Desulfurizer.get(1))
+            .duration(200)
+            .eut(480)
+            .addTo(As);
     }
 
     public void loadDeleteRecipe() {

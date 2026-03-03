@@ -1,21 +1,21 @@
 package com.science.gtnl.common.recipe.gtnl;
 
-import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.dreammaster.bartworksHandler.BacteriaRegistry;
 import com.dreammaster.fluids.FluidList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
+import com.science.gtnl.mixins.early.NHCoreMod.AccessorBacteriaRegistry;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.common.loaders.BioItemList;
-import bartworks.util.BioCulture;
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsKevlar;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GTOreDictUnificator;
@@ -125,7 +125,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTUtility.copyAmount(0, BioItemList.getPetriDish(getCulture("CombinedBac"))),
+                Mods.NewHorizonsCoreMod.isModLoaded() ? getBacPetriDish() : new ItemStack(Items.paper, 0),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.AntimonyTrioxide, 16),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Osmium, 16))
             .fluidInputs(
@@ -137,7 +137,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
                 Materials.Oil.getFluid(2),
                 Materials.Creosote.getFluid(120),
                 Materials.Water.getFluid(250),
-                FluidList.FermentedBacterialSludge.getFluidStack(10),
+                Mods.NewHorizonsCoreMod.isModLoaded() ? getFermentedBacterialSludge() : Materials.Lava.getFluid(10),
                 Materials.FermentedBiomass.getFluid(100),
                 Materials.RadoxSuperHeavy.getFluid(15),
                 Materials.RadoxHeavy.getFluid(20),
@@ -231,16 +231,17 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
             .addTo(PPR);
     }
 
-    public static BioCulture getCulture(String key) {
-        try {
-            Field field = BacteriaRegistry.class.getDeclaredField("CultureSet");
-            field.setAccessible(true); // 绕过访问控制
-            @SuppressWarnings("unchecked")
-            LinkedHashMap<String, BioCulture> map = (LinkedHashMap<String, BioCulture>) field.get(null);
-            return map.get(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    @Optional.Method(modid = "dreamcraft")
+    public FluidStack getFermentedBacterialSludge() {
+        return FluidList.FermentedBacterialSludge.getFluidStack(10);
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public ItemStack getBacPetriDish() {
+        return GTUtility.copyAmount(
+            0,
+            BioItemList.getPetriDish(
+                AccessorBacteriaRegistry.getCultureSet()
+                    .get("CombinedBac")));
     }
 }

@@ -13,7 +13,13 @@ import com.reavaritia.common.blocks.tile.TileEntityNeutronCollector;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.config.MainConfig;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
+import fox.spiteful.avaritia.items.LudicrousItems;
+import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
+import gregtech.api.enums.OrePrefixes;
+import gregtech.api.util.GTOreDictUnificator;
 
 public class BlockLoader {
 
@@ -30,7 +36,8 @@ public class BlockLoader {
         NeutronCollector = new BlockNeutronCollector(
             "NeutronCollector",
             3600,
-            2,
+            Mods.Avaritia.isModLoaded() ? getNeutronDust()
+                : GTOreDictUnificator.get(OrePrefixes.dustTiny, Materials.CosmicNeutronium, 1),
             "NeutronCollector",
             "NeutronCollector",
             ItemBlockNeutronCollector.class,
@@ -39,7 +46,8 @@ public class BlockLoader {
         DenseNeutronCollector = new BlockNeutronCollector(
             "DenseNeutronCollector",
             3600,
-            3,
+            Mods.Avaritia.isModLoaded() ? getNeutronNugget()
+                : GTOreDictUnificator.get(OrePrefixes.nugget, Materials.CosmicNeutronium, 1),
             "DenseNeutronCollector",
             "DenseNeutronCollector",
             ItemBlockNeutronCollector.ItemBlockDenseNeutronCollector.class,
@@ -48,7 +56,8 @@ public class BlockLoader {
         DenserNeutronCollector = new BlockNeutronCollector(
             "DenserNeutronCollector",
             3600,
-            4,
+            Mods.Avaritia.isModLoaded() ? getNeutronInot()
+                : GTOreDictUnificator.get(OrePrefixes.ingot, Materials.CosmicNeutronium, 1),
             "DenserNeutronCollector",
             "DenserNeutronCollector",
             ItemBlockNeutronCollector.ItemBlockDenserNeutronCollector.class,
@@ -57,7 +66,8 @@ public class BlockLoader {
         DensestNeutronCollector = new BlockNeutronCollector(
             "DensestNeutronCollector",
             200,
-            4,
+            Mods.Avaritia.isModLoaded() ? getNeutronInot()
+                : GTOreDictUnificator.get(OrePrefixes.ingot, Materials.CosmicNeutronium, 1),
             "DensestNeutronCollector",
             "DensestNeutronCollector",
             ItemBlockNeutronCollector.ItemBlockDensestNeutronCollector.class,
@@ -80,7 +90,21 @@ public class BlockLoader {
         OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, EndPortalFrame);
         OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, Bedrock);
         OreDictionary.registerOre(MainConfig.re_avaritia.unbreakOre, ExtremeAnvilBlock);
+    }
 
+    @Optional.Method(modid = "Avaritia")
+    public static ItemStack getNeutronDust() {
+        return new ItemStack(LudicrousItems.resource, 1, 2);
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public static ItemStack getNeutronNugget() {
+        return new ItemStack(LudicrousItems.resource, 1, 3);
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public static ItemStack getNeutronInot() {
+        return new ItemStack(LudicrousItems.resource, 1, 4);
     }
 
 }

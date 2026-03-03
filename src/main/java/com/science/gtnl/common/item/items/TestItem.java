@@ -17,10 +17,12 @@ import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.loader.EffectLoader;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fox.spiteful.avaritia.render.IHaloRenderItem;
 
+@Optional.Interface(iface = "fox.spiteful.avaritia.render.IHaloRenderItem", modid = "Avaritia")
 public class TestItem extends Item implements IHaloRenderItem {
 
     public IIcon[] halo;
@@ -74,26 +76,31 @@ public class TestItem extends Item implements IHaloRenderItem {
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public boolean drawHalo(ItemStack stack) {
         return true;
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public IIcon getHaloTexture(ItemStack stack) {
         return halo[0];
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public int getHaloSize(ItemStack stack) {
         return 10;
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public boolean drawPulseEffect(ItemStack stack) {
         return true;
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public int getHaloColour(ItemStack stack) {
         return 0xE6FFFFFF;
     }

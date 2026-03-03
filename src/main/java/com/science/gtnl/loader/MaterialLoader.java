@@ -55,11 +55,6 @@ public class MaterialLoader {
         WerkstoffAdderRegistry.addWerkstoffAdder(new GTNLMaterials());
 
         loadOreDictionaryRecipes();
-
-        if (Mods.InventoryBogoSorter.isModLoaded()) {
-            BogoSortAPI.INSTANCE.addGenericCompat(ContainerPortableChest.class);
-            BogoSortAPI.INSTANCE.addGenericCompat(ContainerPortableAvaritiaddonsChest.class);
-        }
     }
 
     public static void loadInit() {
@@ -81,7 +76,8 @@ public class MaterialLoader {
         MachineLoader.registry();
         AchievementsLoader.registry();
 
-        if (Mods.StevesCarts2.isModLoaded() && Mods.Railcraft.isModLoaded()
+        if (Mods.GalaxySpace.isModLoaded() && Mods.StevesCarts2.isModLoaded()
+            && Mods.Railcraft.isModLoaded()
             && Mods.IronTanks.isModLoaded()
             && Mods.GraviSuite.isModLoaded()) {
             SchematicRegistry.registerSchematicRecipe(new SchematicSteamRocket());
@@ -89,9 +85,7 @@ public class MaterialLoader {
         }
         RocketFuels.addFuel(EntitySteamRocket.class, GTNLMaterials.CompressedSteam.getMolten(1));
 
-        if (Mods.InventoryBogoSorter.isModLoaded()) {
-            loadCraftTweak();
-        }
+        if (Mods.InventoryBogoSorter.isModLoaded()) loadCraftTweak();
 
         OrePrefixes.nugget.addFamiliarPrefix(OrePrefixes.ingotHot);
         OrePrefixes.ingot.addFamiliarPrefix(OrePrefixes.ingotHot);
@@ -100,11 +94,9 @@ public class MaterialLoader {
     }
 
     public static void loadCompleteInit() {
-        ScriptLoader.registry();
+        if (Mods.NewHorizonsCoreMod.isModLoaded()) ScriptLoader.registry();
 
-        if (Mods.Nutrition.isModLoaded()) {
-            NutrientLoader.registry();
-        }
+        if (Mods.Nutrition.isModLoaded()) NutrientLoader.registry();
 
         loadCardBoardBoxBlackList();
 
@@ -123,6 +115,8 @@ public class MaterialLoader {
         provider.setTweakBalance(true, true, 0, 0);
         provider.setTweakClear(true, true, 0, 0);
         provider.setAlignToGrid(EnumFacing.WEST);
+        BogoSortAPI.INSTANCE.addGenericCompat(ContainerPortableChest.class);
+        BogoSortAPI.INSTANCE.addGenericCompat(ContainerPortableAvaritiaddonsChest.class);
     }
 
     public static void loadOreDictionaryRecipes() {

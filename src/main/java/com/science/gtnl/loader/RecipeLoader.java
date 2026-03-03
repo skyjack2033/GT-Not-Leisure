@@ -188,8 +188,8 @@ public class RecipeLoader {
             new ElectrolyzerRecipes(), new MixerRecipes(), new AssemblerRecipes(), new AutoclaveRecipes(),
             new AlloyBlastSmelterRecipes(), new CompressorRecipes(), new ReFusionReactorRecipes(),
             new RealArtificialStarRecipes(), new PortalToAlfheimRecipes(), new NatureSpiritArrayRecipes(),
-            new ManaInfusionRecipes(), new TranscendentPlasmaMixerRecipes(), new PlasmaForgeRecipes(),
-            new CraftingTableRecipes(), new ChemicalBathRecipes(), new SteamCrackerRecipes(), new DesulfurizerRecipes(),
+            new ManaInfusionRecipes(), new TranscendentPlasmaMixerRecipes(), new CraftingTableRecipes(),
+            new ChemicalBathRecipes(), new SteamCrackerRecipes(), new DesulfurizerRecipes(),
             new PetrochemicalPlantRecipes(), new FusionReactorRecipes(), new SmeltingMixingFurnaceRecipes(),
             new FluidExtraction(), new DigesterRecipes(), new DissolutionTankRecipes(), new CentrifugeRecipes(),
             new ChemicalDehydratorRecipes(), new ChemicalPlantRecipes(), new RareEarthCentrifugalRecipes(),
@@ -201,17 +201,16 @@ public class RecipeLoader {
             new ElectricImplosionCompressorRecipes(), new DecayHastenerRecipes(), new PreciseAssemblerRecipes(),
             new FuelRefiningComplexRecipes(), new CrackingRecipes(), new DistillationTowerRecipes(),
             new SpaceMinerRecipes(), new SpaceDrillRecipes(), new SpaceAssemblerRecipes(), new PCBFactoryRecipes(),
-            new PlatinumBasedTreatmentRecipes(), new ShallowChemicalCouplingRecipes(), new BloodDemonInjectionRecipes(),
-            new AlchemicChemistrySetRecipes(), new AdvancedCircuitAssemblyLineRecipes(), new FallingTowerRecipes(),
-            new AssemblingLineRecipes(), new GasCollectorRecipes(), new EternalGregTechWorkshopUpgradeRecipes(),
-            new FluidCannerRecipes(), new VacuumFreezerRecipes(), new MeteorsRecipes(), new CheatOreProcessingRecipes(),
-            new ShapedArcaneCraftingRecipes(), new InfusionCraftingRecipes(), new SteamManufacturerRecipes(),
-            new SteamCarpenterRecipe(), new LavaMakerRecipes(), new SteamWoodcutterRecipes(),
-            new SteamGateAssemblerRecipes(), new CactusWonderFakeRecipes(), new InfernalCokeRecipes(),
-            new SteamFusionReactorRecipes(), new SteamExtractinatorRecipes(), new RockBreakerRecipes(),
-            new PrimitiveBrickKilnRecipes(), new TargetChamberRecipes(), new ElectrocellGeneratorRecipes(),
-            new RocketAssemblerRecipes(), new FluidSolidifierRecipes(), new FormingPressRecipes(), new HammerRecipes(),
-            new CyclotronRecipes(), new RuneAltarRecipes(), new IndustrialRockCrusherRecipes(),
+            new PlatinumBasedTreatmentRecipes(), new ShallowChemicalCouplingRecipes(),
+            new AdvancedCircuitAssemblyLineRecipes(), new AssemblingLineRecipes(), new GasCollectorRecipes(),
+            new EternalGregTechWorkshopUpgradeRecipes(), new FluidCannerRecipes(), new VacuumFreezerRecipes(),
+            new CheatOreProcessingRecipes(), new ShapedArcaneCraftingRecipes(), new InfusionCraftingRecipes(),
+            new SteamManufacturerRecipes(), new SteamCarpenterRecipe(), new LavaMakerRecipes(),
+            new SteamWoodcutterRecipes(), new SteamGateAssemblerRecipes(), new CactusWonderFakeRecipes(),
+            new InfernalCokeRecipes(), new SteamFusionReactorRecipes(), new SteamExtractinatorRecipes(),
+            new RockBreakerRecipes(), new PrimitiveBrickKilnRecipes(), new TargetChamberRecipes(),
+            new ElectrocellGeneratorRecipes(), new FluidSolidifierRecipes(), new FormingPressRecipes(),
+            new HammerRecipes(), new CyclotronRecipes(), new RuneAltarRecipes(), new IndustrialRockCrusherRecipes(),
             new PrecisionLaserEngraver(), new NanitesIntegratedProcessingRecipes(), new NanoForgeRecipes(),
             new SteamWeatherModuleRecipes(), new ElectricNeutronActivatorRecipes(), new ReactorProcessingUnitRecipes(),
             new NuclearSaltProcessingPlantRecipes(), new MaceratorRecipes(), new QuantumForceTransformerRecipes(),
@@ -224,11 +223,25 @@ public class RecipeLoader {
         RecipeUtil
             .generateRecipesBioLab(BartWorksRecipeMaps.bioLabRecipes, GTNLRecipeMaps.LargeBioLabRecipes, true, 1.1);
 
-        TCResearches.register();
-
         ShimmerRecipes.loadRecipes();
 
         // loadPlasmaCentrifugeRecipes();
+
+        if (Mods.NewHorizonsCoreMod.isModLoaded()) {
+            TCResearches.register();
+            new PlasmaForgeRecipes().loadRecipes();
+        }
+
+        if (Mods.GalaxySpace.isModLoaded()) {
+            new RocketAssemblerRecipes().loadRecipes();
+        }
+
+        if (Mods.BloodMagic.isModLoaded()) {
+            new BloodDemonInjectionRecipes().loadRecipes();
+            new AlchemicChemistrySetRecipes().loadRecipes();
+            new MeteorsRecipes().loadRecipes();
+            new FallingTowerRecipes().loadRecipes();
+        }
 
         if (ModList.TwistSpaceTechnology.isModLoaded()) {
             loadTSTMegaAssemblyLineRecipes();

@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
@@ -34,7 +36,9 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.metadata.ElectrocellGeneratorMetadata;
 
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -68,6 +72,9 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
 
     public MTEHatchInputBus mLeftInputBusses = null;
     public MTEHatchInputBus mRightInputBusses = null;
+
+    public static final Block COMPRESSED_GRAPHITE = Mods.NewHorizonsCoreMod.isModLoaded() ? getCompressedGraphite()
+        : Blocks.coal_block;
 
     public ElectrocellGenerator(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -131,7 +138,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
             .addElement('B', ofBlock(sBlockCasings3, 11))
             .addElement('C', ofFrame(Materials.Steel))
             .addElement('D', ofBlock(sBlockMetal4, 2))
-            .addElement('E', ofBlock(BlockList.CompressedGraphite.getBlock(), 0))
+            .addElement('E', ofBlock(COMPRESSED_GRAPHITE, 0))
             .addElement(
                 'F',
                 ofChain(
@@ -419,5 +426,10 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
             }
         }
         return false;
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static Block getCompressedGraphite() {
+        return BlockList.CompressedGraphite.getBlock();
     }
 }

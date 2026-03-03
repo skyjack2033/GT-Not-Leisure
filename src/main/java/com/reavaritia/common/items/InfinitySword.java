@@ -50,6 +50,7 @@ import com.science.gtnl.mixins.late.DraconicEvolution.AccessorCustomArmorHandler
 import com.science.gtnl.utils.Utils;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -63,10 +64,12 @@ import galaxyspace.core.entity.boss.EntityCrystalBoss;
 import galaxyspace.core.entity.boss.EntityGhastBoss;
 import galaxyspace.core.entity.boss.EntitySlimeBoss;
 import galaxyspace.core.entity.boss.EntityWolfBoss;
+import gregtech.api.enums.Mods;
 import micdoodle8.mods.galacticraft.core.entities.EntitySkeletonBoss;
 import micdoodle8.mods.galacticraft.planets.mars.entities.EntityCreeperBoss;
 import vazkii.botania.common.entity.EntityDoppleganger;
 
+@Optional.Interface(iface = "fox.spiteful.avaritia.render.ICosmicRenderItem", modid = "Avaritia")
 public class InfinitySword extends ItemSword implements ICosmicRenderItem, SubtitleDisplay {
 
     public static long COOLDOWN = 1000;
@@ -101,10 +104,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         if (victim instanceof EntityPlayer targetPlayer) {
             boolean wearingInfinityArmor = false;
             for (ItemStack armorStack : targetPlayer.inventory.armorInventory) {
-                if (armorStack != null && (armorStack.getItem() == LudicrousItems.infinity_helm
-                    || armorStack.getItem() == LudicrousItems.infinity_armor
-                    || armorStack.getItem() == LudicrousItems.infinity_pants
-                    || armorStack.getItem() == LudicrousItems.infinity_shoes)) {
+                if (Mods.Avaritia.isModLoaded() && isInfinityArmor(armorStack)) {
                     wearingInfinityArmor = true;
                     break;
                 }
@@ -146,6 +146,15 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         return true;
     }
 
+    @Optional.Method(modid = "Avaritia")
+    public static boolean isInfinityArmor(ItemStack armorStack) {
+        if (armorStack == null) return false;
+        return armorStack.getItem() == LudicrousItems.infinity_helm
+            || armorStack.getItem() == LudicrousItems.infinity_armor
+            || armorStack.getItem() == LudicrousItems.infinity_pants
+            || armorStack.getItem() == LudicrousItems.infinity_shoes;
+    }
+
     public void applyInfinityDamage(EntityLivingBase target, EntityLivingBase attacker) {
         if (target instanceof EntitySaddleSlime) return;
         if (target instanceof EntityDragon) {
@@ -175,7 +184,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         DamageSource playerSource = DamageSource.causePlayerDamage((EntityPlayer) attacker);
         target.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
         target.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(new DamageSourceInfinitySword(attacker), Float.POSITIVE_INFINITY);
+        if (Mods.Avaritia.isModLoaded()) attackEntityInfinity(target, attacker);
 
         target.attackEntityFrom(DamageSource.anvil, Float.POSITIVE_INFINITY);
         target.attackEntityFrom(DamageSource.fallingBlock, Float.POSITIVE_INFINITY);
@@ -192,18 +201,22 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         target.attackEntityFrom(DamageSource.onFire, Float.POSITIVE_INFINITY);
         target.attackEntityFrom(DamageSource.outOfWorld, Float.POSITIVE_INFINITY);
 
-        if (!(target instanceof EntityPlayer || target instanceof EntityCreeperBoss
-            || target instanceof EntityBlazeBoss
-            || target instanceof EntityCrystalBoss
-            || target instanceof EntityGhastBoss
-            || target instanceof EntitySlimeBoss
-            || target instanceof EntityWolfBoss
-            || target instanceof EntitySkeletonBoss)) {
+        if (!(target instanceof EntityPlayer || (Mods.GalaxySpace.isModLoaded() && isGalaxyBoss(target)))) {
             target.setHealth(0);
             target.onDeath(INFINITY_DAMAGE);
             target.setDead();
             target.worldObj.removeEntity(target);
         }
+    }
+
+    @Optional.Method(modid = "GalaxySpace")
+    public boolean isGalaxyBoss(EntityLivingBase target) {
+        return target instanceof EntityCreeperBoss || target instanceof EntityBlazeBoss
+            || target instanceof EntityCrystalBoss
+            || target instanceof EntityGhastBoss
+            || target instanceof EntitySlimeBoss
+            || target instanceof EntityWolfBoss
+            || target instanceof EntitySkeletonBoss;
     }
 
     @Override
@@ -314,7 +327,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
     }
 
     public void handlePlayerTarget(EntityPlayer target, EntityPlayer attacker, World world) {
-        if (LudicrousItems.isInfinite(target)) {
+        if (Mods.Avaritia.isModLoaded() && isInfinite(target)) {
             target.attackEntityFrom(DamageSource.causePlayerDamage(attacker), 20.0F);
 
             float newHealth = target.getHealth() - 20.0F;
@@ -333,6 +346,16 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         }
     }
 
+    @Optional.Method(modid = "Avaritia")
+    public static boolean isInfinite(EntityPlayer target) {
+        return LudicrousItems.isInfinite(target);
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public void attackEntityInfinity(EntityLivingBase target, EntityLivingBase attacker) {
+        target.attackEntityFrom(new DamageSourceInfinitySword(attacker), Float.POSITIVE_INFINITY);
+    }
+
     public void applyDoubleSweepDamage(EntityLivingBase target, EntityPlayer attacker) {
         if (target instanceof EntitySaddleSlime) return;
         if (!attacker.isSneaking() && target instanceof EntityPlayer) {
@@ -342,7 +365,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         DamageSource playerSource = DamageSource.causePlayerDamage(attacker);
         target.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
         target.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(new DamageSourceInfinitySword(attacker), Float.POSITIVE_INFINITY);
+        if (Mods.Avaritia.isModLoaded()) attackEntityInfinity(target, attacker);
 
         target.attackEntityFrom(DamageSource.anvil, Float.POSITIVE_INFINITY);
         target.attackEntityFrom(DamageSource.fallingBlock, Float.POSITIVE_INFINITY);
@@ -412,10 +435,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
             if (entity instanceof EntityPlayer targetPlayer) {
                 boolean wearingInfinityArmor = false;
                 for (ItemStack armorStack : targetPlayer.inventory.armorInventory) {
-                    if (armorStack != null && (armorStack.getItem() == LudicrousItems.infinity_helm
-                        || armorStack.getItem() == LudicrousItems.infinity_armor
-                        || armorStack.getItem() == LudicrousItems.infinity_pants
-                        || armorStack.getItem() == LudicrousItems.infinity_shoes)) {
+                    if (Mods.Avaritia.isModLoaded() && isInfinityArmor(armorStack)) {
                         wearingInfinityArmor = true;
                         break;
                     }
@@ -574,11 +594,13 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public IIcon getMaskTexture(ItemStack stack, EntityPlayer player) {
         return cosmicMask;
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public float getMaskMultiplier(ItemStack stack, EntityPlayer player) {
         return 1.0f;
     }
@@ -613,6 +635,11 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
 
     @Override
     public Entity createEntity(World world, Entity location, ItemStack itemstack) {
+        return Mods.Avaritia.isModLoaded() ? createImmortalItem(world, location, itemstack) : null;
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public Entity createImmortalItem(World world, Entity location, ItemStack itemstack) {
         return new EntityImmortalItem(world, location, itemstack);
     }
 

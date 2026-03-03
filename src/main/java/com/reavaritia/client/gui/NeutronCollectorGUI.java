@@ -29,7 +29,7 @@ public class NeutronCollectorGUI extends GuiContainer {
     }
 
     public String getLocalizedName() {
-        return StatCollector.translateToLocal("container." + machine.getMachineType());
+        return StatCollector.translateToLocal("container." + machine.machineType);
     }
 
     @Override

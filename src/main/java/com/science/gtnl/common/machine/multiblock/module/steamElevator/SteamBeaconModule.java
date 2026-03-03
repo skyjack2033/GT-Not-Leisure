@@ -719,7 +719,7 @@ public class SteamBeaconModule extends SteamElevatorModule {
                         player.addPotionEffect(new PotionEffect(ModPotions.featherfeet.id, 300, setMaxEffectLevel()));
                         setEnableFeatherFeetEffect(enableFeatherFeetEffect); // 更新启用状态
                     }
-                    if (enableVisRegenEffect) {
+                    if (ThaumicHorizons.isModLoaded() && enableVisRegenEffect) {
                         player.addPotionEffect(new PotionEffect(PotionVisRegen.instance.id, 300, setMaxEffectLevel()));
                         setEnableVisRegenEffect(enableVisRegenEffect); // 更新启用状态
                     }
@@ -1097,8 +1097,10 @@ public class SteamBeaconModule extends SteamElevatorModule {
                         .addTooltip(StatCollector.translateToLocal("Info_SteamBeaconModule_Effect_10"))
                         .setTooltipShowUpDelay(TOOLTIP_DELAY)
                         .setPos(24, 72)
-                        .setSize(16, 16))
-                .widget(
+                        .setSize(16, 16));
+
+            if (ThaumicHorizons.isModLoaded()) {
+                builder.widget(
                     new ButtonWidget().setOnClick((clickData, widget) -> toggleVisRegenEffect())
                         .setPlayClickSoundResource(
                             () -> hasVisRegenEffect() ? SoundResource.GUI_BUTTON_UP.resourceLocation
@@ -1120,6 +1122,7 @@ public class SteamBeaconModule extends SteamElevatorModule {
                         .setTooltipShowUpDelay(TOOLTIP_DELAY)
                         .setPos(42, 72)
                         .setSize(16, 16));
+            }
         }
 
         builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {

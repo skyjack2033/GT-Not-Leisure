@@ -11,11 +11,14 @@ import java.util.Map;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import WayofTime.alchemicalWizardry.common.summoning.meteor.MeteorRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.enums.Mods;
 import gregtech.api.util.GTModHandler;
 
 public class MeteorsRecipes implements IRecipePool {
@@ -31,13 +34,11 @@ public class MeteorsRecipes implements IRecipePool {
             10,
             Integer.MAX_VALUE);
 
+        List<String> meteorDrops = getTNTMeteor();
+
         MeteorRegistry.registerMeteor(
             GTModHandler.getModItem(IndustrialCraft2.ID, "blockNuke", 1),
-            new String[] { "miscutils:blockMiningExplosives:0:20", "IC2:blockITNT:0:20", "minecraft:tnt:1:15",
-                "HardcoreEnderExpansion:enhanced_tnt:0:15", "BloodArsenal:blood_tnt:0:15",
-                "EnderZoo:blockConcussionCharge:0:5", "EnderZoo:blockConfusingCharge:0:5",
-                "EnderZoo:blockEnderCharge:0:5", "TConstruct:explosive.slime:0:5", "TConstruct:explosive.slime:2:5",
-                "ThaumicHorizons:alchemite:0:15", "IC2:blockNuke:0:10", "minecraft:redstone_block:0:1" },
+            meteorDrops.toArray(new String[0]),
             100,
             114514);
 
@@ -87,6 +88,33 @@ public class MeteorsRecipes implements IRecipePool {
                     "miscutils:blockBlockZeron100:0:5", "miscutils:blockBlockZirconiumCarbide:0:5" }),
             100,
             Integer.MAX_VALUE);
+    }
+
+    public static @NotNull List<String> getTNTMeteor() {
+        List<String> meteorDrops = new ArrayList<>();
+
+        meteorDrops.add("miscutils:blockMiningExplosives:0:20");
+        meteorDrops.add("IC2:blockITNT:0:20");
+        meteorDrops.add("minecraft:tnt:1:15");
+        meteorDrops.add("HardcoreEnderExpansion:enhanced_tnt:0:15");
+
+        if (Mods.BloodArsenal.isModLoaded()) {
+            meteorDrops.add("BloodArsenal:blood_tnt:0:15");
+        }
+
+        meteorDrops.add("EnderZoo:blockConcussionCharge:0:5");
+        meteorDrops.add("EnderZoo:blockConfusingCharge:0:5");
+        meteorDrops.add("EnderZoo:blockEnderCharge:0:5");
+        meteorDrops.add("TConstruct:explosive.slime:0:5");
+        meteorDrops.add("TConstruct:explosive.slime:2:5");
+
+        if (Mods.ThaumicHorizons.isModLoaded()) {
+            meteorDrops.add("ThaumicHorizons:alchemite:0:15");
+        }
+
+        meteorDrops.add("IC2:blockNuke:0:10");
+        meteorDrops.add("minecraft:redstone_block:0:1");
+        return meteorDrops;
     }
 
     public static Map<String, Boolean> ORE_DICT_CACHE = new HashMap<>();

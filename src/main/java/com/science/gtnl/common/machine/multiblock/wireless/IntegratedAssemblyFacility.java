@@ -41,6 +41,7 @@ import com.science.gtnl.utils.enums.GTNLStructureChannels;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
+import cpw.mods.fml.common.Optional;
 import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import goodgenerator.items.GGMaterial;
 import goodgenerator.loader.Loaders;
@@ -48,6 +49,7 @@ import goodgenerator.util.ItemRefer;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -89,10 +91,15 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
         ItemList.Robot_Arm_UIV.get(64), ItemList.Field_Generator_UIV.get(32), ItemList.Sensor_UIV.get(32),
         ItemList.Emitter_UIV.get(32), GTNLItemList.EnhancementCore.get(16),
         GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.TranscendentMetal, 16),
-        CustomItemList.PikoCircuit.get(32),
+        Mods.NewHorizonsCoreMod.isModLoaded() ? getPikoCircuit() : null,
         GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUIV, 32),
         GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Mellion, 8),
         GGMaterial.shirabon.get(OrePrefixes.plateSuperdense, 8) };
+
+    @Optional.Method(modid = "dreamcraft")
+    public static ItemStack getPikoCircuit() {
+        return CustomItemList.PikoCircuit.get(32);
+    }
 
     @Getter
     public ItemStack[] storedUpgradeWindowItems = new ItemStack[16];

@@ -284,6 +284,7 @@ import gregtech.api.covers.CoverRegistry;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEBasicMachineWithRecipe;
 import gregtech.api.metatileentity.implementations.MTEHatchDynamo;
@@ -347,12 +348,14 @@ public class MachineLoader {
                 StatCollector.translateToLocal("NameGenerationEarthEngine")));
         addItemTooltip(GTNLItemList.GenerationEarthEngine.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
-        GTNLItemList.BloodSoulSacrificialArray.set(
-            new BloodSoulSacrificialArray(
-                BLOOD_SOUL_SACRIFICIAL_ARRAY.ID,
-                "BloodSoulSacrificialArray",
-                StatCollector.translateToLocal("NameBloodSoulSacrificialArray")));
-        addItemTooltip(GTNLItemList.BloodSoulSacrificialArray.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+        if (Mods.BloodMagic.isModLoaded()) {
+            GTNLItemList.BloodSoulSacrificialArray.set(
+                new BloodSoulSacrificialArray(
+                    BLOOD_SOUL_SACRIFICIAL_ARRAY.ID,
+                    "BloodSoulSacrificialArray",
+                    StatCollector.translateToLocal("NameBloodSoulSacrificialArray")));
+            addItemTooltip(GTNLItemList.BloodSoulSacrificialArray.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+        }
 
         GTNLItemList.RealArtificialStar.set(
             new RealArtificialStar(
@@ -4870,13 +4873,15 @@ public class MachineLoader {
                 StatCollector.translateToLocal("EnergyTransferNode")));
         addItemTooltip(GTNLItemList.EnergyTransferNode.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
-        GTNLItemList.LootBagRedemption.set(
-            new LootBagRedemption(
-                LOOT_BAG_REDEMPTION.ID,
-                "LootBagRedemption",
-                StatCollector.translateToLocal("LootBagRedemption"),
-                14));
-        addItemTooltip(GTNLItemList.LootBagRedemption.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+        if (Mods.EnhancedLootBags.isModLoaded()) {
+            GTNLItemList.LootBagRedemption.set(
+                new LootBagRedemption(
+                    LOOT_BAG_REDEMPTION.ID,
+                    "LootBagRedemption",
+                    StatCollector.translateToLocal("LootBagRedemption"),
+                    14));
+            addItemTooltip(GTNLItemList.LootBagRedemption.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+        }
 
         GTNLItemList.SuperOredictInputBusME.set(
             new OredictInputBusME(

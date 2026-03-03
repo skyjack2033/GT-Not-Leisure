@@ -10,6 +10,7 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
@@ -124,20 +125,22 @@ public class PrimitiveBrickKilnRecipes implements IRecipePool {
             .eut(16)
             .addTo(PBKR);
 
-        if (Mods.Railcraft.isModLoaded()) {
-            RecipeBuilder.builder()
-                .itemInputs(CustomItemList.CokeOvenBrick.get(4))
-                .itemOutputs(GTModHandler.getModItem(Mods.Railcraft.ID, "machine.alpha", 1, 7))
-                .duration(200)
-                .eut(16)
-                .addTo(PBKR);
-            RecipeBuilder.builder()
-                .itemInputs(CustomItemList.AdvancedCokeOvenBrick.get(4))
-                .itemOutputs(GTModHandler.getModItem(Mods.Railcraft.ID, "machine.alpha", 1, 12))
-                .duration(200)
-                .eut(16)
-                .addTo(PBKR);
-        }
+        if (Mods.NewHorizonsCoreMod.isModLoaded() && Mods.Railcraft.isModLoaded()) loadNHRecipe();
+    }
 
+    @Optional.Method(modid = "dreamcraft")
+    public void loadNHRecipe() {
+        RecipeBuilder.builder()
+            .itemInputs(CustomItemList.CokeOvenBrick.get(4))
+            .itemOutputs(GTModHandler.getModItem(Mods.Railcraft.ID, "machine.alpha", 1, 7))
+            .duration(200)
+            .eut(16)
+            .addTo(PBKR);
+        RecipeBuilder.builder()
+            .itemInputs(CustomItemList.AdvancedCokeOvenBrick.get(4))
+            .itemOutputs(GTModHandler.getModItem(Mods.Railcraft.ID, "machine.alpha", 1, 12))
+            .duration(200)
+            .eut(16)
+            .addTo(PBKR);
     }
 }

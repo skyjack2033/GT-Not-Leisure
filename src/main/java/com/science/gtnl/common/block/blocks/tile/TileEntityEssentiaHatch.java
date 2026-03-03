@@ -12,6 +12,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.science.gtnl.utils.machine.LargeEssentiaEnergyData;
 
+import cpw.mods.fml.common.Optional;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import thaumcraft.api.ThaumcraftApiHelper;
@@ -21,6 +22,7 @@ import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumicenergistics.api.storage.IAspectStorage;
 
+@Optional.Interface(iface = "thaumicenergistics.api.storage.IAspectStorage", modid = "thaumicenergistics")
 public class TileEntityEssentiaHatch extends TileEntity
     implements IAspectContainer, IEssentiaTransport, IAspectStorage {
 
@@ -248,11 +250,13 @@ public class TileEntityEssentiaHatch extends TileEntity
     }
 
     @Override
+    @Optional.Method(modid = "thaumicenergistics")
     public int getContainerCapacity() {
         return maxAmountEssentia;
     }
 
     @Override
+    @Optional.Method(modid = "thaumicenergistics")
     public boolean doesShareCapacity() {
         return true;
     }

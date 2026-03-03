@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import static com.dreammaster.scripts.IScriptLoader.missing;
 import static gregtech.api.enums.Mods.*;
 import static gregtech.api.util.GTModHandler.getModItem;
 import static gregtech.api.util.GTRecipeBuilder.SECONDS;
@@ -39,7 +38,7 @@ public class ChemicalBathRecipes implements IRecipePool {
             .addTo(cBR);
 
         RecipeBuilder.builder()
-            .itemInputs(getModItem(Botania.ID, "elfGlass", 1, 0, missing))
+            .itemInputs(getModItem(Botania.ID, "elfGlass", 1, 0))
             .fluidInputs(FluidRegistry.getFluidStack("molten.terrasteel", 576))
             .itemOutputs(GTNLItemList.TerraGlass.get(1))
             .duration(200)
@@ -123,7 +122,7 @@ public class ChemicalBathRecipes implements IRecipePool {
             .fluidInputs(Materials.PoorNetherWaste.getFluid(8_000))
             .itemOutputs(
                 ItemList.Brittle_Netherite_Scrap.get(48),
-                getModItem(EtFuturumRequiem.ID, "netherite_scrap", 16, missing))
+                getModItem(EtFuturumRequiem.ID, "netherite_scrap", 16))
             .duration(10 * SECONDS)
             .eut(TierEU.RECIPE_UHV)
             .addTo(cBR);

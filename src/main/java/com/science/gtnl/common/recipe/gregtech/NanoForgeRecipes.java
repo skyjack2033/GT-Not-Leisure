@@ -1,7 +1,6 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import static gregtech.api.recipe.RecipeMaps.*;
-import static gregtech.api.util.GTRecipeBuilder.*;
+import static gregtech.api.enums.Mods.*;
 import static gregtech.api.util.GTRecipeBuilder.SECONDS;
 import static gregtech.api.util.GTRecipeConstants.*;
 
@@ -10,6 +9,7 @@ import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import cpw.mods.fml.common.Optional;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -59,19 +59,6 @@ public class NanoForgeRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                CustomItemList.RadoxPolymerLens.get(0),
-                GGMaterial.metastableOganesson.get(OrePrefixes.block, 8),
-                ItemList.Circuit_Chip_SoC2.get(64),
-                ItemList.Circuit_Chip_SoC2.get(64))
-            .itemOutputs(GGMaterial.metastableOganesson.get(OrePrefixes.nanite, 1))
-            .fluidInputs(Materials.UUMatter.getFluid(500_000))
-            .metadata(NANO_FORGE_TIER, 2)
-            .duration(300 * SECONDS)
-            .eut(40_000_000)
-            .addTo(NFR);
-
-        RecipeBuilder.builder()
-            .itemInputs(
                 GregtechItemList.Laser_Lens_Special.get(0),
                 GGMaterial.preciousMetalAlloy.get(OrePrefixes.block, 8),
                 ItemList.Circuit_Chip_NanoCPU.get(64),
@@ -80,6 +67,24 @@ public class NanoForgeRecipes implements IRecipePool {
             .fluidInputs(Materials.UUMatter.getFluid(300_000))
             .metadata(NANO_FORGE_TIER, 1)
             .duration(400 * SECONDS)
+            .eut(40_000_000)
+            .addTo(NFR);
+
+        if (NewHorizonsCoreMod.isModLoaded()) loadNHRecipe();
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public void loadNHRecipe() {
+        RecipeBuilder.builder()
+            .itemInputs(
+                CustomItemList.RadoxPolymerLens.get(0),
+                GGMaterial.metastableOganesson.get(OrePrefixes.block, 8),
+                ItemList.Circuit_Chip_SoC2.get(64),
+                ItemList.Circuit_Chip_SoC2.get(64))
+            .itemOutputs(GGMaterial.metastableOganesson.get(OrePrefixes.nanite, 1))
+            .fluidInputs(Materials.UUMatter.getFluid(500_000))
+            .metadata(NANO_FORGE_TIER, 2)
+            .duration(300 * SECONDS)
             .eut(40_000_000)
             .addTo(NFR);
 

@@ -3,7 +3,6 @@ package com.science.gtnl.loader;
 import net.minecraft.stats.Achievement;
 import net.minecraftforge.common.AchievementPage;
 
-import com.dreammaster.gthandler.CustomItemList;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
@@ -22,7 +21,7 @@ public class AchievementsLoader {
             "gtnl.installAllCommunityMod",
             2,
             1,
-            CustomItemList.MedalDerp.get(1),
+            GTNLItemList.NewHorizonsCoil.get(1),
             welcome).setSpecial()
                 .registerStat();
 

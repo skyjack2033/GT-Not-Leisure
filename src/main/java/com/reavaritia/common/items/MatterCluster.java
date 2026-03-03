@@ -25,6 +25,7 @@ import com.reavaritia.utils.item.ItemStackWrapper;
 import com.reavaritia.utils.item.ToolHelper;
 
 import codechicken.lib.math.MathHelper;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fox.spiteful.avaritia.render.ICosmicRenderItem;
@@ -32,6 +33,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@Optional.Interface(iface = "fox.spiteful.avaritia.render.ICosmicRenderItem", modid = "Avaritia")
 public class MatterCluster extends Item implements ICosmicRenderItem {
 
     public static final String MAINTAG = "clusteritems";
@@ -306,6 +308,7 @@ public class MatterCluster extends Item implements ICosmicRenderItem {
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public IIcon getMaskTexture(ItemStack stack, EntityPlayer player) {
         int count = getClusterSize(stack);
         if (count == capacity) {
@@ -315,6 +318,7 @@ public class MatterCluster extends Item implements ICosmicRenderItem {
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public float getMaskMultiplier(ItemStack stack, EntityPlayer player) {
         int count = getClusterSize(stack);
         return count / (float) capacity;

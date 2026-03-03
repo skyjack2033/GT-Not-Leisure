@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 import com.dreammaster.gthandler.CustomItemList;
@@ -15,6 +16,7 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import cpw.mods.fml.common.Optional;
 import galaxyspace.core.inventory.InventorySchematic;
 import galaxyspace.core.recipe.RocketRecipes;
 import galaxyspace.core.register.GSBlocks;
@@ -46,7 +48,7 @@ public class RocketAssemblerRecipes implements IRecipePool {
         HashMap<Integer, ItemStack> input = new HashMap<>();
         HashMap<Integer, ItemStack> inputChest;
         input.put(1, GTModHandler.getModItem(Mods.StevesCarts2.ID, "CartModule", 1, 38));
-        input.put(2, CustomItemList.EngineCore.get(1));
+        input.put(2, Mods.NewHorizonsCoreMod.isModLoaded() ? getEngineCore() : new ItemStack(Items.arrow));
         input.put(3, GTModHandler.getModItem(Mods.IronTanks.ID, "diamondTank", 1));
         input.put(4, GTModHandler.getModItem(Mods.IronTanks.ID, "diamondTank", 1));
 
@@ -131,6 +133,11 @@ public class RocketAssemblerRecipes implements IRecipePool {
 
             recipeBuilder.addTo(RAR);
         }
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static ItemStack getEngineCore() {
+        return CustomItemList.EngineCore.get(1);
     }
 
 }

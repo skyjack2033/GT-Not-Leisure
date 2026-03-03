@@ -20,6 +20,7 @@ import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.recipe.gtnl.ShimmerRecipes;
 
+import cpw.mods.fml.common.Optional.Method;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
@@ -208,7 +209,8 @@ public class DisassemblerHelper {
 
             // 4. replace circuit
             if (itemDataInSlotIdx.mPrefix == OrePrefixes.circuit) {
-                ItemStack circuit = getCheapestCircuitOrNull(thisMaterial);
+                ItemStack circuit = Mods.NewHorizonsCoreMod.isModLoaded() ? getCheapestCircuitOrNull(thisMaterial)
+                    : null;
                 if (circuit != null) {
                     circuit.stackSize = itemInSlotIdx.stackSize;
                     retOutputs[idx] = circuit;
@@ -295,6 +297,7 @@ public class DisassemblerHelper {
         return null;
     }
 
+    @Method(modid = "dreamcraft")
     public static ItemStack getCheapestCircuitOrNull(Materials material) {
         if (material == Materials.ULV) return NHItemList.CircuitULV.getIS(1);
         if (material == Materials.LV) return NHItemList.CircuitLV.getIS(1);

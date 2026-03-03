@@ -34,8 +34,8 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
     modid = MODID,
     version = Tags.VERSION,
     name = MODNAME,
-    dependencies = "required-after:AWWayofTime;" + "required-after:Avaritia;"
-        + "required-after:BloodArsenal;"
+    dependencies = "after:AWWayofTime;" + "after:Avaritia;"
+        + "after:BloodArsenal;"
         + "required-after:Botania;"
         + "required-after:bartworks;"
         + "after:eternalsingularity;"
@@ -49,8 +49,8 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
         + "required-after:IC2;"
         + "required-after:modularui;"
         + "after:miscutils;"
-        + "required-before:neicustomdiagram;"
-        + "required-after:dreamcraft;"
+        + "before:neicustomdiagram;"
+        + "after:dreamcraft;"
         + "required-after:structurelib;"
         + "required-after:Thaumcraft;"
         + "before:TwistSpaceTechnology;",

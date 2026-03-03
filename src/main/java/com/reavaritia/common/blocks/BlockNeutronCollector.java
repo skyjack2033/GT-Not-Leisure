@@ -36,15 +36,15 @@ public class BlockNeutronCollector extends BlockContainer {
     public final String blockName;
 
     public int energy;
-    public int tier;
+    public ItemStack target;
     public String texturePrefix;
     public String tileEntityName;
 
-    public BlockNeutronCollector(String name, int energy, int tier, String texturePrefix, String tileEntityName,
+    public BlockNeutronCollector(String name, int energy, ItemStack target, String texturePrefix, String tileEntityName,
         Class<? extends ItemBlock> itemBlockClass, ReAvaItemList itemListEntry) {
         this(name);
         this.energy = energy;
-        this.tier = tier;
+        this.target = target;
         this.texturePrefix = texturePrefix;
         this.tileEntityName = tileEntityName;
 
@@ -64,7 +64,7 @@ public class BlockNeutronCollector extends BlockContainer {
 
     @Override
     public TileEntity createNewTileEntity(World world, int meta) {
-        return new TileEntityNeutronCollector(energy, tier, tileEntityName);
+        return new TileEntityNeutronCollector(energy, target, tileEntityName);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class BlockNeutronCollector extends BlockContainer {
     @Override
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
         TileEntityNeutronCollector machine = (TileEntityNeutronCollector) world.getTileEntity(x, y, z);
-        int facing = (machine != null) ? machine.getFacing() : 2;
+        int facing = (machine != null) ? machine.facing : 2;
 
         if (side == 0) return bottom;
         if (side == 1) return getTopIconByFacing(facing);

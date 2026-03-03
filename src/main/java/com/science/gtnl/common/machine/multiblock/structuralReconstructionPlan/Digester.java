@@ -31,6 +31,8 @@ import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import bartworks.util.BWUtil;
+import cpw.mods.fml.common.Optional;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -212,11 +214,10 @@ public class Digester extends GTMMultiMachineBase<Digester> implements ISurvival
 
             @Override
             public @Nonnull CheckRecipeResult validateRecipe(@Nonnull GTRecipe recipe) {
-                if (checkForNitricAcid()) {
-                    return recipe.mSpecialValue <= getMCoilLevel().getHeat() ? CheckRecipeResultRegistry.SUCCESSFUL
-                        : CheckRecipeResultRegistry.insufficientHeat(recipe.mSpecialValue);
-                }
-                return SimpleCheckRecipeResult.ofFailure("no_nitricacid");
+                if (Mods.NewHorizonsCoreMod.isModLoaded() && !checkForNitricAcid())
+                    return SimpleCheckRecipeResult.ofFailure("no_nitricacid");
+                return recipe.mSpecialValue <= getMCoilLevel().getHeat() ? CheckRecipeResultRegistry.SUCCESSFUL
+                    : CheckRecipeResultRegistry.insufficientHeat(recipe.mSpecialValue);
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
     }
@@ -256,6 +257,7 @@ public class Digester extends GTMMultiMachineBase<Digester> implements ISurvival
         return StructureUtils.getTextureIndex(sBlockCasings4, 0);
     }
 
+    @Optional.Method(modid = "dreamcraft")
     public boolean checkForNitricAcid() {
         IGregTechTileEntity aBaseMetaTileEntity = this.getBaseMetaTileEntity();
         ForgeDirection backFacing = aBaseMetaTileEntity.getBackFacing();

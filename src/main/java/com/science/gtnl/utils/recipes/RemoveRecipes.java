@@ -1,7 +1,5 @@
 package com.science.gtnl.utils.recipes;
 
-import static com.dreammaster.scripts.IScriptLoader.wildcard;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -399,7 +397,7 @@ public class RemoveRecipes {
             hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
             if (includeWildcardVariants) {
                 iCopy = iCopy.copy();
-                Items.feather.setDamage(iCopy, wildcard);
+                Items.feather.setDamage(iCopy, 32767);
                 hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
             }
         } else if (item instanceof String) {
@@ -407,7 +405,7 @@ public class RemoveRecipes {
                 hashedItems.add(GTUtility.ItemId.createNoCopy(stack));
                 if (includeWildcardVariants) {
                     stack = stack.copy();
-                    Items.feather.setDamage(stack, wildcard);
+                    Items.feather.setDamage(stack, 32767);
                     hashedItems.add(GTUtility.ItemId.createNoCopy(stack));
                 }
             }
@@ -419,7 +417,7 @@ public class RemoveRecipes {
                 hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
                 if (includeWildcardVariants) {
                     iCopy = iCopy.copy();
-                    Items.feather.setDamage(iCopy, wildcard);
+                    Items.feather.setDamage(iCopy, 32767);
                     hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
                 }
             }
@@ -446,7 +444,7 @@ public class RemoveRecipes {
             }
             GTUtility.ItemId key = GTUtility.ItemId.createNoCopy(rCopy);
             rCopy = rCopy.copy();
-            Items.feather.setDamage(rCopy, wildcard);
+            Items.feather.setDamage(rCopy, 32767);
             GTUtility.ItemId keyWildcard = GTUtility.ItemId.createNoCopy(rCopy);
             List<Function<IRecipe, Boolean>> listWhenToRemove = bufferMap.get(key);
             if (listWhenToRemove == null) listWhenToRemove = bufferMap.get(keyWildcard);

@@ -1,5 +1,6 @@
 package com.science.gtnl.common.recipe.gregtech;
 
+import static gregtech.api.enums.Mods.*;
 import static gtnhlanth.api.recipe.LanthanidesRecipeMaps.*;
 
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,7 @@ import com.dreammaster.item.NHItemList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -44,6 +46,13 @@ public class TargetChamberRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_IV)
             .addTo(TCR);
 
+        if (NewHorizonsCoreMod.isModLoaded()) loadNHRecipe();
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public void loadNHRecipe() {
+        ItemStack focusItem = new ItemStack(LanthItemList.maskMap.get(MaskList.CSOC), 0);
+
         RecipeBuilder.builder()
             .itemInputs(focusItem, ItemList.IC2_EnergyCrystal.getWildcard(1L))
             .itemOutputs(GTUtility.copyAmountUnsafe(512, CustomItemList.EngravedEnergyChip.get(1)))
@@ -54,21 +63,6 @@ public class TargetChamberRecipes implements IRecipePool {
                     .amount(2)
                     .energy(4, 10, 1)
                     .minFocus(45)
-                    .build())
-            .duration(1)
-            .eut(TierEU.RECIPE_IV)
-            .addTo(TCR);
-
-        RecipeBuilder.builder()
-            .itemInputs(focusItem, GTOreDictUnificator.get(OrePrefixes.plate, Materials.Gold, 1))
-            .itemOutputs(GTUtility.copyAmountUnsafe(1024, NHItemList.EngravedGoldChip.getIS(1)))
-            .metadata(
-                TARGET_CHAMBER_METADATA,
-                TargetChamberMetadata.builder(focusItem)
-                    .particleID(1)
-                    .amount(2)
-                    .energy(5, 12, 1)
-                    .minFocus(35)
                     .build())
             .duration(1)
             .eut(TierEU.RECIPE_IV)
@@ -102,6 +96,21 @@ public class TargetChamberRecipes implements IRecipePool {
                     .build())
             .duration(1)
             .eut(TierEU.RECIPE_LuV)
+            .addTo(TCR);
+
+        RecipeBuilder.builder()
+            .itemInputs(focusItem, GTOreDictUnificator.get(OrePrefixes.plate, Materials.Gold, 1))
+            .itemOutputs(GTUtility.copyAmountUnsafe(1024, NHItemList.EngravedGoldChip.getIS(1)))
+            .metadata(
+                TARGET_CHAMBER_METADATA,
+                TargetChamberMetadata.builder(focusItem)
+                    .particleID(1)
+                    .amount(2)
+                    .energy(5, 12, 1)
+                    .minFocus(35)
+                    .build())
+            .duration(1)
+            .eut(TierEU.RECIPE_IV)
             .addTo(TCR);
 
         RecipeBuilder.builder()

@@ -3,6 +3,8 @@ package com.science.gtnl.common.recipe.gregtech;
 import static gregtech.api.enums.Materials.*;
 import static gregtech.api.util.GTRecipeConstants.SIEVERT;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import com.dreammaster.item.NHItemList;
@@ -11,8 +13,10 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.API.recipe.BartWorksRecipeMaps;
 import bartworks.util.BWUtil;
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -40,7 +44,7 @@ public class BacterialVatRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Circuit_Chip_Stemcell.get(64),
-                NHItemList.TCetiESeaweedExtract.getIS(16),
+                Mods.NewHorizonsCoreMod.isModLoaded() ? getTCetiESeaweedExtract() : new ItemStack(Items.sugar, 16),
                 GTOreDictUnificator.get(OrePrefixes.dust, Tritanium, 1L))
             .fluidInputs(Materials.GrowthMediumRaw.getFluid(10))
             .fluidOutputs(Materials.BioMediumRaw.getFluid(10))
@@ -49,5 +53,10 @@ public class BacterialVatRecipes implements IRecipePool {
             .duration(1200)
             .addTo(BVR);
 
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public ItemStack getTCetiESeaweedExtract() {
+        return NHItemList.TCetiESeaweedExtract.getIS(16);
     }
 }

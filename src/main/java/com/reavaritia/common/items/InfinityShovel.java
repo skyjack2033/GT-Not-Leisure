@@ -34,10 +34,12 @@ import com.reavaritia.utils.enums.ReAvaItemList;
 import com.reavaritia.utils.item.SubtitleDisplay;
 import com.reavaritia.utils.item.ToolHelper;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fox.spiteful.avaritia.entity.EntityEndestPearl;
 import fox.spiteful.avaritia.entity.EntityImmortalItem;
+import gregtech.api.enums.Mods;
 
 public class InfinityShovel extends ItemSpade implements SubtitleDisplay {
 
@@ -117,10 +119,15 @@ public class InfinityShovel extends ItemSpade implements SubtitleDisplay {
 
         world.playSoundAtEntity(player, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 
-        if (!world.isRemote) {
-            world.spawnEntityInWorld(new EntityEndestPearl(world, player));
+        if (!world.isRemote && Mods.Avaritia.isModLoaded()) {
+            world.spawnEntityInWorld(getEntityEndestPearl(world, player));
         }
         return stack;
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public Entity getEntityEndestPearl(World world, EntityPlayer player) {
+        return new EntityEndestPearl(world, player);
     }
 
     @Override
@@ -194,6 +201,11 @@ public class InfinityShovel extends ItemSpade implements SubtitleDisplay {
 
     @Override
     public Entity createEntity(World world, Entity location, ItemStack itemstack) {
+        return Mods.Avaritia.isModLoaded() ? createImmortalItem(world, location, itemstack) : null;
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public Entity createImmortalItem(World world, Entity location, ItemStack itemstack) {
         return new EntityImmortalItem(world, location, itemstack);
     }
 

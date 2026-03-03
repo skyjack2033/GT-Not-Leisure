@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gtnl;
 
-import static com.dreammaster.scripts.IScriptLoader.missing;
 import static gregtech.api.enums.Mods.*;
 
 import net.minecraft.init.Blocks;
@@ -14,6 +13,7 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -157,17 +157,17 @@ public class FishingGroundRecipes implements IRecipePool {
                 new ItemStack(Blocks.waterlily, 32),
                 new ItemStack(Blocks.vine, 32),
                 GTModHandler.getModItem(TwilightForest.ID, "tile.HugeLilyPad", 32),
-                GTModHandler.getModItem(BiomesOPlenty.ID, "lilyBop", 32, 0, missing),
-                GTModHandler.getModItem(BiomesOPlenty.ID, "lilyBop", 32, 1, missing),
-                GTModHandler.getModItem(BiomesOPlenty.ID, "lilyBop", 32, 2, missing),
-                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 12, missing),
-                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 13, missing),
-                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 14, missing),
-                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 15, missing),
-                GTModHandler.getModItem(PamsHarvestCraft.ID, "seaweedItem", 64, missing),
-                GTModHandler.getModItem(PamsHarvestCraft.ID, "waterchestnutItem", 16, missing),
-                GTModHandler.getModItem(PamsHarvestCraft.ID, "riceItem", 16, missing),
-                GTModHandler.getModItem(PamsHarvestCraft.ID, "cranberryItem", 16, missing))
+                GTModHandler.getModItem(BiomesOPlenty.ID, "lilyBop", 32, 0),
+                GTModHandler.getModItem(BiomesOPlenty.ID, "lilyBop", 32, 1),
+                GTModHandler.getModItem(BiomesOPlenty.ID, "lilyBop", 32, 2),
+                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 12),
+                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 13),
+                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 14),
+                GTModHandler.getModItem(BiomesOPlenty.ID, "coral1", 16, 15),
+                GTModHandler.getModItem(PamsHarvestCraft.ID, "seaweedItem", 64),
+                GTModHandler.getModItem(PamsHarvestCraft.ID, "waterchestnutItem", 16),
+                GTModHandler.getModItem(PamsHarvestCraft.ID, "riceItem", 16),
+                GTModHandler.getModItem(PamsHarvestCraft.ID, "cranberryItem", 16))
             .fluidInputs(FluidRegistry.getFluidStack("water", 10000))
             .outputChances(6000, 6000, 3000, 4000, 4000, 4000, 2500, 2500, 2500, 2500, 7500, 5000, 5000, 5000)
             .duration(500)
@@ -175,30 +175,17 @@ public class FishingGroundRecipes implements IRecipePool {
             .addTo(FGR);
 
         RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(9), NHItemList.MaceratedPlantmass.getIS(16))
-            .itemOutputs(
-                GregtechItemList.AlgaeBiomass.get(64),
-                GregtechItemList.GreenAlgaeBiomass.get(64),
-                GregtechItemList.BrownAlgaeBiomass.get(64),
-                GregtechItemList.GoldenBrownAlgaeBiomass.get(64),
-                GregtechItemList.RedAlgaeBiomass.get(64))
-            .fluidInputs(FluidRegistry.getFluidStack("water", 10000))
-            .duration(200)
-            .eut(TierEU.RECIPE_EV)
-            .addTo(FGR);
-
-        RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(10),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Mytryl, 32L),
-                GTModHandler.getModItem(PamsHarvestCraft.ID, "seaweedItem", 64, missing))
+                GTModHandler.getModItem(PamsHarvestCraft.ID, "seaweedItem", 64))
             .itemOutputs(
-                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 0, missing),
-                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 1, missing),
-                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 2, missing),
-                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 3, missing),
-                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 4, missing),
-                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 5, missing))
+                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 0),
+                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 1),
+                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 2),
+                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 3),
+                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 4),
+                GTModHandler.getModItem(GalaxySpace.ID, "tcetiedandelions", 64, 5))
             .fluidInputs(FluidRegistry.getFluidStack("unknownnutrientagar", 1000))
             .duration(1000)
             .eut(TierEU.RECIPE_LuV)
@@ -401,6 +388,23 @@ public class FishingGroundRecipes implements IRecipePool {
                 .eut(TierEU.RECIPE_HV)
                 .addTo(FGR);
 
+            if (NewHorizonsCoreMod.isModLoaded()) loadNHRecipe();
         }
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public void loadNHRecipe() {
+        RecipeBuilder.builder()
+            .itemInputs(GTUtility.getIntegratedCircuit(9), NHItemList.MaceratedPlantmass.getIS(16))
+            .itemOutputs(
+                GregtechItemList.AlgaeBiomass.get(64),
+                GregtechItemList.GreenAlgaeBiomass.get(64),
+                GregtechItemList.BrownAlgaeBiomass.get(64),
+                GregtechItemList.GoldenBrownAlgaeBiomass.get(64),
+                GregtechItemList.RedAlgaeBiomass.get(64))
+            .fluidInputs(FluidRegistry.getFluidStack("water", 10000))
+            .duration(200)
+            .eut(TierEU.RECIPE_EV)
+            .addTo(FGR);
     }
 }

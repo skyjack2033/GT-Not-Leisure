@@ -15,6 +15,7 @@ import net.minecraft.util.IIcon;
 import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.utils.item.MetaItemStackUtils;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fox.spiteful.avaritia.render.IHaloRenderItem;
@@ -28,6 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <li>Use {@link #initItem(int)} to create your Item at ItemList01.
  *
  */
+@Optional.Interface(iface = "fox.spiteful.avaritia.render.IHaloRenderItem", modid = "Avaritia")
 public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
 
     public static Int2ObjectMap<String[]> metaItemTooltipsMap = new Int2ObjectOpenHashMap<>();
@@ -118,6 +120,7 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public boolean drawHalo(ItemStack stack) {
         return switch (stack.getItemDamage()) {
             case 26, 27 -> true;
@@ -126,6 +129,7 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public IIcon getHaloTexture(ItemStack stack) {
         return switch (stack.getItemDamage()) {
             default -> halo[0];
@@ -133,16 +137,19 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public int getHaloSize(ItemStack stack) {
         return 10;
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public boolean drawPulseEffect(ItemStack stack) {
         return false;
     }
 
     @Override
+    @Optional.Method(modid = "Avaritia")
     public int getHaloColour(ItemStack stack) {
         return 0xE6FFFFFF;
     }

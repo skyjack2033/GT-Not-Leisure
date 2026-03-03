@@ -21,7 +21,9 @@ import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.util.Platform;
+import cpw.mods.fml.common.Optional;
 import fox.spiteful.avaritia.crafting.ExtremeCraftingManager;
+import gregtech.api.enums.Mods;
 
 public class ContainerDirePatternEncoder extends AEBaseContainer implements IOptionalSlotHost {
 
@@ -132,10 +134,15 @@ public class ContainerDirePatternEncoder extends AEBaseContainer implements IOpt
                     .getStackInSlot(x));
         }
 
-        final ItemStack is = ExtremeCraftingManager.getInstance()
-            .findMatchingRecipe(ic, te.getWorldObj());
+        final ItemStack is = Mods.Avaritia.isModLoaded() ? getRecipeOutput(ic) : null;
         this.outputSlot.putStack(is);
         return is;
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public ItemStack getRecipeOutput(InventoryCrafting ic) {
+        return ExtremeCraftingManager.getInstance()
+            .findMatchingRecipe(ic, te.getWorldObj());
     }
 
     public void encode(boolean isShift) {

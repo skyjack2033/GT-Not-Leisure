@@ -4,32 +4,32 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 
-import fox.spiteful.avaritia.items.LudicrousItems;
-import fox.spiteful.avaritia.tile.TileLudicrous;
 import gregtech.api.util.GTUtility;
-import lombok.Getter;
 
-public class TileEntityNeutronCollector extends TileLudicrous implements IInventory {
+public class TileEntityNeutronCollector extends TileEntity implements IInventory {
 
-    @Getter
-    public ItemStack neutrons;
-    @Getter
+    public final ItemStack target;
+    public ItemStack output;
     public int facing = 2;
     public int progress;
     public int time;
     public int meta;
-    @Getter
     public String machineType;
 
     public TileEntityNeutronCollector() {
         super();
+        this.target = null;
     }
 
-    public TileEntityNeutronCollector(int time, int meta, String machineType) {
+    public TileEntityNeutronCollector(int time, ItemStack target, String machineType) {
         super();
         this.time = time;
-        this.meta = meta;
+        this.target = target;
         this.machineType = machineType;
     }
 
@@ -37,12 +37,11 @@ public class TileEntityNeutronCollector extends TileLudicrous implements IInvent
     public void updateEntity() {
         if (++progress >= time) {
             if (this.worldObj != null && !this.worldObj.isRemote) {
-                if (neutrons == null) {
+                if (output == null) {
                     createNeutronItemStack();
-                } else if (GTUtility.areStacksEqual(neutrons, new ItemStack(LudicrousItems.resource, 1, meta))
-                    && neutrons.stackSize < 64) {
-                        neutrons.stackSize++;
-                    }
+                } else if (GTUtility.areStacksEqual(output, target) && output.stackSize < 64) {
+                    output.stackSize++;
+                }
             }
             progress = 0;
             markDirty();
@@ -50,8 +49,8 @@ public class TileEntityNeutronCollector extends TileLudicrous implements IInvent
     }
 
     public void createNeutronItemStack() {
-        if (neutrons == null) {
-            neutrons = new ItemStack(LudicrousItems.resource, 1, meta);
+        if (output == null && target != null) {
+            output = target.copy();
         }
     }
 
@@ -69,8 +68,8 @@ public class TileEntityNeutronCollector extends TileLudicrous implements IInvent
     }
 
     @Override
-    public void readCustomNBT(NBTTagCompound tag) {
-        this.neutrons = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("neutrons"));
+    public void readFromNBT(NBTTagCompound tag) {
+        this.output = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("neutrons"));
         this.progress = tag.getInteger("progress");
         this.time = tag.getInteger("time");
         this.facing = tag.getInteger("facing");
@@ -79,17 +78,30 @@ public class TileEntityNeutronCollector extends TileLudicrous implements IInvent
     }
 
     @Override
-    public void writeCustomNBT(NBTTagCompound tag) {
+    public void writeToNBT(NBTTagCompound tag) {
         tag.setInteger("progress", this.progress);
         tag.setInteger("time", this.time);
         tag.setInteger("facing", this.facing);
         tag.setInteger("meta", this.meta);
-        if (neutrons != null) {
+        if (output != null) {
             NBTTagCompound produce = new NBTTagCompound();
-            neutrons.writeToNBT(produce);
+            output.writeToNBT(produce);
             tag.setTag("neutrons", produce);
         }
         tag.setString("machineType", machineType);
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound tag = new NBTTagCompound();
+        writeToNBT(tag);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -999, tag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
+        super.onDataPacket(net, packet);
+        readFromNBT(packet.func_148857_g());
     }
 
     @Override
@@ -99,20 +111,20 @@ public class TileEntityNeutronCollector extends TileLudicrous implements IInvent
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return neutrons;
+        return output;
     }
 
     @Override
     public ItemStack decrStackSize(int slot, int decrement) {
-        if (neutrons == null) return null;
+        if (output == null) return null;
         else {
             ItemStack take;
-            if (decrement < neutrons.stackSize) {
-                take = neutrons.splitStack(decrement);
-                if (neutrons.stackSize <= 0) neutrons = null;
+            if (decrement < output.stackSize) {
+                take = output.splitStack(decrement);
+                if (output.stackSize <= 0) output = null;
             } else {
-                take = neutrons;
-                neutrons = null;
+                take = output;
+                output = null;
             }
             markDirty();
             return take;
@@ -144,7 +156,7 @@ public class TileEntityNeutronCollector extends TileLudicrous implements IInvent
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        neutrons = stack;
+        output = stack;
     }
 
     @Override

@@ -11,6 +11,7 @@ import static gtnhlanth.common.register.LanthItemList.SHIELDED_ACCELERATOR_CASIN
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -31,8 +32,10 @@ import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLStructureChannels;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import goodgenerator.loader.Loaders;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -50,6 +53,9 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
     private static final int HORIZONTAL_OFF_SET = 34;
     private static final int VERTICAL_OFF_SET = 34;
     private static final int DEPTH_OFF_SET = 20;
+
+    public static final ItemStack CRYSTAL = Mods.NewHorizonsCoreMod.isModLoaded() ? getTwilightCrystal()
+        : new ItemStack(Items.diamond);
 
     public LibraryOfRuina(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -228,8 +234,7 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch()
-            && GTUtility.areStacksEqual(getControllerSlot(), CustomItemList.TwilightCrystal.get(1));
+        return super.checkHatch() && GTUtility.areStacksEqual(getControllerSlot(), CRYSTAL);
     }
 
     @Override
@@ -304,5 +309,10 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
                 }
             }
         }
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static ItemStack getTwilightCrystal() {
+        return CustomItemList.TwilightCrystal.get(1);
     }
 }

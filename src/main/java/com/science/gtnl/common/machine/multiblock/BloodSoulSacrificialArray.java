@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -46,9 +47,11 @@ import WayofTime.alchemicalWizardry.ModBlocks;
 import WayofTime.alchemicalWizardry.api.items.interfaces.IBindable;
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import WayofTime.alchemicalWizardry.common.entity.projectile.EntityMeteor;
+import cpw.mods.fml.common.Optional;
 import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
@@ -83,6 +86,15 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     private static final int MACHINEMODE_BLOOD_DEMON = 0;
     private static final int MACHINEMODE_FALLING_TOWER = 1;
     private static final int MACHINEMODE_ALCHEMIC = 2;
+
+    public static final Block BLOODY_ICHORIUM = Mods.NewHorizonsCoreMod.isModLoaded() ? getBloodyIchorium()
+        : Blocks.diamond_block;
+    public static final Block BLOODY_THAUMIUM = Mods.NewHorizonsCoreMod.isModLoaded() ? getBloodyThaumium()
+        : Blocks.gold_block;
+    public static final Block BLOODY_VOID = Mods.NewHorizonsCoreMod.isModLoaded() ? getBloodyVoid() : Blocks.iron_block;
+
+    public static final Block BLOOD_LAMP = Mods.BloodArsenal.isModLoaded() ? getBloodLamp() : Blocks.glowstone;
+    public static final Block LP_MATERIALIZER = Mods.BloodArsenal.isModLoaded() ? getLpMaterializer() : Blocks.hopper;
 
     public BloodSoulSacrificialArray(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -230,16 +242,16 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
                     .buildAndChain(GregTechAPI.sBlockCasings8, 10))
             .addElement('C', ofBlock(gtPlusPlus.core.block.ModBlocks.blockSpecialMultiCasings, 13))
             .addElement('D', ofBlock(gtPlusPlus.core.block.ModBlocks.blockCasingsMisc, 9))
-            .addElement('E', ofBlockAnyMeta(BlockList.BloodyIchorium.getBlock()))
-            .addElement('F', ofBlockAnyMeta(BlockList.BloodyThaumium.getBlock()))
-            .addElement('G', ofBlockAnyMeta(BlockList.BloodyVoid.getBlock()))
+            .addElement('E', ofBlockAnyMeta(BLOODY_ICHORIUM))
+            .addElement('F', ofBlockAnyMeta(BLOODY_THAUMIUM))
+            .addElement('G', ofBlockAnyMeta(BLOODY_VOID))
             .addElement('H', ofBlock(Blocks.diamond_block, 0))
             .addElement('I', ofBlock(ModBlocks.bloodRune, 0))
             .addElement('J', ofBlock(ModBlocks.bloodRune, 3))
             .addElement('K', ofBlock(ModBlocks.bloodRune, 4))
             .addElement('L', ofBlock(ModBlocks.bloodRune, 5))
             .addElement('M', ofBlock(ModBlocks.bloodRune, 6))
-            .addElement('N', ofBlockAnyMeta(com.arc.bloodarsenal.common.block.ModBlocks.blood_lamp))
+            .addElement('N', ofBlockAnyMeta(BLOOD_LAMP))
             .addElement('O', ofBlockAnyMeta(ModBlocks.blockCrystal))
             .addElement('P', ofBlockAnyMeta(ModBlocks.bloodStoneBrick))
             .addElement('Q', ofBlockAnyMeta(Blocks.glowstone))
@@ -248,7 +260,7 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
             .addElement('T', ofBlockAnyMeta(ModBlocks.runeOfSelfSacrifice))
             .addElement('U', ofBlockAnyMeta(ModBlocks.speedRune))
             .addElement('V', CommonElements.BlockBeacon.get())
-            .addElement('W', ofBlockAnyMeta(com.arc.bloodarsenal.common.block.ModBlocks.lp_materializer))
+            .addElement('W', ofBlockAnyMeta(LP_MATERIALIZER))
             .addElement('X', ofFrame(Materials.NaquadahAlloy))
             .addElement('Y', ofBlockAnyMeta(ModBlocks.ritualStone))
             .addElement(
@@ -552,5 +564,30 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     @Override
     public boolean shouldCheckMaintenance() {
         return false;
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static Block getBloodyIchorium() {
+        return BlockList.BloodyIchorium.getBlock();
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static Block getBloodyThaumium() {
+        return BlockList.BloodyThaumium.getBlock();
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static Block getBloodyVoid() {
+        return BlockList.BloodyVoid.getBlock();
+    }
+
+    @Optional.Method(modid = "BloodArsenal")
+    public static Block getBloodLamp() {
+        return com.arc.bloodarsenal.common.block.ModBlocks.blood_lamp;
+    }
+
+    @Optional.Method(modid = "BloodArsenal")
+    public static Block getLpMaterializer() {
+        return com.arc.bloodarsenal.common.block.ModBlocks.lp_materializer;
     }
 }

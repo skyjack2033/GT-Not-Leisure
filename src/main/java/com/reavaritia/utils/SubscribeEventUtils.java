@@ -43,11 +43,12 @@ import com.reavaritia.common.items.InfinitySword;
 import com.reavaritia.common.items.MatterCluster;
 import com.reavaritia.utils.item.ToolHelper;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import fox.spiteful.avaritia.Config;
 import fox.spiteful.avaritia.LudicrousEvents;
 import fox.spiteful.avaritia.LudicrousText;
-import fox.spiteful.avaritia.items.LudicrousItems;
+import gregtech.api.enums.Mods;
 
 public class SubscribeEventUtils {
 
@@ -55,7 +56,7 @@ public class SubscribeEventUtils {
 
     @SubscribeEvent
     public void onPlayerMine(PlayerInteractEvent event) {
-        if (!Config.bedrockBreaker || event.face == -1
+        if (!(Mods.Avaritia.isModLoaded() && getBedrockBreak()) || event.face == -1
             || event.world.isRemote
             || event.action != PlayerInteractEvent.Action.LEFT_CLICK_BLOCK
             || event.entityPlayer.getHeldItem() == null
@@ -92,14 +93,18 @@ public class SubscribeEventUtils {
         }
     }
 
+    @Optional.Method(modid = "Avaritia")
+    public boolean getBedrockBreak() {
+        return Config.bedrockBreaker;
+    }
+
     @SubscribeEvent
     public void handleExtraLuck(BlockEvent.HarvestDropsEvent event) {
         if (event.harvester == null) return;
         if (event.harvester.getHeldItem() == null) return;
         ItemStack held = event.harvester.getHeldItem();
         if (held.getItem() instanceof InfinityPickaxe) {
-            LudicrousEvents.extraLuck(event, 5);
-
+            if (Mods.Avaritia.isModLoaded()) extraLuck(event, 5);
             if (held.getTagCompound() != null && held.getTagCompound()
                 .getBoolean("HammerMode")
                 && ToolHelper.hammering.contains(event.harvester)
@@ -171,7 +176,8 @@ public class SubscribeEventUtils {
         if (!(event.entityLiving instanceof EntityPlayer player)) return;
         if (player.getHeldItem() != null && player.getHeldItem()
             .getItem() instanceof InfinitySword && player.isUsingItem()) event.setCanceled(true);
-        if (LudicrousItems.isInfinite(player) && !event.source.damageType.equals("infinity")) event.setCanceled(true);
+        if (Mods.Avaritia.isModLoaded() && InfinitySword.isInfinite(player)
+            && !event.source.damageType.equals("infinity")) event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -180,7 +186,8 @@ public class SubscribeEventUtils {
         if (event.source.getEntity() != null && event.source.getEntity() instanceof EntityPlayer) return;
         if (player.getHeldItem() != null && player.getHeldItem()
             .getItem() instanceof InfinitySword && player.isUsingItem()) event.setCanceled(true);
-        if (LudicrousItems.isInfinite(player) && !event.source.damageType.equals("infinity")) event.setCanceled(true);
+        if (Mods.Avaritia.isModLoaded() && InfinitySword.isInfinite(player)
+            && !event.source.damageType.equals("infinity")) event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -420,10 +427,12 @@ public class SubscribeEventUtils {
                     .contains(StatCollector.translateToLocal("attribute.name.generic.attackDamage"))
                     || event.toolTip.get(x)
                         .contains(StatCollector.translateToLocal("Attack Damage"))) {
+                    var damage = StatCollector.translateToLocal("Damage_InfinitySword");
+                    if (Mods.Avaritia.isModLoaded()) damage = makeFabulous(damage);
                     event.toolTip.set(
                         x,
                         EnumChatFormatting.BLUE + "+"
-                            + LudicrousText.makeFabulous(StatCollector.translateToLocal("Damage_InfinitySword"))
+                            + damage
                             + " "
                             + EnumChatFormatting.BLUE
                             + StatCollector.translateToLocal("attribute.name.generic.attackDamage"));
@@ -431,5 +440,15 @@ public class SubscribeEventUtils {
                 }
             }
         }
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public static String makeFabulous(String text) {
+        return LudicrousText.makeFabulous(text);
+    }
+
+    @Optional.Method(modid = "Avaritia")
+    public static void extraLuck(BlockEvent.HarvestDropsEvent event, int mult) {
+        LudicrousEvents.extraLuck(event, mult);
     }
 }
