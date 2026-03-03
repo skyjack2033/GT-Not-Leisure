@@ -265,7 +265,7 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
     @Override
     public boolean checkHatch() {
         for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV & mEnergyHatch.mTier > mGlassTier) {
+            if (mGlassTier < VoltageIndex.UHV && mEnergyHatch.mTier > mGlassTier) {
                 return false;
             }
         }
