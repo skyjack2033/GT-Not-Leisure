@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -297,155 +296,177 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
         return amp;
     }
 
-    public long getPerAspectEnergy(Aspect aspect) {
+    public long getPerAspectEnergy(Aspect aspect, int amount) {
         int type = LargeEssentiaEnergyData.getAspectTypeIndex(aspect);
         if (!isValidEssentia(aspect)) return 0;
         return switch (type) {
-            case 0 -> normalEssentia(aspect);
-            case 1 -> airEssentia(aspect);
-            case 2 -> thermalEssentia(aspect);
-            case 3 -> unstableEssentia(aspect);
-            case 4 -> victusEssentia(aspect);
-            case 5 -> taintedEssentia(aspect);
-            case 6 -> mechanicEssentia(aspect);
-            case 7 -> spiritEssentia(aspect);
-            case 8 -> radiationEssentia(aspect);
-            case 9 -> electricEssentia(aspect);
+            case 0 -> normalEssentia(aspect, amount);
+            case 1 -> airEssentia(aspect, amount);
+            case 2 -> thermalEssentia(aspect, amount);
+            case 3 -> unstableEssentia(aspect, amount);
+            case 4 -> victusEssentia(aspect, amount);
+            case 5 -> taintedEssentia(aspect, amount);
+            case 6 -> mechanicEssentia(aspect, amount);
+            case 7 -> spiritEssentia(aspect, amount);
+            case 8 -> radiationEssentia(aspect, amount);
+            case 9 -> electricEssentia(aspect, amount);
             default -> 0;
         };
     }
 
-    public long normalEssentia(Aspect aspect) {
+    public long normalEssentia(Aspect aspect, int amount) {
         return LargeEssentiaEnergyData.getAspectFuelValue(aspect);
     }
 
-    public long airEssentia(Aspect aspect) {
+    public long airEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 8;
-        if (depleteInput(Materials.LiquidAir.getFluid(ceoInput))) {
+        long ceoInput = (long) (LargeEssentiaEnergyData.getAspectCeo(aspect) * 8L);
+        if (depleteInput(Materials.LiquidAir.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.5D;
-        } else if (depleteInput(Materials.Air.getGas(ceoInput))) {
+        } else if (depleteInput(Materials.Air.getGas(GTUtility.safeInt(ceoInput, 0)))) {
             ceoOutput = 1.0D;
         }
         return (long) (baseValue * ceoOutput);
     }
 
-    public long thermalEssentia(Aspect aspect) {
+    public long thermalEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
-        if (depleteInput(Materials.SuperCoolant.getFluid(ceoInput))) {
+        long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
+        if (depleteInput(Materials.SuperCoolant.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 9.0D;
-        } else if (depleteInput(new FluidStack(GTPPFluids.Cryotheum, ceoInput))) {
+        } else if (depleteInput(new FluidStack(GTPPFluids.Cryotheum, GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 5.0D;
-        } else if (depleteInput(GTModHandler.getIC2Coolant(ceoInput))) {
+        } else if (depleteInput(GTModHandler.getIC2Coolant(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.5D;
-        } else if (depleteInput(Materials.Ice.getSolid(ceoInput))) {
+        } else if (depleteInput(Materials.Ice.getSolid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.2D;
-        } else if (depleteInput(GTModHandler.getDistilledWater(ceoInput))) {
+        } else if (depleteInput(GTModHandler.getDistilledWater(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.0D;
-        } else if (depleteInput(Materials.Water.getFluid(ceoInput))) {
+        } else if (depleteInput(Materials.Water.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 0.5D;
         }
 
         return (long) (baseValue * ceoOutput);
     }
 
-    public long unstableEssentia(Aspect aspect) {
+    public long unstableEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 4;
-        if (depleteInput(WerkstoffLoader.Xenon.getFluidOrGas(ceoInput))) {
+        long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 4;
+        if (depleteInput(WerkstoffLoader.Xenon.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 4.0D;
-        } else if (depleteInput(WerkstoffLoader.Krypton.getFluidOrGas(ceoInput))) {
+        } else if (depleteInput(WerkstoffLoader.Krypton.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 3.0D;
-        } else if (depleteInput(Materials.Argon.getFluid(ceoInput))) {
+        } else if (depleteInput(Materials.Argon.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 2.5D;
-        } else if (depleteInput(WerkstoffLoader.Neon.getFluidOrGas(ceoInput))) {
+        } else if (depleteInput(WerkstoffLoader.Neon.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 2.2D;
-        } else if (depleteInput(Materials.Helium.getFluid(ceoInput))) {
+        } else if (depleteInput(Materials.Helium.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 2.0D;
-        } else if (depleteInput(Materials.Nitrogen.getFluid(ceoInput))) {
+        } else if (depleteInput(Materials.Nitrogen.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.0D;
         }
         return (long) (baseValue * ceoOutput);
     }
 
-    public long victusEssentia(Aspect aspect) {
+    public long victusEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 18;
-        if (depleteInput(new FluidStack(XPJUICE, ceoInput))) {
+        long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 18;
+        if (depleteInput(new FluidStack(XPJUICE, GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 2.0D;
-        } else if (depleteInput(new FluidStack(LIFEESSENCE, ceoInput))) {
+        } else if (depleteInput(new FluidStack(LIFEESSENCE, GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 6.0D;
         }
         return (long) (baseValue * ceoOutput);
     }
 
-    public long taintedEssentia(Aspect aspect) {
+    public long taintedEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 3;
+        long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 3;
         int chance = 2000;
-        if (depleteInput(new FluidStack(PURE, ceoInput))) {
+        if (depleteInput(new FluidStack(PURE, GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 60.0D;
             chance = 0;
-        } else if (depleteInput(new FluidStack(DEATH, ceoInput))) {
+        } else if (depleteInput(new FluidStack(DEATH, GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = Math.pow(25000D / baseValue, 4);
             chance = 4000;
         }
 
-        if (random.nextInt(10000) < chance) {
-            World world = getBaseMetaTileEntity().getWorld();
-            int tX = random.nextInt(4);
-            int tZ = random.nextInt(4);
-            if (world.isAirBlock(tX, 0, tZ)) world.setBlock(tX, 0, tZ, ConfigBlocks.blockFluxGas, random.nextInt(8), 3);
+        if (chance > 0) {
+            double expected = (double) amount * chance / 10000.0;
+            int guaranteed = (int) expected;
+            double remainder = expected - guaranteed;
+
+            int totalTriggers = guaranteed;
+
+            if (random.nextDouble() < remainder) {
+                totalTriggers++;
+            }
+
+            var te = getBaseMetaTileEntity();
+            var world = te.getWorld();
+            int x = te.getXCoord();
+            int y = te.getYCoord();
+            int z = te.getZCoord();
+
+            for (int i = 0; i < totalTriggers; i++) {
+                int tX = x + random.nextInt(17) - 8;
+                int tY = y + random.nextInt(17) - 8;
+                int tZ = z + random.nextInt(17) - 8;
+
+                if (world.isAirBlock(tX, tY, tZ)) {
+                    world.setBlock(tX, tY, tZ, ConfigBlocks.blockFluxGas, random.nextInt(8), 3);
+                }
+            }
         }
 
         return (long) (baseValue * ceoOutput);
     }
 
-    public long mechanicEssentia(Aspect aspect) {
+    public long mechanicEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 20;
-        if (depleteInput(Materials.Lubricant.getFluid(ceoInput))) {
+        long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 20;
+        if (depleteInput(Materials.Lubricant.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.0D;
         }
         return (long) (baseValue * ceoOutput);
     }
 
-    public long spiritEssentia(Aspect aspect) {
+    public long spiritEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
-        if (depleteInput(new FluidStack(SPIRIT, ceoInput))) {
+        long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
+        if (depleteInput(new FluidStack(SPIRIT, GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 10D * (1 + mStableValue / 100D);
-        } else if (depleteInput(new FluidStack(HOLLOW_TEARS, ceoInput))) {
+        } else if (depleteInput(new FluidStack(HOLLOW_TEARS, GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 15D * (1 + 100D / mStableValue);
         }
         return (long) (baseValue * ceoOutput);
     }
 
-    public long radiationEssentia(Aspect aspect) {
+    public long radiationEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
-        int ceoInput = (int) LargeEssentiaEnergyData.getAspectCeo(aspect) * 6;
-        if (depleteInput(Materials.Caesium.getMolten(ceoInput))) {
+        long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 6;
+        if (depleteInput(Materials.Caesium.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 2.0D;
-        } else if (depleteInput(Materials.Uranium235.getMolten(ceoInput))) {
+        } else if (depleteInput(Materials.Uranium235.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 3.0D;
-        } else if (depleteInput(Materials.Naquadah.getMolten(ceoInput))) {
+        } else if (depleteInput(Materials.Naquadah.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 4.0D;
-        } else if (depleteInput(GGMaterial.atomicSeparationCatalyst.getMolten(ceoInput))) {
-            ceoOutput = 16.0D;
-        }
+        } else
+            if (depleteInput(GGMaterial.atomicSeparationCatalyst.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
+                ceoOutput = 16.0D;
+            }
         return (long) (baseValue * ceoOutput);
     }
 
-    public long electricEssentia(Aspect aspect) {
+    public long electricEssentia(Aspect aspect, int amount) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = Math.pow(3.0, GTUtility.getTier(getVoltageLimit()));
         return (long) (baseValue * ceoOutput);
@@ -473,17 +494,17 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
                     Aspect aspect = iterator.next();
                     if (!isValidEssentia(aspect)) continue;
 
-                    long perEU = getPerAspectEnergy(aspect) * mStableValue / 25;
-                    if (perEU <= 0) continue;
-
-                    long needEU = maxEU - eut;
-                    if (needEU <= 0) break;
-
                     int amount = aspects.getAmount(aspect);
                     if (amount <= 0) {
                         iterator.remove();
                         continue;
                     }
+
+                    long perEU = getPerAspectEnergy(aspect, amount) * mStableValue / 25;
+                    if (perEU <= 0) continue;
+
+                    long needEU = maxEU - eut;
+                    if (needEU <= 0) break;
 
                     long canConsume = needEU / perEU;
 
