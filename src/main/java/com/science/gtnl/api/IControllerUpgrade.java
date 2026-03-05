@@ -70,23 +70,42 @@ public interface IControllerUpgrade {
     default void saveUpgradeNBTData(NBTTagCompound aNBT) {
         NBTTagCompound upgradeWindowStorageNBTTag = new NBTTagCompound();
         int storageIndex = 0;
+        boolean hasUpgradeItem = false;
+
         for (ItemStack itemStack : getUpgradeInputSlotHandler().getStacks()) {
             if (itemStack != null) {
+                hasUpgradeItem = true;
                 upgradeWindowStorageNBTTag
                     .setInteger(storageIndex + "stacksizeOfStoredUpgradeItems", itemStack.stackSize);
                 aNBT.setTag(storageIndex + "storedUpgradeItem", itemStack.writeToNBT(new NBTTagCompound()));
             }
             storageIndex++;
         }
-        aNBT.setTag("upgradeWindowStorage", upgradeWindowStorageNBTTag);
 
-        NBTTagCompound paidCostTag = new NBTTagCompound();
-        for (int i = 0; i < getUpgradePaidCosts().length; i++) {
-            paidCostTag.setInteger("cost" + i, getUpgradePaidCosts()[i]);
+        if (hasUpgradeItem) {
+            aNBT.setTag("upgradeWindowStorage", upgradeWindowStorageNBTTag);
         }
-        aNBT.setTag("paidCosts", paidCostTag);
 
-        aNBT.setBoolean("upgradeConsumed", isUpgradeConsumed());
+        int[] paidCosts = getUpgradePaidCosts();
+        if (paidCosts != null && paidCosts.length > 0) {
+            NBTTagCompound paidCostTag = new NBTTagCompound();
+            boolean hasCost = false;
+
+            for (int i = 0; i < paidCosts.length; i++) {
+                if (paidCosts[i] != 0) {
+                    hasCost = true;
+                    paidCostTag.setInteger("cost" + i, paidCosts[i]);
+                }
+            }
+
+            if (hasCost) {
+                aNBT.setTag("paidCosts", paidCostTag);
+            }
+        }
+
+        if (isUpgradeConsumed()) {
+            aNBT.setBoolean("upgradeConsumed", true);
+        }
     }
 
     default void loadUpgradeNBTData(NBTTagCompound aNBT) {
