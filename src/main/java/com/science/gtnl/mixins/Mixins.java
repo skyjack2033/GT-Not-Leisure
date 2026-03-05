@@ -34,7 +34,7 @@ public enum Mixins implements IMixins {
         "Minecraft.MixinWorldServer"),
 
     MINECRAFT_CLIENT(Side.CLIENT, "Minecraft.AccessorEntityRenderer", "Minecraft.MixinMinecraft",
-        "Minecraft.MixinWorldClient"),
+        "Minecraft.MixinWorldClient", "Minecraft.MixinSimpleReloadableResourceManager"),
 
     SUPER_CREEPER(new MixinBuilder("Mixins for Super Creeper logic")
         .addCommonMixins(
