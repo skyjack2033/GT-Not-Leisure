@@ -49,7 +49,7 @@ public abstract class MixinMTEPlasmaForge extends MTEExtendedPowerMultiBlockBase
 
     @Override
     public void setItemNBT(NBTTagCompound nbt) {
-        nbt.setBoolean("lockRuntime", gtnl$lockRuntime);
+        if (gtnl$lockRuntime) nbt.setBoolean("lockRuntime", true);
         super.setItemNBT(nbt);
     }
 
