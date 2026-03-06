@@ -10,7 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
-import com.science.gtnl.common.item.ItemDireCraftPattern;
+import com.science.gtnl.common.item.items.DireCraftPattern;
 import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
@@ -86,7 +86,7 @@ public class ContainerDirePatternEncoder extends AEBaseContainer implements IOpt
                 @Override
                 public boolean isItemValid(final ItemStack i) {
                     if (i != null) {
-                        return i.getItem() instanceof ItemDireCraftPattern;
+                        return i.getItem() instanceof DireCraftPattern;
                     }
                     return false;
                 }
@@ -207,7 +207,7 @@ public class ContainerDirePatternEncoder extends AEBaseContainer implements IOpt
             return false;
         }
 
-        return output.getItem() instanceof ItemDireCraftPattern;
+        return output.getItem() instanceof DireCraftPattern;
     }
 
     @Override

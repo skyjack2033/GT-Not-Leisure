@@ -36,6 +36,7 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.util.GTUtility;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -76,11 +77,12 @@ public class ItemInfinityItem extends Item implements IFluidContainerItem {
         this.setTextureName(RESOURCE_ROOT_ID + ":" + name);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setMaxStackSize(1);
-        itemList.set(new ItemStack(this));
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance()
             .bus()
             .register(this);
+        GameRegistry.registerItem(this, getUnlocalizedName());
+        itemList.set(new ItemStack(this));
     }
 
     @Override

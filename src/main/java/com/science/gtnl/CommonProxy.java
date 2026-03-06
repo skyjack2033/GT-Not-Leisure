@@ -1,10 +1,13 @@
 package com.science.gtnl;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableChest;
+import com.science.gtnl.common.block.blocks.PartSuperInterface;
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
 import com.science.gtnl.common.entity.EntityParticleBeam;
@@ -15,6 +18,7 @@ import com.science.gtnl.common.recipe.gtnl.ExtremeExtremeEntityCrusherRecipes;
 import com.science.gtnl.common.world.GTNLWorldgenloader;
 import com.science.gtnl.container.ContainerAEChisel;
 import com.science.gtnl.container.ContainerDirePatternEncoder;
+import com.science.gtnl.container.ContainerSuperInterface;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAdvancedWorkbench;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAnvil;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableBasicWorkbench;
@@ -31,6 +35,9 @@ import com.science.gtnl.utils.machine.VMTweakHelper;
 import com.science.gtnl.utils.recipes.CraftingUnitHandler;
 
 import appeng.api.AEApi;
+import appeng.api.parts.IPart;
+import appeng.api.parts.IPartHost;
+import appeng.container.ContainerOpenContext;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
@@ -83,7 +90,9 @@ public class CommonProxy implements IGuiHandler {
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        return switch (GuiType.getGuiType(ID)) {
+        ForgeDirection side = ForgeDirection.getOrientation(ID & 7);
+        int guiID = ID >> 3;
+        return switch (GuiType.getGuiType(guiID)) {
             case DetravScannerGUI -> null;
             case PortableBasicWorkBenchGUI -> new ContainerPortableBasicWorkbench(player, world, player.getHeldItem());
             case PortableAdvancedWorkBenchGUI -> new ContainerPortableAdvancedWorkbench(
@@ -157,16 +166,30 @@ public class CommonProxy implements IGuiHandler {
                 }
                 yield null;
             }
+            case SuperInterfaceGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartSuperInterface si) {
+                        var container = new ContainerSuperInterface(player.inventory, si);
+                        ContainerOpenContext ctx = new ContainerOpenContext(si);
+                        ctx.setWorld(world);
+                        ctx.setX(x);
+                        ctx.setY(y);
+                        ctx.setZ(z);
+                        ctx.setSide(side);
+                        container.setOpenContext(ctx);
+                        yield container;
+                    }
+                }
+                yield null;
+            }
         };
     }
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         return null;
-    }
-
-    public void openProspectorGUI() {
-        // just Client code
     }
 
     public EntityPlayer getEntityPlayerFromContext(final MessageContext ctx) {
@@ -176,5 +199,20 @@ public class CommonProxy implements IGuiHandler {
     public EntityParticleBeam particleBeam(double x, double y, double z, double masterX, double masterY, double masterZ,
         double radius, EntityParticleBeam oldBeam, boolean render) {
         return null;
+    }
+
+    public static void openGui(EntityPlayer player, GuiType type, ForgeDirection side, TileEntity tile) {
+        if (tile == null) return;
+        openGui(player, type, side, tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
+    }
+
+    public static void openGui(EntityPlayer player, GuiType type, ForgeDirection side, World world, int x, int y,
+        int z) {
+        if (player == null || world == null) return;
+        if (side == null) side = ForgeDirection.UNKNOWN;
+
+        int fullID = (type.getID() << 3) | (side.ordinal() & 7);
+
+        player.openGui(ScienceNotLeisure.instance, fullID, world, x, y, z);
     }
 }

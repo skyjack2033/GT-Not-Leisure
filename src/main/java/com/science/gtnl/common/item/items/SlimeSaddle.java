@@ -11,6 +11,8 @@ import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.entity.EntitySaddleSlime;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+
 public class SlimeSaddle extends Item {
 
     public SlimeSaddle() {
@@ -18,6 +20,7 @@ public class SlimeSaddle extends Item {
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setMaxStackSize(1);
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "SlimeSaddle");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.SlimeSaddle.set(new ItemStack(this, 1));
     }
 

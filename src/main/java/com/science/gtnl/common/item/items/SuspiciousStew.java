@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.util.GTModHandler;
 
 public class SuspiciousStew extends ItemFood {
@@ -31,6 +32,7 @@ public class SuspiciousStew extends ItemFood {
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "SuspiciousStew");
         this.setMaxStackSize(1);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, "SuspiciousStew");
         GTNLItemList.SuspiciousStew.set(new ItemStack(this, 1));
     }
 

@@ -75,8 +75,8 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
 
     @Override
     public void setItemNBT(NBTTagCompound aNBT) {
+        if (wirelessUpgrade) aNBT.setBoolean("wirelessUpgrade", true);
         super.setItemNBT(aNBT);
-        aNBT.setBoolean("wirelessUpgrade", wirelessUpgrade);
     }
 
     @Override

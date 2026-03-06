@@ -41,6 +41,7 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -65,6 +66,7 @@ public class VeinMiningPickaxe extends ItemPickaxe implements SubtitleDisplay {
         FMLCommonHandler.instance()
             .bus()
             .register(this);
+        GameRegistry.registerItem(this, "VeinMiningPickaxe");
         GTNLItemList.VeinMiningPickaxe.set(new ItemStack(this, 1));
     }
 

@@ -11,6 +11,7 @@ import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import baubles.api.BaubleType;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import vazkii.botania.common.Botania;
@@ -22,6 +23,7 @@ public class SuperReachRing extends BaubleItem {
         this.setUnlocalizedName("SuperReachRing");
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "SuperReachRing");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.SuperReachRing.set(new ItemStack(this, 1));
     }
 

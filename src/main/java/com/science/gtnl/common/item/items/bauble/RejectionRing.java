@@ -18,6 +18,7 @@ import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import baubles.api.BaubleType;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -28,6 +29,7 @@ public class RejectionRing extends BaubleItem {
         this.setUnlocalizedName("RejectionRing");
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "RejectionRing");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.RejectionRing.set(new ItemStack(this, 1));
     }
 

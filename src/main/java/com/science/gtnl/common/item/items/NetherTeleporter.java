@@ -23,6 +23,7 @@ import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.utils.TeleporterUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -36,6 +37,7 @@ public class NetherTeleporter extends Item implements SubtitleDisplay {
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "NetherTeleporter");
         this.setMaxStackSize(1);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.NetherTeleporter.set(new ItemStack(this, 1));
     }
 

@@ -19,6 +19,7 @@ import com.science.gtnl.common.entity.EntitySteamRocket;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import micdoodle8.mods.galacticraft.api.entity.IRocketType.EnumRocketType;
@@ -30,15 +31,16 @@ import micdoodle8.mods.galacticraft.core.tile.TileEntityLandingPad;
 import micdoodle8.mods.galacticraft.core.util.EnumColor;
 import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
 
-public class SteamRocketItem extends Item implements IHoldableItem {
+public class SteamRocket extends Item implements IHoldableItem {
 
-    public SteamRocketItem() {
+    public SteamRocket() {
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
         this.setTextureName("arrow");
         this.setUnlocalizedName("SteamRocket");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.SteamRocket.set(new ItemStack(this, 1));
     }
 

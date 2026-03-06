@@ -33,6 +33,7 @@ import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -64,6 +65,7 @@ public class TwilightSword extends ItemSword implements PlaySound {
         setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         setMaxDamage(9999);
         MinecraftForge.EVENT_BUS.register(this);
+        GameRegistry.registerItem(this, "TwilightSword");
         GTNLItemList.TwilightSword.set(new ItemStack(this, 1));
     }
 

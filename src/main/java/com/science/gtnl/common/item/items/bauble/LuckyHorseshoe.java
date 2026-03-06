@@ -19,6 +19,7 @@ import com.science.gtnl.utils.item.ItemUtils;
 import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -31,6 +32,7 @@ public class LuckyHorseshoe extends BaubleItem {
         this.setUnlocalizedName("LuckyHorseshoe");
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "LuckyHorseshoe");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.LuckyHorseshoe.set(new ItemStack(this, 1));
         MinecraftForge.EVENT_BUS.register(this);
     }

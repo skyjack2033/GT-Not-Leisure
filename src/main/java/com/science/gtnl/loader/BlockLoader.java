@@ -9,7 +9,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.blocks.BlockAEChisel;
 import com.science.gtnl.common.block.blocks.BlockArtificialStarRender;
 import com.science.gtnl.common.block.blocks.BlockCardboardBox;
@@ -601,7 +600,6 @@ public class BlockLoader {
     public static void registerTreeBrickuoia() {
         saplingBrickuoia = new SaplingBrickuoia();
         GTNLItemList.SaplingBrickuoia.set(new ItemStack(saplingBrickuoia, 1));
-        saplingBrickuoia.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         AnimatedTooltipHandler.addItemTooltip(
             GTNLItemList.SaplingBrickuoia.get(1),
             () -> StatCollector.translateToLocal("Tooltip_GiantBrickuoiaSapling_00"));

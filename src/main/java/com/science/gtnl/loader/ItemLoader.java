@@ -1,6 +1,5 @@
 package com.science.gtnl.loader;
 
-import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.item.items.SuspiciousStew.*;
 import static com.science.gtnl.utils.text.AnimatedTooltipHandler.*;
 
@@ -9,8 +8,6 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -18,13 +15,13 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.common.item.DebugItem;
-import com.science.gtnl.common.item.ItemDireCraftPattern;
+import com.science.gtnl.common.block.blocks.item.ItemPartSuperInterface;
 import com.science.gtnl.common.item.ItemInfinityCell;
 import com.science.gtnl.common.item.ItemInfinityItem;
-import com.science.gtnl.common.item.ItemRecord;
 import com.science.gtnl.common.item.MetaItemAdder;
 import com.science.gtnl.common.item.items.CircuitIntegratedPlus;
+import com.science.gtnl.common.item.items.DebugItem;
+import com.science.gtnl.common.item.items.DireCraftPattern;
 import com.science.gtnl.common.item.items.ElectricProspectorTool;
 import com.science.gtnl.common.item.items.FakeItemSiren;
 import com.science.gtnl.common.item.items.GTNLItemBucket;
@@ -33,7 +30,7 @@ import com.science.gtnl.common.item.items.NetherTeleporter;
 import com.science.gtnl.common.item.items.NullPointerException;
 import com.science.gtnl.common.item.items.PortableItem;
 import com.science.gtnl.common.item.items.SlimeSaddle;
-import com.science.gtnl.common.item.items.SteamRocketItem;
+import com.science.gtnl.common.item.items.SteamRocket;
 import com.science.gtnl.common.item.items.Stick;
 import com.science.gtnl.common.item.items.SuspiciousStew;
 import com.science.gtnl.common.item.items.TestItem;
@@ -67,119 +64,100 @@ import gregtech.common.render.items.InfinityMetaItemRenderer;
 
 public class ItemLoader {
 
-    public static Item steamRocket;
-    public static Item nullPointerException;
-    public static Item fakeItemSiren;
-    public static Item netherTeleporter;
-    public static Item testItem;
-    public static Item debugItem;
-    public static Item KFCFamily;
-    public static Item twilightSword;
-    public static Item circuitIntegratedPlus;
-    public static Item timeStopPocketWatch;
-    public static Item infinityTorch;
-    public static Item infinityWaterBucket;
-    public static Item infinityLavaBucket;
-    public static Item infinityHoneyBucket;
-    public static Item infinityShimmerBucket;
-    public static Item superstrongSponge;
-    public static Item slimeSaddle;
-    public static Item infinityFuelRodDepleted;
-    public static Item infinityFuelRod;
-    public static Item metaItem;
-    public static ItemBucket honeyBucket;
-    public static ItemBucket shimmerBucket;
-    public static ItemInfinityCell infinityCell;
-    public static ItemDireCraftPattern direCraftPattern;
-    public static Item wirelessUpgradeChip;
-    public static Item stick;
-    public static Item suspiciousStew;
-    public static Item veinMiningPickaxe;
-    public static Item portableItem;
+    public static SteamRocket steamRocket = new SteamRocket();
+    public static NullPointerException nullPointerException = new NullPointerException();
+    public static FakeItemSiren fakeItemSiren = new FakeItemSiren();
+    public static NetherTeleporter netherTeleporter = new NetherTeleporter();
+    public static TestItem testItem = new TestItem();
+    public static DebugItem debugItem = new DebugItem();
+    public static KFCFamily KFCFamily = new KFCFamily();
+    public static TwilightSword twilightSword = new TwilightSword();
+    public static CircuitIntegratedPlus circuitIntegratedPlus = new CircuitIntegratedPlus();
+    public static TimeStopPocketWatch timeStopPocketWatch = new TimeStopPocketWatch();
 
-    public static Item electricProspectorTool;
+    public static ItemInfinityItem infinityTorch = new ItemInfinityItem(
+        "InfinityTorch",
+        Blocks.torch,
+        GTNLItemList.InfinityTorch);
 
-    public static Item satietyRing;
-    public static Item rejectionRing;
-    public static Item superReachRing;
-    public static Item physicsCape;
-    public static Item royalGel;
-    public static Item luckyHorseshoe;
+    public static ItemInfinityItem infinityWaterBucket = new ItemInfinityItem(
+        "InfinityWaterBucket",
+        Blocks.water,
+        FluidRegistry.getFluid("water"),
+        GTNLItemList.InfinityWaterBucket);
 
-    public static ItemStack infinityItemCell;
+    public static ItemInfinityItem infinityLavaBucket = new ItemInfinityItem(
+        "InfinityLavaBucket",
+        Blocks.lava,
+        FluidRegistry.getFluid("lava"),
+        GTNLItemList.InfinityLavaBucket);
+
+    public static ItemInfinityItem infinityHoneyBucket = new ItemInfinityItem(
+        "InfinityHoneyBucket",
+        BlockLoader.honeyFluidBlock,
+        BlockLoader.honeyFluid,
+        GTNLItemList.InfinityHoneyBucket);
+
+    public static ItemInfinityItem infinityShimmerBucket = new ItemInfinityItem(
+        "InfinityShimmerBucket",
+        BlockLoader.shimmerFluidBlock,
+        BlockLoader.shimmerFluid,
+        GTNLItemList.InfinityShimmerBucket);
+
+    public static ItemInfinityItem superstrongSponge = new ItemInfinityItem(
+        "SuperstrongSponge",
+        (Block) null,
+        false,
+        GTNLItemList.SuperstrongSponge);
+
+    public static FuelRodDepleted infinityFuelRodDepleted = new FuelRodDepleted("InfinityFuelRodDepleted", 2000);
+
+    public static FuelRod infinityFuelRod = new FuelRod(
+        "InfinityFuelRod",
+        1,
+        491520,
+        500,
+        15000,
+        160000,
+        70F,
+        new ItemStack(infinityFuelRodDepleted, 1));
+
+    public static MetaItemAdder metaItem = new MetaItemAdder("MetaItem", GTNLCreativeTabs.GTNotLeisureItem);
+
+    public static GTNLItemBucket honeyBucket;
+    public static GTNLItemBucket shimmerBucket;
+
+    public static ItemInfinityCell infinityCell = new ItemInfinityCell();
+    public static DireCraftPattern direCraftPattern = new DireCraftPattern();
+
+    public static WirelessUpgradeChip wirelessUpgradeChip = new WirelessUpgradeChip();
+    public static SuspiciousStew suspiciousStew = new SuspiciousStew();
+    public static PortableItem portableItem = new PortableItem();
+    public static ElectricProspectorTool electricProspectorTool = new ElectricProspectorTool();
+
+    public static SlimeSaddle slimeSaddle = new SlimeSaddle();
+
+    public static SuperReachRing superReachRing = new SuperReachRing();
+    public static SatietyRing satietyRing = new SatietyRing();
+    public static RejectionRing rejectionRing = new RejectionRing();
+
+    public static PhysicsCape physicsCape = new PhysicsCape();
+    public static RoyalGel royalGel = new RoyalGel();
+    public static LuckyHorseshoe luckyHorseshoe = new LuckyHorseshoe();
+
+    public static Stick stick = new Stick();
+
+    public static VeinMiningPickaxe veinMiningPickaxe = new VeinMiningPickaxe();
+
+    public static ItemPartSuperInterface superInterface = new ItemPartSuperInterface();
+
     public static ItemStack infinityDyeCell;
     public static ItemStack infinityDyeFluidCell;
     public static ItemStack infinityStoneCell;
 
     public static void registryItems() {
-        portableItem = new PortableItem();
-        veinMiningPickaxe = new VeinMiningPickaxe();
-        suspiciousStew = new SuspiciousStew();
-        steamRocket = new SteamRocketItem();
-        nullPointerException = new NullPointerException();
-        fakeItemSiren = new FakeItemSiren();
-        wirelessUpgradeChip = new WirelessUpgradeChip();
-        testItem = new TestItem();
-        debugItem = new DebugItem();
-        netherTeleporter = new NetherTeleporter();
-        electricProspectorTool = new ElectricProspectorTool();
-        KFCFamily = new KFCFamily(20, 20, true);
-        twilightSword = new TwilightSword();
-        circuitIntegratedPlus = new CircuitIntegratedPlus();
-        timeStopPocketWatch = new TimeStopPocketWatch();
-        infinityTorch = new ItemInfinityItem("InfinityTorch", Blocks.torch, GTNLItemList.InfinityTorch);
-        infinityWaterBucket = new ItemInfinityItem(
-            "InfinityWaterBucket",
-            Blocks.water,
-            FluidRegistry.getFluid("water"),
-            GTNLItemList.InfinityWaterBucket);
-        infinityLavaBucket = new ItemInfinityItem(
-            "InfinityLavaBucket",
-            Blocks.lava,
-            FluidRegistry.getFluid("lava"),
-            GTNLItemList.InfinityLavaBucket);
-        infinityHoneyBucket = new ItemInfinityItem(
-            "InfinityHoneyBucket",
-            BlockLoader.honeyFluidBlock,
-            BlockLoader.honeyFluid,
-            GTNLItemList.InfinityHoneyBucket);
-        infinityShimmerBucket = new ItemInfinityItem(
-            "InfinityShimmerBucket",
-            BlockLoader.shimmerFluidBlock,
-            BlockLoader.shimmerFluid,
-            GTNLItemList.InfinityShimmerBucket);
-        superstrongSponge = new ItemInfinityItem(
-            "SuperstrongSponge",
-            (Block) null,
-            false,
-            GTNLItemList.SuperstrongSponge);
-        RecordLoader.recordSus = new ItemRecord("sus").setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
-        RecordLoader.recordNewHorizons = new ItemRecord("new_horizons")
-            .setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
-        infinityFuelRodDepleted = new FuelRodDepleted("InfinityFuelRodDepleted", 2000);
-        infinityFuelRod = new FuelRod(
-            "InfinityFuelRod",
-            1,
-            491520,
-            500,
-            15000,
-            160000,
-            70F,
-            new ItemStack(infinityFuelRodDepleted, 1));
-        metaItem = new MetaItemAdder("MetaItem", GTNLCreativeTabs.GTNotLeisureItem)
-            .setTextureName(RESOURCE_ROOT_ID + ":" + "MetaItem/0");
         honeyBucket = GTNLItemBucket.create(BlockLoader.honeyFluid);
         shimmerBucket = GTNLItemBucket.create(BlockLoader.shimmerFluid);
-        superReachRing = new SuperReachRing();
-        satietyRing = new SatietyRing();
-        rejectionRing = new RejectionRing();
-        slimeSaddle = new SlimeSaddle();
-        physicsCape = new PhysicsCape();
-        royalGel = new RoyalGel();
-        luckyHorseshoe = new LuckyHorseshoe();
-        infinityCell = new ItemInfinityCell();
-        direCraftPattern = new ItemDireCraftPattern();
-        stick = new Stick();
 
         var subDyeItems = new ItemInfinityCell.SubItem[16];
         for (short i = 0; i < 16; i++) {
@@ -241,52 +219,17 @@ public class ItemLoader {
         ItemLoader.infinityStoneCell = ItemInfinityCell
             .getSubItem(StorageChannel.ITEMS, "InfinityCell.stone.name", "InfinityStoneCell", infinityStoneCell);
 
-        GameRegistry.registerItem(wirelessUpgradeChip, "WirelessUpgradeChip");
-        GameRegistry.registerItem(stick, "Stick");
-        GameRegistry.registerItem(portableItem, "PortableItem");
-        GameRegistry.registerItem(veinMiningPickaxe, "VeinMiningPickaxe");
-        GameRegistry.registerItem(suspiciousStew, "SuspiciousStew");
-        GameRegistry.registerItem(steamRocket, "SteamRocket");
-        GameRegistry.registerItem(nullPointerException, "NullPointerException");
-        GameRegistry.registerItem(netherTeleporter, "NetherTeleporter");
-        GameRegistry.registerItem(fakeItemSiren, "FakeItemSiren");
-        GameRegistry.registerItem(testItem, "TestItem");
-        GameRegistry.registerItem(electricProspectorTool, "ElectricProspectorTool");
-        GameRegistry.registerItem(KFCFamily, "KFCFamily");
-        GameRegistry.registerItem(twilightSword, "TwilightSword");
-        GameRegistry.registerItem(circuitIntegratedPlus, "CircuitIntegratedPlus");
-        GameRegistry.registerItem(timeStopPocketWatch, "TimeStopPocketWatch");
-        GameRegistry.registerItem(infinityTorch, "InfinityTorch");
-        GameRegistry.registerItem(infinityWaterBucket, "InfinityWaterBucket");
-        GameRegistry.registerItem(infinityLavaBucket, "InfinityLavaBucket");
-        GameRegistry.registerItem(infinityHoneyBucket, "InfinityHoneyBucket");
-        GameRegistry.registerItem(infinityShimmerBucket, "InfinityShimmerBucket");
-        GameRegistry.registerItem(superstrongSponge, "SuperstrongSponge");
-        GameRegistry.registerItem(slimeSaddle, "SlimeSaddle");
         GameRegistry.registerItem(RecordLoader.recordSus, "record_sus");
         GameRegistry.registerItem(RecordLoader.recordNewHorizons, "record_new_horizons");
-        GameRegistry.registerItem(infinityFuelRodDepleted, "InfinityFuelRodDepleted");
-        GameRegistry.registerItem(infinityFuelRod, "InfinityFuelRod");
-        GameRegistry.registerItem(direCraftPattern, "DireCraftPattern");
-        GameRegistry.registerItem(metaItem, "MetaItem");
 
-        GameRegistry.registerItem(satietyRing, "SatietyRing");
-        GameRegistry.registerItem(rejectionRing, "RejectionRing");
-        GameRegistry.registerItem(superReachRing, "SuperReachRing");
-        GameRegistry.registerItem(royalGel, "RoyalGel");
-        GameRegistry.registerItem(physicsCape, "PhysicsCape");
-        GameRegistry.registerItem(luckyHorseshoe, "LuckyHorseshoe");
-        GameRegistry.registerItem(infinityCell, "InfinityCell");
-        GameRegistry.registerItem(debugItem, "DebugItem");
-
-        GTNLItemList.RecordSus.set(new ItemStack(RecordLoader.recordSus, 1));
-        GTNLItemList.RecordNewHorizons.set(new ItemStack(RecordLoader.recordNewHorizons, 1));
-        GTNLItemList.RecordLavaChicken.set(new ItemStack(RecordLoader.recordLavaChicken, 1));
-        GTNLItemList.InfinityFuelRodDepleted.set(new ItemStack(infinityFuelRodDepleted, 1));
-        GTNLItemList.InfinityFuelRod.set(new ItemStack(infinityFuelRod, 1));
-        GTNLItemList.HoneyBucket.set(new ItemStack(honeyBucket, 1));
-        GTNLItemList.ShimmerBucket.set(new ItemStack(shimmerBucket, 1));
-        GTNLItemList.InfinityCell.set(new ItemStack(infinityCell, 1));
+        GTNLItemList.RecordSus.set(RecordLoader.recordSus);
+        GTNLItemList.RecordNewHorizons.set(RecordLoader.recordNewHorizons);
+        GTNLItemList.RecordLavaChicken.set(RecordLoader.recordLavaChicken);
+        GTNLItemList.InfinityFuelRodDepleted.set(infinityFuelRodDepleted);
+        GTNLItemList.InfinityFuelRod.set(infinityFuelRod);
+        GTNLItemList.HoneyBucket.set(honeyBucket);
+        GTNLItemList.ShimmerBucket.set(shimmerBucket);
+        GTNLItemList.InfinityCell.set(infinityCell);
         GTNLItemList.InfinityDyeCell.set(infinityDyeCell);
         GTNLItemList.InfinityDyeFluidCell.set(infinityDyeFluidCell);
         GTNLItemList.InfinityStoneCell.set(ItemLoader.infinityStoneCell);

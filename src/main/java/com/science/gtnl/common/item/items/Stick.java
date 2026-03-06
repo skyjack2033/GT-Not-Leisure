@@ -35,6 +35,7 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.Mods;
@@ -53,6 +54,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "Stick");
         this.setHasSubtypes(true);
+        GameRegistry.registerItem(this, "Stick");
         GTNLItemList.Stick.set(new ItemStack(this, 1));
     }
 

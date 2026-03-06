@@ -1,4 +1,4 @@
-package com.science.gtnl.common.item;
+package com.science.gtnl.common.item.items;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
@@ -11,13 +11,15 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.items.misc.ItemEncodedPattern;
+import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ItemDireCraftPattern extends ItemEncodedPattern {
+public class DireCraftPattern extends ItemEncodedPattern {
 
-    public ItemDireCraftPattern() {
+    public DireCraftPattern() {
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "DireCraftPattern");
         this.setUnlocalizedName("DireCraftPattern");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.DireCraftPattern.set(new ItemStack(this, 1));
     }
 

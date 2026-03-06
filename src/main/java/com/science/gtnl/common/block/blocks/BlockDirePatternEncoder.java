@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.CommonProxy;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.blocks.item.ItemBlockDirePatternEncoder;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
@@ -36,7 +36,7 @@ public class BlockDirePatternEncoder extends AEBaseTileBlock {
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7,
         float par8, float par9) {
         if (!world.isRemote) {
-            player.openGui(ScienceNotLeisure.instance, GuiType.DirePatternEncoderGUI.getID(), world, x, y, z);
+            CommonProxy.openGui(player, GuiType.DirePatternEncoderGUI, null, world, x, y, z);
             return true;
         }
         return super.onBlockActivated(world, x, y, z, player, par6, par7, par8, par9);

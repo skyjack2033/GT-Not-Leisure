@@ -66,6 +66,7 @@ import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 import appeng.util.item.ItemList;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -81,6 +82,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
         this.setHasSubtypes(true);
         this.setUnlocalizedName("InfinityCell");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         AEApi.instance()
             .registries()
             .cell()

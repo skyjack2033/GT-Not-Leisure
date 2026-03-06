@@ -12,12 +12,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.science.gtnl.client.GTNLInputHandler;
 import com.science.gtnl.client.GTNLTooltipManager;
 import com.science.gtnl.client.gui.GuiAEChisel;
 import com.science.gtnl.client.gui.GuiDirePatternEncoder;
+import com.science.gtnl.client.gui.GuiSuperInterface;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAdvancedWorkbench;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAnvil;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableBasicWorkbench;
@@ -27,6 +29,7 @@ import com.science.gtnl.client.gui.portableWorkbench.GuiPortableEnderChest;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableFurnace;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortablePortableCompressedChest;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortablePortableInfinityChest;
+import com.science.gtnl.common.block.blocks.PartSuperInterface;
 import com.science.gtnl.common.block.blocks.item.ItemBlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.item.ItemBlockNanoPhagocytosisPlantRender;
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
@@ -70,6 +73,8 @@ import com.science.gtnl.utils.event.SubscribeEventClientUtils;
 import com.science.gtnl.utils.gui.NotificationTickHandler;
 
 import Forge.NullPointerException;
+import appeng.api.parts.IPart;
+import appeng.api.parts.IPartHost;
 import appeng.client.render.ItemRenderer;
 import codechicken.nei.guihook.GuiContainerManager;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -220,7 +225,9 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        return switch (GuiType.getGuiType(ID)) {
+        ForgeDirection side = ForgeDirection.getOrientation(ID & 7);
+        int guiID = ID >> 3;
+        return switch (GuiType.getGuiType(guiID)) {
             case DetravScannerGUI -> new DetravScannerGUI();
             case PortableBasicWorkBenchGUI -> new GuiPortableBasicWorkbench(player.inventory, world);
             case PortableAdvancedWorkBenchGUI -> new GuiPortableAdvancedWorkbench(
@@ -259,19 +266,17 @@ public class ClientProxy extends CommonProxy {
                 }
                 yield null;
             }
+            case SuperInterfaceGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartSuperInterface si) {
+                        yield new GuiSuperInterface(player.inventory, si);
+                    }
+                }
+                yield null;
+            }
         };
-    }
-
-    @Override
-    public void openProspectorGUI() {
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        player.openGui(
-            ScienceNotLeisure.instance,
-            GuiType.DetravScannerGUI.getID(),
-            player.worldObj,
-            (int) player.posX,
-            (int) player.posY,
-            (int) player.posZ);
     }
 
     @Override

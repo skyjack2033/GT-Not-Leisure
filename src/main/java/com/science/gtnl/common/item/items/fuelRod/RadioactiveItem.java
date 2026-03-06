@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 
 import com.science.gtnl.client.GTNLCreativeTabs;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import ic2.core.IC2Potion;
 
 // Code From NH-Utilities
@@ -25,6 +26,7 @@ public class RadioactiveItem extends Item {
         this.setUnlocalizedName(name);
         this.setTextureName(name);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import com.science.gtnl.CommonProxy;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.blocks.item.ItemBlockAEChisel;
@@ -44,7 +45,7 @@ public class BlockAEChisel extends AEBaseTileBlock {
                     if (te.getParallel() != 1) {
                         ScienceNotLeisure.network.sendTo(new AEChiselSyncParallel(te), p);
                     }
-                    p.openGui(ScienceNotLeisure.instance, GuiType.AEChiselGUI.getID(), world, x, y, z);
+                    CommonProxy.openGui(p, GuiType.AEChiselGUI, null, world, x, y, z);
                 }
             }
             return true;

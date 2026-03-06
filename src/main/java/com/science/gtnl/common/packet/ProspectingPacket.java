@@ -1,19 +1,24 @@
 package com.science.gtnl.common.packet;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.github.bsideup.jabel.Desugar;
 import com.google.common.base.Objects;
-import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.CommonProxy;
 import com.science.gtnl.utils.detrav.DetravMapTexture;
 import com.science.gtnl.utils.detrav.DetravScannerGUI;
+import com.science.gtnl.utils.enums.GuiType;
 
 import bartworks.system.material.Werkstoff;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import detrav.utils.FluidColors;
 import detrav.utils.GTppHelper;
 import gregtech.api.GregTechAPI;
@@ -132,8 +137,21 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
             message.metaMap);
 
         DetravScannerGUI.newMap(new DetravMapTexture(wrapper));
-        ScienceNotLeisure.proxy.openProspectorGUI();
+        if (ctx.side.isClient()) openProspectorGUI();
         return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void openProspectorGUI() {
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        CommonProxy.openGui(
+            player,
+            GuiType.DetravScannerGUI,
+            null,
+            player.worldObj,
+            (int) player.posX,
+            (int) player.posY,
+            (int) player.posZ);
     }
 
     public static void addOre(ProspectingPacket packet, byte y, int i, int j, short meta) {

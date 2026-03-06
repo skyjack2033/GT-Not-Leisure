@@ -38,6 +38,7 @@ import com.science.gtnl.utils.item.MetaItemStackUtils;
 import com.sinthoras.visualprospecting.VisualProspecting_API;
 
 import bartworks.system.material.Werkstoff;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -80,6 +81,7 @@ public class ElectricProspectorTool extends Item {
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "ElectricProspectorTool");
         this.setMaxStackSize(1);
         this.setMaxDamage(1);
+        GameRegistry.registerItem(this, getUnlocalizedName());
     }
 
     public static ItemStack initItem(int aMeta, int aRange, long maxDamage) {

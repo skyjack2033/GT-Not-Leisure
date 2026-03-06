@@ -14,6 +14,7 @@ import com.science.gtnl.api.IWirelessEnergy;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.metatileentity.BaseMetaTileEntity;
@@ -25,6 +26,7 @@ public class WirelessUpgradeChip extends Item {
         this.setUnlocalizedName("WirelessUpgradeChip");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "WirelessUpgradeChip");
+        GameRegistry.registerItem(this, "WirelessUpgradeChip");
         GTNLItemList.WirelessUpgradeChip.set(new ItemStack(this, 1));
     }
 

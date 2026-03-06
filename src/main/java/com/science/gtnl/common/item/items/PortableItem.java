@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import com.cleanroommc.modularui.utils.item.InvWrapper;
+import com.science.gtnl.CommonProxy;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableChest;
 import com.science.gtnl.utils.InventoryInfinityChest;
@@ -41,6 +42,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.tile.misc.TileInterface;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.common.tileentities.machines.IDualInputHatchWithPattern;
 import lombok.val;
@@ -54,6 +56,7 @@ public class PortableItem extends Item {
         this.setMaxStackSize(1);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setHasSubtypes(true);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         for (PortableType type : PortableType.values()) {
             GTNLItemList.valueOf(type.getUnlocalizedName())
                 .set(new ItemStack(this, 1, type.ordinal()));
@@ -156,7 +159,7 @@ public class PortableItem extends Item {
         if (!world.isRemote && !player.isSneaking()) {
             PortableType type = getPortableType(stack);
             if (type != null && type.getGuiID() >= 0) {
-                player.openGui(instance, type.getGuiID(), world, 0, 0, 0);
+                CommonProxy.openGui(player, type.getGuiType(), null, world, 0, 0, 0);
             }
         }
         return stack;
@@ -510,6 +513,10 @@ public class PortableItem extends Item {
 
         public static PortableType byMeta(int meta) {
             return (meta >= 0 && meta < values().length) ? values()[meta] : null;
+        }
+
+        public GuiType getGuiType() {
+            return gui;
         }
 
         public int getGuiID() {

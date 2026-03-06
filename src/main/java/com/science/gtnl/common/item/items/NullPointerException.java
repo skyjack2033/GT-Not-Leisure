@@ -11,6 +11,8 @@ import net.minecraft.world.World;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+
 public class NullPointerException extends Item {
 
     public NullPointerException() {
@@ -20,6 +22,7 @@ public class NullPointerException extends Item {
         this.setUnlocalizedName("NullPointerException");
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "NullPointerException");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.NullPointerException.set(new ItemStack(this, 1));
     }
 
