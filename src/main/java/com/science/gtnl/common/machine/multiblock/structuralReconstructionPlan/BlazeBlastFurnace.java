@@ -286,7 +286,12 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
 
     @Override
     public double getDurationModifier() {
-        return 1.0 / 2.5;
+        return 1.0 / 3;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.75;
     }
 
     @Override
