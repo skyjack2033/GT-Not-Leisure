@@ -19,6 +19,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
@@ -30,6 +31,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.dreammaster.item.NHItemList;
 import com.google.common.collect.Iterables;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.mojang.authlib.GameProfile;
@@ -42,11 +44,15 @@ import com.science.gtnl.utils.enums.ModList;
 
 import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
+import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Mods;
 import gregtech.api.util.GTModHandler;
+import gregtech.api.util.GTUtility;
+import gregtech.common.items.MetaGeneratedItem01;
+import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 
 public class ItemUtils {
 
@@ -152,6 +158,15 @@ public class ItemUtils {
         Materials.DraconiumAwakened, // MAX
     };
 
+    public static ItemStack WINDMILL_SHAFT;
+    public static ItemStack MOLD_PELLET;
+    public static ItemStack MOLD_HELMET;
+    public static ItemStack MOLD_CHESTPLATE;
+    public static ItemStack MOLD_LEGGINGS;
+    public static ItemStack MOLD_BOOTS;
+    public static ItemStack MOLD_MARSHMALLOW;
+    public static ItemStack EXTRUDER_SHAPE_BOAT;
+
     public static BaubleType UNIVERSAL_TYPE;
 
     static {
@@ -162,6 +177,42 @@ public class ItemUtils {
             type = BaubleType.RING;
         }
         UNIVERSAL_TYPE = type;
+
+        if (WINDMILL_SHAFT == null) WINDMILL_SHAFT = GregtechItemList.Shape_Extruder_WindmillShaft.get(1);
+        if (MOLD_PELLET == null) MOLD_PELLET = GregtechItemList.Pellet_Mold.get(1);
+        if (Mods.NewHorizonsCoreMod.isModLoaded()) initNHItems();
+    }
+
+    @Optional.Method(modid = "dreamcraft")
+    public static void initNHItems() {
+        if (MOLD_HELMET == null) MOLD_HELMET = NHItemList.MoldHelmet.getIS(1);
+        if (MOLD_CHESTPLATE == null) MOLD_CHESTPLATE = NHItemList.MoldChestplate.getIS(1);
+        if (MOLD_LEGGINGS == null) MOLD_LEGGINGS = NHItemList.MoldLeggings.getIS(1);
+        if (MOLD_BOOTS == null) MOLD_BOOTS = NHItemList.MoldBoots.getIS(1);
+        if (MOLD_MARSHMALLOW == null) MOLD_MARSHMALLOW = NHItemList.MarshmallowFormMold.getIS(1);
+        if (EXTRUDER_SHAPE_BOAT == null) EXTRUDER_SHAPE_BOAT = NHItemList.ExtruderShapeBoat.getIS(1);
+    }
+
+    public static boolean isExtraItem(ItemStack stack) {
+        if (stack == null) return false;
+
+        Item item = stack.getItem();
+        int meta = stack.getItemDamage();
+
+        if (item instanceof MetaGeneratedItem01) {
+            return (meta >= 32301 && meta <= 32331) || (meta >= 32350 && meta <= 32377);
+        }
+
+        if (GTUtility.areStacksEqual(stack, ItemUtils.MOLD_PELLET, true)) return true;
+        if (GTUtility.areStacksEqual(stack, ItemUtils.MOLD_HELMET, true)) return true;
+        if (GTUtility.areStacksEqual(stack, ItemUtils.MOLD_CHESTPLATE, true)) return true;
+        if (GTUtility.areStacksEqual(stack, ItemUtils.MOLD_LEGGINGS, true)) return true;
+        if (GTUtility.areStacksEqual(stack, ItemUtils.MOLD_BOOTS, true)) return true;
+        if (GTUtility.areStacksEqual(stack, ItemUtils.MOLD_MARSHMALLOW, true)) return true;
+        if (GTUtility.areStacksEqual(stack, ItemUtils.WINDMILL_SHAFT, true)) return true;
+        if (GTUtility.areStacksEqual(stack, ItemUtils.EXTRUDER_SHAPE_BOAT, true)) return true;
+
+        return false;
     }
 
     public static NBTTagCompound writeItemStackToNBT(ItemStack stack) {

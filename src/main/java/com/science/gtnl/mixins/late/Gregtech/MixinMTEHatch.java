@@ -1,37 +1,45 @@
 package com.science.gtnl.mixins.late.Gregtech;
 
+import java.util.List;
+import java.util.Objects;
+
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import com.science.gtnl.api.mixinHelper.IMultiblockRecipeMap;
 import com.science.gtnl.config.MainConfig;
+import com.science.gtnl.utils.Utils;
+import com.science.gtnl.utils.item.ItemUtils;
 
 import appeng.helpers.ICustomNameObject;
+import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.interfaces.IConfigurationCircuitSupport;
 import gregtech.api.interfaces.ITexture;
-import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEBasicTank;
 import gregtech.api.metatileentity.implementations.MTEHatch;
 import gregtech.api.metatileentity.implementations.MTEHatchInput;
 import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 
 @Mixin(value = MTEHatch.class, remap = false)
-public abstract class MixinMTEHatch extends MTEBasicTank implements IMultiblockRecipeMap {
-
-    @Shadow
-    private int texturePage;
-
-    @Shadow
-    private int textureIndex;
+public abstract class MixinMTEHatch extends MTEBasicTank implements IMultiblockRecipeMap, ICustomNameObject {
 
     @Unique
     private String gtnl$multiBlockRecipeMapName = null;
+
+    @Unique
+    private String gtnl$customName = "";
 
     public MixinMTEHatch(int aID, String aName, String aNameRegional, int aTier, int aInvSlotCount, String aDescription,
         ITexture... aTextures) {
@@ -48,13 +56,92 @@ public abstract class MixinMTEHatch extends MTEBasicTank implements IMultiblockR
         gtnl$multiBlockRecipeMapName = recipeMap;
     }
 
+    @Override
+    public boolean hasCustomName() {
+        return !gtnl$customName.isEmpty() || MainConfig.machine.enableHatchInterfaceTerminalEnhance;
+    }
+
+    @Override
+    public String getCustomName() {
+        if (!gtnl$customName.isEmpty()) return gtnl$customName;
+        String mainText = getLocalName();
+        StringBuilder sb = new StringBuilder(mainText);
+        MTEHatch hatch = (MTEHatch) (Object) this;
+
+        if (hatch instanceof IConfigurationCircuitSupport circuitHatch) {
+            ItemStack circuit = getStackInSlot(circuitHatch.getCircuitSlot());
+            if (circuit != null) {
+                sb.append(" - ")
+                    .append(circuit.getItemDamage());
+            }
+        }
+
+        if (hatch instanceof MTEHatchInput inputHatch
+            && (gtnl$multiBlockRecipeMapName != null || inputHatch.mRecipeMap != null)) {
+            sb.append(" - ")
+                .append(
+                    StatCollector.translateToLocal(
+                        gtnl$multiBlockRecipeMapName != null ? gtnl$multiBlockRecipeMapName
+                            : inputHatch.mRecipeMap.unlocalizedName));
+        }
+        if (hatch instanceof MTEHatchInputBus inputBus
+            && (gtnl$multiBlockRecipeMapName != null || inputBus.mRecipeMap != null)) {
+            sb.append(" - ")
+                .append(
+                    StatCollector.translateToLocal(
+                        gtnl$multiBlockRecipeMapName != null ? gtnl$multiBlockRecipeMapName
+                            : inputBus.mRecipeMap.unlocalizedName));
+        }
+
+        for (int i = 0; i < 10 && i < mInventory.length; i++) {
+            ItemStack stack = mInventory[i];
+            if (!ItemUtils.isExtraItem(stack)) continue;
+            sb.append(" - ")
+                .append(stack.getDisplayName());
+            break;
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public void getWailaNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y,
+        int z) {
+        super.getWailaNBTData(player, tile, tag, world, x, y, z);
+        if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
+        if (!Objects.equals(getCustomName(), getLocalName())) {
+            tag.setString("name", getCustomName());
+        }
+    }
+
+    @Override
+    public void getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
+        IWailaConfigHandler config) {
+        super.getWailaBody(itemStack, currenttip, accessor, config);
+        if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
+        NBTTagCompound tag = accessor.getNBTData();
+        if (tag.hasKey("name")) {
+            currenttip.add(
+                EnumChatFormatting.AQUA
+                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
+                        ? Utils.getExtraInterfaceName(tag.getString("name"))
+                        : tag.getString("name"))
+                    + EnumChatFormatting.RESET);
+        }
+    }
+
     @ModifyVariable(method = "updateCraftingIcon", at = @At("HEAD"), argsOnly = true, index = 1)
     private ItemStack gtnl$modifyCraftingIcon(ItemStack value) {
+        if (!gtnl$customName.isEmpty()) {
+            var item = value.copy();
+            item.setStackDisplayName(gtnl$customName);
+            return item;
+        }
         if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return value;
         if (value.hasDisplayName()) return value;
         MTEHatch hatch = (MTEHatch) (Object) this;
         StringBuilder sb = null;
-        if (hatch instanceof IConfigurationCircuitSupport circuitHatch && !(hatch instanceof ICustomNameObject)) {
+        if (hatch instanceof IConfigurationCircuitSupport circuitHatch) {
             ItemStack circuit = getStackInSlot(circuitHatch.getCircuitSlot());
             if (circuit != null) {
                 sb = new StringBuilder();
@@ -85,47 +172,39 @@ public abstract class MixinMTEHatch extends MTEBasicTank implements IMultiblockR
                         : inputBus.mRecipeMap.unlocalizedName)
                 .append("_extra_end_");
         }
+
+        for (int i = 0; i < 10 && i < mInventory.length; i++) {
+            ItemStack stack = mInventory[i];
+            if (!ItemUtils.isExtraItem(stack)) continue;
+
+            if (sb == null) {
+                sb = new StringBuilder();
+            }
+
+            String registryName = GameRegistry.findUniqueIdentifierFor(stack.getItem())
+                .toString();
+
+            sb.append("extra_item_start_")
+                .append(registryName)
+                .append("@")
+                .append(stack.getItemDamage());
+
+            if (stack.hasDisplayName()) {
+                sb.append("{")
+                    .append(stack.getDisplayName())
+                    .append("}");
+            }
+
+            sb.append("extra_item_end_");
+            break;
+        }
+
         if (sb != null && sb.length() > 0) {
             ItemStack modified = value.copy();
             modified.setStackDisplayName(sb.toString());
             return modified;
         }
         return value;
-    }
-
-    /**
-     * <p>
-     * This method updates the texture based on the given texture ID. It calculates the texture page and index
-     * and issues the appropriate update based on whether the operation is on the server or client side.
-     * </p>
-     *
-     * <p>
-     * <b>Warning:</b> This method will be removed in version 2.8.2. Please consider using the new method for texture
-     * handling.
-     * </p>
-     *
-     * @param id The texture ID to update the texture page and index.
-     *
-     * @reason This method will be deprecated in version 2.8.2 due to changes in texture handling. A more efficient
-     *         and scalable system will replace this method.
-     * @author GTNotLeisure
-     */
-    @Deprecated
-    @Overwrite
-    public final void updateTexture(int id) {
-        int newTexturePage = id >> 7;
-        int newTextureIndex = id & 127;
-        if (newTexturePage == texturePage && newTextureIndex == textureIndex) return;
-        texturePage = newTexturePage;
-        textureIndex = newTextureIndex;
-
-        IGregTechTileEntity base = getBaseMetaTileEntity();
-
-        if (base.isServerSide()) {
-            base.issueTileUpdate();
-        } else {
-            base.issueTextureUpdate();
-        }
     }
 
 }
