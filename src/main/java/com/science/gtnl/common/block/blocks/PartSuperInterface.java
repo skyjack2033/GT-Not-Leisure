@@ -18,18 +18,18 @@ import appeng.util.inv.WrapperInvSlot;
 
 public class PartSuperInterface extends PartInterface {
 
-    public int configSlots = 18;
-    public int storageSlots = 18;
+    public int configSlots = 27;
+    public int storageSlots = 27;
     public int patternSlots = 108;
-    public int upgradeSlots = 15;
+    public int upgradeSlots = 4;
 
     public PartSuperInterface(ItemStack is) {
         super(is);
         var duality = (IDualityInterface) ((AccessorPartInterface) this).getDuality();
-        duality.setConfigSlots(18);
-        duality.setStorageSlots(18);
-        duality.setPatternSlots(108);
-        duality.setUpgradeSlots(15);
+        duality.setConfigSlots(configSlots);
+        duality.setStorageSlots(storageSlots);
+        duality.setPatternSlots(patternSlots);
+        duality.setUpgradeSlots(upgradeSlots);
         duality.gtnl$setConfig(new AppEngInternalAEInventory(this, configSlots));
         duality.gtnl$setStorage(new AppEngInternalInventory(this, storageSlots));
         duality.gtnl$setPatterns(new AppEngInternalInventory(this, patternSlots));
