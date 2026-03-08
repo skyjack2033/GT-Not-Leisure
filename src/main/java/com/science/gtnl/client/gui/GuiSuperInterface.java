@@ -1,13 +1,14 @@
 package com.science.gtnl.client.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
-import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.common.packet.InterfacePagePacket;
 import com.science.gtnl.container.ContainerSuperInterface;
 
 import appeng.api.config.AdvancedBlockingMode;
@@ -18,10 +19,12 @@ import appeng.api.config.Settings;
 import appeng.api.config.Upgrades;
 import appeng.api.config.YesNo;
 import appeng.client.gui.implementations.GuiUpgradeable;
+import appeng.client.gui.widgets.GuiAeButton;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiSimpleImgButton;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.GuiToggleButton;
+import appeng.client.texture.ExtraBlockTextures;
 import appeng.core.AELog;
 import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
@@ -38,9 +41,7 @@ public class GuiSuperInterface extends GuiUpgradeable {
     public GuiImgButton BlockMode, SmartBlockMode, fuzzyMode, insertionMode, advancedBlockingMode, lockCraftingMode;
     public GuiToggleButton interfaceMode, patternOptimization;
     public GuiSimpleImgButton doublePatterns;
-
-    public GuiButton btnPrevPage;
-    public GuiButton btnNextPage;
+    public GuiTextAeButton prevPage, nextPage;
 
     public GuiSuperInterface(InventoryPlayer inventoryPlayer, IInterfaceHost te) {
         super(new ContainerSuperInterface(inventoryPlayer, te));
@@ -120,11 +121,25 @@ public class GuiSuperInterface extends GuiUpgradeable {
         this.buttonList.add(fuzzyMode);
 
         offset += 18 * 2;
-        this.btnPrevPage = new GuiButton(101, btnX - 18, this.guiTop + offset, 16, 16, "<");
+        this.prevPage = new GuiTextAeButton(
+            101,
+            btnX - 18,
+            this.guiTop + offset,
+            16,
+            16,
+            "<",
+            StatCollector.translateToLocal("text.SuperInterface.tooltip.0"));
 
-        this.btnNextPage = new GuiButton(102, btnX, this.guiTop + offset, 16, 16, ">");
-        this.buttonList.add(btnPrevPage);
-        this.buttonList.add(btnNextPage);
+        this.nextPage = new GuiTextAeButton(
+            102,
+            btnX,
+            this.guiTop + offset,
+            16,
+            16,
+            ">",
+            StatCollector.translateToLocal("text.SuperInterface.tooltip.1"));
+        this.buttonList.add(prevPage);
+        this.buttonList.add(nextPage);
     }
 
     @Override
@@ -150,11 +165,12 @@ public class GuiSuperInterface extends GuiUpgradeable {
         }
 
         this.fontRendererObj.drawString(GuiText.Interface.getLocal(), 8, 6, 4210752);
-        String pageLabel = String.format("Page: %d/%d", container.currentPage + 1, container.getMaxPages());
+        String pageLabel = StatCollector
+            .translateToLocalFormatted("text.SuperInterface.page", container.currentPage + 1, container.getMaxPages());
         this.fontRendererObj.drawString(pageLabel, 110, 6, 4210752);
 
-        this.btnPrevPage.enabled = container.currentPage > 0;
-        this.btnNextPage.enabled = container.currentPage < container.getMaxPages() - 1;
+        this.prevPage.enabled = container.currentPage > 0;
+        this.nextPage.enabled = container.currentPage < container.getMaxPages() - 1;
     }
 
     @Override
@@ -174,9 +190,9 @@ public class GuiSuperInterface extends GuiUpgradeable {
         ContainerSuperInterface container = (ContainerSuperInterface) this.cvb;
         final boolean backwards = Mouse.isButtonDown(1);
 
-        if (btn == btnPrevPage) {
+        if (btn == prevPage) {
             container.previousPage();
-        } else if (btn == btnNextPage) {
+        } else if (btn == nextPage) {
             container.nextPage();
         } else if (btn == this.priority) {
             NetworkHandler.instance.sendToServer(new PacketSwitchGuis(GuiBridge.GUI_PRIORITY));
@@ -209,10 +225,6 @@ public class GuiSuperInterface extends GuiUpgradeable {
         }
     }
 
-    public void sendPageChangePacket(int page) {
-        ScienceNotLeisure.network.sendToServer(new InterfacePagePacket(page));
-    }
-
     @Override
     public String getBackground() {
         return "guis/super_interface.png";
@@ -226,5 +238,48 @@ public class GuiSuperInterface extends GuiUpgradeable {
         if (this.lockCraftingMode != null)
             this.lockCraftingMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.LOCK_CRAFTING) > 0);
         if (this.fuzzyMode != null) this.fuzzyMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.FUZZY) > 0);
+    }
+
+    public static class GuiTextAeButton extends GuiAeButton {
+
+        public GuiTextAeButton(final int id, final int xPosition, final int yPosition, final int width,
+            final int height, final String displayString, final String tootipString) {
+            super(id, xPosition, yPosition, width, height, displayString, tootipString);
+        }
+
+        @Override
+        public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+            if (!this.visible) return;
+
+            if (this.enabled) {
+                GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            } else {
+                GL11.glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+            }
+
+            mc.renderEngine.bindTexture(ExtraBlockTextures.GuiTexture("guis/states.png"));
+
+            this.field_146123_n = mouseX >= this.xPosition && mouseY >= this.yPosition
+                && mouseX < this.xPosition + this.width
+                && mouseY < this.yPosition + this.height;
+
+            this.drawTexturedModalRect(this.xPosition, this.yPosition, 240, 240, 16, 16);
+
+            var fontrenderer = mc.fontRenderer;
+            int color = this.enabled ? 0xE0E0E0 : 0x707070;
+
+            if (this.field_146123_n && this.enabled) {
+                color = 0xFFFFA0;
+            }
+
+            this.drawCenteredString(
+                fontrenderer,
+                this.displayString,
+                this.xPosition + this.width / 2,
+                this.yPosition + (this.height - 8) / 2,
+                color);
+
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        }
     }
 }
