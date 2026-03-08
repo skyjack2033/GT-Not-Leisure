@@ -18,6 +18,8 @@ public class ContainerSuperInterface extends ContainerInterface {
     public static final int PATTERNS_PER_PAGE = 36;
     public static final int CONFIG_PER_PAGE = 9;
     public int currentPage = 0;
+    public final int maxPage;
+    public final OptionalSlotRestrictedInput[][] patternSlotPages;
 
     public static final int SLOT_SIZE = 18;
     public static final int TITLE_HEIGHT = 15;
@@ -34,6 +36,9 @@ public class ContainerSuperInterface extends ContainerInterface {
         patternSlots = accessor.getPatternSlots();
         upgradeSlots = accessor.getUpgradeSlots();
 
+        maxPage = getMaxPages();
+        patternSlotPages = new OptionalSlotRestrictedInput[maxPage][PATTERNS_PER_PAGE];
+
         this.refreshSlots(ip);
     }
 
@@ -43,41 +48,58 @@ public class ContainerSuperInterface extends ContainerInterface {
 
         this.addUpgradeSlots();
 
-        int configStartIdx = currentPage * CONFIG_PER_PAGE;
-        for (int x = 0; x < 9; x++) {
-            int idx = configStartIdx + x;
-            if (idx < configSlots) {
-                this.addSlotToContainer(
-                    new OptionalSlotFake(this.myDuality.getConfig(), this, idx, 8 + SLOT_SIZE * x, TITLE_HEIGHT, 0));
-            }
-            if (idx < storageSlots) {
-                this.addSlotToContainer(
-                    new SlotNormal(this.myDuality.getStorage(), idx, 8 + SLOT_SIZE * x, TITLE_HEIGHT + SLOT_SIZE));
-            }
+        for (int i = 0; i < 9 * maxPage; i++) {
+            var x = i % 9;
+            this.addSlotToContainer(
+                new OptionalSlotFake(this.myDuality.getConfig(), this, i, 8 + SLOT_SIZE * x, TITLE_HEIGHT, -1));
+            this.addSlotToContainer(
+                new SlotNormal(this.myDuality.getStorage(), i, 8 + SLOT_SIZE * i, TITLE_HEIGHT + SLOT_SIZE));
         }
 
-        int patternStartIdx = currentPage * PATTERNS_PER_PAGE;
         int patternStartY = TITLE_HEIGHT + (2 * SLOT_SIZE) + SECTION_GAP;
 
-        for (int i = 0; i < PATTERNS_PER_PAGE; i++) {
-            int idx = patternStartIdx + i;
-            if (idx < patternSlots) {
-                int x = i % 9;
-                int y = i / 9;
-                this.addSlotToContainer(
-                    new OptionalSlotRestrictedInput(
-                        SlotRestrictedInput.PlacableItemType.ENCODED_PATTERN,
-                        this.myDuality.getPatterns(),
-                        this,
-                        idx,
-                        8 + SLOT_SIZE * x,
-                        patternStartY + y * SLOT_SIZE,
-                        y,
-                        ip).setStackLimit(1));
+        for (int i = 0; i < 36 * maxPage; i++) {
+            int x = i % 9;
+            int y = (i / 9) % 4;
+            var g = i / 36;
+            this.addSlotToContainer(
+                (patternSlotPages[g][i % 36] = new OptionalSlotRestrictedInput(
+                    SlotRestrictedInput.PlacableItemType.ENCODED_PATTERN,
+                    this.myDuality.getPatterns(),
+                    this,
+                    i,
+                    8 + SLOT_SIZE * x,
+                    patternStartY + y * SLOT_SIZE,
+                    g,
+                    ip)).setStackLimit(1));
+            if (g > 0) {
+                patternSlotPages[g][i % 36].xDisplayPosition = Integer.MIN_VALUE;
             }
         }
 
-        this.bindPlayerInventory(ip, 8, this.getHeight() - PLAYER_INV_HEIGHT);
+        this.bindPlayerInventory(ip, 0, this.getHeight() - PLAYER_INV_HEIGHT);
+    }
+
+    public void previousPage() {
+        if (currentPage > 0) {
+            for (var slot : patternSlotPages[currentPage--]) {
+                slot.xDisplayPosition = Integer.MIN_VALUE;
+            }
+            for (var slot : patternSlotPages[currentPage]) {
+                slot.xDisplayPosition = slot.getX();
+            }
+        }
+    }
+
+    public void nextPage() {
+        if (currentPage < maxPage - 1) {
+            for (var slot : patternSlotPages[currentPage++]) {
+                slot.xDisplayPosition = Integer.MIN_VALUE;
+            }
+            for (var slot : patternSlotPages[currentPage]) {
+                slot.xDisplayPosition = slot.getX();
+            }
+        }
     }
 
     public void addUpgradeSlots() {
@@ -93,6 +115,15 @@ public class ContainerSuperInterface extends ContainerInterface {
         }
     }
 
+    private boolean init;
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        if (init) return;
+        init = true;
+    }
+
     @Override
     public int availableUpgrades() {
         return upgradeSlots;
@@ -100,7 +131,11 @@ public class ContainerSuperInterface extends ContainerInterface {
 
     @Override
     public boolean isSlotEnabled(final int idx) {
-        return !Platform.isClient() || (!isEmpty && !isConfigEmpty);
+        if (Platform.isClient()) {
+            if (!isEmpty && !isConfigEmpty) {
+                return idx == currentPage || idx < 0 || !init;
+            } else return false;
+        } else return true;
     }
 
     @Override

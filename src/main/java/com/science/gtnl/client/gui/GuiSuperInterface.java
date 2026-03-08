@@ -174,32 +174,21 @@ public class GuiSuperInterface extends GuiUpgradeable {
         ContainerSuperInterface container = (ContainerSuperInterface) this.cvb;
         final boolean backwards = Mouse.isButtonDown(1);
 
-        if (btn == btnPrevPage && container.currentPage > 0) {
-            container.currentPage--;
-            container.refreshSlots(this.mc.thePlayer.inventory);
-            sendPageChangePacket(container.currentPage);
-        } else if (btn == btnNextPage && container.currentPage < container.getMaxPages() - 1) {
-            container.currentPage++;
-            container.refreshSlots(this.mc.thePlayer.inventory);
-            sendPageChangePacket(container.currentPage);
-        }
-
-        if (btn == this.priority) {
+        if (btn == btnPrevPage) {
+            container.previousPage();
+        } else if (btn == btnNextPage) {
+            container.nextPage();
+        } else if (btn == this.priority) {
             NetworkHandler.instance.sendToServer(new PacketSwitchGuis(GuiBridge.GUI_PRIORITY));
-        }
-        if (btn == this.interfaceMode) {
+        } else if (btn == this.interfaceMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(Settings.INTERFACE_TERMINAL, backwards));
-        }
-        if (btn == this.BlockMode) {
+        } else if (btn == this.BlockMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.BlockMode.getSetting(), backwards));
-        }
-        if (btn == this.SmartBlockMode) {
+        } else if (btn == this.SmartBlockMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.SmartBlockMode.getSetting(), backwards));
-        }
-        if (btn == this.insertionMode) {
+        } else if (btn == this.insertionMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.insertionMode.getSetting(), backwards));
-        }
-        if (btn == this.doublePatterns) {
+        } else if (btn == this.doublePatterns) {
             try {
                 int val = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 1 : 0;
                 if (backwards) val |= 0b10;
@@ -208,18 +197,14 @@ public class GuiSuperInterface extends GuiUpgradeable {
             } catch (final Throwable e) {
                 AELog.debug(e);
             }
-        }
-        if (btn == this.patternOptimization) {
+        } else if (btn == this.patternOptimization) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(Settings.PATTERN_OPTIMIZATION, backwards));
-        }
-        if (btn == this.advancedBlockingMode) {
+        } else if (btn == this.advancedBlockingMode) {
             NetworkHandler.instance
                 .sendToServer(new PacketConfigButton(this.advancedBlockingMode.getSetting(), backwards));
-        }
-        if (btn == this.lockCraftingMode) {
+        } else if (btn == this.lockCraftingMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.lockCraftingMode.getSetting(), backwards));
-        }
-        if (btn == this.fuzzyMode) {
+        } else if (btn == this.fuzzyMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.fuzzyMode.getSetting(), backwards));
         }
     }

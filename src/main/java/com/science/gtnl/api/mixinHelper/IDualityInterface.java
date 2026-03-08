@@ -160,5 +160,5 @@ public interface IDualityInterface {
 
     void setScheduledReason(ScheduledReason reason);
 
-    void updatePlan(int slot);
+    void gtnl$updatePlan(int slot);
 }

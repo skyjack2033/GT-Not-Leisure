@@ -2,8 +2,6 @@ package com.science.gtnl.mixins.late.AppliedEnergistics;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.item.ItemStack;
 
 import org.spongepowered.asm.mixin.Final;
@@ -40,6 +38,8 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.ConfigManager;
 import appeng.util.ScheduledReason;
 import appeng.util.inv.WrapperInvSlot;
+import lombok.Getter;
+import lombok.Setter;
 
 @Mixin(value = DualityInterface.class, remap = false)
 @Getter
@@ -137,7 +137,7 @@ public abstract class MixinDualityInterface implements IDualityInterface {
     private ScheduledReason scheduledReason;
 
     @Invoker("updatePlan")
-    public abstract void gtnl$invokeUpdatePlan(int slot);
+    public abstract void gtnl$updatePlan(int slot);
 
     @Inject(
         method = "getTermName",
@@ -172,11 +172,6 @@ public abstract class MixinDualityInterface implements IDualityInterface {
     @ModifyConstant(method = "updateStorage", constant = @Constant(intValue = 9))
     private int modifyUpdateStorage(int original) {
         return storageSlots;
-    }
-
-    @Override
-    public void updatePlan(int slot) {
-        gtnl$invokeUpdatePlan(slot);
     }
 
 }
