@@ -40,125 +40,125 @@ public interface IDualityInterface {
 
     void setUpgradeSlots(int slots);
 
-    int[] gtnl$getSides();
+    int[] getSides();
 
-    void gtnl$setSides(int[] sides);
+    void setSides(int[] sides);
 
-    IAEItemStack[] gtnl$getRequireWork();
+    IAEItemStack[] getRequireWork();
 
-    void gtnl$setRequireWork(IAEItemStack[] requireWork);
+    void setRequireWork(IAEItemStack[] requireWork);
 
-    boolean[] gtnl$getHasFuzzyConfig();
+    boolean[] getHasFuzzyConfig();
 
-    void gtnl$setHasFuzzyConfig(boolean[] hasFuzzyConfig);
+    void setHasFuzzyConfig(boolean[] hasFuzzyConfig);
 
-    MultiCraftingTracker gtnl$getCraftingTracker();
+    MultiCraftingTracker getCraftingTracker();
 
-    void gtnl$setCraftingTracker(MultiCraftingTracker craftingTracker);
+    void setCraftingTracker(MultiCraftingTracker craftingTracker);
 
-    AENetworkProxy gtnl$getGridProxy();
+    AENetworkProxy getGridProxy();
 
-    void gtnl$setGridProxy(AENetworkProxy gridProxy);
+    void setGridProxy(AENetworkProxy gridProxy);
 
-    IInterfaceHost gtnl$getIHost();
+    IInterfaceHost getIHost();
 
-    void gtnl$setIHost(IInterfaceHost iHost);
+    void setIHost(IInterfaceHost iHost);
 
-    BaseActionSource gtnl$getMySource();
+    BaseActionSource getMySource();
 
-    void gtnl$setMySource(BaseActionSource mySource);
+    void setMySource(BaseActionSource mySource);
 
-    BaseActionSource gtnl$getInterfaceRequestSource();
+    BaseActionSource getInterfaceRequestSource();
 
-    void gtnl$setInterfaceRequestSource(BaseActionSource source);
+    void setInterfaceRequestSource(BaseActionSource source);
 
-    ConfigManager gtnl$getCm();
+    ConfigManager getCm();
 
-    void gtnl$setCm(ConfigManager cm);
+    void setCm(ConfigManager cm);
 
-    AppEngInternalAEInventory gtnl$getConfig();
+    AppEngInternalAEInventory getConfig();
 
-    void gtnl$setConfig(AppEngInternalAEInventory config);
+    void setConfig(AppEngInternalAEInventory config);
 
-    AppEngInternalInventory gtnl$getPatterns();
+    AppEngInternalInventory getPatterns();
 
-    void gtnl$setPatterns(AppEngInternalInventory patterns);
+    void setPatterns(AppEngInternalInventory patterns);
 
-    MEMonitorPassThrough<IAEItemStack> gtnl$getItems();
+    MEMonitorPassThrough<IAEItemStack> getItems();
 
-    void gtnl$setItems(MEMonitorPassThrough<IAEItemStack> items);
+    void setItems(MEMonitorPassThrough<IAEItemStack> items);
 
-    MEMonitorPassThrough<IAEFluidStack> gtnl$getFluids();
+    MEMonitorPassThrough<IAEFluidStack> getFluids();
 
-    void gtnl$setFluids(MEMonitorPassThrough<IAEFluidStack> fluids);
+    void setFluids(MEMonitorPassThrough<IAEFluidStack> fluids);
 
-    UpgradeInventory gtnl$getUpgrades();
+    UpgradeInventory getUpgrades();
 
-    void gtnl$setUpgrades(UpgradeInventory upgrades);
+    void setUpgrades(UpgradeInventory upgrades);
 
-    AppEngInternalInventory gtnl$getStorage();
+    AppEngInternalInventory getStorage();
 
-    void gtnl$setStorage(AppEngInternalInventory storage);
+    void setStorage(AppEngInternalInventory storage);
 
-    WrapperInvSlot gtnl$getSlotInv();
+    WrapperInvSlot getSlotInv();
 
-    void gtnl$setSlotInv(WrapperInvSlot slotInv);
+    void setSlotInv(WrapperInvSlot slotInv);
 
-    ItemStack gtnl$getStored();
+    ItemStack getStored();
 
-    void gtnl$setStored(ItemStack stored);
+    void setStored(ItemStack stored);
 
-    IAEItemStack gtnl$getFuzzyItemStack();
+    IAEItemStack getFuzzyItemStack();
 
-    void gtnl$setFuzzyItemStack(IAEItemStack stack);
+    void setFuzzyItemStack(IAEItemStack stack);
 
-    boolean gtnl$getHasConfig();
+    boolean isHasConfig();
 
-    void gtnl$setHasConfig(boolean value);
+    void setHasConfig(boolean value);
 
-    int gtnl$getPriority();
+    int getPriority();
 
-    void gtnl$setPriority(int priority);
+    void setPriority(int priority);
 
-    List<ICraftingPatternDetails> gtnl$getCraftingList();
+    List<ICraftingPatternDetails> getCraftingList();
 
-    void gtnl$setCraftingList(List<ICraftingPatternDetails> list);
+    void setCraftingList(List<ICraftingPatternDetails> list);
 
-    boolean gtnl$getSharedInventory();
+    boolean isSharedInventory();
 
-    void gtnl$setSharedInventory(boolean value);
+    void setSharedInventory(boolean value);
 
-    List<ItemStack> gtnl$getWaitingToSend();
+    List<ItemStack> getWaitingToSend();
 
-    void gtnl$setWaitingToSend(List<ItemStack> list);
+    void setWaitingToSend(List<ItemStack> list);
 
-    IMEInventory<IAEItemStack> gtnl$getDestination();
+    IMEInventory<IAEItemStack> getDestination();
 
-    void gtnl$setDestination(IMEInventory<IAEItemStack> destination);
+    void setDestination(IMEInventory<IAEItemStack> destination);
 
-    boolean gtnl$getIsWorking();
+    boolean isWorking();
 
-    void gtnl$setIsWorking(boolean working);
+    void setWorking(boolean working);
 
-    YesNo gtnl$getRedstoneState();
+    YesNo getRedstoneState();
 
-    void gtnl$setRedstoneState(YesNo state);
+    void setRedstoneState(YesNo state);
 
-    UnlockCraftingEvent gtnl$getUnlockEvent();
+    UnlockCraftingEvent getUnlockEvent();
 
-    void gtnl$setUnlockEvent(UnlockCraftingEvent event);
+    void setUnlockEvent(UnlockCraftingEvent event);
 
-    List<IAEItemStack> gtnl$getUnlockStacks();
+    List<IAEItemStack> getUnlockStacks();
 
-    void gtnl$setUnlockStacks(List<IAEItemStack> stacks);
+    void setUnlockStacks(List<IAEItemStack> stacks);
 
-    int gtnl$getLastInputHash();
+    int getLastInputHash();
 
-    void gtnl$setLastInputHash(int hash);
+    void setLastInputHash(int hash);
 
-    ScheduledReason gtnl$getScheduledReason();
+    ScheduledReason getScheduledReason();
 
-    void gtnl$setScheduledReason(ScheduledReason reason);
+    void setScheduledReason(ScheduledReason reason);
 
-    void gtnl$updatePlan(int slot);
+    void updatePlan(int slot);
 }

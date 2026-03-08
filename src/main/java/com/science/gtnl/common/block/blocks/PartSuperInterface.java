@@ -30,18 +30,18 @@ public class PartSuperInterface extends PartInterface {
         duality.setStorageSlots(storageSlots);
         duality.setPatternSlots(patternSlots);
         duality.setUpgradeSlots(upgradeSlots);
-        duality.gtnl$setConfig(new AppEngInternalAEInventory(this, configSlots));
-        duality.gtnl$setStorage(new AppEngInternalInventory(this, storageSlots));
-        duality.gtnl$setPatterns(new AppEngInternalInventory(this, patternSlots));
-        duality.gtnl$setSlotInv(new WrapperInvSlot(duality.gtnl$getStorage()));
-        duality.gtnl$setUpgrades(
+        duality.setConfig(new AppEngInternalAEInventory(this, configSlots));
+        duality.setStorage(new AppEngInternalInventory(this, storageSlots));
+        duality.setPatterns(new AppEngInternalInventory(this, patternSlots));
+        duality.setSlotInv(new WrapperInvSlot(duality.getStorage()));
+        duality.setUpgrades(
             new StackUpgradeInventory(
-                duality.gtnl$getGridProxy()
+                duality.getGridProxy()
                     .getMachineRepresentation(),
                 this,
                 upgradeSlots));
-        duality.gtnl$setRequireWork(new IAEItemStack[storageSlots]);
-        duality.gtnl$setHasFuzzyConfig(new boolean[configSlots]);
+        duality.setRequireWork(new IAEItemStack[storageSlots]);
+        duality.setHasFuzzyConfig(new boolean[configSlots]);
     }
 
     @Override
