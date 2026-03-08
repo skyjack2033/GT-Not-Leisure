@@ -35,6 +35,7 @@ import appeng.core.sync.packets.PacketSwitchGuis;
 import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.IInterfaceHost;
 
+// TODO:再加个二合一ME接口
 public class GuiSuperInterface extends GuiUpgradeable {
 
     public GuiTabButton priority;
@@ -164,7 +165,8 @@ public class GuiSuperInterface extends GuiUpgradeable {
                         : ButtonToolTips.OptimizePatternsNoReq.getLocal()));
         }
 
-        this.fontRendererObj.drawString(GuiText.Interface.getLocal(), 8, 6, 4210752);
+        this.fontRendererObj
+            .drawString(getGuiDisplayName(StatCollector.translateToLocal("item.super_interface.name")), 8, 6, 4210752);
         String pageLabel = StatCollector
             .translateToLocalFormatted("text.SuperInterface.page", container.currentPage + 1, container.getMaxPages());
         this.fontRendererObj.drawString(pageLabel, 110, 6, 4210752);
@@ -178,7 +180,7 @@ public class GuiSuperInterface extends GuiUpgradeable {
         super.drawBG(offsetX, offsetY, mouseX, mouseY);
         this.drawTexturedModalRect(offsetX + 7, offsetY + 14, 7, 71, 162, 18);
         this.drawTexturedModalRect(offsetX + 7, offsetY + 32, 7, 107, 162, 18);
-        int patternStartY = 14 + 36 + 4;
+        int patternStartY = 14 + 36 + 3;
         for (int i = 4; i > 0; i--) {
             this.drawTexturedModalRect(offsetX + 7, offsetY + patternStartY + (4 - i) * 18, 7, 107, 162, 18);
         }

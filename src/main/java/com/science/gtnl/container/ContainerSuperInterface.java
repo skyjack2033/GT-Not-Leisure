@@ -10,6 +10,7 @@ import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
 import appeng.util.Platform;
 
+// TODO:再加个二合一ME接口
 public class ContainerSuperInterface extends ContainerInterface {
 
     public final DualityInterface myDuality;
@@ -23,7 +24,7 @@ public class ContainerSuperInterface extends ContainerInterface {
 
     public static final int SLOT_SIZE = 18;
     public static final int TITLE_HEIGHT = 15;
-    public static final int SECTION_GAP = 4;
+    public static final int SECTION_GAP = 3;
     public static final int PLAYER_INV_HEIGHT = 82;
 
     public ContainerSuperInterface(InventoryPlayer ip, IInterfaceHost te) {

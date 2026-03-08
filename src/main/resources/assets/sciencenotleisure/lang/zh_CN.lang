@@ -1201,6 +1201,9 @@ tile.lootgames.sdk_master.name=数独
 Info_Sudoku_00=剩余：%d
 Info_Sudoku_01=上次点击时间：%d
 
+item.part_super_interface.name=超级ME接口
+item.super_interface.name=超级ME接口
+
 tile.EssentiaHatch.name=源质输入仓
 Tooltip_EssentiaHatch_00=手持源质罐子右键以设置过滤
 Tooltip_EssentiaHatch_01=空手Shift右键以重置过滤

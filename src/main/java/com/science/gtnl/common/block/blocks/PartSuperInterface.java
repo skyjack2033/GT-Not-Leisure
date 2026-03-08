@@ -16,6 +16,8 @@ import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.WrapperInvSlot;
 
+// TODO:添加方块版本的超级ME接口
+// TODO:再加个二合一ME接口
 public class PartSuperInterface extends PartInterface {
 
     public int configSlots = 27;
