@@ -27,7 +27,7 @@ public class InfusionCraftingRecipes implements IRecipePool {
     public static final ItemStack IC2_MACHINE = GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockMachine", 1, 1);
 
     public static final ItemStack BLAST_FURNACE_TEMPLATE = GTModHandler
-        .getModItem(Mods.EtFuturumRequiem.ID, "blast_furnace", 1, 1);
+        .getModItem(Mods.EtFuturumRequiem.ID, "blast_furnace", 1);
 
     public static final Set<GTUtility.ItemId> UNCONSUMED_ITEMS = new HashSet<>();
 
