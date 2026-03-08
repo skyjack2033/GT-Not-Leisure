@@ -91,7 +91,13 @@ public class SubscribeEventUtils {
             ModList.Sudoku.ID,
             ModList.GiveCount.ID,
             ModList.ChromaticTooltips.ID,
-            ModList.ChromaticTooltipsCompat.ID));
+            ModList.ChromaticTooltipsCompat.ID,
+            ModList.NewHorizonsCoreMod.ID,
+            ModList.GalaxySpace.ID,
+            ModList.EnhancedLootBags.ID,
+            ModList.NotEnoughEnergistics.ID,
+            ModList.NEICustomDiagrams.ID,
+            ModList.AvaritiaAddons.ID));
 
     public static Object2IntMap<UUID> foodTickTimers = new Object2IntOpenHashMap<>();
 
