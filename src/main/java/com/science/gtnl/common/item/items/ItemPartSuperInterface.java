@@ -1,4 +1,4 @@
-package com.science.gtnl.common.block.blocks.item;
+package com.science.gtnl.common.item.items;
 
 import static com.science.gtnl.ScienceNotLeisure.*;
 
@@ -10,7 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.common.block.blocks.PartSuperInterface;
+import com.science.gtnl.common.item.PartSuperInterface;
+import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.AEApi;
 import appeng.api.parts.IPartItem;
@@ -18,19 +19,19 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-// TODO:添加方块版本的超级ME接口
 // TODO:再加个二合一ME接口
 public class ItemPartSuperInterface extends Item implements IPartItem {
 
     public ItemPartSuperInterface() {
         this.setMaxStackSize(64);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
-        this.setUnlocalizedName("part_super_interface");
+        this.setUnlocalizedName("PartSuperInterface");
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "SuperInterface");
-        GameRegistry.registerItem(this, "part_super_interface");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         AEApi.instance()
             .partHelper()
             .setItemBusRenderer(this);
+        GTNLItemList.PartSuperInterface.set(new ItemStack(this, 1));
     }
 
     @Nullable

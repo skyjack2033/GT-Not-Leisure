@@ -166,7 +166,7 @@ public class GuiSuperInterface extends GuiUpgradeable {
         }
 
         this.fontRendererObj
-            .drawString(getGuiDisplayName(StatCollector.translateToLocal("item.super_interface.name")), 8, 6, 4210752);
+            .drawString(getGuiDisplayName(StatCollector.translateToLocal("container.SuperInterface")), 8, 6, 4210752);
         String pageLabel = StatCollector
             .translateToLocalFormatted("text.SuperInterface.page", container.currentPage + 1, container.getMaxPages());
         this.fontRendererObj.drawString(pageLabel, 110, 6, 4210752);

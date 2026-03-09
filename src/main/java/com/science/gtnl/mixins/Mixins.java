@@ -68,6 +68,7 @@ public enum Mixins implements IMixins {
         .addCommonMixins(
             "AEFluidCraft.MixinItemFluidPacket",
             "AppliedEnergistics.AccessorPartInterface",
+            "AppliedEnergistics.AccessorTileInterface",
             "AppliedEnergistics.MixinAdaptorIInventory",
             "AppliedEnergistics.MixinDualityInterface",
             "AppliedEnergistics.MixinInterfaceTerminalEntry",

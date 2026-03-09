@@ -1201,9 +1201,6 @@ tile.lootgames.sdk_master.name=Sudoku
 Info_Sudoku_00=Renaming: %d
 Info_Sudoku_01=Last Click Time: %d
 
-item.part_super_interface.name=Super ME Interface
-item.super_interface.name=Super ME Interface
-
 tile.EssentiaHatch.name=Essentia Input Hatch
 Tooltip_EssentiaHatch_00=You can right click it with an Essentia Jar to set Essentia Filter
 Tooltip_EssentiaHatch_01=Right click it with empty hands to clear the Filter.
@@ -1249,6 +1246,10 @@ Tooltip_PlayerLeash_00=Creates a powerful leash field that allows the placer to 
 
 tile.DirePatternEncoder.name=Dire Pattern Encoder
 container.DirePatternEncoder=Dire Pattern Encoder
+
+item.PartSuperInterface.name=Super ME Interface
+tile.SuperInterface.name=Super ME Interface
+container.SuperInterface=Super ME Interface
 
 tile.AEChisel.name=ME Chisel
 container.AEChisel=ME Chisel

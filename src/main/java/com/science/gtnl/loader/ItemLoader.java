@@ -15,7 +15,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.common.block.blocks.item.ItemPartSuperInterface;
 import com.science.gtnl.common.item.ItemInfinityCell;
 import com.science.gtnl.common.item.ItemInfinityItem;
 import com.science.gtnl.common.item.MetaItemAdder;
@@ -25,6 +24,7 @@ import com.science.gtnl.common.item.items.DireCraftPattern;
 import com.science.gtnl.common.item.items.ElectricProspectorTool;
 import com.science.gtnl.common.item.items.FakeItemSiren;
 import com.science.gtnl.common.item.items.GTNLItemBucket;
+import com.science.gtnl.common.item.items.ItemPartSuperInterface;
 import com.science.gtnl.common.item.items.KFCFamily;
 import com.science.gtnl.common.item.items.NetherTeleporter;
 import com.science.gtnl.common.item.items.NullPointerException;

@@ -24,6 +24,7 @@ import com.science.gtnl.common.block.blocks.BlockPlayerDoll;
 import com.science.gtnl.common.block.blocks.BlockPlayerLeash;
 import com.science.gtnl.common.block.blocks.BlockSearedLadder;
 import com.science.gtnl.common.block.blocks.BlockShimmerFluid;
+import com.science.gtnl.common.block.blocks.BlockSuperInterface;
 import com.science.gtnl.common.block.blocks.BlockWaterCandle;
 import com.science.gtnl.common.block.blocks.BlocksCompressedStargate;
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
@@ -37,6 +38,7 @@ import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorksh
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
 import com.science.gtnl.common.block.blocks.tile.TileEntityNanoPhagocytosisPlant;
 import com.science.gtnl.common.block.blocks.tile.TileEntityPlayerDoll;
+import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
 import com.science.gtnl.common.block.blocks.tile.TileEntityWaterCandle;
 import com.science.gtnl.common.block.casings.base.ItemBlockBase;
 import com.science.gtnl.common.block.casings.base.MetaBlockBase;
@@ -70,6 +72,7 @@ public class BlockLoader {
     public static Block playerLeash;
     public static Block direPatternEncoder;
     public static Block aeChisel;
+    public static Block superInterface;
     public static Block nanoPhagocytosisPlantRender;
     public static Block eternalGregTechWorkshopRender;
     public static Block dimensionRespawnAnchor;
@@ -110,6 +113,9 @@ public class BlockLoader {
 
         aeChisel = new BlockAEChisel();
         GameRegistry.registerTileEntity(TileEntityAEChisel.class, "AEChiselTileEntity");
+
+        superInterface = new BlockSuperInterface();
+        GameRegistry.registerTileEntity(TileEntitySuperInterface.class, "SuperInterfaceTileEntity");
 
         cardboardBox = new BlockCardboardBox();
         GameRegistry.registerTileEntity(TileEntityCardboardBox.class, "CardboardBoxTileEntity");

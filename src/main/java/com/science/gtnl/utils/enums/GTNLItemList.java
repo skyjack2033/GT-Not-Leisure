@@ -52,6 +52,8 @@ public enum GTNLItemList implements IItemContainer {
     EnderElevatorBlock,
     EnderElevatorSlab,
     EnderElevatorCarpet,
+    SuperInterface,
+    PartSuperInterface,
 
     BronzeBrickCasing,
     SteelBrickCasing,

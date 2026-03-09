@@ -7,10 +7,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableChest;
-import com.science.gtnl.common.block.blocks.PartSuperInterface;
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
+import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
 import com.science.gtnl.common.entity.EntityParticleBeam;
+import com.science.gtnl.common.item.PartSuperInterface;
 import com.science.gtnl.common.machine.hatch.SuperCraftingInputHatchME;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import com.science.gtnl.common.packet.NetWorkHandler;
@@ -80,6 +81,8 @@ public class CommonProxy implements IGuiHandler {
             .interfaceTerminal();
         interfaceTerminal.register(SuperCraftingInputHatchME.class);
         interfaceTerminal.register(AssemblerMatrix.class);
+        interfaceTerminal.register(PartSuperInterface.class);
+        interfaceTerminal.register(TileEntitySuperInterface.class);
 
         // AltarStructure.registerAltarStructureInfo();
     }
@@ -168,7 +171,18 @@ public class CommonProxy implements IGuiHandler {
             }
             case SuperInterfaceGUI -> {
                 var t = world.getTileEntity(x, y, z);
-                if (t instanceof IPartHost host) {
+                if (t instanceof TileEntitySuperInterface si) {
+                    var container = new ContainerSuperInterface(player.inventory, si);
+                    ContainerOpenContext ctx = new ContainerOpenContext(si);
+                    ctx.setWorld(world);
+                    ctx.setX(x);
+                    ctx.setY(y);
+                    ctx.setZ(z);
+                    ctx.setSide(side);
+                    container.setOpenContext(ctx);
+                    yield container;
+
+                } else if (t instanceof IPartHost host) {
                     IPart part = host.getPart(side);
                     if (part instanceof PartSuperInterface si) {
                         var container = new ContainerSuperInterface(player.inventory, si);

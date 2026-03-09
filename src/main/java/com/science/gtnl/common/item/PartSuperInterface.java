@@ -1,4 +1,4 @@
-package com.science.gtnl.common.block.blocks;
+package com.science.gtnl.common.item;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,6 @@ import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.WrapperInvSlot;
 
-// TODO:添加方块版本的超级ME接口
 // TODO:再加个二合一ME接口
 public class PartSuperInterface extends PartInterface {
 
@@ -58,5 +57,10 @@ public class PartSuperInterface extends PartInterface {
             this.getHost()
                 .getTile());
         return true;
+    }
+
+    @Override
+    public int rows() {
+        return 12;
     }
 }

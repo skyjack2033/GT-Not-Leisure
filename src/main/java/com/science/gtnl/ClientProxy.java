@@ -29,7 +29,6 @@ import com.science.gtnl.client.gui.portableWorkbench.GuiPortableEnderChest;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableFurnace;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortablePortableCompressedChest;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortablePortableInfinityChest;
-import com.science.gtnl.common.block.blocks.PartSuperInterface;
 import com.science.gtnl.common.block.blocks.item.ItemBlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.item.ItemBlockNanoPhagocytosisPlantRender;
 import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
@@ -40,12 +39,14 @@ import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorksh
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
 import com.science.gtnl.common.block.blocks.tile.TileEntityNanoPhagocytosisPlant;
 import com.science.gtnl.common.block.blocks.tile.TileEntityPlayerDoll;
+import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
 import com.science.gtnl.common.block.blocks.tile.TileEntityWaterCandle;
 import com.science.gtnl.common.command.CommandSpoce;
 import com.science.gtnl.common.entity.EntityParticleBeam;
 import com.science.gtnl.common.entity.EntityPlayerLeashKnot;
 import com.science.gtnl.common.entity.EntitySaddleSlime;
 import com.science.gtnl.common.entity.EntitySteamRocket;
+import com.science.gtnl.common.item.PartSuperInterface;
 import com.science.gtnl.common.packet.client.TitleDisplayHandler;
 import com.science.gtnl.common.render.SpoceRenderHandler;
 import com.science.gtnl.common.render.entity.NullPointerExceptionRender;
@@ -129,6 +130,8 @@ public class ClientProxy extends CommonProxy {
             .registerItemRenderer(Item.getItemFromBlock(BlockLoader.direPatternEncoder), ItemRenderer.INSTANCE);
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockLoader.aeChisel), ItemRenderer.INSTANCE);
+        MinecraftForgeClient
+            .registerItemRenderer(Item.getItemFromBlock(BlockLoader.superInterface), ItemRenderer.INSTANCE);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPlayerDoll.class, new PlayerDollRenderer());
         MinecraftForgeClient
@@ -268,7 +271,9 @@ public class ClientProxy extends CommonProxy {
             }
             case SuperInterfaceGUI -> {
                 var t = world.getTileEntity(x, y, z);
-                if (t instanceof IPartHost host) {
+                if (t instanceof TileEntitySuperInterface si) {
+                    yield new GuiSuperInterface(player.inventory, si);
+                } else if (t instanceof IPartHost host) {
                     IPart part = host.getPart(side);
                     if (part instanceof PartSuperInterface si) {
                         yield new GuiSuperInterface(player.inventory, si);

@@ -13,7 +13,6 @@ import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.TickrateAPI;
-import com.science.gtnl.common.block.blocks.PartSuperInterface;
 import com.science.gtnl.common.entity.EntitySteamRocket;
 import com.science.gtnl.common.item.items.MilledOre;
 import com.science.gtnl.common.item.steamRocket.SchematicSteamRocket;
@@ -30,8 +29,6 @@ import com.science.gtnl.utils.enums.GTNLStructureChannels;
 import com.science.gtnl.utils.enums.ModList;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseBucket;
 
-import appeng.api.AEApi;
-import appeng.api.config.Upgrades;
 import bartworks.API.WerkstoffAdderRegistry;
 import cpw.mods.fml.common.Optional;
 import goodgenerator.loader.Loaders;
@@ -78,12 +75,6 @@ public class MaterialLoader {
         GreenHouseBucket.LoadGreenHouseBuckets();
         MachineLoader.registry();
         AchievementsLoader.registry();
-
-        AEApi.instance()
-            .registries()
-            .interfaceTerminal()
-            .register(PartSuperInterface.class);
-        Upgrades.PATTERN_CAPACITY.registerItem(new ItemStack(ItemLoader.superInterface), 11);
 
         if (Mods.GalaxySpace.isModLoaded() && Mods.StevesCarts2.isModLoaded()
             && Mods.Railcraft.isModLoaded()
