@@ -134,7 +134,6 @@ public enum Mixins implements IMixins {
             "InventoryBogoSorter.MixinShortcutHandler",
             "InventoryBogoSorter.MixinSortHandler",
             "ModularUI.MixinFluidSlotWidget",
-            "NotEnoughItems.MixinItemStackFilterParser",
             "TConstruct.MixinSmelteryLogic",
             "TecTech.MixinMTEEyeOfHarmony",
             "TecTech.MixinMTEResearchStation",

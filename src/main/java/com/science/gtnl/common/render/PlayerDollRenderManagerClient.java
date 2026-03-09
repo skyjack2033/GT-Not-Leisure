@@ -18,7 +18,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
@@ -39,10 +38,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class PlayerDollRenderManagerClient {
-
-    public static final Map<String, Long> FAILED_DOWNLOADS = new ConcurrentHashMap<>();
-    public static final Set<String> LOADING = ConcurrentHashMap.newKeySet();
-    public static final long RETRY_INTERVAL = 10 * 60 * 1000;
 
     public static final Map<String, ResourceLocation> TEXTURE_SKIN_CACHE = new ConcurrentHashMap<>();
     public static final Map<String, ResourceLocation> TEXTURE_CAPE_CACHE = new ConcurrentHashMap<>();
@@ -111,10 +106,6 @@ public class PlayerDollRenderManagerClient {
 
     public static ResourceLocation loadProfileTexture(String uuid, TextureType type) {
         if (uuid == null || BLACKLISTED_UUIDS.contains(uuid)) return type == TextureType.SKIN ? DEFAULT_SKIN : null;
-        Long lastFail = FAILED_DOWNLOADS.get(uuid);
-        if (lastFail != null && System.currentTimeMillis() - lastFail < RETRY_INTERVAL) {
-            return type == TextureType.SKIN ? DEFAULT_SKIN : null;
-        }
 
         Map<String, ResourceLocation> cache = type == TextureType.SKIN ? TEXTURE_SKIN_CACHE : TEXTURE_CAPE_CACHE;
 
@@ -133,7 +124,6 @@ public class PlayerDollRenderManagerClient {
 
         String url = fetchTextureUrl(uuid, type);
         if (url == null) {
-            FAILED_DOWNLOADS.put(uuid, System.currentTimeMillis());
             cache.put(uuid, type == TextureType.SKIN ? DEFAULT_SKIN : DEFAULT_CAPE);
             return null;
         }
@@ -158,61 +148,32 @@ public class PlayerDollRenderManagerClient {
         ResourceLocation cached = cache.get(key);
         if (cached != null) return cached;
 
-        Long lastFail = FAILED_DOWNLOADS.get(key);
-        if (lastFail != null && System.currentTimeMillis() - lastFail < RETRY_INTERVAL) {
-            return type == TextureType.SKIN ? DEFAULT_SKIN : null;
-        }
-
         File dir = type == TextureType.SKIN ? (custom ? CUSTOM_SKIN_DIR : SKIN_DIR)
             : (custom ? CUSTOM_CAPE_DIR : CAPE_DIR);
 
         File target = new File(dir, key + ".png");
 
-        if (target.exists()) {
-            ResourceLocation tex = getLocalTextureFromFile(target, type);
-            if (tex != null) cache.put(key, tex);
-            return tex;
-        }
-
-        if (!LOADING.add(key)) {
-            return type == TextureType.SKIN ? DEFAULT_SKIN : null;
-        }
+        if (target.exists()) return getLocalTextureFromFile(target, type);
 
         return AsyncDownloader.getTexture(key, () -> {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-                conn.setConnectTimeout(3000);
-                conn.setReadTimeout(3000);
+            try (InputStream in = new URL(url).openStream(); FileOutputStream out = new FileOutputStream(target)) {
 
-                try (InputStream in = conn.getInputStream(); FileOutputStream out = new FileOutputStream(target)) {
-
-                    byte[] buf = new byte[8192];
-                    int len;
-                    while ((len = in.read(buf)) != -1) {
-                        out.write(buf, 0, len);
-                    }
-                }
+                byte[] buf = new byte[8192];
+                int len;
+                while ((len = in.read(buf)) != -1) out.write(buf, 0, len);
 
                 if (!isValidImage(target)) {
                     target.delete();
-                    FAILED_DOWNLOADS.put(key, System.currentTimeMillis());
                     return type == TextureType.SKIN ? DEFAULT_SKIN : null;
                 }
 
                 ResourceLocation tex = getLocalTextureFromFile(target, type);
                 if (tex != null) cache.put(key, tex);
-
                 return tex;
 
             } catch (IOException e) {
-
                 target.delete();
-                FAILED_DOWNLOADS.put(key, System.currentTimeMillis());
-
                 return type == TextureType.SKIN ? DEFAULT_SKIN : null;
-
-            } finally {
-                LOADING.remove(key);
             }
         });
     }
