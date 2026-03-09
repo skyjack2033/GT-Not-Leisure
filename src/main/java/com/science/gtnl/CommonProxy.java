@@ -18,6 +18,7 @@ import com.science.gtnl.common.packet.NetWorkHandler;
 import com.science.gtnl.common.recipe.gtnl.ExtremeExtremeEntityCrusherRecipes;
 import com.science.gtnl.common.world.GTNLWorldgenloader;
 import com.science.gtnl.container.ContainerAEChisel;
+import com.science.gtnl.container.ContainerCustomPriority;
 import com.science.gtnl.container.ContainerDirePatternEncoder;
 import com.science.gtnl.container.ContainerSuperInterface;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAdvancedWorkbench;
@@ -39,6 +40,7 @@ import appeng.api.AEApi;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.container.ContainerOpenContext;
+import appeng.helpers.IPriorityHost;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
@@ -195,6 +197,30 @@ public class CommonProxy implements IGuiHandler {
                         container.setOpenContext(ctx);
                         yield container;
                     }
+                }
+                yield null;
+            }
+            case CustomPriorityGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                IPriorityHost priorityHost = null;
+                if (t instanceof TileEntitySuperInterface si) {
+                    priorityHost = si;
+                } else if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartSuperInterface si) {
+                        priorityHost = si;
+                    }
+                }
+                if (priorityHost != null) {
+                    var container = new ContainerCustomPriority(player.inventory, priorityHost);
+                    ContainerOpenContext ctx = new ContainerOpenContext(priorityHost);
+                    ctx.setWorld(world);
+                    ctx.setX(x);
+                    ctx.setY(y);
+                    ctx.setZ(z);
+                    ctx.setSide(side);
+                    container.setOpenContext(ctx);
+                    yield container;
                 }
                 yield null;
             }

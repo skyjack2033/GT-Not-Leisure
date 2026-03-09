@@ -64,7 +64,6 @@ import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.mixinHelper.IMultiblockRecipeMap;
 import com.science.gtnl.config.MainConfig;
-import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.AEApi;
@@ -497,7 +496,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
     public boolean needPatternSync = true;
     public boolean justHadNewItems = false;
 
-    public String customName = null;
+    public String customName = "";
     public boolean supportFluids;
     public boolean additionalConnection = false;
     public boolean disablePatternOptimization = false;
@@ -793,7 +792,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
             }
         }
         aNBT.setTag("internalInventory", internalInventoryNBT);
-        if (customName != null) aNBT.setString("customName", customName);
+        if (customName != null && !customName.isEmpty()) aNBT.setString("customName", customName);
         aNBT.setBoolean("additionalConnection", additionalConnection);
         aNBT.setBoolean("disablePatternOptimization", disablePatternOptimization);
         aNBT.setBoolean("showPattern", showPattern);
@@ -1166,14 +1165,6 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
     public void getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
         NBTTagCompound tag = accessor.getNBTData();
-        if (tag.hasKey("name")) {
-            currenttip.add(
-                EnumChatFormatting.AQUA
-                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
-                        ? Utils.getExtraInterfaceName(tag.getString("name"))
-                        : tag.getString("name"))
-                    + EnumChatFormatting.RESET);
-        }
         currenttip.add(
             StatCollector
                 .translateToLocal("Info_ShowPattern_" + (tag.getBoolean("showPattern") ? "Enabled" : "Disabled")));
@@ -1227,10 +1218,6 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
         }
 
         tag.setTag("inventory", inventory);
-
-        if (!Objects.equals(getName(), getLocalName())) {
-            tag.setString("name", getName());
-        }
     }
 
     @Override

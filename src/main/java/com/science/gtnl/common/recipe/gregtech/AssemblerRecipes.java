@@ -3108,6 +3108,28 @@ public class AssemblerRecipes implements IRecipePool {
             .addTo(As)
             .addTo(HOR);
 
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockInterface", 3),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 54),
+                GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 2),
+                GTUtility.getIntegratedCircuit(2))
+            .itemOutputs(GTNLItemList.SuperInterface.get(1))
+            .duration(100)
+            .eut(TierEU.RECIPE_MV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockInterface", 3),
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 54),
+                GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 2),
+                GTUtility.getIntegratedCircuit(3))
+            .itemOutputs(GTNLItemList.PartSuperInterface.get(1))
+            .duration(100)
+            .eut(TierEU.RECIPE_MV)
+            .addTo(As);
+
         loadLamp();
         loadWirelessHatch();
         loadLaserHatch();

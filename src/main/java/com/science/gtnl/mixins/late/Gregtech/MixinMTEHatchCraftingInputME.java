@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.science.gtnl.api.mixinHelper.IMultiblockRecipeMap;
 import com.science.gtnl.config.MainConfig;
-import com.science.gtnl.utils.Utils;
 
 import appeng.api.networking.crafting.ICraftingMedium;
 import appeng.util.ReadableNumberConverter;
@@ -47,7 +46,7 @@ public abstract class MixinMTEHatchCraftingInputME extends MTEHatchInputBus
     @Inject(method = "getName", at = @At("HEAD"), cancellable = true)
     private void gtnl$overrideGetName(CallbackInfoReturnable<String> cir) {
         if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
-        MTEHatchCraftingInputME self = (MTEHatchCraftingInputME) (Object) this;
+        var self = (MTEHatchCraftingInputME) (Object) this;
 
         if (self.hasCustomName()) {
             cir.setReturnValue(self.getCustomName());
@@ -103,14 +102,6 @@ public abstract class MixinMTEHatchCraftingInputME extends MTEHatchInputBus
     public void getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
         NBTTagCompound tag = accessor.getNBTData();
-        if (tag.hasKey("name")) {
-            currenttip.add(
-                EnumChatFormatting.AQUA
-                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
-                        ? Utils.getExtraInterfaceName(tag.getString("name"))
-                        : tag.getString("name"))
-                    + EnumChatFormatting.RESET);
-        }
         if (tag.hasKey("inventory")) {
             NBTTagList inventory = tag.getTagList("inventory", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < inventory.tagCount(); ++i) {

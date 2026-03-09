@@ -4,12 +4,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.packet.SwitchToCustomGuiPacket;
 import com.science.gtnl.container.ContainerSuperInterface;
+import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.config.AdvancedBlockingMode;
 import appeng.api.config.FuzzyMode;
@@ -18,6 +22,7 @@ import appeng.api.config.LockCraftingMode;
 import appeng.api.config.Settings;
 import appeng.api.config.Upgrades;
 import appeng.api.config.YesNo;
+import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.implementations.GuiUpgradeable;
 import appeng.client.gui.widgets.GuiAeButton;
 import appeng.client.gui.widgets.GuiImgButton;
@@ -28,14 +33,12 @@ import appeng.client.texture.ExtraBlockTextures;
 import appeng.core.AELog;
 import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
-import appeng.core.sync.GuiBridge;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketConfigButton;
-import appeng.core.sync.packets.PacketSwitchGuis;
 import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.IInterfaceHost;
+import appeng.parts.AEBasePart;
 
-// TODO:修复优先级GUI退回到普通接口的问题
 // TODO:再加个二合一ME接口
 public class GuiSuperInterface extends GuiUpgradeable {
 
@@ -198,7 +201,12 @@ public class GuiSuperInterface extends GuiUpgradeable {
         } else if (btn == nextPage) {
             container.nextPage();
         } else if (btn == this.priority) {
-            NetworkHandler.instance.sendToServer(new PacketSwitchGuis(GuiBridge.GUI_PRIORITY));
+            ForgeDirection side = ForgeDirection.UNKNOWN;
+            if (this.bc instanceof AEBasePart part) {
+                side = part.getSide();
+            }
+            AEBaseGui.setSwitchingGuis(true);
+            ScienceNotLeisure.network.sendToServer(new SwitchToCustomGuiPacket(GuiType.CustomPriorityGUI, side));
         } else if (btn == this.interfaceMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(Settings.INTERFACE_TERMINAL, backwards));
         } else if (btn == this.BlockMode) {

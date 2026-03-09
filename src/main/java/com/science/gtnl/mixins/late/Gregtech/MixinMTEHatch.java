@@ -21,6 +21,7 @@ import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.item.ItemUtils;
 
+import appeng.api.util.IInterfaceViewable;
 import appeng.helpers.ICustomNameObject;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.interfaces.IConfigurationCircuitSupport;
@@ -109,8 +110,15 @@ public abstract class MixinMTEHatch extends MTEBasicTank implements IMultiblockR
         int z) {
         super.getWailaNBTData(player, tile, tag, world, x, y, z);
         if (!MainConfig.machine.enableHatchInterfaceTerminalEnhance) return;
-        if (!Objects.equals(getCustomName(), getLocalName())) {
-            tag.setString("name", getCustomName());
+        var name = getCustomName();
+        if (name == null || name.isEmpty()) {
+            if (this instanceof IInterfaceViewable viewable) {
+                name = viewable.getName();
+                if (name == null || name.isEmpty()) return;
+            }
+        }
+        if (!Objects.equals(name, getLocalName())) {
+            tag.setString("name", name);
         }
     }
 

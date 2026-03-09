@@ -23,7 +23,8 @@ public enum GuiType {
     PortableDarkSteelChestGUI(18),
     DirePatternEncoderGUI(19),
     AEChiselGUI(20),
-    SuperInterfaceGUI(21);
+    SuperInterfaceGUI(21),
+    CustomPriorityGUI(22);
 
     private final int id;
 

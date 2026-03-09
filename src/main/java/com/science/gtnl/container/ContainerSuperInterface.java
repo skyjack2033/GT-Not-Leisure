@@ -5,7 +5,10 @@ import net.minecraft.entity.player.InventoryPlayer;
 import com.science.gtnl.api.mixinHelper.IDualityInterface;
 
 import appeng.container.implementations.ContainerInterface;
-import appeng.container.slot.*;
+import appeng.container.slot.OptionalSlotFake;
+import appeng.container.slot.OptionalSlotRestrictedInput;
+import appeng.container.slot.SlotNormal;
+import appeng.container.slot.SlotRestrictedInput;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
 import appeng.util.Platform;

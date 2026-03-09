@@ -1290,9 +1290,20 @@ public class CraftingTableRecipes implements IRecipePool {
                 new ItemStack(Items.flint, 1) });
 
         GTModHandler.addCraftingRecipe(
-            GTNLItemList.CompressedFurnaceCasing.get(1),
-            new Object[] { "AAA", "ABA", "AAA", 'A', new ItemStack(Blocks.furnace, 1), 'B',
-                new ItemStack(Items.flint, 1) });
+            GTNLItemList.SuperInterface.get(1),
+            recipeFlags,
+            new Object[] { "ABC", "BAB", "CBA", 'A',
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockInterface", 1), 'B',
+                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 54), 'C',
+                GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 1) });
+
+        GTModHandler.addShapelessCraftingRecipe(
+            GTNLItemList.PartSuperInterface.get(1),
+            new Object[] { GTNLItemList.SuperInterface.get(1) });
+
+        GTModHandler.addShapelessCraftingRecipe(
+            GTNLItemList.SuperInterface.get(1),
+            new Object[] { GTNLItemList.PartSuperInterface.get(1) });
 
         if (NewHorizonsCoreMod.isModLoaded()) {
             loadNHRecipe();

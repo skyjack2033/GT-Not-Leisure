@@ -18,6 +18,7 @@ import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.science.gtnl.client.GTNLInputHandler;
 import com.science.gtnl.client.GTNLTooltipManager;
 import com.science.gtnl.client.gui.GuiAEChisel;
+import com.science.gtnl.client.gui.GuiCustomPriority;
 import com.science.gtnl.client.gui.GuiDirePatternEncoder;
 import com.science.gtnl.client.gui.GuiSuperInterface;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAdvancedWorkbench;
@@ -77,6 +78,7 @@ import Forge.NullPointerException;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.client.render.ItemRenderer;
+import appeng.helpers.IPriorityHost;
 import codechicken.nei.guihook.GuiContainerManager;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -278,6 +280,24 @@ public class ClientProxy extends CommonProxy {
                     if (part instanceof PartSuperInterface si) {
                         yield new GuiSuperInterface(player.inventory, si);
                     }
+                }
+                yield null;
+            }
+            case CustomPriorityGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                IPriorityHost priorityHost = null;
+
+                if (t instanceof TileEntitySuperInterface si) {
+                    priorityHost = si;
+                } else if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartSuperInterface si) {
+                        priorityHost = si;
+                    }
+                }
+
+                if (priorityHost != null) {
+                    yield new GuiCustomPriority(player.inventory, priorityHost, GuiType.SuperInterfaceGUI);
                 }
                 yield null;
             }
