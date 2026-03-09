@@ -282,20 +282,20 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
                 if (requiredPCBTier > machineTier)
                     return CheckRecipeResultRegistry.insufficientMachineTier(requiredPCBTier);
 
-                int parallel = 0;
+                long parallel = 0;
 
                 for (FluidStack fluidStack : getStoredWater()) {
                     if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[requiredPCBTier - 1])) {
-                        parallel += (int) (fluidStack.amount / 100d
+                        parallel += (long) (fluidStack.amount / 100d
                             * GTUtility.powInt(2, machineTier - requiredPCBTier));
                     }
                     if (GTUtility.areFluidsEqual(fluidStack, purifiedWater[requiredPCBTier + 3])) {
-                        parallel += (int) (fluidStack.amount / 50d
+                        parallel += (long) (fluidStack.amount / 50d
                             * GTUtility.powInt(2, machineTier - requiredPCBTier));
                     }
                 }
 
-                maxParallel = GTUtility.min(parallel, getTrueParallel());
+                maxParallel = (int) GTUtility.min(parallel, getTrueParallel());
 
                 if (maxParallel <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
 
@@ -471,7 +471,9 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
     @Override
     public double getDurationModifier() {
-        return 1.0 / (wirelessUpgrade ? 8.0 : 3.0 + machineTier - 1) - (Math.max(0, mParallelTier - 1) / 50.0);
+        double modifier = 1.0 / (wirelessUpgrade ? 8.0 : 3.0 + (machineTier - 1) * 0.1)
+            - (Math.max(0, mParallelTier - 1) / 50.0);
+        return Math.max(0.00001, modifier);
     }
 
     @Override

@@ -16,6 +16,7 @@ import appeng.client.gui.implementations.GuiPriority;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.container.AEBaseContainer;
 import appeng.helpers.IPriorityHost;
+import appeng.parts.PartBasicState;
 
 public class GuiCustomPriority extends GuiPriority {
 
@@ -59,9 +60,8 @@ public class GuiCustomPriority extends GuiPriority {
 
             ForgeDirection side = ForgeDirection.UNKNOWN;
             if (this.inventorySlots instanceof AEBaseContainer bc) {
-                if (bc.getOpenContext() != null) {
-                    side = bc.getOpenContext()
-                        .getSide();
+                if (bc.getTarget() instanceof PartBasicState part) {
+                    side = part.getSide();
                 }
             }
 
