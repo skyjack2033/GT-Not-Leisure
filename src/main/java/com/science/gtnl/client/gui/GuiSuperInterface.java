@@ -35,6 +35,7 @@ import appeng.core.sync.packets.PacketSwitchGuis;
 import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.IInterfaceHost;
 
+// TODO:修复优先级GUI退回到普通接口的问题
 // TODO:再加个二合一ME接口
 public class GuiSuperInterface extends GuiUpgradeable {
 
