@@ -114,6 +114,7 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
                 .skullOwner(owner)
                 .displayName(name)
                 .renderCapeMode(capeMode)
+                .hideNEI(true)
                 .build());
     }
 
@@ -172,6 +173,11 @@ public class ItemBlockPlayerDoll extends ItemBlock implements IItemWithModularUI
 
         public PlayerDollData renderCapeMode(byte value) {
             nbt.setByte("RenderCapeMode", value);
+            return this;
+        }
+
+        public PlayerDollData hideNEI(boolean value) {
+            nbt.setBoolean("HideNEI", value);
             return this;
         }
 

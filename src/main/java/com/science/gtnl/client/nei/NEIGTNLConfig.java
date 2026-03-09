@@ -95,6 +95,6 @@ public class NEIGTNLConfig implements IConfigureNEI {
         API.hideItem(GTNLItemList.TwilightSword.get(1));
         API.hideItem(GTNLItemList.FakeItemSiren.get(1));
         API.hideItem(ModList.ScienceNotLeisure.ID + ":" + "Stick");
-        API.hideItem(ModList.ScienceNotLeisure.ID + ":" + "playerDoll" + " tag.*=r/.*/");
+        API.hideItem(ModList.ScienceNotLeisure.ID + ":" + "tile.playerDoll" + " tag.HideNEI=1b");
     }
 }
