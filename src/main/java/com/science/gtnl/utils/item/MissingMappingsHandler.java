@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
 import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.loader.ItemLoader;
 
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -96,6 +97,20 @@ public class MissingMappingsHandler {
         .remapBlock("sciencenotleisure:MetaBlock", BlockLoader.metaBlock)
         .remapBlock("sciencenotleisure:MetaCasing02", BlockLoader.metaCasing02)
         .remapBlock("sciencenotleisure:MetaCasing", BlockLoader.metaCasing)
+        .remapBlock("sciencenotleisure:PlayerLeash", BlockLoader.playerLeash)
+        .remapBlock("sciencenotleisure:CompressedStargateTier0", BlockLoader.compressedStargateTier0)
+        .remapBlock("sciencenotleisure:CompressedStargateTier1", BlockLoader.compressedStargateTier1)
+        .remapBlock("sciencenotleisure:CompressedStargateTier2", BlockLoader.compressedStargateTier2)
+        .remapBlock("sciencenotleisure:CompressedStargateTier3", BlockLoader.compressedStargateTier3)
+        .remapBlock("sciencenotleisure:CompressedStargateTier4", BlockLoader.compressedStargateTier4)
+        .remapBlock("sciencenotleisure:CompressedStargateTier5", BlockLoader.compressedStargateTier5)
+        .remapBlock("sciencenotleisure:CompressedStargateTier6", BlockLoader.compressedStargateTier6)
+        .remapBlock("sciencenotleisure:CompressedStargateTier7", BlockLoader.compressedStargateTier7)
+        .remapBlock("sciencenotleisure:CompressedStargateTier8", BlockLoader.compressedStargateTier8)
+        .remapBlock("sciencenotleisure:CompressedStargateTier9", BlockLoader.compressedStargateTier9)
+        .remapBlock("sciencenotleisure:shimmer", BlockLoader.shimmerFluidBlock)
+        .remapBlock("sciencenotleisure:honey", BlockLoader.honeyFluidBlock)
+        .remapBlock("sciencenotleisure:tile.playerDoll", BlockLoader.playerDoll)
 
          // Item remappings
         .remapItem("ScienceNotLeisure:RecordSus", GameRegistry.findItem(ScienceNotLeisure.ID, "RecordSus"))
@@ -112,6 +127,38 @@ public class MissingMappingsHandler {
         .remapItem("ScienceNotLeisure:InfinityFuelRodDepleted", GameRegistry.findItem(ScienceNotLeisure.ID, "InfinityFuelRodDepleted"))
         .remapItem("ScienceNotLeisure:milledNaquadahEnriched", GameRegistry.findItem(ScienceNotLeisure.ID, "milledNaquadahEnriched"))
         .remapItem("ScienceNotLeisure:FrothNaquadahenrichedflotation", GameRegistry.findItem(ScienceNotLeisure.ID, "FrothNaquadahenrichedflotation"))
+
+        .remapItem("sciencenotleisure:SteamRocket", ItemLoader.steamRocket)
+        .remapItem("sciencenotleisure:InfinityLavaBucket", ItemLoader.infinityLavaBucket)
+        .remapItem("sciencenotleisure:InfinityWaterBucket", ItemLoader.infinityWaterBucket)
+        .remapItem("sciencenotleisure:RejectionRing", ItemLoader.rejectionRing)
+        .remapItem("sciencenotleisure:SlimeSaddle", ItemLoader.slimeSaddle)
+        .remapItem("sciencenotleisure:NullPointerException", ItemLoader.nullPointerException)
+        .remapItem("sciencenotleisure:CircuitIntegratedPlus", ItemLoader.circuitIntegratedPlus)
+        .remapItem("sciencenotleisure:SuperstrongSponge", ItemLoader.superstrongSponge)
+        .remapItem("sciencenotleisure:DebugItem", ItemLoader.debugItem)
+        .remapItem("sciencenotleisure:InfinityShimmerBucket", ItemLoader.infinityShimmerBucket)
+        .remapItem("sciencenotleisure:InfinityTorch", ItemLoader.infinityTorch)
+        .remapItem("sciencenotleisure:SatietyRing", ItemLoader.satietyRing)
+        .remapItem("sciencenotleisure:InfinityFuelRod", ItemLoader.infinityFuelRod)
+        .remapItem("sciencenotleisure:KFCFamily", ItemLoader.KFCFamily)
+        .remapItem("sciencenotleisure:FakeItemSiren", ItemLoader.fakeItemSiren)
+        .remapItem("sciencenotleisure:InfinityCell", ItemLoader.infinityCell)
+        .remapItem("sciencenotleisure:DireCraftPattern", ItemLoader.direCraftPattern)
+        .remapItem("sciencenotleisure:LuckyHorseshoe", ItemLoader.luckyHorseshoe)
+        .remapItem("sciencenotleisure:PhysicsCape", ItemLoader.physicsCape)
+        .remapItem("sciencenotleisure:NetherTeleporter", ItemLoader.netherTeleporter)
+        .remapItem("sciencenotleisure:InfinityFuelRodDepleted", ItemLoader.infinityFuelRodDepleted)
+        .remapItem("sciencenotleisure:RoyalGel", ItemLoader.royalGel)
+        .remapItem("sciencenotleisure:SuperReachRing", ItemLoader.superReachRing)
+        .remapItem("sciencenotleisure:InfinityHoneyBucket", ItemLoader.infinityHoneyBucket)
+        .remapItem("sciencenotleisure:VeinMiningPickaxe", ItemLoader.veinMiningPickaxe)
+        .remapItem("sciencenotleisure:Stick", ItemLoader.stick)
+        .remapItem("sciencenotleisure:SuspiciousStew", ItemLoader.suspiciousStew)
+        .remapItem("sciencenotleisure:TestItem", ItemLoader.testItem)
+        .remapItem("sciencenotleisure:TimeStopPocketWatch", ItemLoader.timeStopPocketWatch)
+        .remapItem("sciencenotleisure:TwilightSword", ItemLoader.twilightSword)
+        .remapItem("sciencenotleisure:WirelessUpgradeChip", ItemLoader.wirelessUpgradeChip)
 
         .remapItem("ScienceNotLeisure:CrystalPickaxe", GameRegistry.findItem(ReAvaritia.ID, "CrystalPickaxe"))
         .remapItem("ScienceNotLeisure:CrystalHoe", GameRegistry.findItem(ReAvaritia.ID, "CrystalHoe"))

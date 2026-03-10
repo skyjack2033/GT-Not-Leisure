@@ -32,6 +32,7 @@ public class BlockArtificialStarRender extends Block {
         this.setBlockName("RealArtificialStarRenderer");
         this.setLightLevel(1.0f);
         GameRegistry.registerBlock(this, ItemBlockArtificialStarRender.class, getUnlocalizedName());
+        GameRegistry.registerTileEntity(TileEntityArtificialStar.class, "ArtificialStarRenderTileEntity");
         GTNLItemList.ArtificialStarRender.set(new ItemStack(this, 1));
     }
 

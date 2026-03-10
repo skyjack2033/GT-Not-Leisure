@@ -26,7 +26,7 @@ public class WirelessUpgradeChip extends Item {
         this.setUnlocalizedName("WirelessUpgradeChip");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "WirelessUpgradeChip");
-        GameRegistry.registerItem(this, "WirelessUpgradeChip");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.WirelessUpgradeChip.set(new ItemStack(this, 1));
     }
 

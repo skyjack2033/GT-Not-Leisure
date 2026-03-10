@@ -30,6 +30,7 @@ public class BlockNanoPhagocytosisPlantRender extends Block {
         this.setBlockName("NanoPhagocytosisPlantRenderer");
         this.setLightLevel(1.0f);
         GameRegistry.registerBlock(this, ItemBlockNanoPhagocytosisPlantRender.class, getUnlocalizedName());
+        GameRegistry.registerTileEntity(TileEntityNanoPhagocytosisPlant.class, "NanoPhagocytosisPlantRenderTileEntity");
         GTNLItemList.NanoPhagocytosisPlantRender.set(new ItemStack(this, 1));
     }
 

@@ -31,12 +31,13 @@ public class BlockPlayerDoll extends BlockContainer {
         super(Material.iron);
         this.setResistance(99999999f);
         this.setHardness(5f);
-        this.setBlockName("playerDoll");
+        this.setBlockName("PlayerDoll");
         this.setBlockBounds(0.1F, 0.0F, 0.1F, 0.9F, 1.0F, 0.9F);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisurePlayerDoll);
         this.setLightLevel(1f);
         this.setStepSound(soundTypeGlass);
         GameRegistry.registerBlock(this, ItemBlockPlayerDoll.class, getUnlocalizedName());
+        GameRegistry.registerTileEntity(TileEntityPlayerDoll.class, "PlayerDollTileEntity");
         GTNLItemList.PlayerDoll.set(new ItemStack(this, 1));
     }
 

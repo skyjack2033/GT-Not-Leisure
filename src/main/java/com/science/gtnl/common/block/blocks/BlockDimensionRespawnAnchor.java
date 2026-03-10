@@ -47,6 +47,7 @@ public class BlockDimensionRespawnAnchor extends BlockContainer {
         this.setLightOpacity(0);
         this.setTickRandomly(true);
         GameRegistry.registerBlock(this, ItemBlockDimensionRespawnAnchor.class, getUnlocalizedName());
+        GameRegistry.registerTileEntity(TileEntityDimensionRespawnAnchor.class, "DimensionRespawnAnchorTileEntity");
         GTNLItemList.DimensionRespawnAnchor.set(new ItemStack(this, 1));
         BlockDispenser.dispenseBehaviorRegistry
             .putObject(Item.getItemFromBlock(Blocks.glowstone), new BehaviorGlowstoneCharge());

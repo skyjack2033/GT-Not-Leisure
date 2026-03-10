@@ -65,7 +65,7 @@ public class TwilightSword extends ItemSword implements PlaySound {
         setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         setMaxDamage(9999);
         MinecraftForge.EVENT_BUS.register(this);
-        GameRegistry.registerItem(this, "TwilightSword");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.TwilightSword.set(new ItemStack(this, 1));
     }
 

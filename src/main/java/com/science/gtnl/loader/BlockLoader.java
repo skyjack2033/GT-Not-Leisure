@@ -27,19 +27,7 @@ import com.science.gtnl.common.block.blocks.BlockShimmerFluid;
 import com.science.gtnl.common.block.blocks.BlockSuperInterface;
 import com.science.gtnl.common.block.blocks.BlockWaterCandle;
 import com.science.gtnl.common.block.blocks.BlocksCompressedStargate;
-import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
-import com.science.gtnl.common.block.blocks.tile.TileEntityArtificialStar;
-import com.science.gtnl.common.block.blocks.tile.TileEntityCardboardBox;
-import com.science.gtnl.common.block.blocks.tile.TileEntityDimensionRespawnAnchor;
-import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEnderElevator;
-import com.science.gtnl.common.block.blocks.tile.TileEntityEssentiaHatch;
-import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
-import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
-import com.science.gtnl.common.block.blocks.tile.TileEntityNanoPhagocytosisPlant;
-import com.science.gtnl.common.block.blocks.tile.TileEntityPlayerDoll;
-import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
-import com.science.gtnl.common.block.blocks.tile.TileEntityWaterCandle;
 import com.science.gtnl.common.block.casings.base.ItemBlockBase;
 import com.science.gtnl.common.block.casings.base.MetaBlockBase;
 import com.science.gtnl.common.block.casings.casing.MetaCasing;
@@ -103,47 +91,20 @@ public class BlockLoader {
     public static MetaCasing metaCasing02 = new MetaCasing("MetaCasing02", (byte) 32);
 
     public static void registryBlocks() {
-
         playerLeash = new BlockPlayerLeash();
-
         searedLadder = new BlockSearedLadder();
-
         direPatternEncoder = new BlockDirePatternEncoder();
-        GameRegistry.registerTileEntity(TileEntityDirePatternEncoder.class, "DirePatternEncoderTileEntity");
-
         aeChisel = new BlockAEChisel();
-        GameRegistry.registerTileEntity(TileEntityAEChisel.class, "AEChiselTileEntity");
-
         superInterface = new BlockSuperInterface();
-        GameRegistry.registerTileEntity(TileEntitySuperInterface.class, "SuperInterfaceTileEntity");
-
         cardboardBox = new BlockCardboardBox();
-        GameRegistry.registerTileEntity(TileEntityCardboardBox.class, "CardboardBoxTileEntity");
-
         eternalGregTechWorkshopRender = new BlockEternalGregTechWorkshopRender();
-        GameRegistry
-            .registerTileEntity(TileEntityEternalGregTechWorkshop.class, "EternalGregTechWorkshopRenderTileEntity");
-
         nanoPhagocytosisPlantRender = new BlockNanoPhagocytosisPlantRender();
-        GameRegistry.registerTileEntity(TileEntityNanoPhagocytosisPlant.class, "NanoPhagocytosisPlantRenderTileEntity");
-
         artificialStarRender = new BlockArtificialStarRender();
-        GameRegistry.registerTileEntity(TileEntityArtificialStar.class, "ArtificialStarRenderTileEntity");
-
         playerDoll = new BlockPlayerDoll();
-        GameRegistry.registerTileEntity(TileEntityPlayerDoll.class, "PlayerDollTileEntity");
-
         laserBeacon = new BlockLaserBeacon();
-        GameRegistry.registerTileEntity(TileEntityLaserBeacon.class, "LaserBeaconTileEntity");
-
         waterCandle = new BlockWaterCandle();
-        GameRegistry.registerTileEntity(TileEntityWaterCandle.class, "WaterCandleTileEntity");
-
         dimensionRespawnAnchor = new BlockDimensionRespawnAnchor();
-        GameRegistry.registerTileEntity(TileEntityDimensionRespawnAnchor.class, "DimensionRespawnAnchorTileEntity");
-
         essentiaHatch = new BlockEssentiaHatch();
-        GameRegistry.registerTileEntity(TileEntityEssentiaHatch.class, "EssentiaHatchTileEntity");
 
         enderElevatorBlock = new BlockEnderElevator(0);
         enderElevatorSlab = new BlockEnderElevator(1);
@@ -160,47 +121,26 @@ public class BlockLoader {
         GameRegistry.registerBlock(metaCasing, MetaItemBlockCasing.class, metaCasing.getUnlocalizedName());
         GameRegistry.registerBlock(metaCasing02, MetaItemBlockCasing.class, metaCasing02.getUnlocalizedName());
 
-        GameRegistry.registerBlock(compressedStargateTier0, "CompressedStargateTier0");
         GTNLItemList.CompressedStargateTier0.set(new ItemStack(compressedStargateTier0));
-
-        GameRegistry.registerBlock(compressedStargateTier1, "CompressedStargateTier1");
         GTNLItemList.CompressedStargateTier1.set(new ItemStack(compressedStargateTier1));
-
-        GameRegistry.registerBlock(compressedStargateTier2, "CompressedStargateTier2");
         GTNLItemList.CompressedStargateTier2.set(new ItemStack(compressedStargateTier2));
-
-        GameRegistry.registerBlock(compressedStargateTier3, "CompressedStargateTier3");
         GTNLItemList.CompressedStargateTier3.set(new ItemStack(compressedStargateTier3));
-
-        GameRegistry.registerBlock(compressedStargateTier4, "CompressedStargateTier4");
         GTNLItemList.CompressedStargateTier4.set(new ItemStack(compressedStargateTier4));
-
-        GameRegistry.registerBlock(compressedStargateTier5, "CompressedStargateTier5");
         GTNLItemList.CompressedStargateTier5.set(new ItemStack(compressedStargateTier5));
-
-        GameRegistry.registerBlock(compressedStargateTier6, "CompressedStargateTier6");
         GTNLItemList.CompressedStargateTier6.set(new ItemStack(compressedStargateTier6));
-
-        GameRegistry.registerBlock(compressedStargateTier7, "CompressedStargateTier7");
         GTNLItemList.CompressedStargateTier7.set(new ItemStack(compressedStargateTier7));
-
-        GameRegistry.registerBlock(compressedStargateTier8, "CompressedStargateTier8");
         GTNLItemList.CompressedStargateTier8.set(new ItemStack(compressedStargateTier8));
-
-        GameRegistry.registerBlock(compressedStargateTier9, "CompressedStargateTier9");
         GTNLItemList.CompressedStargateTier9.set(new ItemStack(compressedStargateTier9));
 
         honeyFluid = new Fluid("honey").setViscosity(6000)
             .setDensity(1500);
         FluidRegistry.registerFluid(honeyFluid);
         honeyFluidBlock = new BlockHoneyFluid(honeyFluid);
-        GameRegistry.registerBlock(honeyFluidBlock, "honey");
         GTNLItemList.HoneyFluidBlock.set(new ItemStack(honeyFluidBlock));
 
         shimmerFluid = new Fluid("shimmer").setViscosity(800);
         FluidRegistry.registerFluid(shimmerFluid);
         shimmerFluidBlock = new BlockShimmerFluid(shimmerFluid);
-        GameRegistry.registerBlock(shimmerFluidBlock, "shimmer");
         GTNLItemList.ShimmerFluidBlock.set(new ItemStack(shimmerFluidBlock));
 
         GTNLItemList.ShirabonReinforcedBoronSilicateGlass.set(new ItemStack(ItemRegistry.bw_realglas2, 1, 1));

@@ -54,7 +54,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "Stick");
         this.setHasSubtypes(true);
-        GameRegistry.registerItem(this, "Stick");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.Stick.set(new ItemStack(this, 1));
     }
 

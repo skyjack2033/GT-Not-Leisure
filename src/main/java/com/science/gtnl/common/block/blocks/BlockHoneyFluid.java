@@ -11,6 +11,8 @@ import net.minecraftforge.fluids.Fluid;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.BlockFluidBase;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+
 public class BlockHoneyFluid extends BlockFluidBase {
 
     public BlockHoneyFluid(Fluid fluid) {
@@ -18,6 +20,7 @@ public class BlockHoneyFluid extends BlockFluidBase {
         this.setBlockName("honey");
         this.setQuantaPerBlock(4);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
+        GameRegistry.registerBlock(this, getUnlocalizedName());
     }
 
     @Override

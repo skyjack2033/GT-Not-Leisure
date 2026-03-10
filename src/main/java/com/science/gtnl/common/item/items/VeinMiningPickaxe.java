@@ -66,7 +66,7 @@ public class VeinMiningPickaxe extends ItemPickaxe implements SubtitleDisplay {
         FMLCommonHandler.instance()
             .bus()
             .register(this);
-        GameRegistry.registerItem(this, "VeinMiningPickaxe");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.VeinMiningPickaxe.set(new ItemStack(this, 1));
     }
 

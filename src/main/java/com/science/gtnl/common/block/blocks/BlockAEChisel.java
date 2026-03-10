@@ -31,6 +31,7 @@ public class BlockAEChisel extends AEBaseTileBlock {
         setHarvestLevel("pickaxe", 3);
         setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
         GameRegistry.registerBlock(this, ItemBlockAEChisel.class, getUnlocalizedName());
+        GameRegistry.registerTileEntity(TileEntityAEChisel.class, "AEChiselTileEntity");
         GTNLItemList.AEChisel.set(new ItemStack(this, 1));
         setTileEntity(TileEntityAEChisel.class);
         setBlockTextureName(RESOURCE_ROOT_ID + ":AEChisel");

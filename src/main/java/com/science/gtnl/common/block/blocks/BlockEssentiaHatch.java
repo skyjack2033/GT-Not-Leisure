@@ -35,6 +35,7 @@ public class BlockEssentiaHatch extends BlockContainer {
         this.setHarvestLevel("wrench", 2);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureMachine);
         GameRegistry.registerBlock(this, ItemBlockEssentiaHatch.class, getUnlocalizedName());
+        GameRegistry.registerTileEntity(TileEntityEssentiaHatch.class, "EssentiaHatchTileEntity");
         GregTechAPI.registerMachineBlock(this, -1);
         GTNLItemList.EssentiaHatch.set(new ItemStack(this, 1));
     }

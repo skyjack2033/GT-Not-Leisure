@@ -30,6 +30,8 @@ public class BlockEternalGregTechWorkshopRender extends Block {
         this.setBlockName("EternalGregTechWorkshopRenderer");
         this.setLightLevel(1.0f);
         GameRegistry.registerBlock(this, ItemBlockEternalGregTechWorkshopRender.class, getUnlocalizedName());
+        GameRegistry
+            .registerTileEntity(TileEntityEternalGregTechWorkshop.class, "EternalGregTechWorkshopRenderTileEntity");
         GTNLItemList.EternalGregTechWorkshopRender.set(new ItemStack(this, 1));
     }
 

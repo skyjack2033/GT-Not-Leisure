@@ -33,7 +33,7 @@ public class TestItem extends Item implements IHaloRenderItem {
         this.setUnlocalizedName("TestItem");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "TestItem");
-        GameRegistry.registerItem(this, "TestItem");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.TestItem.set(new ItemStack(this, 1));
     }
 

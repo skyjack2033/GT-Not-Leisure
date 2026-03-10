@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 
 import com.science.gtnl.client.GTNLCreativeTabs;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -29,6 +30,7 @@ public class BlocksCompressedStargate extends Block {
         this.setBlockTextureName(RESOURCE_ROOT_ID + ":" + "CompressedStargate/");
         this.TextureName = new String[] { "Front", "Side", "Bottom", "Top_" + aTier };
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
+        GameRegistry.registerBlock(this, getUnlocalizedName());
     }
 
     @SideOnly(Side.CLIENT)

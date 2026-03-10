@@ -17,7 +17,7 @@ public enum Mixins implements IMixins {
     GREGTECH_ACCESSORS(Side.COMMON, "Gregtech.AccessorMTETieredMachineBlock", "Gregtech.AccessorEyeOfHarmonyRecipe",
         "Gregtech.AccessorGTRecipe", "Gregtech.AccessorGTRecipeBuilder", "Gregtech.AccessorGTLanguageManager",
         "Gregtech.AccessorCommonMetaTileEntity", "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch",
-        "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo"),
+        "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine"),
 
     NH_CORE_MOD_ACCESSORS(new MixinBuilder().addCommonMixins("NHCoreMod.AccessorBacteriaRegistry")
         .setPhase(Phase.EARLY)
@@ -106,7 +106,6 @@ public enum Mixins implements IMixins {
             "Gregtech.MixinGTUtil",
             "Gregtech.MixinMTEBetterJukebox",
             "Gregtech.MixinMTEForgeOfGods",
-            "Gregtech.MixinMTEBasicMachine",
             "Gregtech.MixinMTEHatch",
             "Gregtech.MixinMTEHatchOutputBusME",
             "Gregtech.MixinMTEHatchOutputME",

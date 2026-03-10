@@ -24,7 +24,7 @@ public class BlockPlayerLeash extends Block {
         this.setBlockName("PlayerLeash");
         this.setBlockTextureName("planks_oak");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
-        GameRegistry.registerBlock(this, ItemBlockPlayerLeash.class, "PlayerLeash");
+        GameRegistry.registerBlock(this, ItemBlockPlayerLeash.class, getUnlocalizedName());
         GTNLItemList.PlayerLeash.set(new ItemStack(this, 1));
     }
 

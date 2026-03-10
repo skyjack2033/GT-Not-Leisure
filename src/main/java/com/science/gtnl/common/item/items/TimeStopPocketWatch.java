@@ -34,7 +34,7 @@ public class TimeStopPocketWatch extends Item {
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         this.setTextureName(RESOURCE_ROOT_ID + ":" + "TimeStopPocketWatch");
         this.setMaxStackSize(1);
-        GameRegistry.registerItem(this, "TimeStopPocketWatch");
+        GameRegistry.registerItem(this, getUnlocalizedName());
         GTNLItemList.TimeStopPocketWatch.set(new ItemStack(this, 1));
     }
 

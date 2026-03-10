@@ -19,6 +19,7 @@ import com.science.gtnl.common.block.BlockFluidBase;
 import com.science.gtnl.common.recipe.gtnl.ShimmerRecipes;
 import com.science.gtnl.loader.EffectLoader;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -31,6 +32,7 @@ public class BlockShimmerFluid extends BlockFluidBase {
         this.setBlockName("shimmer");
         this.setQuantaPerBlock(7);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
+        GameRegistry.registerBlock(this, getUnlocalizedName());
     }
 
     @Override
