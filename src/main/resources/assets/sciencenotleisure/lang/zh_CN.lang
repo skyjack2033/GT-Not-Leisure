@@ -1251,6 +1251,8 @@ item.PartSuperInterface.name=超级ME接口
 tile.SuperInterface.name=超级ME接口
 container.SuperInterface=超级ME接口
 
+item.PartActiveFormationPlane.name=ME主动成型面板
+
 tile.AEChisel.name=ME雕凿机
 container.AEChisel=ME雕凿机
 text.ae_chisel.gui.parallel=设置样板并行

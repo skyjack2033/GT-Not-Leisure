@@ -24,6 +24,7 @@ import com.science.gtnl.common.item.items.DireCraftPattern;
 import com.science.gtnl.common.item.items.ElectricProspectorTool;
 import com.science.gtnl.common.item.items.FakeItemSiren;
 import com.science.gtnl.common.item.items.GTNLItemBucket;
+import com.science.gtnl.common.item.items.ItemPartActiveFormationPlane;
 import com.science.gtnl.common.item.items.ItemPartSuperInterface;
 import com.science.gtnl.common.item.items.KFCFamily;
 import com.science.gtnl.common.item.items.NetherTeleporter;
@@ -150,6 +151,7 @@ public class ItemLoader {
     public static VeinMiningPickaxe veinMiningPickaxe = new VeinMiningPickaxe();
 
     public static ItemPartSuperInterface superInterface = new ItemPartSuperInterface();
+    public static ItemPartActiveFormationPlane activeFormationPlane = new ItemPartActiveFormationPlane();
 
     public static ItemStack infinityDyeCell;
     public static ItemStack infinityDyeFluidCell;

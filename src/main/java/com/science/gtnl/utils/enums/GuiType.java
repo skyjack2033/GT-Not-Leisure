@@ -24,7 +24,8 @@ public enum GuiType {
     DirePatternEncoderGUI(19),
     AEChiselGUI(20),
     SuperInterfaceGUI(21),
-    CustomPriorityGUI(22);
+    CustomPriorityGUI(22),
+    ActiveFormationPlaneGUI(23);
 
     private final int id;
 

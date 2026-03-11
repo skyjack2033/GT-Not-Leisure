@@ -6,6 +6,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
+import com.science.gtnl.common.item.PartActiveFormationPlane;
 import com.science.gtnl.common.item.PartSuperInterface;
 import com.science.gtnl.common.packet.SwitchToCustomGuiPacket;
 import com.science.gtnl.utils.enums.GTNLItemList;
@@ -49,6 +50,9 @@ public class GuiCustomPriority extends GuiPriority {
             this.originalGui = null;
         } else if (target instanceof PartSuperInterface) {
             this.myIcon = GTNLItemList.PartSuperInterface.get(1);
+            this.originalGui = null;
+        } else if (target instanceof PartActiveFormationPlane) {
+            this.myIcon = GTNLItemList.PartActiveFormationPlane.get(1);
             this.originalGui = null;
         }
     }

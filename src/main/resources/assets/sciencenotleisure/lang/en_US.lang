@@ -1251,6 +1251,8 @@ item.PartSuperInterface.name=Super ME Interface
 tile.SuperInterface.name=Super ME Interface
 container.SuperInterface=Super ME Interface
 
+item.PartActiveFormationPlane.name=ME Active Formation Plane
+
 tile.AEChisel.name=ME Chisel
 container.AEChisel=ME Chisel
 text.ae_chisel.gui.parallel=Set Pattern Parallel

@@ -11,6 +11,7 @@ import com.science.gtnl.common.block.blocks.tile.TileEntityAEChisel;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDirePatternEncoder;
 import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
 import com.science.gtnl.common.entity.EntityParticleBeam;
+import com.science.gtnl.common.item.PartActiveFormationPlane;
 import com.science.gtnl.common.item.PartSuperInterface;
 import com.science.gtnl.common.machine.hatch.SuperCraftingInputHatchME;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
@@ -18,6 +19,7 @@ import com.science.gtnl.common.packet.NetWorkHandler;
 import com.science.gtnl.common.recipe.gtnl.ExtremeExtremeEntityCrusherRecipes;
 import com.science.gtnl.common.world.GTNLWorldgenloader;
 import com.science.gtnl.container.ContainerAEChisel;
+import com.science.gtnl.container.ContainerActiveFormationPlane;
 import com.science.gtnl.container.ContainerCustomPriority;
 import com.science.gtnl.container.ContainerDirePatternEncoder;
 import com.science.gtnl.container.ContainerSuperInterface;
@@ -31,12 +33,14 @@ import com.science.gtnl.container.portableWorkbench.ContainerPortableEnderChest;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableFurnace;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableInfinityChest;
 import com.science.gtnl.loader.MaterialLoader;
+import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 import com.science.gtnl.utils.event.SubscribeEventUtils;
 import com.science.gtnl.utils.machine.VMTweakHelper;
 import com.science.gtnl.utils.recipes.CraftingUnitHandler;
 
 import appeng.api.AEApi;
+import appeng.api.config.Upgrades;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.container.ContainerOpenContext;
@@ -85,6 +89,22 @@ public class CommonProxy implements IGuiHandler {
         interfaceTerminal.register(AssemblerMatrix.class);
         interfaceTerminal.register(PartSuperInterface.class);
         interfaceTerminal.register(TileEntitySuperInterface.class);
+
+        Upgrades.ADVANCED_BLOCKING.registerItem(GTNLItemList.PartSuperInterface.get(1), 1);
+        Upgrades.CRAFTING.registerItem(GTNLItemList.PartSuperInterface.get(1), 1);
+        Upgrades.FAKE_CRAFTING.registerItem(GTNLItemList.PartSuperInterface.get(1), 1);
+        Upgrades.FUZZY.registerItem(GTNLItemList.PartSuperInterface.get(1), 1);
+        Upgrades.LOCK_CRAFTING.registerItem(GTNLItemList.PartSuperInterface.get(1), 1);
+
+        Upgrades.ADVANCED_BLOCKING.registerItem(GTNLItemList.SuperInterface.get(1), 1);
+        Upgrades.CRAFTING.registerItem(GTNLItemList.SuperInterface.get(1), 1);
+        Upgrades.FAKE_CRAFTING.registerItem(GTNLItemList.SuperInterface.get(1), 1);
+        Upgrades.FUZZY.registerItem(GTNLItemList.SuperInterface.get(1), 1);
+        Upgrades.LOCK_CRAFTING.registerItem(GTNLItemList.SuperInterface.get(1), 1);
+
+        Upgrades.CAPACITY.registerItem(GTNLItemList.PartActiveFormationPlane.get(1), 5);
+        Upgrades.FUZZY.registerItem(GTNLItemList.PartActiveFormationPlane.get(1), 1);
+        Upgrades.INVERTER.registerItem(GTNLItemList.PartActiveFormationPlane.get(1), 1);
 
         // AltarStructure.registerAltarStructureInfo();
     }
@@ -200,6 +220,24 @@ public class CommonProxy implements IGuiHandler {
                 }
                 yield null;
             }
+            case ActiveFormationPlaneGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartActiveFormationPlane si) {
+                        var container = new ContainerActiveFormationPlane(player.inventory, si);
+                        ContainerOpenContext ctx = new ContainerOpenContext(si);
+                        ctx.setWorld(world);
+                        ctx.setX(x);
+                        ctx.setY(y);
+                        ctx.setZ(z);
+                        ctx.setSide(side);
+                        container.setOpenContext(ctx);
+                        yield container;
+                    }
+                }
+                yield null;
+            }
             case CustomPriorityGUI -> {
                 var t = world.getTileEntity(x, y, z);
                 IPriorityHost priorityHost = null;
@@ -208,6 +246,8 @@ public class CommonProxy implements IGuiHandler {
                 } else if (t instanceof IPartHost host) {
                     IPart part = host.getPart(side);
                     if (part instanceof PartSuperInterface si) {
+                        priorityHost = si;
+                    } else if (part instanceof PartActiveFormationPlane si) {
                         priorityHost = si;
                     }
                 }

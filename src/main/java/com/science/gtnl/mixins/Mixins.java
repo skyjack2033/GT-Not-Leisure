@@ -67,6 +67,7 @@ public enum Mixins implements IMixins {
     LATE_COMMON(new MixinBuilder("General Late Mixins")
         .addCommonMixins(
             "AEFluidCraft.MixinItemFluidPacket",
+            "AppliedEnergistics.AccessorContainerUpgradeable",
             "AppliedEnergistics.AccessorPartInterface",
             "AppliedEnergistics.AccessorTileInterface",
             "AppliedEnergistics.MixinAdaptorIInventory",

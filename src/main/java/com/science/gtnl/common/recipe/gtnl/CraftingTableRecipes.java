@@ -17,6 +17,7 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import appeng.api.AEApi;
 import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -45,6 +46,15 @@ public class CraftingTableRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+        var aeParts = AEApi.instance()
+            .definitions()
+            .parts();
+        var aeBlocks = AEApi.instance()
+            .definitions()
+            .blocks();
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.LargeSteamCrusher.get(1),
@@ -1259,9 +1269,10 @@ public class CraftingTableRecipes implements IRecipePool {
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.QuantumComputerCasing.get(1),
-            new Object[] { "ABA", "BCB", "ABA", 'A',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockQuartzGlass", 1), 'B',
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 1), 'C', ItemList.QuantumEye.get(1) });
+            new Object[] { "ABA", "BCB", "ABA", 'A', aeBlocks.quartzGlass()
+                .maybeStack(1)
+                .orNull(), 'B', GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 1), 'C',
+                ItemList.QuantumEye.get(1) });
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.LargeRockCrusher.get(1),
@@ -1273,10 +1284,15 @@ public class CraftingTableRecipes implements IRecipePool {
         GTModHandler.addCraftingRecipe(
             GTNLItemList.DirePatternEncoder.get(1),
             new Object[] { "ABA", "CDC", "AEA", 'A', GTOreDictUnificator.get(OrePrefixes.plate, Materials.Titanium, 1),
-                'B', GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiPart", 1, 500), 'C',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 24), 'D',
-                GTModHandler.getModItem(AvaritiaAddons.ID, "ExtremeAutoCrafter", 1), 'E',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCellWorkbench", 1) });
+                'B', aeParts.patternTerminalEx()
+                    .maybeStack(1)
+                    .orNull(),
+                'C', aeMaterials.engProcessor()
+                    .maybeStack(1)
+                    .orNull(),
+                'D', GTModHandler.getModItem(AvaritiaAddons.ID, "ExtremeAutoCrafter", 1), 'E', aeBlocks.cellWorkbench()
+                    .maybeStack(1)
+                    .orNull() });
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.LargeSteamBending.get(1),
@@ -1292,10 +1308,25 @@ public class CraftingTableRecipes implements IRecipePool {
         GTModHandler.addCraftingRecipe(
             GTNLItemList.SuperInterface.get(1),
             recipeFlags,
-            new Object[] { "ABC", "BAB", "CBA", 'A',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockInterface", 1), 'B',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 54), 'C',
-                GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 1) });
+            new Object[] { "ABC", "BAB", "CBA", 'A', aeBlocks.iface()
+                .maybeStack(1)
+                .orNull(), 'B',
+                aeMaterials.cardPatternCapacity()
+                    .maybeStack(1)
+                    .orNull(),
+                'C', GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 1) });
+
+        GTModHandler.addCraftingRecipe(
+            GTNLItemList.PartActiveFormationPlane.get(1),
+            new Object[] { "ABA", "BCB", "DED", 'A', aeMaterials.formationCore()
+                .maybeStack(1)
+                .orNull(), 'B', new ItemStack(Blocks.piston, 1), 'C',
+                aeParts.formationPlane()
+                    .maybeStack(1)
+                    .orNull(),
+                'D', GTOreDictUnificator.get(OrePrefixes.screw, Materials.Titanium, 1), 'E', aeParts.exportBus()
+                    .maybeStack(1)
+                    .orNull() });
 
         GTModHandler.addShapelessCraftingRecipe(
             GTNLItemList.PartSuperInterface.get(1),
@@ -1313,6 +1344,16 @@ public class CraftingTableRecipes implements IRecipePool {
 
     @Optional.Method(modid = "dreamcraft")
     public void loadNHRecipe() {
+        var aeItems = AEApi.instance()
+            .definitions()
+            .items();
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+        var aeBlocks = AEApi.instance()
+            .definitions()
+            .blocks();
+
         GTModHandler.addCraftingRecipe(
             GTNLItemList.Desulfurizer.get(1),
             new Object[] { "ABA", "CDC", "EFE", 'A', OrePrefixes.circuit.get(Materials.HV), 'B',
@@ -1322,10 +1363,13 @@ public class CraftingTableRecipes implements IRecipePool {
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.QuantumComputerUnit.get(1),
-            new Object[] { "AB ", "CD ", "   ", 'A',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCraftingUnit", 1), 'B',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47), 'C',
-                CustomItemList.EngravedQuantumChip.get(1), 'D',
+            new Object[] { "AB ", "CD ", "   ", 'A', aeBlocks.craftingUnit()
+                .maybeStack(1)
+                .orNull(), 'B',
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull(),
+                'C', CustomItemList.EngravedQuantumChip.get(1), 'D',
                 NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(1) });
     }
 

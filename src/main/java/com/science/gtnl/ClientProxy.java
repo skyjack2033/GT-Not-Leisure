@@ -18,6 +18,7 @@ import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.science.gtnl.client.GTNLInputHandler;
 import com.science.gtnl.client.GTNLTooltipManager;
 import com.science.gtnl.client.gui.GuiAEChisel;
+import com.science.gtnl.client.gui.GuiActiveFormationPlane;
 import com.science.gtnl.client.gui.GuiCustomPriority;
 import com.science.gtnl.client.gui.GuiDirePatternEncoder;
 import com.science.gtnl.client.gui.GuiSuperInterface;
@@ -47,6 +48,7 @@ import com.science.gtnl.common.entity.EntityParticleBeam;
 import com.science.gtnl.common.entity.EntityPlayerLeashKnot;
 import com.science.gtnl.common.entity.EntitySaddleSlime;
 import com.science.gtnl.common.entity.EntitySteamRocket;
+import com.science.gtnl.common.item.PartActiveFormationPlane;
 import com.science.gtnl.common.item.PartSuperInterface;
 import com.science.gtnl.common.packet.client.TitleDisplayHandler;
 import com.science.gtnl.common.render.SpoceRenderHandler;
@@ -283,21 +285,37 @@ public class ClientProxy extends CommonProxy {
                 }
                 yield null;
             }
+            case ActiveFormationPlaneGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartActiveFormationPlane si) {
+                        yield new GuiActiveFormationPlane(player.inventory, si);
+                    }
+                }
+                yield null;
+            }
             case CustomPriorityGUI -> {
                 var t = world.getTileEntity(x, y, z);
                 IPriorityHost priorityHost = null;
+                GuiType type = null;
 
                 if (t instanceof TileEntitySuperInterface si) {
                     priorityHost = si;
+                    type = GuiType.SuperInterfaceGUI;
                 } else if (t instanceof IPartHost host) {
                     IPart part = host.getPart(side);
                     if (part instanceof PartSuperInterface si) {
                         priorityHost = si;
+                        type = GuiType.SuperInterfaceGUI;
+                    } else if (part instanceof PartActiveFormationPlane si) {
+                        priorityHost = si;
+                        type = GuiType.ActiveFormationPlaneGUI;
                     }
                 }
 
                 if (priorityHost != null) {
-                    yield new GuiCustomPriority(player.inventory, priorityHost, GuiType.SuperInterfaceGUI);
+                    yield new GuiCustomPriority(player.inventory, priorityHost, type);
                 }
                 yield null;
             }
