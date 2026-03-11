@@ -330,6 +330,11 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     }
 
     @Override
+    protected boolean supportsCraftingMEBuffer() {
+        return false;
+    }
+
+    @Override
     public boolean onRunningTick(ItemStack aStack) {
         if (++tick % 20 == 0) {
             SubscribeEventUtils.sleepTime += time;
