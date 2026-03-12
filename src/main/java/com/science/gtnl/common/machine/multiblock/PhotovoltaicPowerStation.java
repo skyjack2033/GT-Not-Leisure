@@ -132,35 +132,14 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
     }
 
     @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-
-        if (this.mProgresstime % 20 == 0 && mProgresstime != 0) {
+    public void runMachine(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        if (mMaxProgresstime > 0 && doRandomMaintenanceDamage() && mProgresstime + 1 % 20 == 0) {
             startRecipeProcessing();
-            for (FluidStack tFluid : getStoredFluids()) {
-                if (GTUtility.areFluidsEqual(tFluid, GTModHandler.getDistilledWater(1))) {
-                    boolean success = drainFluid(this.mEUt / 4);
-                    endRecipeProcessing();
-                    if (!success) stopMachine(ShutDownReasonRegistry.NO_REPAIR);
-                    return;
-                }
+            if (!depleteInput(GTModHandler.getDistilledWater(lEUt / 4))) {
+                stopMachine(ShutDownReasonRegistry.NONE);
             }
             endRecipeProcessing();
-            stopMachine(ShutDownReasonRegistry.NO_REPAIR);
         }
-    }
-
-    private boolean drainFluid(int amount) {
-        int remaining = amount;
-        for (FluidStack tFluid : getStoredFluids()) {
-            if (GTUtility.areFluidsEqual(tFluid, GTModHandler.getDistilledWater(1))) {
-                int drained = Math.min(tFluid.amount, remaining);
-                tFluid.amount -= drained;
-                remaining -= drained;
-                if (remaining <= 0) break;
-            }
-        }
-        return remaining <= 0;
     }
 
     @Override
@@ -190,7 +169,7 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
         return new String[] {
             StatCollector.translateToLocal("GT5U.engine.output") + ": "
                 + EnumChatFormatting.RED
-                + GTUtility.formatNumbers(mEUt)
+                + GTUtility.formatNumbers(lEUt)
                 + EnumChatFormatting.RESET
                 + " EU/t",
             StatCollector.translateToLocal("GT5U.engine.consumption") + ": "
