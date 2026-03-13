@@ -19,6 +19,7 @@ import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 
+import appeng.api.AEApi;
 import bartworks.common.loaders.ItemRegistry;
 import fox.spiteful.avaritia.crafting.ExtremeCraftingManager;
 import ggfab.GGItemList;
@@ -63,6 +64,16 @@ public class ScriptAvaritia implements IScriptLoader {
 
     @Override
     public void loadRecipes() {
+        var aeItems = AEApi.instance()
+            .definitions()
+            .items();
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+        var aeBlocks = AEApi.instance()
+            .definitions()
+            .blocks();
+
         ItemStack eternityFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.Eternity.getMolten(114514));
         ItemStack magMatterFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.MagMatter.getMolten(114514));
         ItemStack universiumFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.Universium.getMolten(114514));
@@ -268,9 +279,13 @@ public class ScriptAvaritia implements IScriptLoader {
                 '7',
                 GTNLItemList.CircuitResonaticUIV.get(1),
                 '8',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemExtremeStorageCell.Universe", 1, 0),
+                aeItems.cellUniverse()
+                    .maybeStack(1)
+                    .orNull(),
                 '9',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCreativeEnergyCell", 1, 0),
+                aeBlocks.energyCellCreative()
+                    .maybeStack(1)
+                    .orNull(),
                 'a',
                 NHItemList.ChevronPolychrome.getIS(1),
                 'b',
@@ -1090,7 +1105,9 @@ public class ScriptAvaritia implements IScriptLoader {
                 'e',
                 ItemUtils.getSpecialFlower("asgardandelion"),
                 'f',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockSingularityCraftingStorage", 1, 0),
+                aeBlocks.craftingStorageSingularity()
+                    .maybeStack(1)
+                    .orNull(),
                 'g',
                 GTModHandler.getModItem(Computronics.ID, "computronics.ocSpecialParts", 1, 0),
                 'h',
@@ -2079,7 +2096,9 @@ public class ScriptAvaritia implements IScriptLoader {
                 'L',
                 new ItemStack(Items.dye, 1, 3),
                 'M',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 61),
+                aeMaterials.emptyAdvancedStorageCell()
+                    .maybeStack(1)
+                    .orNull(),
                 'N',
                 new ItemStack(Items.dye, 1, 1),
                 'O',
@@ -2240,6 +2259,8 @@ public class ScriptAvaritia implements IScriptLoader {
                 'K',
                 GTNLItemList.LargeRockCrusher.get(1),
                 'L',
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 61));
+                aeMaterials.emptyAdvancedStorageCell()
+                    .maybeStack(1)
+                    .orNull());
     }
 }

@@ -1,14 +1,13 @@
 package com.science.gtnl.common.recipe.gtnl;
 
-import static gregtech.api.enums.Mods.AppliedEnergistics2;
-import static gregtech.api.util.GTModHandler.getModItem;
-
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import appeng.api.AEApi;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.recipe.RecipeMap;
@@ -19,16 +18,21 @@ public class MatterFabricatorRecipes implements IRecipePool {
 
     public RecipeMap<?> MFR = GTNLRecipeMaps.MatterFabricatorRecipes;
 
+    public static final ItemStack PAINT_BALL = AEApi.instance()
+        .definitions()
+        .materials()
+        .matterBall()
+        .maybeStack(1)
+        .orNull();
+
     @Override
     public void loadRecipes() {
-
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(1),
                 GTOreDictUnificator.get(OrePrefixes.ingot, Materials.Iron, 1L)
                     .setStackDisplayName(StatCollector.translateToLocal("NEI.MatterFabricatorRecipes.01")))
-            .itemOutputs(
-                GTUtility.copyAmountUnsafe(640, getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 6)))
+            .itemOutputs(GTUtility.copyAmountUnsafe(640, PAINT_BALL))
             .eut(120)
             .duration(200)
             .fake()
@@ -50,8 +54,7 @@ public class MatterFabricatorRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(1),
                 GTOreDictUnificator.get(OrePrefixes.gem, Materials.Emerald, 1L)
                     .setStackDisplayName(StatCollector.translateToLocal("NEI.MatterFabricatorRecipes.02")))
-            .itemOutputs(
-                GTUtility.copyAmountUnsafe(640, getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 6)))
+            .itemOutputs(GTUtility.copyAmountUnsafe(640, PAINT_BALL))
             .eut(120)
             .duration(200)
             .fake()
@@ -73,8 +76,7 @@ public class MatterFabricatorRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(1),
                 GTOreDictUnificator.get(OrePrefixes.block, Materials.Iron, 1L)
                     .setStackDisplayName(StatCollector.translateToLocal("NEI.MatterFabricatorRecipes.03")))
-            .itemOutputs(
-                GTUtility.copyAmountUnsafe(640 * 9, getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 6)))
+            .itemOutputs(GTUtility.copyAmountUnsafe(640 * 9, PAINT_BALL))
             .eut(120)
             .duration(200)
             .fake()

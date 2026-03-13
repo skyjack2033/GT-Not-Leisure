@@ -36,6 +36,7 @@ import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 
+import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridHost;
@@ -58,8 +59,6 @@ import appeng.me.GridAccessException;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.me.helpers.AENetworkProxy;
 import appeng.me.helpers.IGridProxyable;
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoidingMode;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -80,16 +79,36 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
 
     public static int CASING_INDEX = GTUtility.getTextureId((byte) 116, (byte) 42);
 
-    public static Block CRAFTING_STORAGE = GameRegistry
-        .findBlock(Mods.AppliedEnergistics2.ID, "tile.BlockCraftingStorage");
-    public static Block ADV_CRAFTING_STORAGE = GameRegistry
-        .findBlock(Mods.AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingStorage");
-    public static Block SINGULARITY_CRAFTING_STORAGE = GameRegistry
-        .findBlock(Mods.AppliedEnergistics2.ID, "tile.BlockSingularityCraftingStorage");
-    public static Block CRAFTING_PROCESSING_UNIT = GameRegistry
-        .findBlock(Mods.AppliedEnergistics2.ID, "tile.BlockCraftingUnit");
-    public static Block ADV_CRAFTING_PROCESSING_UNIT = GameRegistry
-        .findBlock(Mods.AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit");
+    public static Block CRAFTING_STORAGE = AEApi.instance()
+        .definitions()
+        .blocks()
+        .craftingStorage1k()
+        .maybeBlock()
+        .orNull();
+    public static Block ADV_CRAFTING_STORAGE = AEApi.instance()
+        .definitions()
+        .blocks()
+        .craftingStorage256k()
+        .maybeBlock()
+        .orNull();
+    public static Block SINGULARITY_CRAFTING_STORAGE = AEApi.instance()
+        .definitions()
+        .blocks()
+        .craftingStorageSingularity()
+        .maybeBlock()
+        .orNull();
+    public static Block CRAFTING_PROCESSING_UNIT = AEApi.instance()
+        .definitions()
+        .blocks()
+        .craftingUnit()
+        .maybeBlock()
+        .orNull();
+    public static Block ADV_CRAFTING_PROCESSING_UNIT = AEApi.instance()
+        .definitions()
+        .blocks()
+        .craftingAccelerator64x()
+        .maybeBlock()
+        .orNull();
 
     // Extent in all directions. Specifically the offset from the controller to each wall.
     // Min values will always be negative, Max values positive.

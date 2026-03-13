@@ -11,6 +11,7 @@ import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import appeng.api.AEApi;
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.GTValues;
@@ -38,6 +39,10 @@ public class ChemicalRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+
         RecipeBuilder.builder()
             .itemInputs(
                 GTNLMaterials.CrudeHexanitrohexaazaisowurtzitane.get(OrePrefixes.dust, 36),
@@ -547,8 +552,12 @@ public class ChemicalRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 8, 45),
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull(),
+                aeMaterials.skyDust()
+                    .maybeStack(8)
+                    .orNull(),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.EnderPearl, 8))
             .itemOutputs(GTNLItemList.ShatteredSingularity.get(2))
             .fluidInputs(Materials.Lava.getFluid(1000))

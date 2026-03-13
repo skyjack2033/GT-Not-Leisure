@@ -285,13 +285,13 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
     @Override
     public boolean checkHatch() {
         for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mMachineTier < VoltageIndex.UHV & mEnergyHatch.mTier > mMachineTier) {
+            if (mMachineTier < VoltageIndex.UHV && mEnergyHatch.mTier > mMachineTier) {
                 return false;
             }
         }
 
         for (MTEHatch mExoEnergyHatch : this.mExoticEnergyHatches) {
-            if (mMachineTier < VoltageIndex.UHV & mExoEnergyHatch.mTier > mMachineTier) {
+            if (mMachineTier < VoltageIndex.UHV && mExoEnergyHatch.mTier > mMachineTier) {
                 return false;
             }
         }

@@ -53,6 +53,7 @@ import gtnhlanth.common.register.LanthItemList;
 import tectech.recipe.TTRecipeAdder;
 import tectech.thing.CustomItemList;
 
+// TODO:把AE2的物品调用改成 AEApi.instance().definitions()
 @SuppressWarnings("deprecation")
 public class AssemblingLineRecipes implements IRecipePool {
 

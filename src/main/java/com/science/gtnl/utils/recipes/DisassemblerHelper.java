@@ -20,6 +20,8 @@ import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.recipe.gtnl.ShimmerRecipes;
 
+import appeng.api.AEApi;
+import appeng.api.util.AEColor;
 import cpw.mods.fml.common.Optional.Method;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -79,10 +81,19 @@ public class DisassemblerHelper {
         inputBlacklist.add(new GTItemStack(GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockElectric", 1L, 6)));
         // endregion
 
-        inputBlacklist
-            .add(new GTItemStack(GTModHandler.getModItem(Mods.AppliedEnergistics2.ID, "item.ItemMultiPart", 1L, 36)));
-        inputBlacklist
-            .add(new GTItemStack(GTModHandler.getModItem(Mods.AppliedEnergistics2.ID, "item.ItemMultiPart", 1L, 536)));
+        var aeParts = AEApi.instance()
+            .definitions()
+            .parts();
+
+        inputBlacklist.add(
+            new GTItemStack(
+                aeParts.craftingTerminal()
+                    .maybeStack(1)
+                    .orNull()));
+        inputBlacklist.add(
+            new GTItemStack(
+                aeParts.cableDense()
+                    .stack(AEColor.Transparent, 1)));
 
         // Radiation Proof Plate
         inputBlacklist

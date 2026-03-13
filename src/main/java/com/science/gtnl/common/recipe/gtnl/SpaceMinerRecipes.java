@@ -11,6 +11,7 @@ import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 import com.science.gtnl.utils.recipes.metadata.ResourceCollectionModuleMetadata;
 
+import appeng.api.AEApi;
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
@@ -34,6 +35,10 @@ public class SpaceMinerRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
+        var aeBlocks = AEApi.instance()
+            .definitions()
+            .blocks();
+
         RecipeBuilder.builder()
             .itemInputs(GTUtility.getIntegratedCircuit(24), ItemList.MiningDroneUV.get(0))
             .itemOutputs(
@@ -740,8 +745,11 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(10, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Cassiterite, 1)),
                 GTUtility.copyAmountUnsafe(50, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Realgar, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Mytryl, 1)),
-                GTUtility
-                    .copyAmountUnsafe(80, GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockSkyStone", 1)),
+                GTUtility.copyAmountUnsafe(
+                    80,
+                    aeBlocks.skyStone()
+                        .maybeStack(1)
+                        .orNull()),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Americium, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Dilithium, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.MeteoricIron, 1)))
@@ -760,8 +768,11 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(10, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Cassiterite, 1)),
                 GTUtility.copyAmountUnsafe(50, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Realgar, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Mytryl, 1)),
-                GTUtility
-                    .copyAmountUnsafe(80, GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockSkyStone", 1)),
+                GTUtility.copyAmountUnsafe(
+                    80,
+                    aeBlocks.skyStone()
+                        .maybeStack(1)
+                        .orNull()),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Americium, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Dilithium, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.MeteoricIron, 1)))

@@ -7,7 +7,6 @@ import static gregtech.api.GregTechAPI.sBlockCasings1;
 import static gregtech.api.GregTechAPI.sBlockCasings3;
 import static gregtech.api.GregTechAPI.sBlockCasings8;
 import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.enums.Mods.AppliedEnergistics2;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gregtech.api.util.GTUtility.getIntegratedCircuit;
@@ -17,7 +16,6 @@ import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -31,10 +29,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
+import com.science.gtnl.common.recipe.gtnl.MatterFabricatorRecipes;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoidingMode;
@@ -184,8 +182,7 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
         ItemStack controllerItem = getControllerSlot();
         this.mParallelTier = getParallelTier(controllerItem);
 
-        final Item matterBall = GameRegistry.findItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial");
-        final ItemStack outputItem = new ItemStack(matterBall, 1, 6);
+        final ItemStack outputItem = MatterFabricatorRecipes.PAINT_BALL.copy();
         final int maxParallel = getTrueParallel();
 
         boolean hasCircuit1 = false;

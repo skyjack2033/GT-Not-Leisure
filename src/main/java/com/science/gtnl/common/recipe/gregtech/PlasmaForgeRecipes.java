@@ -9,6 +9,7 @@ import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import appeng.api.AEApi;
 import goodgenerator.util.ItemRefer;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
@@ -29,12 +30,18 @@ public class PlasmaForgeRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Quantum_Tank_IV.get(4),
                 ItemList.Tesseract.get(4),
                 MaterialsElements.STANDALONE.DRAGON_METAL.getPlateDense(16),
-                GTModHandler.getModItem(Mods.AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 34),
+                aeMaterials.cell128SpatialPart()
+                    .maybeStack(16)
+                    .orNull(),
                 GTModHandler.getModItem(Mods.Avaritia.ID, "Singularity", 2, 0),
                 ItemRefer.Fluid_Storage_Core_T8.get(2))
             .fluidInputs(GTNLMaterials.ExcitedNaquadahFuel.getFluidOrGas(1000))

@@ -10,6 +10,7 @@ import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import appeng.api.AEApi;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
@@ -25,6 +26,10 @@ public class RockBreakerRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
+        var aeBlocks = AEApi.instance()
+            .definitions()
+            .blocks();
+
         RecipeBuilder.builder()
             .itemInputs(GTUtility.getIntegratedCircuit(1))
             .itemOutputs(new ItemStack(Blocks.cobblestone, 1))
@@ -82,8 +87,15 @@ public class RockBreakerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(7),
-                GTModHandler.getModItem(Mods.AppliedEnergistics2.ID, "tile.BlockSkyStone", 0))
-            .itemOutputs(GTModHandler.getModItem(Mods.AppliedEnergistics2.ID, "tile.BlockSkyStone", 1))
+                GTUtility.copyAmountUnsafe(
+                    0,
+                    aeBlocks.skyStone()
+                        .maybeStack(1)
+                        .orNull()))
+            .itemOutputs(
+                aeBlocks.skyStone()
+                    .maybeStack(1)
+                    .orNull())
             .duration(16 * TICKS)
             .eut(TierEU.RECIPE_EV)
             .addTo(RBR);

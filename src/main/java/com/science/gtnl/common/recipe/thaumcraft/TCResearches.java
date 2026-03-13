@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 
+import appeng.api.AEApi;
 import bartworks.system.material.WerkstoffLoader;
 import fox.spiteful.avaritia.items.LudicrousItems;
 import goodgenerator.util.ItemRefer;
@@ -137,8 +138,12 @@ public class TCResearches {
                             GregtechItemList.SynchrotronCapableCatalyst.get(1),
                             GTNLItemList.UMVParallelControllerCore.get(1),
                             GTModHandler.getModItem(Mods.AE2FluidCraft.ID, "fluid_storage.Universe", 1),
-                            GTModHandler
-                                .getModItem(Mods.AppliedEnergistics2.ID, "item.ItemExtremeStorageCell.Universe", 1),
+                            AEApi.instance()
+                                .definitions()
+                                .items()
+                                .cellUniverse()
+                                .maybeStack(1)
+                                .orNull(),
                             Mods.SGCraft.isModLoaded() ? GTModHandler.getModItem(Mods.SGCraft.ID, "ic2Capacitor", 1)
                                 : new ItemStack(Blocks.dirt),
                             Mods.Computronics.isModLoaded()

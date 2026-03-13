@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gtnl;
 
-import static gregtech.api.enums.Mods.AppliedEnergistics2;
 import static gregtech.api.enums.Mods.IndustrialCraft2;
 
 import net.minecraft.init.Items;
@@ -11,6 +10,7 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import appeng.api.AEApi;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
@@ -25,6 +25,10 @@ public class MolecularTransformerRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.gemExquisite, Materials.Sapphire, 1L))
             .itemOutputs(GTModHandler.getModItem(IndustrialCraft2.ID, "itemBatLamaCrystal", 1, 0))
@@ -108,7 +112,10 @@ public class MolecularTransformerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(new ItemStack(Items.quartz, 1))
-            .itemOutputs(GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 1))
+            .itemOutputs(
+                aeMaterials.certusQuartzCrystalCharged()
+                    .maybeStack(1)
+                    .orNull())
             .duration(160)
             .eut(120)
             .addTo(MTR);
@@ -150,7 +157,10 @@ public class MolecularTransformerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.gem, Materials.Quartzite, 1L))
-            .itemOutputs(GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 1))
+            .itemOutputs(
+                aeMaterials.certusQuartzCrystalCharged()
+                    .maybeStack(1)
+                    .orNull())
             .duration(160)
             .eut(120)
             .addTo(MTR);

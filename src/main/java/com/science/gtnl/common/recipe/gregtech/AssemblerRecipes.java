@@ -50,6 +50,7 @@ import gtPlusPlus.core.recipe.common.CI;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import gtnhlanth.common.register.LanthItemList;
 
+// TODO:把AE2的物品调用改成 AEApi.instance().definitions()
 public class AssemblerRecipes implements IRecipePool {
 
     public RecipeMap<?> As = RecipeMaps.assemblerRecipes;
