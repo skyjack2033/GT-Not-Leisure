@@ -287,6 +287,11 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
     }
 
     @Override
+    protected boolean supportsCraftingMEBuffer() {
+        return false;
+    }
+
+    @Override
     public void clearHatches() {
         super.clearHatches();
         if (portHatch != null) {
@@ -527,7 +532,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
                 } else {
                     aeItem.setStackSize(capacityPerItem);
                 }
-                portHatch.postUpdateItem(aItem, capacityPerItem - size);
+                if (portHatch != null) portHatch.postUpdateItem(aItem, capacityPerItem - size);
             }
             return doVoidExcess ? aItem.stackSize : (int) (capacityPerItem - size);
         } else {
@@ -537,7 +542,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
                 } else {
                     aeItem.setStackSize(size + aItem.stackSize);
                 }
-                portHatch.postUpdateItem(aItem, aItem.stackSize);
+                if (portHatch != null) portHatch.postUpdateItem(aItem, aItem.stackSize);
             }
             return aItem.stackSize;
         }
@@ -559,7 +564,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
                 } else {
                     aeItem.setStackSize(capacityPerItem);
                 }
-                portHatch.postUpdateItem(aItem.getItemStack(), capacityPerItem - size);
+                if (portHatch != null) portHatch.postUpdateItem(aItem.getItemStack(), capacityPerItem - size);
             }
             return doVoidExcess ? aItem.getStackSize() : (int) (capacityPerItem - size);
         } else {
@@ -569,7 +574,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
                 } else {
                     aeItem.setStackSize(size + aItem.getStackSize());
                 }
-                portHatch.postUpdateItem(aItem.getItemStack(), aItem.getStackSize());
+                if (portHatch != null) portHatch.postUpdateItem(aItem.getItemStack(), aItem.getStackSize());
             }
             return aItem.getStackSize();
         }
@@ -585,13 +590,13 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
         if (storedSize > requestSize) {
             if (doOutput) {
                 aeItem.setStackSize(storedSize - requestSize);
-                portHatch.postUpdateItem(aItem.getItemStack(), -requestSize);
+                if (portHatch != null) portHatch.postUpdateItem(aItem.getItemStack(), -requestSize);
             }
             return requestSize;
         } else {
             if (doOutput) {
                 aeItem.setStackSize(0);
-                portHatch.postUpdateItem(aItem.getItemStack(), -storedSize);
+                if (portHatch != null) portHatch.postUpdateItem(aItem.getItemStack(), -storedSize);
             }
             return storedSize;
         }
