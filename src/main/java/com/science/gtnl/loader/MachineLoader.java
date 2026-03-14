@@ -12,6 +12,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
 
+import com.Nxer.TwistSpaceTechnology.common.GTCMItemList;
 import com.google.common.collect.ImmutableSet;
 import com.science.gtnl.common.machine.basicMachine.DebugResearchStation;
 import com.science.gtnl.common.machine.basicMachine.DieselGenerator;
@@ -280,6 +281,7 @@ import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.text.AnimatedText;
 
 import bartworks.common.loaders.ItemRegistry;
+import cpw.mods.fml.common.Optional;
 import gregtech.api.covers.CoverRegistry;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
@@ -5026,6 +5028,10 @@ public class MachineLoader {
         registerBasicMachine();
         registerCovers();
 
+        loadItemTooltip();
+    }
+
+    public static void loadItemTooltip() {
         if (MainConfig.machine.enableIntegratedOreFactoryChange) {
             addItemTooltip(ItemList.Ore_Processor.get(1), AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
         }
@@ -5049,10 +5055,19 @@ public class MachineLoader {
             addItemTooltip(ItemList.Machine_Multi_PurificationPlant.get(1), AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
         }
 
+        if (ModList.TwistSpaceTechnology.isModLoaded()) {
+            loadTSTItemTooltip();
+        }
+
         addItemTooltip(
             CustomItemList.Machine_Multi_Research.get(1),
             () -> StatCollector.translateToLocal("Tooltip_ResearchStation_00"));
         addItemTooltip(CustomItemList.Machine_Multi_Research.get(1), AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
+    }
+
+    @Optional.Method(modid = "TwistSpaceTechnology")
+    public static void loadTSTItemTooltip() {
+        addItemTooltip(GTCMItemList.OreProcessingFactory.get(1), AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
     }
 
     public enum GasCollectorTier {

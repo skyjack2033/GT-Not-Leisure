@@ -206,6 +206,13 @@ public enum Mixins implements IMixins {
         .setApplyIf(() -> MainConfig.machine.enableRecipeOutputChance)
         .addExcludedMod(ModList.Overpowered)),
 
+    OVERPOWERED_TST_CHANGE(
+        new MixinBuilder("Overpowered TST Mixin Changes").addCommonMixins("Overpowered.MixinGTCM_ParallelHelper")
+            .setPhase(Phase.LATE)
+            .setApplyIf(() -> MainConfig.machine.enableRecipeOutputChance)
+            .addRequiredMod(ModList.TwistSpaceTechnology)
+            .addExcludedMod(ModList.Overpowered)),
+
     NO_NHU_MIXINS(new MixinBuilder("Mixins when NHUtilities is absent")
         .addCommonMixins(
             "NoNHU.MixinAbstractPoweredMachineEntity",
