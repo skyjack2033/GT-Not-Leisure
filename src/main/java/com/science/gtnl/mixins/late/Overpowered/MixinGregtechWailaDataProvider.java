@@ -46,9 +46,11 @@ public class MixinGregtechWailaDataProvider {
                     int tier = GTUtility.getTier(mte.getMaxInputVoltage());
                     int baseTier = GTUtility.getTier(recipe.mEUt);
                     double bonus = tier <= baseTier ? 0.0 : (tier - baseTier) * MainConfig.machine.recipeOutputChance;
-                    tag.setInteger("tier", tier);
-                    tag.setInteger("baseTier", baseTier);
-                    tag.setDouble("bonus", bonus);
+                    NBTTagCompound chanceTag = new NBTTagCompound();
+                    chanceTag.setInteger("tier", tier);
+                    chanceTag.setInteger("baseTier", baseTier);
+                    chanceTag.setDouble("bonus", bonus);
+                    tag.setTag("outputChanceData", chanceTag);
                     cir.setReturnValue(tag);
                 }
             }
@@ -61,20 +63,22 @@ public class MixinGregtechWailaDataProvider {
         if (ModList.Overpowered.isModLoaded() || !MainConfig.machine.enableRecipeOutputChance) return;
         NBTTagCompound tag = accessor.getNBTData();
 
-        if (tag.hasKey("tier") && tag.hasKey("baseTier") && tag.hasKey("bonus")) {
-            int tier = tag.getInteger("tier");
-            int baseTier = tag.getInteger("baseTier");
-            double bonus = tag.getDouble("bonus");
+        if (tag.hasKey("outputChanceData")) {
+            NBTTagCompound chanceTag = tag.getCompoundTag("outputChanceData");
+
+            int tier = chanceTag.getInteger("tier");
+            int baseTier = chanceTag.getInteger("baseTier");
+            double bonus = chanceTag.getDouble("bonus");
 
             String debugMessage = String.format(
                 StatCollector.translateToLocal("Info_VoltageChanceBonus_00"),
                 bonus,
                 StringUtils.voltageTooltipFormatted(tier),
                 StringUtils.voltageTooltipFormatted(baseTier));
+
             currenttip.add(debugMessage);
             cir.setReturnValue(currenttip);
         }
-
     }
 
 }
