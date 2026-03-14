@@ -296,7 +296,7 @@ public class VeinMiningPickaxe extends ItemPickaxe implements SubtitleDisplay {
                     pz,
                     block,
                     EnchantmentHelper.getSilkTouchModifier(player),
-                    0);
+                    EnchantmentHelper.getFortuneModifier(player));
                 if (!player.capabilities.isCreativeMode) allDrops.addAll(drops);
 
                 cleared++;
