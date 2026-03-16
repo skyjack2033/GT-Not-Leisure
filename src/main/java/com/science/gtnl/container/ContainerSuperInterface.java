@@ -3,6 +3,7 @@ package com.science.gtnl.container;
 import net.minecraft.entity.player.InventoryPlayer;
 
 import com.science.gtnl.api.mixinHelper.IDualityInterface;
+import com.science.gtnl.mixins.late.AppliedEnergistics.AccessorContainerUpgradeable;
 
 import appeng.container.implementations.ContainerInterface;
 import appeng.container.slot.OptionalSlotFake;
@@ -53,8 +54,48 @@ public class ContainerSuperInterface extends ContainerInterface {
     public void refreshSlots(InventoryPlayer ip) {
         this.inventorySlots.clear();
         this.inventoryItemStacks.clear();
+        this.bindPlayerInventory(ip, 0, this.getHeight() - PLAYER_INV_HEIGHT);
 
         this.addUpgradeSlots();
+
+        if (this.hasToolbox()) {
+            int size = this.getToolboxSize();
+            // For advanced toolbox to move down a little bit
+            int yBias = size == 3 ? 0 : 7;
+            for (int v = 0; v < size; v++) {
+                for (int u = 0; u < size; u++) {
+                    this.addSlotToContainer(
+                        (new SlotRestrictedInput(
+                            SlotRestrictedInput.PlacableItemType.UPGRADES,
+                            ((AccessorContainerUpgradeable) this).getTbInventory(),
+                            u + v * size,
+                            186 + u * 18,
+                            this.getHeight() - 82 - yBias + v * 18,
+                            this.getInventoryPlayer())).setPlayerSide());
+                }
+            }
+        }
+
+        int patternStartY = TITLE_HEIGHT + (2 * SLOT_SIZE) + SECTION_GAP;
+
+        for (int i = 0; i < PATTERNS_PER_PAGE * maxPage; i++) {
+            int x = i % 9;
+            int y = (i / 9) % 4;
+            var g = i / PATTERNS_PER_PAGE;
+            this.addSlotToContainer(
+                (patternSlotPages[g][i % 36] = new OptionalSlotRestrictedInput(
+                    SlotRestrictedInput.PlacableItemType.ENCODED_PATTERN,
+                    this.myDuality.getPatterns(),
+                    this,
+                    i,
+                    8 + SLOT_SIZE * x,
+                    patternStartY + y * SLOT_SIZE,
+                    g,
+                    ip)).setStackLimit(1));
+            if (g > 0) {
+                patternSlotPages[g][i % 36].xDisplayPosition = Integer.MIN_VALUE;
+            }
+        }
 
         for (int i = 0; i < CONFIG_PER_PAGE * maxPage; i++) {
             int x = i % 9;
@@ -83,29 +124,6 @@ public class ContainerSuperInterface extends ContainerInterface {
                 storageSlot.xDisplayPosition = Integer.MIN_VALUE;
             }
         }
-
-        int patternStartY = TITLE_HEIGHT + (2 * SLOT_SIZE) + SECTION_GAP;
-
-        for (int i = 0; i < PATTERNS_PER_PAGE * maxPage; i++) {
-            int x = i % 9;
-            int y = (i / 9) % 4;
-            var g = i / PATTERNS_PER_PAGE;
-            this.addSlotToContainer(
-                (patternSlotPages[g][i % 36] = new OptionalSlotRestrictedInput(
-                    SlotRestrictedInput.PlacableItemType.ENCODED_PATTERN,
-                    this.myDuality.getPatterns(),
-                    this,
-                    i,
-                    8 + SLOT_SIZE * x,
-                    patternStartY + y * SLOT_SIZE,
-                    g,
-                    ip)).setStackLimit(1));
-            if (g > 0) {
-                patternSlotPages[g][i % 36].xDisplayPosition = Integer.MIN_VALUE;
-            }
-        }
-
-        this.bindPlayerInventory(ip, 0, this.getHeight() - PLAYER_INV_HEIGHT);
     }
 
     public void previousPage() {
@@ -135,6 +153,12 @@ public class ContainerSuperInterface extends ContainerInterface {
             if (slot != null) slot.xDisplayPosition = visible ? slot.getX() : Integer.MIN_VALUE;
         }
     }
+
+    @Override
+    public void setupConfig() {}
+
+    @Override
+    public void setupUpgrades() {}
 
     public void addUpgradeSlots() {
         for (int i = 0; i < upgradeSlots; i++) {
