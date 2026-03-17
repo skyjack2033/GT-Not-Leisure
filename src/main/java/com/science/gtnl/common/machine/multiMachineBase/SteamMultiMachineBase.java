@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiMachineBase;
 import static bartworks.system.material.WerkstoffLoader.BWBlockCasings;
 import static com.science.gtnl.utils.enums.GTNLMachineID.BIG_STEAM_INPUT_HATCH;
 import static com.science.gtnl.utils.enums.GTNLMachineID.PIPELESS_STEAM_HATCH;
-import static com.science.gtnl.utils.steam.SteamWirelessNetworkManager.*;
 import static gregtech.api.GregTechAPI.*;
 import static gregtech.api.GregTechAPI.sBlockFrames;
 import static gregtech.api.metatileentity.BaseTileEntity.TOOLTIP_DELAY;
@@ -74,6 +73,7 @@ import com.science.gtnl.utils.gui.CircularGaugeDrawable;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
+import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
 
 import gregtech.api.enums.StructureError;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -415,7 +415,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
         if (isInTeam) {
             teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-            steamDisplay = getUserSteam(ownerUUID);
+            steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
         }
     }
 
@@ -427,7 +427,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
                 if (isInTeam) {
                     teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-                    steamDisplay = getUserSteam(ownerUUID);
+                    steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
                 }
             }
             if (this.mUpdate == 1 || this.mStartUpCheck == 1) {

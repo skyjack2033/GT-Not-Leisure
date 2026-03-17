@@ -1,6 +1,5 @@
 package com.science.gtnl.common.machine.hatch;
 
-import static com.science.gtnl.utils.steam.SteamWirelessNetworkManager.*;
 import static gregtech.common.misc.WirelessNetworkManager.*;
 
 import java.math.BigInteger;
@@ -30,6 +29,7 @@ import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.mixins.early.Gregtech.AccessorMTEHatch;
 import com.science.gtnl.utils.enums.SteamTypes;
 import com.science.gtnl.utils.item.ItemUtils;
+import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
 
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -232,7 +232,7 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
 
         if (isInTeam) {
             teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-            steamDisplay = getUserSteam(ownerUUID);
+            steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
         }
 
         tryFetchingSteam();
@@ -257,7 +257,7 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
 
                 if (isInTeam) {
                     teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-                    steamDisplay = getUserSteam(ownerUUID);
+                    steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
                 }
             }
         }
@@ -282,7 +282,7 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
             if (matchedSteamType != null) {
                 int convertedAmount = rawAmount * matchedSteamType.efficiencyFactor;
 
-                if (!addSteamToGlobalSteamMap(ownerUUID, convertedAmount)) {
+                if (!SteamWirelessNetworkManager.addSteamToGlobalSteamMap(ownerUUID, convertedAmount)) {
                     return;
                 }
 

@@ -10,11 +10,13 @@ import net.minecraft.item.ItemStack;
 
 import com.github.bsideup.jabel.Desugar;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.config.MainConfig;
 
 import bartworks.system.material.WerkstoffLoader;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.metatileentity.implementations.MTEMultiBlockBase;
+import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 
@@ -116,24 +118,85 @@ public class ChanceBonusManager {
         addToBlacklist(
             WerkstoffLoader.PDSalt.get(OrePrefixes.dust, 1),
             WerkstoffLoader.PDMetallicPowder.get(OrePrefixes.dust, 1));
+        addToBlacklist(null, null, GTNLRecipeMaps.FishingGroundRecipes);
     }
 
     public static void addToBlacklist(ItemStack input, ItemStack output) {
-        BLACKLIST.add(new RecipePair(input, output));
+        BLACKLIST.add(new RecipePair(new ItemStack[] { input }, new ItemStack[] { output }, null));
     }
 
-    private static boolean isBlacklisted(GTRecipe recipe) {
-        if (recipe.mInputs.length == 0 || recipe.mOutputs.length == 0) return false;
+    public static void addToBlacklist(ItemStack[] input, ItemStack[] output) {
+        addToBlacklist(input, output, null);
+    }
+
+    public static void addToBlacklist(ItemStack[] input, ItemStack[] output, RecipeMap<?> recipeMap) {
+        BLACKLIST.add(new RecipePair(input, output, recipeMap));
+    }
+
+    public static boolean isBlacklisted(GTRecipe recipe) {
+        if (recipe == null) return false;
 
         for (RecipePair pair : BLACKLIST) {
-            if (recipe.mInputs[0].isItemEqual(pair.input) && recipe.mOutputs[0].isItemEqual(pair.output)) {
+            boolean match = true;
+
+            if (pair.recipeMap() != null) {
+                if (recipe.getRecipeCategory() == null || recipe.getRecipeCategory().recipeMap != pair.recipeMap()) {
+                    match = false;
+                }
+            }
+
+            if (match && pair.input() != null && pair.input().length > 0) {
+                if (recipe.mInputs == null) {
+                    match = false;
+                } else {
+                    for (ItemStack required : pair.input()) {
+                        boolean found = false;
+
+                        for (ItemStack in : recipe.mInputs) {
+                            if (in != null && required != null && in.isItemEqual(required)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            match = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (match && pair.output() != null && pair.output().length > 0) {
+                if (recipe.mOutputs == null) {
+                    match = false;
+                } else {
+                    for (ItemStack required : pair.output()) {
+                        boolean found = false;
+
+                        for (ItemStack out : recipe.mOutputs) {
+                            if (out != null && required != null && out.isItemEqual(required)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            match = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (match) {
                 return true;
             }
         }
+
         return false;
     }
 
     @Desugar
-    public record RecipePair(ItemStack input, ItemStack output) {}
-
+    public record RecipePair(ItemStack[] input, ItemStack[] output, RecipeMap<?> recipeMap) {}
 }

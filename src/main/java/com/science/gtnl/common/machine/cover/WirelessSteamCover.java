@@ -12,7 +12,7 @@ import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.science.gtnl.utils.enums.SteamTypes;
 import com.science.gtnl.utils.gui.WirelessSteamCoverGui;
 import com.science.gtnl.utils.gui.WirelessSteamCoverUIFactory;
-import com.science.gtnl.utils.steam.SteamWirelessNetworkManager;
+import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
 
 import gregtech.api.covers.CoverContext;
 import gregtech.api.gui.modularui.CoverUIBuildContext;

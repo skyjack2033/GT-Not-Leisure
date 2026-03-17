@@ -1,4 +1,4 @@
-package com.science.gtnl.utils.steam;
+package com.science.gtnl.utils.world.steam;
 
 import java.math.BigInteger;
 import java.util.HashMap;
