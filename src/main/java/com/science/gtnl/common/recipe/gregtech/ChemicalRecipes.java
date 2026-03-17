@@ -14,7 +14,6 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import appeng.api.AEApi;
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
-import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsKevlar;
 import gregtech.api.enums.OrePrefixes;
@@ -593,7 +592,7 @@ public class ChemicalRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_IV)
             .addTo(MCRR);
 
-        GTValues.RA.stdBuilder()
+        RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.gem, Materials.NetherStar, 2),
                 GTUtility.getIntegratedCircuit(20))
@@ -603,14 +602,14 @@ public class ChemicalRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_HV)
             .addTo(MCRR);
 
-        GTValues.RA.stdBuilder()
+        RecipeBuilder.builder()
             .fluidInputs(Materials.Ammonia.getGas(1000), Materials.SulfuricAcid.getFluid(1000))
             .fluidOutputs(GTNLMaterials.AmmoniumBisulfate.getFluidOrGas(1000))
             .duration(15 * SECONDS)
             .eut(TierEU.EV)
             .addTo(MCRR);
 
-        GTValues.RA.stdBuilder()
+        RecipeBuilder.builder()
             .fluidInputs(GTNLMaterials.AmmoniumPersulfate.getFluidOrGas(1000), Materials.Water.getFluid(2000))
             .fluidOutputs(
                 GTNLMaterials.AmmoniumBisulfate.getFluidOrGas(2000),
@@ -618,5 +617,15 @@ public class ChemicalRecipes implements IRecipePool {
             .duration(30 * SECONDS)
             .eut(TierEU.IV)
             .addTo(MCRR);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(1),
+                GTOreDictUnificator.get(OrePrefixes.dust, Materials.Sodium, 2))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.SodiumOxide, 3))
+            .fluidInputs(Materials.Oxygen.getGas(1000))
+            .duration(3)
+            .eut(TierEU.RECIPE_LV)
+            .addTo(UC);
     }
 }

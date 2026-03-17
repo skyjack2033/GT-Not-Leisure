@@ -25,6 +25,8 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import appeng.api.AEApi;
+import appeng.api.util.AEColor;
 import bartworks.system.material.WerkstoffLoader;
 import cpw.mods.fml.common.Optional;
 import goodgenerator.items.GGMaterial;
@@ -50,7 +52,6 @@ import gtPlusPlus.core.recipe.common.CI;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import gtnhlanth.common.register.LanthItemList;
 
-// TODO:把AE2的物品调用改成 AEApi.instance().definitions()
 public class AssemblerRecipes implements IRecipePool {
 
     public RecipeMap<?> As = RecipeMaps.assemblerRecipes;
@@ -58,6 +59,18 @@ public class AssemblerRecipes implements IRecipePool {
 
     @Override
     public void loadRecipes() {
+        var aeItems = AEApi.instance()
+            .definitions()
+            .items();
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+        var aeParts = AEApi.instance()
+            .definitions()
+            .parts();
+        var aeBlocks = AEApi.instance()
+            .definitions()
+            .blocks();
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -765,8 +778,12 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Hatch_Output_Bus_EV.get(1L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiPart", 1, 440),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 30))
+                aeParts.iface()
+                    .maybeStack(1)
+                    .orNull(),
+                aeMaterials.cardSpeed()
+                    .maybeStack(2)
+                    .orNull())
             .itemOutputs(
                 ItemUtils
                     .getItemStack(ItemList.Hatch_Output_Bus_ME.get(1L), "{baseCapacity:9223372036854775807L}", null))
@@ -777,11 +794,21 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Hatch_Output_ME.get(1L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockQuantumRing", 2),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockQuantumLinkChamber", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 47),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCraftingUnit", 1, 1))
+                aeBlocks.quantumRing()
+                    .maybeStack(2)
+                    .orNull(),
+                aeBlocks.quantumLink()
+                    .maybeStack(1)
+                    .orNull(),
+                aeMaterials.singularity()
+                    .maybeStack(2)
+                    .orNull(),
+                aeBlocks.tinyTNT()
+                    .maybeStack(1)
+                    .orNull(),
+                aeBlocks.craftingAccelerator()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(
                 ItemUtils
                     .getItemStack(GTNLItemList.OutputHatchMEProxy.get(1L), "{baseCapacity:9223372036854775807L}", null))
@@ -792,11 +819,21 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Hatch_Output_Bus_ME.get(1L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockQuantumRing", 2),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockQuantumLinkChamber", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 47),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockCraftingUnit", 1, 1))
+                aeBlocks.quantumRing()
+                    .maybeStack(2)
+                    .orNull(),
+                aeBlocks.quantumLink()
+                    .maybeStack(1)
+                    .orNull(),
+                aeMaterials.singularity()
+                    .maybeStack(2)
+                    .orNull(),
+                aeBlocks.tinyTNT()
+                    .maybeStack(1)
+                    .orNull(),
+                aeBlocks.craftingAccelerator()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(
                 ItemUtils
                     .getItemStack(GTNLItemList.OutputBusMEProxy.get(1L), "{baseCapacity:9223372036854775807L}", null))
@@ -808,7 +845,9 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 ItemList.Hatch_Output_EV.get(1L),
                 GTModHandler.getModItem(AE2FluidCraft.ID, "part_fluid_interface", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 30))
+                aeMaterials.cardSpeed()
+                    .maybeStack(2)
+                    .orNull())
             .itemOutputs(
                 ItemUtils.getItemStack(ItemList.Hatch_Output_ME.get(1L), "{baseCapacity:9223372036854775807L}", null))
             .duration(300)
@@ -820,7 +859,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Hatch_Input_ME.get(1L),
                 GTModHandler.getModItem(AE2FluidCraft.ID, "part_fluid_interface", 1),
                 ItemList.Electric_Pump_IV.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 30))
+                aeMaterials.cardSpeed()
+                    .maybeStack(4)
+                    .orNull())
             .itemOutputs(ItemList.Hatch_Input_ME_Advanced.get(1))
             .duration(300)
             .eut(7680)
@@ -829,9 +870,13 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Hatch_Input_Bus_ME.get(1L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiPart", 1, 440),
+                aeParts.iface()
+                    .maybeStack(1)
+                    .orNull(),
                 ItemList.Conveyor_Module_IV.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 30))
+                aeMaterials.cardSpeed()
+                    .maybeStack(4)
+                    .orNull())
             .itemOutputs(ItemList.Hatch_Input_Bus_ME_Advanced.get(1))
             .duration(300)
             .eut(7680)
@@ -2075,9 +2120,13 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Hatch_Input_Bus_ME.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiPart", 1, 220),
+                aeParts.storageBus()
+                    .maybeStack(1)
+                    .orNull(),
                 ItemList.Conveyor_Module_EV.get(2),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 9, 27))
+                aeMaterials.cardCapacity()
+                    .maybeStack(9)
+                    .orNull())
             .itemOutputs(GTNLItemList.SuperInputBusME.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(576))
             .duration(300)
@@ -2087,9 +2136,13 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTNLItemList.SuperInputBusME.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockChest", 1),
+                aeBlocks.chest()
+                    .maybeStack(1)
+                    .orNull(),
                 ItemList.Conveyor_Module_ZPM.get(2),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 56))
+                aeMaterials.cardSuperSpeed()
+                    .maybeStack(4)
+                    .orNull())
             .itemOutputs(GTNLItemList.AdvancedSuperInputBusME.get(1))
             .fluidInputs(MaterialsAlloy.INDALLOY_140.getFluidStack(1296))
             .duration(300)
@@ -2100,7 +2153,9 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 ItemList.Hatch_Input_HV.get(1),
                 GTModHandler.getModItem(AE2FluidCraft.ID, "fluid_interface", 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 30))
+                aeMaterials.cardSpeed()
+                    .maybeStack(4)
+                    .orNull())
             .itemOutputs(ItemList.Hatch_Input_ME.get(1))
             .duration(300)
             .eut(TierEU.HV)
@@ -2111,7 +2166,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Hatch_Input_ME.get(1),
                 GTModHandler.getModItem(AE2FluidCraft.ID, "part_fluid_storage_bus", 1),
                 ItemList.Electric_Pump_EV.get(2),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 9, 27))
+                aeMaterials.cardCapacity()
+                    .maybeStack(9)
+                    .orNull())
             .itemOutputs(GTNLItemList.SuperInputHatchME.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(576))
             .duration(300)
@@ -2121,9 +2178,13 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTNLItemList.SuperInputHatchME.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockChest", 2),
+                aeBlocks.chest()
+                    .maybeStack(2)
+                    .orNull(),
                 ItemList.Electric_Pump_ZPM.get(2),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 6, 56))
+                aeMaterials.cardSuperSpeed()
+                    .maybeStack(6)
+                    .orNull())
             .itemOutputs(GTNLItemList.AdvancedSuperInputHatchME.get(1))
             .fluidInputs(MaterialsAlloy.INDALLOY_140.getFluidStack(1296))
             .duration(300)
@@ -2190,7 +2251,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Chest_LV.get(1),
                 ItemList.Super_Tank_LV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Steel, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchLV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2203,7 +2266,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Chest_MV.get(1),
                 ItemList.Super_Tank_MV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Aluminium, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchMV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2216,7 +2281,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Chest_HV.get(1),
                 ItemList.Super_Tank_HV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.StainlessSteel, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchHV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2229,7 +2296,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Chest_EV.get(1),
                 ItemList.Super_Tank_EV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Titanium, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchEV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2242,7 +2311,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Chest_IV.get(1),
                 ItemList.Super_Tank_IV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.TungstenSteel, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchIV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2255,7 +2326,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_LV.get(1),
                 ItemList.Quantum_Tank_LV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Iridium, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchLuV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2268,7 +2341,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_MV.get(1),
                 ItemList.Quantum_Tank_MV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.NaquadahAlloy, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchZPM.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2281,7 +2356,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_HV.get(1),
                 ItemList.Quantum_Tank_HV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Osmium, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchUV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2294,7 +2371,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_EV.get(1),
                 ItemList.Quantum_Tank_EV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Neutronium, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchUHV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2307,7 +2386,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_IV.get(1),
                 ItemList.Quantum_Tank_IV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Bedrockium, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchUEV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2320,7 +2401,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_IV.get(2),
                 ItemList.Quantum_Tank_IV.get(2),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.BlackPlutonium, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchUIV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2333,7 +2416,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_IV.get(4),
                 ItemList.Quantum_Tank_IV.get(4),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.SpaceTime, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchUMV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2346,7 +2431,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_IV.get(8),
                 ItemList.Quantum_Tank_IV.get(8),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.MagMatter, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchUXV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2360,7 +2447,9 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Tank_IV.get(16),
                 GTOreDictUnificator
                     .get(OrePrefixes.plateDense, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 4L),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 47))
+                aeMaterials.singularity()
+                    .maybeStack(1)
+                    .orNull())
             .itemOutputs(GTNLItemList.HumongousDualInputHatchMAX.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -2933,11 +3022,16 @@ public class AssemblerRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(11),
                 GTNLItemList.AssemblerMatrixWall.get(1),
                 ItemList.Hatch_CraftingInput_Bus_ME_ItemOnly.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 8, 54),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 24),
+                aeMaterials.cardPatternCapacity()
+                    .maybeStack(8)
+                    .orNull(),
+                aeMaterials.engProcessor()
+                    .maybeStack(16)
+                    .orNull(),
                 ItemList.Conveyor_Module_LuV.get(2),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemPaintBall", 64, 11))
+                aeItems.coloredPaintBall()
+                    .stack(AEColor.Blue, 64))
             .itemOutputs(GTNLItemList.AssemblerMatrixPatternCore.get(1))
             .duration(400)
             .eut(TierEU.RECIPE_LuV)
@@ -2947,12 +3041,19 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTUtility.getIntegratedCircuit(11),
                 GTNLItemList.AssemblerMatrixWall.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockMolecularAssembler", 8),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 40, 30),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 22),
+                aeBlocks.molecularAssembler()
+                    .maybeStack(8)
+                    .orNull(),
+                aeMaterials.cardSpeed()
+                    .maybeStack(40)
+                    .orNull(),
+                aeMaterials.logicProcessor()
+                    .maybeStack(16)
+                    .orNull(),
                 ItemList.Robot_Arm_LuV.get(2),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemPaintBall", 64, 10))
+                aeItems.coloredPaintBall()
+                    .stack(AEColor.Purple, 64))
             .itemOutputs(GTNLItemList.AssemblerMatrixCrafterCore.get(1))
             .duration(400)
             .eut(TierEU.RECIPE_LuV)
@@ -2963,8 +3064,12 @@ public class AssemblerRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(11),
                 GTNLItemList.QuantumComputerCasing.get(4),
                 GTNLItemList.QuantumComputerUnit.get(4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 33),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockController", 4),
+                aeMaterials.cell16SpatialPart()
+                    .maybeStack(4)
+                    .orNull(),
+                aeBlocks.controller()
+                    .maybeStack(4)
+                    .orNull(),
                 GTNLItemList.ShatteredSingularity.get(4),
                 ItemList.Emitter_LuV.get(4),
                 ItemList.Sensor_LuV.get(4),
@@ -3111,8 +3216,12 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockInterface", 3),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 54),
+                aeBlocks.iface()
+                    .maybeStack(3)
+                    .orNull(),
+                aeMaterials.cardPatternCapacity()
+                    .maybeStack(4)
+                    .orNull(),
                 GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 2),
                 GTUtility.getIntegratedCircuit(2))
             .itemOutputs(GTNLItemList.SuperInterface.get(1))
@@ -3122,8 +3231,12 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockInterface", 3),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 54),
+                aeBlocks.iface()
+                    .maybeStack(3)
+                    .orNull(),
+                aeMaterials.cardPatternCapacity()
+                    .maybeStack(4)
+                    .orNull(),
                 GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 2),
                 GTUtility.getIntegratedCircuit(3))
             .itemOutputs(GTNLItemList.PartSuperInterface.get(1))
@@ -3311,16 +3424,29 @@ public class AssemblerRecipes implements IRecipePool {
 
     @Optional.Method(modid = "dreamcraft")
     public void loadNHRecipe() {
+        var aeItems = AEApi.instance()
+            .definitions()
+            .items();
+        var aeMaterials = AEApi.instance()
+            .definitions()
+            .materials();
+        var aeBlocks = AEApi.instance()
+            .definitions()
+            .blocks();
+
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(11),
                 GTNLItemList.AssemblerMatrixWall.get(1),
                 ItemList.AcceleratorLuV.get(4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 56),
+                aeMaterials.cardSuperSpeed()
+                    .maybeStack(4)
+                    .orNull(),
                 CustomItemList.EngineeringProcessorItemAdvEmeraldCore.get(16),
                 ItemList.Field_Generator_LuV.get(2),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemPaintBall", 64, 14))
+                aeItems.coloredPaintBall()
+                    .stack(AEColor.Red, 64))
             .itemOutputs(GTNLItemList.AssemblerMatrixSpeedCore.get(1))
             .duration(400)
             .eut(TierEU.RECIPE_LuV)
@@ -3330,11 +3456,17 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTUtility.getIntegratedCircuit(11),
                 GTNLItemList.QuantumComputerUnit.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 6, 60),
+                aeMaterials.cell16384kPart()
+                    .maybeStack(6)
+                    .orNull(),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
                 GTNLItemList.ShatteredSingularity.get(4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 27),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 22),
+                aeMaterials.cardCapacity()
+                    .maybeStack(4)
+                    .orNull(),
+                aeMaterials.logicProcessor()
+                    .maybeStack(16)
+                    .orNull(),
                 NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
             .itemOutputs(GTNLItemList.QuantumComputerCraftingStorage128M.get(1))
@@ -3362,11 +3494,17 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTUtility.getIntegratedCircuit(11),
                 GTNLItemList.QuantumComputerUnit.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 3, 3),
+                aeBlocks.craftingStorage16384k()
+                    .maybeStack(3)
+                    .orNull(),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
                 GTNLItemList.ShatteredSingularity.get(4),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 56),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 23),
+                aeMaterials.cardSuperSpeed()
+                    .maybeStack(4)
+                    .orNull(),
+                aeMaterials.calcProcessor()
+                    .maybeStack(16)
+                    .orNull(),
                 NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
             .itemOutputs(GTNLItemList.QuantumComputerAccelerator.get(1))
@@ -3381,10 +3519,14 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.QuantumComputerUnit.get(1),
                 GTNLItemList.QuantumComputerAccelerator.get(1),
                 GTNLItemList.QuantumComputerCraftingStorage256M.get(1),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 47),
+                aeMaterials.singularity()
+                    .maybeStack(4)
+                    .orNull(),
                 GTNLItemList.ShatteredSingularity.get(2),
                 CustomItemList.EngravedQuantumChip.get(16),
-                GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 24),
+                aeMaterials.engProcessor()
+                    .maybeStack(16)
+                    .orNull(),
                 NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(4))
             .itemOutputs(GTNLItemList.QuantumComputerCore.get(1))
             .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
