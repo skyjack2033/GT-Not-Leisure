@@ -18,6 +18,7 @@ import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import com.science.gtnl.common.packet.NetWorkHandler;
 import com.science.gtnl.common.recipe.gtnl.ExtremeExtremeEntityCrusherRecipes;
 import com.science.gtnl.common.world.GTNLWorldgenloader;
+import com.science.gtnl.common.world.VoidWorldHandler;
 import com.science.gtnl.container.ContainerAEChisel;
 import com.science.gtnl.container.ContainerActiveFormationPlane;
 import com.science.gtnl.container.ContainerCustomPriority;
@@ -60,23 +61,27 @@ public class CommonProxy implements IGuiHandler {
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new SubscribeEventUtils());
-        if (Mods.MobsInfo.isModLoaded()) {
-            MinecraftForge.EVENT_BUS.register(new ExtremeExtremeEntityCrusherRecipes());
-        }
         FMLCommonHandler.instance()
             .bus()
             .register(new SubscribeEventUtils());
+        MinecraftForge.EVENT_BUS.register(new VoidWorldHandler());
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new VoidWorldHandler());
+        MinecraftForge.TERRAIN_GEN_BUS.register(new GTNLWorldgenloader());
 
         NetWorkHandler.registerAllMessage();
     }
 
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
     public void init(FMLInitializationEvent event) {
-        MinecraftForge.TERRAIN_GEN_BUS.register(new GTNLWorldgenloader());
         MinecraftForge.EVENT_BUS.register(new VMTweakHelper());
         FMLCommonHandler.instance()
             .bus()
             .register(new VMTweakHelper());
+        if (Mods.MobsInfo.isModLoaded()) {
+            MinecraftForge.EVENT_BUS.register(new ExtremeExtremeEntityCrusherRecipes());
+        }
         CraftingUnitHandler.register();
     }
 
