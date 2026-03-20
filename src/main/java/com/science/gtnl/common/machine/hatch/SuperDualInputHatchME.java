@@ -217,6 +217,15 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
                 inventoryHandlerDisplay.setStackInSlot(aIndex, null);
                 return null;
             }
+
+            if (!isAllowedToWork()) {
+                this.i_shadow[aIndex] = null;
+                this.i_saved[aIndex] = 0;
+                this.i_client[aIndex] = 0;
+                super.setInventorySlotContents(aIndex + SLOT_COUNT, null);
+                return null;
+            }
+
             try {
                 IMEMonitor<IAEItemStack> sg = proxy.getStorage()
                     .getItemInventory();
@@ -243,17 +252,24 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         return null;
     }
 
-    public void updateInformationSlotF(int index) {
+    public void updateInformationSlotF(int aIndex) {
 
-        FluidStack fluidStack = f_mark[index];
+        FluidStack fluidStack = f_mark[aIndex];
         if (fluidStack == null) {
-            f_display[index] = null;
+            f_display[aIndex] = null;
             return;
         }
 
         AENetworkProxy proxy = getProxy();
         if (proxy == null || !proxy.isActive()) {
-            f_display[index] = null;
+            f_display[aIndex] = null;
+            return;
+        }
+
+        if (!isAllowedToWork()) {
+            this.f_shadow[aIndex] = null;
+            this.f_saved[aIndex] = 0;
+            this.f_client[aIndex] = 0;
             return;
         }
 
@@ -261,7 +277,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             IMEMonitor<IAEFluidStack> sg = proxy.getStorage()
                 .getFluidInventory();
             IAEFluidStack request = AEFluidStack.create(fluidStack);
-            request.setStackSize(f_stored[index]);
+            request.setStackSize(f_stored[aIndex]);
             IAEFluidStack result = sg.extractItems(request, Actionable.SIMULATE, getRequestSource());
             if (result != null) {
                 FluidTankG g = new FluidTankG();
@@ -269,14 +285,14 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
                 result.setStackSize(g.getFluidAmount());
             }
             FluidStack resultFluid = (result != null) ? result.getFluidStack() : null;
-            f_client[index] = result == null ? 0 : result.getStackSize();
+            f_client[aIndex] = result == null ? 0 : result.getStackSize();
             if (expediteRecipeCheck) {
-                FluidStack previous = f_mark[index];
+                FluidStack previous = f_mark[aIndex];
                 if (resultFluid != null) {
                     justHadNewItems = !resultFluid.isFluidEqual(previous);
                 }
             }
-            f_display[index] = resultFluid;
+            f_display[aIndex] = resultFluid;
         } catch (GridAccessException ignored) {}
 
     }
@@ -892,7 +908,13 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             String state = WailaText.getPowerState(isActive, isPowered, isBooting);
 
             if (isActive && isPowered) {
-                return new Text(MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state));
+                return new Text(
+                    MessageFormat.format(
+                        "{0}{1}§f ({2})",
+                        EnumChatFormatting.GREEN,
+                        state,
+                        StatCollector
+                            .translateToLocal(isAllowedToWork() ? "GT5U.gui.text.enabled" : "GT5U.gui.text.disabled")));
             } else {
                 return new Text(EnumChatFormatting.DARK_RED + state);
             }
