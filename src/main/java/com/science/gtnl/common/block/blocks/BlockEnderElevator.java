@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 
 import com.science.gtnl.ClientProxy;
 import com.science.gtnl.client.GTNLCreativeTabs;
+import com.science.gtnl.common.block.blocks.item.ItemBlockEnderElevator;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEnderElevator;
 import com.science.gtnl.utils.event.LivingSneakEvent;
 
@@ -51,7 +52,7 @@ public class BlockEnderElevator extends BlockContainer {
         this.setBlockTextureName(RESOURCE_ROOT_ID + ":EnderElevator");
         this.setLightLevel(1.0f);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
-        GameRegistry.registerBlock(this, getUnlocalizedName());
+        GameRegistry.registerBlock(this, ItemBlockEnderElevator.class, getUnlocalizedName());
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance()
             .bus()

@@ -62,11 +62,6 @@ public class BlockLaserBeacon extends BlockContainer {
     }
 
     @Override
-    public String getUnlocalizedName() {
-        return "tile.LaserBeacon";
-    }
-
-    @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         blockIcon = Textures.BlockIcons.MACHINE_COIL_SUPERCONDUCTOR.getIcon();
