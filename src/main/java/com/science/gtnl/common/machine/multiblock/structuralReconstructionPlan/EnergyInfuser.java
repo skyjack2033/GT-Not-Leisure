@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,6 +49,7 @@ import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import cofh.api.energy.IEnergyContainerItem;
@@ -61,6 +63,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.misc.WirelessNetworkManager;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import tectech.thing.casing.TTCasingsContainer;
@@ -75,6 +78,8 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
     public static final long usedEuPerDurability = 1000;
     public static final int usedUumPerDurability = 1;
     public int mCountCasing;
+    public UUID ownerUUID;
+    public boolean wirelessMode;
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String EI_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/energy_infuser";
     private static final String[][] shape = StructureUtils.readStructureFromFile(EI_STRUCTURE_FILE_PATH);
@@ -147,7 +152,16 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
 
     @Override
     public boolean checkMachine_EM(IGregTechTileEntity iGregTechTileEntity, ItemStack itemStack) {
-        return structureCheck_EM(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
+        wirelessMode = false;
+        if (!structureCheck_EM(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET)) return false;
+        wirelessMode = mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty() && eEnergyMulti.isEmpty();
+        return true;
+    }
+
+    @Override
+    public void onFirstTick_EM(IGregTechTileEntity aBaseMetaTileEntity) {
+        super.onFirstTick_EM(aBaseMetaTileEntity);
+        this.ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
     }
 
     @Override
@@ -295,6 +309,10 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
     }
 
     public long getMaxStoredEU() {
+        if (wirelessMode) {
+            return Utils.toLongSafe(WirelessNetworkManager.getUserEU(ownerUUID));
+        }
+
         long maxStoredEU = 0;
 
         for (MTEHatchEnergy tHatch : validMTEList(mEnergyHatches)) {
@@ -315,6 +333,11 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
     }
 
     public void decreaseEUValue(long energyToRemove) {
+        if (wirelessMode) {
+            WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, -energyToRemove);
+            return;
+        }
+
         long maxStoredEU = 0;
         MTEHatchEnergy targetEnergyHatch = null;
         MTEHatchEnergyMulti targetEnergyMulti = null;
@@ -407,6 +430,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
             .addInfo(StatCollector.translateToLocal("Tooltip_EnergyInfuser_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_EnergyInfuser_03"))
             .addInfo(StatCollector.translateToLocal("Tooltip_EnergyInfuser_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_EnergyInfuser_05"))
             .addTecTechHatchInfo()
             .beginStructureBlock(5, 8, 5, true)
             .addInputHatch(StatCollector.translateToLocal("Tooltip_EnergyInfuser_Casing"))
