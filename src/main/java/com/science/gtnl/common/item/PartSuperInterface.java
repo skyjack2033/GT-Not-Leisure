@@ -5,8 +5,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 
 import com.science.gtnl.CommonProxy;
+import com.science.gtnl.api.ICustomGui;
 import com.science.gtnl.api.mixinHelper.IDualityInterface;
 import com.science.gtnl.mixins.late.AppliedEnergistics.AccessorPartInterface;
+import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.storage.data.IAEItemStack;
@@ -17,7 +19,7 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.WrapperInvSlot;
 
 // TODO:再加个二合一ME接口
-public class PartSuperInterface extends PartInterface {
+public class PartSuperInterface extends PartInterface implements ICustomGui {
 
     public int configSlots = 27;
     public int storageSlots = 27;
@@ -62,5 +64,10 @@ public class PartSuperInterface extends PartInterface {
     @Override
     public int rows() {
         return 12;
+    }
+
+    @Override
+    public ItemStack getOriginGuiIcon() {
+        return GTNLItemList.PartSuperInterface.get(1);
     }
 }

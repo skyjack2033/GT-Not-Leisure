@@ -9,6 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 
 import com.science.gtnl.CommonProxy;
+import com.science.gtnl.api.ICustomGui;
+import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.config.Actionable;
@@ -30,7 +32,7 @@ import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 
-public class PartActiveFormationPlane extends PartFormationPlane implements IGridTickable {
+public class PartActiveFormationPlane extends PartFormationPlane implements IGridTickable, ICustomGui {
 
     public final BaseActionSource source;
     public int nextSlot = 0;
@@ -161,5 +163,10 @@ public class PartActiveFormationPlane extends PartFormationPlane implements IGri
     @Override
     public IAEItemStack injectItems(IAEItemStack input, Actionable type, BaseActionSource src) {
         return input;
+    }
+
+    @Override
+    public ItemStack getOriginGuiIcon() {
+        return GTNLItemList.PartActiveFormationPlane.get(1);
     }
 }

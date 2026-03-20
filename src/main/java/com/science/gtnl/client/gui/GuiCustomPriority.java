@@ -5,11 +5,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
-import com.science.gtnl.common.item.PartActiveFormationPlane;
-import com.science.gtnl.common.item.PartSuperInterface;
+import com.science.gtnl.api.ICustomGui;
 import com.science.gtnl.common.packet.SwitchToCustomGuiPacket;
-import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.client.gui.AEBaseGui;
@@ -45,14 +42,8 @@ public class GuiCustomPriority extends GuiPriority {
     @Override
     public void setOriginGUI(Object target) {
         super.setOriginGUI(target);
-        if (target instanceof TileEntitySuperInterface) {
-            this.myIcon = GTNLItemList.SuperInterface.get(1);
-            this.originalGui = null;
-        } else if (target instanceof PartSuperInterface) {
-            this.myIcon = GTNLItemList.PartSuperInterface.get(1);
-            this.originalGui = null;
-        } else if (target instanceof PartActiveFormationPlane) {
-            this.myIcon = GTNLItemList.PartActiveFormationPlane.get(1);
+        if (target instanceof ICustomGui original) {
+            this.myIcon = original.getOriginGuiIcon();
             this.originalGui = null;
         }
     }
