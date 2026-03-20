@@ -16,7 +16,7 @@ import com.science.gtnl.CommonProxy;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.blocks.item.ItemBlockSuperInterface;
 import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
-import com.science.gtnl.common.render.RendererSuperInterface;
+import com.science.gtnl.common.render.tile.SuperInterfaceRenderer;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
@@ -61,7 +61,7 @@ public class BlockSuperInterface extends BlockInterface {
     @Override
     @SideOnly(Side.CLIENT)
     public RenderBlockInterface getRenderer() {
-        return new RendererSuperInterface();
+        return new SuperInterfaceRenderer();
     }
 
     @Override

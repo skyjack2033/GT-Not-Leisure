@@ -1,4 +1,4 @@
-package com.science.gtnl.common.render;
+package com.science.gtnl.common.render.tile;
 
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.util.IIcon;
@@ -12,9 +12,9 @@ import appeng.block.misc.BlockInterface;
 import appeng.client.render.BlockRenderInfo;
 import appeng.client.render.blocks.RenderBlockInterface;
 
-public class RendererSuperInterface extends RenderBlockInterface {
+public class SuperInterfaceRenderer extends RenderBlockInterface {
 
-    public RendererSuperInterface() {
+    public SuperInterfaceRenderer() {
         super();
     }
 
