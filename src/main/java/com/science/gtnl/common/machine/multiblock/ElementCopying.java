@@ -76,6 +76,7 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
@@ -191,8 +192,8 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         costingEU = BigInteger.ZERO;
         costingEUText = ZERO_STRING;
 
-        long maxInputEu = wirelessMode ? getUserEU(ownerUUID).min(BigInteger.valueOf(Long.MAX_VALUE))
-            .longValue() : getMaxInputEu();
+        long maxInputEU = wirelessMode ? Utils.toLongSafe(WirelessNetworkManager.getUserEU(ownerUUID))
+            : getMaxInputEu();
 
         long needUUMPerUnit = getNeedUUM();
         long needEUtPerUnit = Math.max(getNeedEU() / 20, 1);
@@ -205,7 +206,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
             .sum();
 
         int parallelByUUM = (int) Math.min(Integer.MAX_VALUE, totalUUMAvailable / needUUMPerUnit);
-        int parallelByEU = (int) Math.min(Integer.MAX_VALUE, maxInputEu / needEUtPerUnit);
+        int parallelByEU = (int) Math.min(Integer.MAX_VALUE, maxInputEU / needEUtPerUnit);
         if (parallelByEU <= 0) return CheckRecipeResultRegistry.insufficientPower(parallelByEU);
 
         maxParallelStored = Math.min(maxParallelStored, Math.min(parallelByUUM, parallelByEU));

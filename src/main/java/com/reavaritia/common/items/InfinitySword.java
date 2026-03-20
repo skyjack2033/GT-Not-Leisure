@@ -383,13 +383,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         target.attackEntityFrom(DamageSource.outOfWorld, Float.POSITIVE_INFINITY);
 
         target.onDeath(INFINITY_DAMAGE);
-        if (!(target instanceof EntityPlayer || target instanceof EntityCreeperBoss
-            || target instanceof EntityBlazeBoss
-            || target instanceof EntityCrystalBoss
-            || target instanceof EntityGhastBoss
-            || target instanceof EntitySlimeBoss
-            || target instanceof EntityWolfBoss
-            || target instanceof EntitySkeletonBoss)) {
+        if (!(target instanceof EntityPlayer || isGalaxyBoss(target))) {
             target.setHealth(0);
             target.onDeath(INFINITY_DAMAGE);
             target.setDead();

@@ -10,7 +10,6 @@ import static gregtech.api.enums.HatchElement.*;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.common.misc.WirelessNetworkManager.*;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 
 import gregtech.api.enums.Textures;
@@ -163,16 +163,7 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
         long availableEUt;
 
         if (wirelessMode) {
-            BigInteger eu = getUserEU(ownerUUID);
-            long energyEU;
-
-            if (eu.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
-                energyEU = Long.MAX_VALUE;
-            } else {
-                energyEU = eu.longValue();
-            }
-
-            availableEUt = energyEU;
+            availableEUt = Utils.toLongSafe(getUserEU(ownerUUID));
 
             if (availableEUt < 4) {
                 return CheckRecipeResultRegistry.insufficientPower(4);

@@ -57,8 +57,8 @@ public class EntityBlazeFireball extends EntitySmallFireball {
 
         if (mop.entityHit instanceof EntityLivingBase target) {
 
-            if (target instanceof EntityEnderman) {
-                ((EntityEnderman) target).setAttackTarget(shootingEntity);
+            if (target instanceof EntityEnderman enderman) {
+                enderman.setAttackTarget(shootingEntity);
                 target.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) shootingEntity), 50.0F);
             } else {
                 if (!target.isPotionActive(Potion.fireResistance.id)) {

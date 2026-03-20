@@ -153,10 +153,10 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
     public static Utils.VargsFunction<Object[], FluidStack[]> asFluidStack = (s) -> Arrays.stream(s)
         .flatMap(Arrays::stream)
         .map(f -> {
-            if (f instanceof FluidTank) {
-                return ((FluidTank) f).getFluid();
-            } else if (f instanceof FluidStack) {
-                return (FluidStack) f;
+            if (f instanceof FluidTank tank) {
+                return tank.getFluid();
+            } else if (f instanceof FluidStack stack) {
+                return stack;
             } else if (f == null) {
                 /* ignore */return null;
             } else {

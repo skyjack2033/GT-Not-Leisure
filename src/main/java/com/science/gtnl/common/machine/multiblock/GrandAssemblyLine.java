@@ -204,12 +204,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         long energyEU;
 
         if (wirelessMode) {
-            BigInteger eu = getUserEU(ownerUUID);
-            if (eu.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
-                energyEU = Long.MAX_VALUE;
-            } else {
-                energyEU = eu.longValue();
-            }
+            energyEU = toLongSafe(getUserEU(ownerUUID));
         } else {
             energyEU = getMaxInputEu();
         }
