@@ -28,10 +28,15 @@ public class SpoceRenderHandler {
     public static final float[] buildBuf = new float[1 << 16];
     public static int buildCount;
     public static final double[] angleScratch = new double[9];
+    public static final int UPDATE_VERT = 15;
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = mc.theWorld;
+        if (world == null) return;
+
         synchronized (SpoceEffect.effects) {
             Iterator<SpoceEffect> it = SpoceEffect.effects.iterator();
 
@@ -45,9 +50,10 @@ public class SpoceRenderHandler {
 
                 effect.update();
 
-                if (Minecraft.getMinecraft().theWorld != null
-                    && Minecraft.getMinecraft().theWorld.getTotalWorldTime() % 10 == 0) {
-                    for (SpoceEffect.Layer l : effect.layers) l.dirty = true;
+                if (world.getTotalWorldTime() % UPDATE_VERT == 0) {
+                    for (SpoceEffect.Layer l : effect.layers) {
+                        if (l.renderLines) l.dirty = true;
+                    }
                 }
             }
         }
@@ -55,10 +61,12 @@ public class SpoceRenderHandler {
 
     @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event) {
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = mc.theWorld;
+        if (world == null) return;
+
         synchronized (SpoceEffect.effects) {
             if (SpoceEffect.effects.isEmpty()) return;
-            World world = Minecraft.getMinecraft().theWorld;
-            if (world == null) return;
 
             double px = RenderManager.instance.viewerPosX;
             double py = RenderManager.instance.viewerPosY;
