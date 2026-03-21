@@ -24,7 +24,7 @@ public class CommandSpoce extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/spoce test | start <x y z> <radius color renderLines...> | stop";
+        return "/spoce test | start [x y z] <radius color alpha lines...> [life] | stop";
     }
 
     @Override
@@ -32,7 +32,6 @@ public class CommandSpoce extends CommandBase {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args, "test", "start", "stop");
         }
-
         return null;
     }
 
@@ -55,6 +54,7 @@ public class CommandSpoce extends CommandBase {
                 SpoceEffect.clearAll();
                 sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "All render effects cleared"));
             }
+
             case "test" -> {
                 if (!(sender instanceof EntityPlayer player)) {
                     sender.addChatMessage(
@@ -69,9 +69,11 @@ public class CommandSpoce extends CommandBase {
                 testEffect.addLayer(8.0, 0x66FF66, true);
 
                 SpoceEffect.addEffect(testEffect);
+
                 sender.addChatMessage(
                     new ChatComponentText(EnumChatFormatting.AQUA + "Loaded default Spoce test parameters (3 layers)"));
             }
+
             case "start" -> {
                 try {
                     int idx = 1;
@@ -97,19 +99,32 @@ public class CommandSpoce extends CommandBase {
                         return;
                     }
 
-                    SpoceEffect effect = new SpoceEffect(x, y, z, 0.8f, 1.0f);
+                    int life = -1;
+                    int end = args.length;
 
-                    while (idx < args.length) {
+                    if (args.length > idx) {
+                        String last = args[args.length - 1];
+
+                        if (isNumeric(last)) {
+                            life = (int) Double.parseDouble(last);
+                            end--;
+                        }
+                    }
+
+                    SpoceEffect effect = new SpoceEffect(x, y, z, 0.8f, 1.0f);
+                    effect.setLife(life);
+
+                    while (idx < end) {
                         String rStr = args[idx++];
                         double radius = rStr.equals("*") ? DEF_RADIUS : Double.parseDouble(rStr);
 
-                        String cStr = (idx < args.length) ? args[idx++] : "*";
+                        String cStr = (idx < end) ? args[idx++] : "*";
                         int color = cStr.equals("*") ? DEF_COLOR : parseColor(cStr);
 
-                        String aStr = (idx < args.length) ? args[idx++] : "*";
+                        String aStr = (idx < end) ? args[idx++] : "*";
                         float alpha = aStr.equals("*") ? DEF_ALPHA : Float.parseFloat(aStr);
 
-                        String lStr = (idx < args.length) ? args[idx++] : "*";
+                        String lStr = (idx < end) ? args[idx++] : "*";
                         boolean lines = lStr.equals("*") ? DEF_LINES : Boolean.parseBoolean(lStr);
 
                         SpoceEffect.Layer layer = new SpoceEffect.Layer(radius, color, lines);
@@ -125,15 +140,21 @@ public class CommandSpoce extends CommandBase {
                         effect.addLayer(DEF_RADIUS, DEF_COLOR, DEF_LINES);
                     }
 
+                    if (life == 0) {
+                        effect.remove();
+                    }
+
                     SpoceEffect.addEffect(effect);
+
                     sender.addChatMessage(
                         new ChatComponentText(
                             EnumChatFormatting.AQUA + String.format(
-                                "Spoce instance started (Position: %.1f %.1f %.1f, Layers: %d)",
+                                "Spoce started (%.1f %.1f %.1f, Layers: %d, Life: %d)",
                                 x,
                                 y,
                                 z,
-                                effect.layers.size())));
+                                effect.layers.size(),
+                                life)));
 
                 } catch (Exception e) {
                     sender.addChatMessage(

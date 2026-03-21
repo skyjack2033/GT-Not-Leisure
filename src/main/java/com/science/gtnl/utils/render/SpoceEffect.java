@@ -15,6 +15,7 @@ public class SpoceEffect {
 
     private float lastAnimProgress = 0;
     private float animProgress = 0;
+    private int life = -1;
 
     public SpoceEffect(double x, double y, double z, float speed, float scale) {
         this.x = x;
@@ -32,11 +33,19 @@ public class SpoceEffect {
         removed = true;
     }
 
+    public SpoceEffect setLife(int life) {
+        this.life = life;
+        return this;
+    }
+
     public void update() {
         lastAnimProgress = animProgress;
         if (animProgress < 1.0f) {
             animProgress = Math.min(animProgress + 0.03f, 1.0f);
         }
+
+        if (life > 0) life--;
+        if (life == 0) removed = true;
     }
 
     public float getInterp(float partial) {
