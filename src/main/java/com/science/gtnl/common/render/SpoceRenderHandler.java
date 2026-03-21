@@ -1,8 +1,7 @@
 package com.science.gtnl.common.render;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Iterator;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -26,30 +25,26 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class SpoceRenderHandler {
 
-    public static final List<SpoceEffect> effects = new ArrayList<>();
-
     public static final float[] buildBuf = new float[1 << 16];
     public static int buildCount;
     public static final double[] angleScratch = new double[9];
 
-    public static void addEffect(SpoceEffect effect) {
-        synchronized (effects) {
-            effects.add(effect);
-        }
-    }
-
-    public static void clearAll() {
-        synchronized (effects) {
-            effects.clear();
-        }
-    }
-
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
-        synchronized (effects) {
-            for (SpoceEffect effect : effects) {
+        synchronized (SpoceEffect.effects) {
+            Iterator<SpoceEffect> it = SpoceEffect.effects.iterator();
+
+            while (it.hasNext()) {
+                SpoceEffect effect = it.next();
+
+                if (effect.removed) {
+                    it.remove();
+                    continue;
+                }
+
                 effect.update();
+
                 if (Minecraft.getMinecraft().theWorld != null
                     && Minecraft.getMinecraft().theWorld.getTotalWorldTime() % 10 == 0) {
                     for (SpoceEffect.Layer l : effect.layers) l.dirty = true;
@@ -60,8 +55,8 @@ public class SpoceRenderHandler {
 
     @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event) {
-        synchronized (effects) {
-            if (effects.isEmpty()) return;
+        synchronized (SpoceEffect.effects) {
+            if (SpoceEffect.effects.isEmpty()) return;
             World world = Minecraft.getMinecraft().theWorld;
             if (world == null) return;
 
@@ -69,7 +64,7 @@ public class SpoceRenderHandler {
             double py = RenderManager.instance.viewerPosY;
             double pz = RenderManager.instance.viewerPosZ;
 
-            for (SpoceEffect effect : effects) {
+            for (SpoceEffect effect : SpoceEffect.effects) {
                 renderEffect(world, effect, px, py, pz, event.partialTicks);
             }
         }

@@ -8,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
-import com.science.gtnl.common.render.SpoceRenderHandler;
 import com.science.gtnl.utils.render.SpoceEffect;
 
 public class CommandSpoce extends CommandBase {
@@ -53,7 +52,7 @@ public class CommandSpoce extends CommandBase {
 
         switch (subCommand) {
             case "stop" -> {
-                SpoceRenderHandler.clearAll();
+                SpoceEffect.clearAll();
                 sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "All render effects cleared"));
             }
             case "test" -> {
@@ -69,7 +68,7 @@ public class CommandSpoce extends CommandBase {
                 testEffect.addLayer(6.0, 0xFF9933, true);
                 testEffect.addLayer(8.0, 0x66FF66, true);
 
-                SpoceRenderHandler.addEffect(testEffect);
+                SpoceEffect.addEffect(testEffect);
                 sender.addChatMessage(
                     new ChatComponentText(EnumChatFormatting.AQUA + "Loaded default Spoce test parameters (3 layers)"));
             }
@@ -126,7 +125,7 @@ public class CommandSpoce extends CommandBase {
                         effect.addLayer(DEF_RADIUS, DEF_COLOR, DEF_LINES);
                     }
 
-                    SpoceRenderHandler.addEffect(effect);
+                    SpoceEffect.addEffect(effect);
                     sender.addChatMessage(
                         new ChatComponentText(
                             EnumChatFormatting.AQUA + String.format(

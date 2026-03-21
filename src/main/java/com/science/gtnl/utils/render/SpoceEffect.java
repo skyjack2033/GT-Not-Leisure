@@ -5,10 +5,13 @@ import java.util.List;
 
 public class SpoceEffect {
 
+    public static final List<SpoceEffect> effects = new ArrayList<>();
+
     public double x, y, z;
     public float rotSpeed;
     public float globalScale;
     public List<Layer> layers = new ArrayList<>();
+    public boolean removed = false;
 
     private float lastAnimProgress = 0;
     private float animProgress = 0;
@@ -25,6 +28,10 @@ public class SpoceEffect {
         layers.add(new Layer(radius, color, renderLines));
     }
 
+    public void remove() {
+        removed = true;
+    }
+
     public void update() {
         lastAnimProgress = animProgress;
         if (animProgress < 1.0f) {
@@ -35,6 +42,19 @@ public class SpoceEffect {
     public float getInterp(float partial) {
         float linearT = lastAnimProgress + (animProgress - lastAnimProgress) * partial;
         return 1.0f - (float) Math.pow(1.0 - linearT, 3);
+    }
+
+    public static SpoceEffect addEffect(SpoceEffect effect) {
+        synchronized (effects) {
+            effects.add(effect);
+        }
+        return effect;
+    }
+
+    public static void clearAll() {
+        synchronized (effects) {
+            effects.clear();
+        }
     }
 
     public static class Layer {
