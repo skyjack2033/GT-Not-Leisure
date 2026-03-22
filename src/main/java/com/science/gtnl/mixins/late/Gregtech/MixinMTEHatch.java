@@ -58,6 +58,11 @@ public abstract class MixinMTEHatch extends MTEBasicTank implements IMultiblockR
     }
 
     @Override
+    public void setCustomName(String name) {
+        gtnl$customName = name;
+    }
+
+    @Override
     public boolean hasCustomName() {
         return !gtnl$customName.isEmpty() || MainConfig.machine.enableHatchInterfaceTerminalEnhance;
     }
