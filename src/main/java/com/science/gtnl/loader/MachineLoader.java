@@ -1131,7 +1131,7 @@ public class MachineLoader {
 
         GTNLItemList.TreeDiagram.set(
             new TreeDiagram(
-                CIRCUIT_COMPONENT_ASSEMBLY_LINE.ID,
+                TREE_DIAGRAM.ID,
                 "TreeDiagram",
                 StatCollector.translateToLocal("NameTreeDiagram")));
         addItemTooltip(GTNLItemList.TreeDiagram.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
