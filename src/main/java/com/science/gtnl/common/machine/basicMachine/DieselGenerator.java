@@ -1,9 +1,5 @@
 package com.science.gtnl.common.machine.basicMachine;
 
-import static gregtech.api.enums.GTValues.*;
-import static gregtech.api.enums.Textures.BlockIcons.*;
-import static gregtech.api.objects.XSTR.*;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -16,13 +12,16 @@ import com.science.gtnl.utils.item.ItemUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.ParticleFX;
+import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.modularui.IAddGregtechLogo;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEBasicGenerator;
+import gregtech.api.objects.XSTR;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
@@ -115,10 +114,10 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
                 && !aBaseMetaTileEntity.getOpacityAtSide(ForgeDirection.UP)) {
 
                 final double x = aBaseMetaTileEntity.getOffsetX(ForgeDirection.UP, 1) + 2D / 16D
-                    + XSTR_INSTANCE.nextFloat() * 14D / 16D;
+                    + XSTR.XSTR_INSTANCE.nextFloat() * 14D / 16D;
                 final double y = aBaseMetaTileEntity.getOffsetY(ForgeDirection.UP, 1) + 1D / 32D;
                 final double z = aBaseMetaTileEntity.getOffsetZ(ForgeDirection.UP, 1) + 2D / 16D
-                    + XSTR_INSTANCE.nextFloat() * 14D / 16D;
+                    + XSTR.XSTR_INSTANCE.nextFloat() * 14D / 16D;
 
                 new ParticleEventBuilder().setMotion(0D, 0D, 0D)
                     .setPosition(x, y, z)
@@ -133,21 +132,21 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getFront(byte aColor) {
         return new ITexture[] { super.getFront(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_FRONT),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_FRONT),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_FRONT_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_FRONT_GLOW)
                     .glow()
                     .build()),
-            OVERLAYS_ENERGY_OUT[this.mTier + 1] };
+            Textures.BlockIcons.OVERLAYS_ENERGY_OUT[this.mTier + 1] };
     }
 
     @Override
     public ITexture[] getBack(byte aColor) {
         return new ITexture[] { super.getBack(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_BACK),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_BACK),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_BACK_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_BACK_GLOW)
                     .glow()
                     .build()) };
     }
@@ -156,9 +155,9 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getBottom(byte aColor) {
         return new ITexture[] { super.getBottom(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_BOTTOM),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_BOTTOM),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_BOTTOM_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_BOTTOM_GLOW)
                     .glow()
                     .build()) };
     }
@@ -167,9 +166,9 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getTop(byte aColor) {
         return new ITexture[] { super.getTop(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_TOP),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_TOP),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_TOP_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_TOP_GLOW)
                     .glow()
                     .build()) };
     }
@@ -178,9 +177,9 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getSides(byte aColor) {
         return new ITexture[] { super.getSides(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_SIDE),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_SIDE),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_SIDE_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_SIDE_GLOW)
                     .glow()
                     .build()) };
     }
@@ -189,21 +188,21 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getFrontActive(byte aColor) {
         return new ITexture[] { super.getFrontActive(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_FRONT_ACTIVE),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_FRONT_ACTIVE),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_FRONT_ACTIVE_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_FRONT_ACTIVE_GLOW)
                     .glow()
                     .build()),
-            OVERLAYS_ENERGY_OUT[this.mTier + 1] };
+            Textures.BlockIcons.OVERLAYS_ENERGY_OUT[this.mTier + 1] };
     }
 
     @Override
     public ITexture[] getBackActive(byte aColor) {
         return new ITexture[] { super.getBackActive(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_BACK_ACTIVE),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_BACK_ACTIVE),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_BACK_ACTIVE_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_BACK_ACTIVE_GLOW)
                     .glow()
                     .build()) };
     }
@@ -212,9 +211,9 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getBottomActive(byte aColor) {
         return new ITexture[] { super.getBottomActive(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_BOTTOM_ACTIVE),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_BOTTOM_ACTIVE),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_BOTTOM_ACTIVE_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_BOTTOM_ACTIVE_GLOW)
                     .glow()
                     .build()) };
     }
@@ -223,9 +222,9 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getTopActive(byte aColor) {
         return new ITexture[] { super.getTopActive(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_TOP_ACTIVE),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_TOP_ACTIVE),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_TOP_ACTIVE_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_TOP_ACTIVE_GLOW)
                     .glow()
                     .build()) };
     }
@@ -234,9 +233,9 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
     public ITexture[] getSidesActive(byte aColor) {
         return new ITexture[] { super.getSidesActive(aColor)[0],
             TextureFactory.of(
-                TextureFactory.of(DIESEL_GENERATOR_SIDE_ACTIVE),
+                TextureFactory.of(Textures.BlockIcons.DIESEL_GENERATOR_SIDE_ACTIVE),
                 TextureFactory.builder()
-                    .addIcon(DIESEL_GENERATOR_SIDE_ACTIVE_GLOW)
+                    .addIcon(Textures.BlockIcons.DIESEL_GENERATOR_SIDE_ACTIVE_GLOW)
                     .glow()
                     .build()) };
     }
@@ -253,6 +252,6 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
 
     @Override
     public long maxEUStore() {
-        return Math.max(getEUVar(), V[mTier] * 128L + getMinimumStoredEU());
+        return Math.max(getEUVar(), GTValues.V[mTier] * 128L + getMinimumStoredEU());
     }
 }

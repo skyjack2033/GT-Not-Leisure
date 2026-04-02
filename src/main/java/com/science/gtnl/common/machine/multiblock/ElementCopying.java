@@ -1,14 +1,20 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
-import static com.science.gtnl.utils.Utils.*;
-import static gregtech.api.enums.HatchElement.*;
+import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gregtech.api.util.GTUtility.*;
-import static gregtech.common.misc.WirelessNetworkManager.*;
-import static gtnhlanth.common.register.LanthItemList.ELECTRODE_CASING;
+import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.io.IOException;
@@ -79,6 +85,7 @@ import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
+import gtnhlanth.common.block.BlockCasing;
 
 public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopying> implements ISurvivalConstructable {
 
@@ -184,7 +191,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         resetParallelTier();
         maxParallelStored = getTrueParallel();
         costingEU = BigInteger.ZERO;
-        costingEUText = ZERO_STRING;
+        costingEUText = Utils.ZERO_STRING;
 
         long maxInputEU = wirelessMode ? Utils.toLongSafe(WirelessNetworkManager.getUserEU(ownerUUID))
             : getMaxInputEu();
@@ -341,7 +348,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
     public ArrayList<FluidStack> getStoredFluidsForColor(Optional<Byte> color) {
         ArrayList<FluidStack> rList = new ArrayList<>();
         Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
-        for (MTEHatchInput tHatch : validMTEList(mInputHatches)) {
+        for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             byte hatchColor = tHatch.getColor();
             if (color.isPresent() && hatchColor != -1 && hatchColor != color.get()) continue;
             setHatchRecipeMap(tHatch);
@@ -406,7 +413,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         return StructureDefinition.<ElementCopying>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
             .addElement('A', ofBlock(BlockLoader.metaCasing, 18))
-            .addElement('B', ofBlockAnyMeta(ELECTRODE_CASING))
+            .addElement('B', ofBlockAnyMeta(new BlockCasing("electrode")))
             .addElement(
                 'C',
                 buildHatchAdder(ElementCopying.class).casingIndex(getCasingTextureID())

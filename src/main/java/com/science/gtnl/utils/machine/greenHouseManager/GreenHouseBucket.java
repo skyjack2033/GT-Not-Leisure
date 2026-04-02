@@ -1,9 +1,5 @@
 package com.science.gtnl.utils.machine.greenHouseManager;
 
-import static com.science.gtnl.utils.item.ItemUtils.readItemStackFromNBT;
-import static com.science.gtnl.utils.item.ItemUtils.writeItemStackToNBT;
-import static gregtech.api.enums.Mods.*;
-
 import java.util.LinkedList;
 
 import net.minecraft.item.ItemStack;
@@ -12,6 +8,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 
 import com.science.gtnl.api.IGreenHouse;
+import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.machine.greenHouseManager.buckets.GreenHouseFlowerBucket;
 import com.science.gtnl.utils.machine.greenHouseManager.buckets.GreenHouseIC2Bucket;
 import com.science.gtnl.utils.machine.greenHouseManager.buckets.GreenHouseInfusedSeedBucket;
@@ -19,6 +16,7 @@ import com.science.gtnl.utils.machine.greenHouseManager.buckets.GreenHouseRainbo
 import com.science.gtnl.utils.machine.greenHouseManager.buckets.GreenHouseSeedBucket;
 import com.science.gtnl.utils.machine.greenHouseManager.buckets.GreenHouseStemBucket;
 
+import gregtech.api.enums.Mods;
 import gregtech.api.util.GTUtility;
 import lombok.Getter;
 
@@ -39,7 +37,7 @@ public abstract class GreenHouseBucket {
     }
 
     public GreenHouseBucket(NBTTagCompound nbt) {
-        this.seed = readItemStackFromNBT(nbt.getCompoundTag("seed"));
+        this.seed = ItemUtils.readItemStackFromNBT(nbt.getCompoundTag("seed"));
         this.seedCount = nbt.getInteger("count");
 
         // parse support items
@@ -48,7 +46,7 @@ public abstract class GreenHouseBucket {
             if (supportItemsNBTList.tagCount() > 0) {
                 this.supportItems = new ItemStack[supportItemsNBTList.tagCount()];
                 for (int i = 0; i < supportItemsNBTList.tagCount(); i++) {
-                    this.supportItems[i] = readItemStackFromNBT(supportItemsNBTList.getCompoundTagAt(i));
+                    this.supportItems[i] = ItemUtils.readItemStackFromNBT(supportItemsNBTList.getCompoundTagAt(i));
                 }
             } else {
                 supportItems = null;
@@ -62,12 +60,12 @@ public abstract class GreenHouseBucket {
         // IC2 buckets
         GreenHouseModes.IC2.addLowPriorityFactory(GreenHouseIC2Bucket.factory);
 
-        if (ThaumicTinkerer.isModLoaded()) {
+        if (Mods.ThaumicTinkerer.isModLoaded()) {
             GreenHouseModes.Normal.addLowPriorityFactory(GreenHouseInfusedSeedBucket.factory);
         }
 
         // Regular Mode Buckets
-        if (ThaumicBases.isModLoaded()) {
+        if (Mods.ThaumicBases.isModLoaded()) {
             GreenHouseModes.Normal.addLowPriorityFactory(GreenHouseRainbowCactusBucket.factory);
         }
         GreenHouseModes.Normal.addLowPriorityFactory(GreenHouseFlowerBucket.factory);
@@ -83,12 +81,12 @@ public abstract class GreenHouseBucket {
     public NBTTagCompound save() {
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("type", this.getNBTIdentifier());
-        nbt.setTag("seed", writeItemStackToNBT(this.seed));
+        nbt.setTag("seed", ItemUtils.writeItemStackToNBT(this.seed));
         nbt.setInteger("count", this.seedCount);
         if (this.supportItems != null && this.supportItems.length > 0) {
             NBTTagList supportItemNBT = new NBTTagList();
             for (ItemStack supportItem : this.supportItems) {
-                supportItemNBT.appendTag(writeItemStackToNBT(supportItem));
+                supportItemNBT.appendTag(ItemUtils.writeItemStackToNBT(supportItem));
             }
             nbt.setTag("supportItems", supportItemNBT);
         }

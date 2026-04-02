@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gtnl;
 
-import static gregtech.api.enums.Mods.Forestry;
 import static gregtech.api.util.GTRecipeBuilder.SECONDS;
 import static gregtech.api.util.GTRecipeBuilder.TICKS;
 import static gregtech.api.util.GTRecipeConstants.COIL_HEAT;
@@ -14,6 +13,7 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsKevlar;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -310,7 +310,7 @@ public class ShallowChemicalCouplingRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_UEV)
             .addTo(SCCR);
 
-        if (Forestry.isModLoaded()) loadCombsRecipes();
+        if (Mods.Forestry.isModLoaded()) loadCombsRecipes();
     }
 
     public void loadCombsRecipes() {

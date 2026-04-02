@@ -1,16 +1,26 @@
 package com.science.gtnl.common.machine.multiblock.wireless;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.*;
+import static gregtech.api.GregTechAPI.sBlockCasings1;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings8;
 import static gregtech.api.GregTechAPI.sBlockCasings9;
-import static gregtech.api.enums.GTValues.V;
-import static gregtech.api.enums.HatchElement.*;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
-import static gtPlusPlus.core.block.ModBlocks.*;
+import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
+import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
+import static gtPlusPlus.core.block.ModBlocks.blockSpecialMultiCasings;
 import static kubatech.loaders.BlockLoader.defcCasingBlock;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
@@ -48,6 +58,7 @@ import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import bartworks.common.loaders.ItemRegistry;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsUEVplus;
@@ -313,7 +324,7 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
             @NotNull
             @Override
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                if (wirelessMode && recipe.mEUt > V[Math.min(mParallelTier + 1, 14)] * 4
+                if (wirelessMode && recipe.mEUt > GTValues.V[Math.min(mParallelTier + 1, 14)] * 4
                     && machineMode != MACHINEMODE_DTPF) {
                     return CheckRecipeResultRegistry.insufficientPower(recipe.mEUt);
                 }
@@ -357,7 +368,7 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     public void setProcessingLogicPower(ProcessingLogic logic) {
         if (wirelessMode) {
             logic.setAvailableVoltage(
-                machineMode == MACHINEMODE_DTPF ? Integer.MAX_VALUE * 8L : V[Math.min(mParallelTier + 1, 14)]);
+                machineMode == MACHINEMODE_DTPF ? Integer.MAX_VALUE * 8L : GTValues.V[Math.min(mParallelTier + 1, 14)]);
             logic.setAvailableAmperage(8L << (2L * mParallelTier) - 2L);
             logic.setAmperageOC(true);
             logic.enablePerfectOverclock();

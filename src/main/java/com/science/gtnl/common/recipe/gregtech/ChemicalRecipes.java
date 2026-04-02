@@ -1,7 +1,6 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import static gregtech.api.enums.Mods.*;
-import static gregtech.api.util.GTRecipeBuilder.*;
+import static gregtech.api.util.GTRecipeBuilder.SECONDS;
 
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -16,6 +15,7 @@ import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsKevlar;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.IRecipeMap;
@@ -517,7 +517,7 @@ public class ChemicalRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.plate, Materials.Plastic, 4))
-            .itemOutputs(GTModHandler.getModItem(IndustrialCraft2.ID, "blockITNT", 32))
+            .itemOutputs(GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockITNT", 32))
             .fluidInputs(GTNLMaterials.SmallBaka.getFluidOrGas(2000))
             .duration(100)
             .eut(TierEU.RECIPE_HV)

@@ -1,12 +1,21 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.enums.Mods.Botania;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings4;
+import static gregtech.api.GregTechAPI.sBlockCasings8;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +57,7 @@ import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
@@ -86,7 +96,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     public static final int RUNE_MODE = 3;
     public boolean enableInfinityMana = false;
     public static final ItemStack asgardandelion = ItemUtils
-        .getItemStack(Botania.ID, "specialFlower", 1, 0, "{type:\"asgardandelion\"}", null);
+        .getItemStack(Mods.Botania.ID, "specialFlower", 1, 0, "{type:\"asgardandelion\"}", null);
 
     public ArrayList<CustomFluidHatch> mFluidManaInputHatch = new ArrayList<>();
 
@@ -304,7 +314,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     @Override
     public boolean depleteInput(FluidStack aLiquid, boolean simulate) {
         if (aLiquid == null) return false;
-        for (MTEHatchInput tHatch : validMTEList(mInputHatches)) {
+        for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             setHatchRecipeMap(tHatch);
             FluidStack tLiquid = tHatch.drain(ForgeDirection.UNKNOWN, aLiquid, false);
             if (tLiquid != null && tLiquid.amount >= aLiquid.amount) {
@@ -315,7 +325,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
                 return tLiquid != null && tLiquid.amount >= aLiquid.amount;
             }
         }
-        for (CustomFluidHatch tHatch : validMTEList(mFluidManaInputHatch)) {
+        for (CustomFluidHatch tHatch : GTUtility.validMTEList(mFluidManaInputHatch)) {
             FluidStack tLiquid = tHatch.drain(ForgeDirection.UNKNOWN, aLiquid, false);
             if (tLiquid != null && tLiquid.amount >= aLiquid.amount) {
                 if (simulate) {
@@ -472,7 +482,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     @Override
     public void setupParameters() {
         super.setupParameters();
-        if (GTUtility.areStacksEqual(getControllerSlot(), GTModHandler.getModItem(Botania.ID, "pool", 1, 1), true)
+        if (GTUtility.areStacksEqual(getControllerSlot(), GTModHandler.getModItem(Mods.Botania.ID, "pool", 1, 1), true)
             || GTUtility.areStacksEqual(getControllerSlot(), asgardandelion, true)) {
             enableInfinityMana = true;
         }
@@ -492,7 +502,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
 
     @Override
     public void updateSlots() {
-        for (CustomFluidHatch tHatch : validMTEList(mFluidManaInputHatch)) tHatch.updateSlots();
+        for (CustomFluidHatch tHatch : GTUtility.validMTEList(mFluidManaInputHatch)) tHatch.updateSlots();
         super.updateSlots();
     }
 

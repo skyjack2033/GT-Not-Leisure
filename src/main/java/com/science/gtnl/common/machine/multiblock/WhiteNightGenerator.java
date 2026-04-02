@@ -1,11 +1,12 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.enums.Mods.EternalSingularity;
-import static gregtech.api.enums.Mods.UniversalSingularities;
+import static gregtech.api.GregTechAPI.sBlockCasings9;
+import static gregtech.api.enums.HatchElement.Dynamo;
+import static gregtech.api.enums.HatchElement.Maintenance;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
@@ -36,6 +37,7 @@ import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.MaterialsKevlar;
 import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -156,12 +158,12 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
     public int getMultiTier() {
         if (GTUtility.areStacksEqual(
             getControllerSlot(),
-            GTModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 1, 31))) {
+            GTModHandler.getModItem(Mods.UniversalSingularities.ID, "universal.general.singularity", 1, 31))) {
             return 2;
         }
         if (GTUtility.areStacksEqual(
             getControllerSlot(),
-            GTModHandler.getModItem(EternalSingularity.ID, "eternal_singularity", 1, 0))) {
+            GTModHandler.getModItem(Mods.EternalSingularity.ID, "eternal_singularity", 1, 0))) {
             return 1;
         }
         return 0;

@@ -1,13 +1,24 @@
 package com.science.gtnl.common.machine.multiblock.wireless;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
-import static com.science.gtnl.ScienceNotLeisure.*;
-import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.GTValues.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.util.GTStructureUtility.*;
-import static tectech.thing.casing.TTCasingsContainer.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
+import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
+import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings9;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
+import static gregtech.api.util.GTStructureUtility.activeCoils;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.ofCoil;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
+import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +46,7 @@ import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -46,6 +58,7 @@ import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.metatileentity.implementations.MTEHatchInput;
 import gregtech.api.objects.GTDualInputPattern;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMapBuilder;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
@@ -223,8 +236,14 @@ public class PhaseChangeCube extends WirelessEnergyMultiMachineBase<PhaseChangeC
                 GTDualInputPattern inputs = inv.getPatternInputs();
                 setInputItems(inputs.inputItems);
                 setInputFluids(inputs.inputFluid);
-                Set<GTRecipe> recipes = findRecipeMatches(RecipeMaps.fluidSolidifierRecipes)
-                    .collect(Collectors.toSet());
+                Set<GTRecipe> recipes = findRecipeMatches(
+                    RecipeMapBuilder.of("gt.recipe.fluidsolidifier")
+                        .maxIO(1, 1, 1, 0)
+                        .minInputs(1, 1)
+                        .slotOverlays(
+                            (index, isFluid, isOutput,
+                                isSpecial) -> !isFluid && !isOutput ? GTUITextures.OVERLAY_SLOT_MOLD : null)
+                        .build()).collect(Collectors.toSet());
                 if (!recipes.isEmpty()) {
                     dualInvWithPatternToRecipeCache.put(inv, recipes);
                     activeDualInv = inv;
@@ -236,7 +255,7 @@ public class PhaseChangeCube extends WirelessEnergyMultiMachineBase<PhaseChangeC
             @NotNull
             @Override
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                if (wirelessMode && recipe.mEUt > V[Math.min(mParallelTier + 1, 14)] * 4) {
+                if (wirelessMode && recipe.mEUt > GTValues.V[Math.min(mParallelTier + 1, 14)] * 4) {
                     return CheckRecipeResultRegistry.insufficientPower(recipe.mEUt);
                 }
                 return super.validateRecipe(recipe);
@@ -313,15 +332,28 @@ public class PhaseChangeCube extends WirelessEnergyMultiMachineBase<PhaseChangeC
     public RecipeMap<?> getRecipeMap() {
         if (machineMode == MACHINEMODE_EXTRA) return RecipeMaps.extractorRecipes;
         else if (machineMode == MACHINEMODE_FLUID) return RecipeMaps.fluidExtractionRecipes;
-        else if (machineMode == MACHINEMODE_SOLID) return RecipeMaps.fluidSolidifierRecipes;
+        else if (machineMode == MACHINEMODE_SOLID) return RecipeMapBuilder.of("gt.recipe.fluidsolidifier")
+            .maxIO(1, 1, 1, 0)
+            .minInputs(1, 1)
+            .slotOverlays(
+                (index, isFluid, isOutput, isSpecial) -> !isFluid && !isOutput ? GTUITextures.OVERLAY_SLOT_MOLD : null)
+            .build();
         return RecipeMaps.extractorRecipes;
     }
 
     @Nonnull
     @Override
     public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
-        return Arrays
-            .asList(RecipeMaps.extractorRecipes, RecipeMaps.fluidExtractionRecipes, RecipeMaps.fluidSolidifierRecipes);
+        return Arrays.asList(
+            RecipeMaps.extractorRecipes,
+            RecipeMaps.fluidExtractionRecipes,
+            RecipeMapBuilder.of("gt.recipe.fluidsolidifier")
+                .maxIO(1, 1, 1, 0)
+                .minInputs(1, 1)
+                .slotOverlays(
+                    (index, isFluid, isOutput, isSpecial) -> !isFluid && !isOutput ? GTUITextures.OVERLAY_SLOT_MOLD
+                        : null)
+                .build());
     }
 
     @Override

@@ -1,13 +1,26 @@
 package com.science.gtnl.common.machine.multiblock.wireless;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlocksTiered;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.GTValues.V;
-import static gregtech.api.enums.GTValues.VN;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.util.GTStructureUtility.*;
+import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings2;
+import static gregtech.api.GregTechAPI.sBlockCasings6;
+import static gregtech.api.GregTechAPI.sBlockCasings8;
+import static gregtech.api.GregTechAPI.sBlockCasings9;
+import static gregtech.api.GregTechAPI.sBlockCasingsSE;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.chainAllGlasses;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,6 +59,7 @@ import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import goodgenerator.items.GGMaterial;
 import goodgenerator.loader.Loaders;
 import goodgenerator.util.ItemRefer;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.MaterialsUEVplus;
@@ -289,7 +303,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
             @NotNull
             @Override
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                if (wirelessMode && recipe.mEUt > V[Math.min(mParallelTier + 1, 14)] * 4) {
+                if (wirelessMode && recipe.mEUt > GTValues.V[Math.min(mParallelTier + 1, 14)] * 4) {
                     return CheckRecipeResultRegistry.insufficientPower(recipe.mEUt);
                 }
                 if (machineMode == MACHINEMODE_COMPO && !upgradeConsumed) {
@@ -316,14 +330,14 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
         if (mCasingTier < 0) return 0;
         if (wirelessMode) {
             if (mCasingTier >= 10) {
-                return V[Math.min(mParallelTier + 1, 14)];
+                return GTValues.V[Math.min(mParallelTier + 1, 14)];
             } else {
-                return V[Math.min(Math.min(mParallelTier + 1, mCasingTier + 4), 14)];
+                return GTValues.V[Math.min(Math.min(mParallelTier + 1, mCasingTier + 4), 14)];
             }
         } else if (mCasingTier >= 10) {
-            return V[mEnergyHatchTier];
+            return GTValues.V[mEnergyHatchTier];
         } else {
-            return V[Math.min(mCasingTier + 4, mEnergyHatchTier)];
+            return GTValues.V[Math.min(mCasingTier + 4, mEnergyHatchTier)];
         }
     }
 
@@ -419,7 +433,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
         String[] ret = new String[origin.length + 1];
         System.arraycopy(origin, 0, ret, 0, origin.length);
         ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? VN[mCasingTier + 1] : "None!");
+            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
         return ret;
     }
 

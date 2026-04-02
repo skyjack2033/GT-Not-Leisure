@@ -1,8 +1,5 @@
 package com.science.gtnl.common.recipe.script;
 
-import static gregtech.api.enums.Mods.*;
-import static gregtech.api.enums.Mods.GregTech;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +10,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import com.dreammaster.scripts.IScriptLoader;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import gregtech.api.enums.Mods;
 import tconstruct.library.TConstructRegistry;
 
 public class ScriptTinkersConstruct implements IScriptLoader {
@@ -24,7 +22,7 @@ public class ScriptTinkersConstruct implements IScriptLoader {
 
     @Override
     public List<String> getDependencies() {
-        return Arrays.asList(TinkerConstruct.ID, GregTech.ID);
+        return Arrays.asList(Mods.TinkerConstruct.ID, Mods.GregTech.ID);
     }
 
     @Override

@@ -1,14 +1,30 @@
 package com.science.gtnl.common.machine.multiblock.wireless;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
+import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static goodgenerator.loader.Loaders.FRF_Coil_1;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.util.GTStructureUtility.*;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings2;
+import static gregtech.api.GregTechAPI.sBlockCasings4;
+import static gregtech.api.GregTechAPI.sBlockCasings9;
+import static gregtech.api.GregTechAPI.sBlockCasingsDyson;
+import static gregtech.api.GregTechAPI.sBlockMetal5;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
+import static gregtech.api.util.GTStructureUtility.activeCoils;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.ofCoil;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
-import static gtnhlanth.common.register.LanthItemList.ELECTRODE_CASING;
 import static kekztech.common.Blocks.lscLapotronicEnergyUnit;
 
 import java.util.Arrays;
@@ -42,6 +58,7 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
+import gtnhlanth.common.block.BlockCasing;
 
 public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBase<MagneticEnergyReactionFurnace> {
 
@@ -126,7 +143,7 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
             .addElement('A', ofBlock(FRF_Coil_1, 0))
             .addElement('B', ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('C', ofBlockAnyMeta(ELECTRODE_CASING))
+            .addElement('C', ofBlockAnyMeta(new BlockCasing("electrode")))
             .addElement('D', ofBlock(sBlockCasings10, 0))
             .addElement('E', ofBlock(sBlockCasings10, 6))
             .addElement('F', ofBlock(sBlockCasings2, 6))

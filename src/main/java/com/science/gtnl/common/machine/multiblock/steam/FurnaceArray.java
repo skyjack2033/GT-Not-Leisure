@@ -1,9 +1,11 @@
 package com.science.gtnl.common.machine.multiblock.steam;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.util.GTStructureUtility.*;
-import static gregtech.api.util.GTUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -246,7 +248,7 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
         }
 
         boolean hasMEOutputBus = false;
-        for (final MTEHatch bus : validMTEList(mOutputBusses)) {
+        for (final MTEHatch bus : GTUtility.validMTEList(mOutputBusses)) {
             if (bus instanceof MTEHatchOutputBusME meBus) {
                 if (!meBus.isLocked() && meBus.canAcceptItem()) {
                     hasMEOutputBus = true;

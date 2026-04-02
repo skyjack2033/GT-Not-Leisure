@@ -1,14 +1,32 @@
 package com.science.gtnl.common.machine.multiblock.module.nanitesIntegratedProcessingCenter;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.GTValues.V;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.util.GTStructureUtility.*;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings2;
+import static gregtech.api.GregTechAPI.sBlockCasings3;
+import static gregtech.api.GregTechAPI.sBlockCasings4;
+import static gregtech.api.GregTechAPI.sBlockCasings8;
+import static gregtech.api.GregTechAPI.sBlockCasingsDyson;
+import static gregtech.api.GregTechAPI.sBlockMetal5;
+import static gregtech.api.GregTechAPI.sBlockReinforced;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
+import static gregtech.api.util.GTStructureUtility.activeCoils;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.chainAllGlasses;
+import static gregtech.api.util.GTStructureUtility.ofCoil;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
-import static gtnhlanth.common.register.LanthItemList.ELECTRODE_CASING;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.ArrayList;
@@ -35,6 +53,7 @@ import com.science.gtnl.utils.recipes.data.NanitesIntegratedProcessingRecipesDat
 import com.science.gtnl.utils.recipes.metadata.NanitesIntegratedProcessingMetadata;
 
 import bartworks.util.BWUtil;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -54,6 +73,7 @@ import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
+import gtnhlanth.common.block.BlockCasing;
 import gtnhlanth.common.register.LanthItemList;
 
 public class NanitesIntegratedProcessingCenter
@@ -192,7 +212,7 @@ public class NanitesIntegratedProcessingCenter
                     .dot(1)
                     .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(sBlockCasings8, 10))))
             .addElement('B', ofBlock(sBlockCasingsTT, 0))
-            .addElement('C', ofBlockAnyMeta(ELECTRODE_CASING))
+            .addElement('C', ofBlockAnyMeta(new BlockCasing("electrode")))
             .addElement('D', ofBlock(sBlockCasings3, 10))
             .addElement('E', ofBlock(sBlockMetal5, 1))
             .addElement('F', ofBlock(BlockLoader.metaCasing, 5))
@@ -294,7 +314,7 @@ public class NanitesIntegratedProcessingCenter
 
             @Override
             public @Nonnull CheckRecipeResult validateRecipe(@Nonnull GTRecipe recipe) {
-                if (wirelessMode && recipe.mEUt > V[Math.min(mParallelTier + 1, 14)] * 4) {
+                if (wirelessMode && recipe.mEUt > GTValues.V[Math.min(mParallelTier + 1, 14)] * 4) {
                     return CheckRecipeResultRegistry.insufficientPower(recipe.mEUt);
                 }
 

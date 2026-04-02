@@ -2,7 +2,7 @@ package com.science.gtnl.common.machine.hatch;
 
 import static com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager.addSteamToGlobalSteamMap;
 import static com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager.getUserSteam;
-import static gregtech.common.misc.WirelessNetworkManager.*;
+import static gregtech.common.misc.WirelessNetworkManager.number_of_energy_additions;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

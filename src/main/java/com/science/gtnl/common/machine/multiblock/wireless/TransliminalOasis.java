@@ -1,16 +1,28 @@
 package com.science.gtnl.common.machine.multiblock.wireless;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
-import static com.science.gtnl.ScienceNotLeisure.*;
-import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
-import static com.science.gtnl.utils.Utils.*;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.enums.Mods.*;
-import static gregtech.api.util.GTStructureUtility.*;
-import static gregtech.api.util.GTUtility.areStacksEqual;
-import static gregtech.common.misc.WirelessNetworkManager.*;
-import static gtnhlanth.common.register.LanthItemList.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings3;
+import static gregtech.api.GregTechAPI.sBlockCasings4;
+import static gregtech.api.GregTechAPI.sBlockCasings8;
+import static gregtech.api.GregTechAPI.sBlockCasings9;
+import static gregtech.api.GregTechAPI.sBlockCasingsDyson;
+import static gregtech.api.GregTechAPI.sBlockGlass1;
+import static gregtech.api.GregTechAPI.sBlockTintedGlass;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.chainAllGlasses;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
+import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -27,13 +39,16 @@ import net.minecraftforge.common.util.ForgeDirection;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
+import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.Utils;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -45,6 +60,7 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
+import gtnhlanth.common.block.BlockCasing;
 import tectech.thing.casing.TTCasingsContainer;
 
 public class TransliminalOasis extends WirelessEnergyMultiMachineBase<TransliminalOasis> {
@@ -53,7 +69,8 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
     private static final int VERTICAL_OFF_SET = 22;
     private static final int DEPTH_OFF_SET = 2;
     private static final String STRUCTURE_PIECE_MAIN = "main";
-    private static final String TO_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/transliminal_oasis";
+    private static final String TO_STRUCTURE_FILE_PATH = ScienceNotLeisure.RESOURCE_ROOT_ID + ":"
+        + "multiblock/transliminal_oasis";
     private static final String[][] shape = StructureUtils.readStructureFromFile(TO_STRUCTURE_FILE_PATH);
 
     public TransliminalOasis(String aName) {
@@ -131,7 +148,13 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
             .addElement(
                 'F',
                 buildHatchAdder(TransliminalOasis.class)
-                    .atLeast(Maintenance, InputBus, OutputBus, InputHatch, Energy.or(ExoticEnergy), ParallelCon)
+                    .atLeast(
+                        Maintenance,
+                        InputBus,
+                        OutputBus,
+                        InputHatch,
+                        Energy.or(ExoticEnergy),
+                        CustomHatchElement.ParallelCon)
                     .casingIndex(getCasingTextureID())
                     .dot(1)
                     .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(sBlockCasings10, 3))))
@@ -143,10 +166,10 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
             .addElement('L', ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))
             .addElement(
                 'M',
-                RandomThings.isModLoaded()
+                Mods.RandomThings.isModLoaded()
                     ? ofChain(
-                        ofBlockAnyMeta(GameRegistry.findBlock(RandomThings.ID, "fertilizedDirt")),
-                        ofBlockAnyMeta(GameRegistry.findBlock(RandomThings.ID, "fertilizedDirt_tilled")))
+                        ofBlockAnyMeta(GameRegistry.findBlock(Mods.RandomThings.ID, "fertilizedDirt")),
+                        ofBlockAnyMeta(GameRegistry.findBlock(Mods.RandomThings.ID, "fertilizedDirt_tilled")))
                     : ofBlockAnyMeta(Blocks.dirt))
             .addElement('N', ofBlock(sBlockCasingsDyson, 9))
             .addElement('O', ofBlock(sBlockTintedGlass, 0))
@@ -155,7 +178,7 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
             .addElement('R', chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
             .addElement('S', ofBlock(sBlockGlass1, 0))
             .addElement('T', ofFrame(Materials.Polytetrafluoroethylene))
-            .addElement('U', ofBlockAnyMeta(ELECTRODE_CASING))
+            .addElement('U', ofBlockAnyMeta(new BlockCasing("electrode")))
             .build();
     }
 
@@ -215,7 +238,7 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
         maxParallelStored = -1;
         resetParallelTier();
         costingEU = BigInteger.ZERO;
-        costingEUText = ZERO_STRING;
+        costingEUText = Utils.ZERO_STRING;
         totalOverclockedDuration = 0;
         cycleNow = 0;
 
@@ -228,7 +251,7 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
             if (stack == null) continue;
 
             for (ItemStack existing : merged) {
-                if (areStacksEqual(existing, stack)) {
+                if (GTUtility.areStacksEqual(existing, stack)) {
                     continue outer;
                 }
             }
@@ -277,13 +300,13 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
         BigInteger costEU = BigInteger.valueOf(processingLogic.getCalculatedEut())
             .multiply(BigInteger.valueOf(processingLogic.getDuration()));
 
-        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(NEGATIVE_ONE))) {
+        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(Utils.NEGATIVE_ONE))) {
             return CheckRecipeResultRegistry.insufficientPower(costEU.longValue());
         }
 
         costingEU = costingEU.add(costEU);
-        mOutputItems = mergeArray(mOutputItems, processingLogic.getOutputItems());
-        mOutputFluids = mergeArray(mOutputFluids, processingLogic.getOutputFluids());
+        mOutputItems = Utils.mergeArray(mOutputItems, processingLogic.getOutputItems());
+        mOutputFluids = Utils.mergeArray(mOutputFluids, processingLogic.getOutputFluids());
         totalOverclockedDuration += processingLogic.getDuration();
 
         endRecipeProcessing();

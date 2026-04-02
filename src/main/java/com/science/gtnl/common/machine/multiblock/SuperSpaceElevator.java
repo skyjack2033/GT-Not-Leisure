@@ -1,15 +1,25 @@
 package com.science.gtnl.common.machine.multiblock;
 
 import static bartworks.common.loaders.ItemRegistry.bw_realglas;
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.utils.Utils.*;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.HatchElement.*;
+import static gregtech.api.GregTechAPI.sBlockCasings1;
+import static gregtech.api.GregTechAPI.sBlockCasingsDyson;
+import static gregtech.api.GregTechAPI.sBlockCasingsSE;
+import static gregtech.api.enums.HatchElement.Dynamo;
+import static gregtech.api.enums.HatchElement.Energy;
 import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.metatileentity.BaseTileEntity.TOOLTIP_DELAY;
-import static gregtech.api.util.GTStructureUtility.*;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 import static gregtech.common.misc.WirelessNetworkManager.getUserEU;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
@@ -54,6 +64,7 @@ import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import gregtech.api.GregTechAPI;
@@ -120,7 +131,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
     public int mCountCasing = 0;
     public boolean wirelessMode = false;
     public UUID ownerUUID;
-    public String costingEUText = ZERO_STRING;
+    public String costingEUText = Utils.ZERO_STRING;
     public ArrayList<TileEntityModuleBase> mProjectModuleHatches = new ArrayList<>();
     public TileEntitySpaceElevatorCable elevatorCable;
     public boolean isLoadedChunk;

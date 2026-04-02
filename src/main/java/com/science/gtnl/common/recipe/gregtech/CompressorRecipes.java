@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import static gregtech.api.enums.Mods.*;
 import static gregtech.api.util.GTRecipeBuilder.SECONDS;
 
 import net.minecraft.init.Blocks;
@@ -13,6 +12,7 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -63,7 +63,7 @@ public class CompressorRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(new ItemStack(Blocks.cobblestone, 64))
-            .itemOutputs(GTModHandler.getModItem(TwilightForest.ID, "tile.GiantCobble", 1))
+            .itemOutputs(GTModHandler.getModItem(Mods.TwilightForest.ID, "tile.GiantCobble", 1))
             .duration(300)
             .eut(TierEU.RECIPE_HV)
             .addTo(CR);

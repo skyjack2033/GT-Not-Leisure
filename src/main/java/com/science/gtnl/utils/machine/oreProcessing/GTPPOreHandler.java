@@ -1,6 +1,8 @@
 package com.science.gtnl.utils.machine.oreProcessing;
 
-import static gtPlusPlus.core.material.MaterialMisc.*;
+import static gtPlusPlus.core.material.MaterialMisc.RARE_EARTH_HIGH;
+import static gtPlusPlus.core.material.MaterialMisc.RARE_EARTH_LOW;
+import static gtPlusPlus.core.material.MaterialMisc.RARE_EARTH_MID;
 import static gtPlusPlus.core.material.MaterialsAlloy.KOBOLDITE;
 
 import java.lang.reflect.Field;

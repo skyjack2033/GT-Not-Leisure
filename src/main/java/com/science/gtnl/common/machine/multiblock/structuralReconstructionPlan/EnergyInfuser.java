@@ -1,12 +1,17 @@
 package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.HatchElement.*;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
-import static gregtech.api.util.GTUtility.*;
 import static kekztech.common.Blocks.lscLapotronicEnergyUnit;
 
 import java.util.ArrayList;
@@ -53,6 +58,7 @@ import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import cofh.api.energy.IEnergyContainerItem;
+import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.SoundResource;
@@ -250,10 +256,10 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
                     long rf = Math.min(
                         energyContainerItem.getMaxEnergyStored(individualStack)
                             - energyContainerItem.getEnergyStored(individualStack),
-                        euPerItem * mEUtoRF / 10L);
+                        euPerItem * GregTechAPI.mEUtoRF / 10L);
                     int rfToCharge = (int) rf;
                     rf = energyContainerItem.receiveEnergy(individualStack, rfToCharge, false);
-                    decreaseEUValue(rf * 10L / mEUtoRF);
+                    decreaseEUValue(rf * 10L / GregTechAPI.mEUtoRF);
                 }
 
                 if ((isItemStackFullyCharged(individualStack) && isItemStackFullyRepaired(individualStack))
@@ -315,14 +321,14 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
 
         long maxStoredEU = 0;
 
-        for (MTEHatchEnergy tHatch : validMTEList(mEnergyHatches)) {
+        for (MTEHatchEnergy tHatch : GTUtility.validMTEList(mEnergyHatches)) {
             maxStoredEU = Math.max(
                 maxStoredEU,
                 tHatch.getBaseMetaTileEntity()
                     .getStoredEU());
         }
 
-        for (MTEHatchEnergyMulti tHatch : validMTEList(eEnergyMulti)) {
+        for (MTEHatchEnergyMulti tHatch : GTUtility.validMTEList(eEnergyMulti)) {
             maxStoredEU = Math.max(
                 maxStoredEU,
                 tHatch.getBaseMetaTileEntity()
@@ -342,7 +348,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         MTEHatchEnergy targetEnergyHatch = null;
         MTEHatchEnergyMulti targetEnergyMulti = null;
 
-        for (MTEHatchEnergy tHatch : validMTEList(mEnergyHatches)) {
+        for (MTEHatchEnergy tHatch : GTUtility.validMTEList(mEnergyHatches)) {
             long storedEU = tHatch.getBaseMetaTileEntity()
                 .getStoredEU();
             if (storedEU > maxStoredEU) {
@@ -351,7 +357,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
             }
         }
 
-        for (MTEHatchEnergyMulti tHatch : validMTEList(eEnergyMulti)) {
+        for (MTEHatchEnergyMulti tHatch : GTUtility.validMTEList(eEnergyMulti)) {
             long storedEU = tHatch.getBaseMetaTileEntity()
                 .getStoredEU();
             if (storedEU > maxStoredEU) {
@@ -499,10 +505,11 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
                     .getDisplayName();
                 String itemAmountString = EnumChatFormatting.WHITE + " x "
                     + EnumChatFormatting.GOLD
-                    + formatShortenedLong(itemCount)
+                    + GTUtility.formatShortenedLong(itemCount)
                     + EnumChatFormatting.WHITE
                     + appendRate(false, itemCount, true);
-                String lineText = EnumChatFormatting.AQUA + truncateText(itemName, 40 - itemAmountString.length())
+                String lineText = EnumChatFormatting.AQUA
+                    + GTUtility.truncateText(itemName, 40 - itemAmountString.length())
                     + itemAmountString;
                 String lineTooltip = EnumChatFormatting.AQUA + itemName + "\n" + appendRate(false, itemCount, false);
 

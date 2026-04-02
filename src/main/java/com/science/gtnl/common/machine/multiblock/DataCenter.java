@@ -1,12 +1,19 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
-import static com.science.gtnl.ScienceNotLeisure.*;
-import static gregtech.api.GregTechAPI.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.util.GTStructureUtility.*;
-import static gregtech.api.util.GTUtility.*;
-import static tectech.thing.metaTileEntity.multi.base.TTMultiblockBase.HatchElement.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
+import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
+import static gregtech.api.GregTechAPI.sBlockCasings10;
+import static gregtech.api.GregTechAPI.sBlockCasings8;
+import static gregtech.api.GregTechAPI.sBlockGlass1;
+import static gregtech.api.enums.HatchElement.Dynamo;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
+import static tectech.thing.metaTileEntity.multi.base.TTMultiblockBase.HatchElement.EnergyMulti;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +51,7 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.WirelessComputationPacket;
-import gtnhlanth.common.register.LanthItemList;
+import gtnhlanth.common.block.BlockCasing;
 import tectech.mechanics.dataTransport.ALRecipeDataPacket;
 import tectech.thing.casing.BlockGTCasingsTT;
 import tectech.thing.casing.TTCasingsContainer;
@@ -134,28 +141,28 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
     public void outputAfterRecipe_EM() {
         HashSet<RecipeAssemblyLine> availableRecipes = new HashSet<>();
 
-        for (MTEHatchDataAccess dataAccess : validMTEList(mDataAccessHatches)) {
+        for (MTEHatchDataAccess dataAccess : GTUtility.validMTEList(mDataAccessHatches)) {
             availableRecipes.addAll(dataAccess.getAssemblyLineRecipes());
         }
 
         if (!availableRecipes.isEmpty()) {
             RecipeAssemblyLine[] recipeArray = availableRecipes.toArray(new RecipeAssemblyLine[0]);
 
-            for (MTEHatchDataItemsOutput hatch : validMTEList(mStacksDataOutputs)) {
+            for (MTEHatchDataItemsOutput hatch : GTUtility.validMTEList(mStacksDataOutputs)) {
                 hatch.q = new ALRecipeDataPacket(recipeArray);
             }
 
             if (wirelessModeEnabled) {
-                for (MTEHatchWirelessDataItemsOutput hatch : validMTEList(mWirelessStacksDataOutputs)) {
+                for (MTEHatchWirelessDataItemsOutput hatch : GTUtility.validMTEList(mWirelessStacksDataOutputs)) {
                     hatch.dataPacket = new ALRecipeDataPacket(recipeArray);
                 }
             }
         } else {
-            for (MTEHatchDataItemsOutput hatch : validMTEList(mStacksDataOutputs)) {
+            for (MTEHatchDataItemsOutput hatch : GTUtility.validMTEList(mStacksDataOutputs)) {
                 hatch.q = null;
             }
 
-            for (MTEHatchWirelessDataItemsOutput hatch : validMTEList(mWirelessStacksDataOutputs)) {
+            for (MTEHatchWirelessDataItemsOutput hatch : GTUtility.validMTEList(mWirelessStacksDataOutputs)) {
                 hatch.dataPacket = null;
             }
         }
@@ -295,7 +302,7 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
                     .buildAndChain(TTCasingsContainer.sBlockCasingsTT, 1))
             .addElement('D', ofBlock(sBlockCasings8, 7))
             .addElement('E', ofBlock(sBlockCasings10, 9))
-            .addElement('F', ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
+            .addElement('F', ofBlockAnyMeta(new BlockCasing("electrode")))
             .addElement('G', ofBlock(TTCasingsContainer.sBlockCasingsTT, 4))
             .addElement('H', ofBlock(TTCasingsContainer.sBlockCasingsTT, 2))
             .addElement('I', ofBlock(BlockLoader.metaCasing, 4))

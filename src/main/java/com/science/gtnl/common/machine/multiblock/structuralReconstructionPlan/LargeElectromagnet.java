@@ -1,14 +1,18 @@
 package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.enums.Textures.BlockIcons.*;
-import static gregtech.api.enums.Textures.BlockIcons.OVERLAY_FRONT_EMS_GLOW;
+import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
-import static gtnhlanth.common.register.LanthItemList.ELECTRODE_CASING;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +42,7 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gtnhlanth.common.block.BlockCasing;
 
 public class LargeElectromagnet extends GTMMultiMachineBase<LargeElectromagnet> implements ISurvivalConstructable {
 
@@ -69,21 +74,21 @@ public class LargeElectromagnet extends GTMMultiMachineBase<LargeElectromagnet> 
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
                 TextureFactory.builder()
-                    .addIcon(OVERLAY_FRONT_EMS_ACTIVE)
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_ACTIVE)
                     .extFacing()
                     .build(),
                 TextureFactory.builder()
-                    .addIcon(OVERLAY_FRONT_EMS_ACTIVE_GLOW)
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_ACTIVE_GLOW)
                     .extFacing()
                     .glow()
                     .build() };
             return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
                 TextureFactory.builder()
-                    .addIcon(OVERLAY_FRONT_EMS)
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS)
                     .extFacing()
                     .build(),
                 TextureFactory.builder()
-                    .addIcon(OVERLAY_FRONT_EMS_GLOW)
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_GLOW)
                     .extFacing()
                     .glow()
                     .build() };
@@ -130,7 +135,7 @@ public class LargeElectromagnet extends GTMMultiMachineBase<LargeElectromagnet> 
     public IStructureDefinition<LargeElectromagnet> getStructureDefinition() {
         return StructureDefinition.<LargeElectromagnet>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
-            .addElement('A', ofBlockAnyMeta(ELECTRODE_CASING))
+            .addElement('A', ofBlockAnyMeta(new BlockCasing("electrode")))
             .addElement(
                 'B',
                 buildHatchAdder(LargeElectromagnet.class).casingIndex(getCasingTextureID())

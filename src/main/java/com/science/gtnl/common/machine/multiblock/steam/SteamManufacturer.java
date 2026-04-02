@@ -1,11 +1,14 @@
 package com.science.gtnl.common.machine.multiblock.steam;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.utils.enums.BlockIcons.OVERLAY_FRONT_STEAM_MANUFACTURER;
 import static com.science.gtnl.utils.enums.BlockIcons.OVERLAY_FRONT_STEAM_MANUFACTURER_ACTIVE;
-import static gregtech.api.enums.GTValues.V;
-import static gregtech.api.enums.HatchElement.*;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 
@@ -23,6 +26,7 @@ import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -141,7 +145,7 @@ public class SteamManufacturer extends SteamMultiMachineBase<SteamManufacturer> 
 
     @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
-        logic.setAvailableVoltage(V[9]);
+        logic.setAvailableVoltage(GTValues.V[9]);
         // We need to trick the GT_ParallelHelper we have enough amps for all recipe parallels.
         logic.setAvailableAmperage(getTrueParallel());
         logic.setAmperageOC(false);

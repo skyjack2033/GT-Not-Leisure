@@ -1,16 +1,22 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.*;
+import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.GregTechAPI.sBlockCasings1;
 import static gregtech.api.GregTechAPI.sBlockCasings3;
 import static gregtech.api.GregTechAPI.sBlockCasings8;
-import static gregtech.api.enums.HatchElement.*;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.ExoticEnergy;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
-import static gregtech.api.util.GTUtility.getIntegratedCircuit;
-import static gtnhlanth.common.register.LanthItemList.ELECTRODE_CASING;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.ArrayList;
@@ -47,6 +53,7 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gtnhlanth.common.block.BlockCasing;
 import tectech.thing.casing.BlockGTCasingsTT;
 
 public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> implements ISurvivalConstructable {
@@ -120,7 +127,7 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
         return StructureDefinition.<MatterFabricator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
             .addElement('A', ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('B', ofBlockAnyMeta(ELECTRODE_CASING))
+            .addElement('B', ofBlockAnyMeta(new BlockCasing("electrode")))
             .addElement('C', ofBlock(sBlockCasings1, 7))
             .addElement('D', ofBlock(sBlockCasings1, 15))
             .addElement('E', ofBlock(sBlockCasings3, 11))
@@ -189,8 +196,8 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
 
         for (ItemStack item : getAllStoredInputs()) {
             if (item == null) continue;
-            if (GTUtility.areStacksEqual(item, getIntegratedCircuit(1))) hasCircuit1 = true;
-            if (GTUtility.areStacksEqual(item, getIntegratedCircuit(2))) hasCircuit2 = true;
+            if (GTUtility.areStacksEqual(item, GTUtility.getIntegratedCircuit(1))) hasCircuit1 = true;
+            if (GTUtility.areStacksEqual(item, GTUtility.getIntegratedCircuit(2))) hasCircuit2 = true;
         }
 
         if (hasCircuit1 == hasCircuit2) return CheckRecipeResultRegistry.NO_RECIPE;
