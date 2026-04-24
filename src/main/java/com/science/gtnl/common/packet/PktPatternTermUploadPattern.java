@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 
 import com.glodblock.github.client.gui.container.ContainerFluidPatternTerminal;
+import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import com.science.gtnl.mixins.late.AppliedEnergistics.assembler.AccessorContainerPatternTerm;
 import com.science.gtnl.mixins.late.AppliedEnergistics.assembler.AccessorFCContainerEncodeTerminal;
@@ -34,7 +35,8 @@ public class PktPatternTermUploadPattern implements IMessage, IMessageHandler<Pk
 
     @Override
     public IMessage onMessage(final PktPatternTermUploadPattern message, final MessageContext ctx) {
-        work(ctx.getServerHandler().playerEntity);
+        var player = ctx.getServerHandler().playerEntity;
+        ServerThreadUtil.addScheduledTask(() -> work(player));
         return null;
     }
 

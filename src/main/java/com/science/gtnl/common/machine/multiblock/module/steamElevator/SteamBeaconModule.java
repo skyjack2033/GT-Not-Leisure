@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
@@ -612,9 +613,8 @@ public class SteamBeaconModule extends SteamElevatorModule {
     }
 
     private boolean isValidItem(ItemStack itemStack) {
-        return itemStack.getItem() == Items.iron_ingot || itemStack.getItem() == Items.gold_ingot
-            || itemStack.getItem() == Items.diamond
-            || itemStack.getItem() == Items.emerald;
+        Item item = itemStack.getItem();
+        return item == Items.iron_ingot || item == Items.gold_ingot || item == Items.diamond || item == Items.emerald;
     }
 
     private int setMaxEffectLevel() {

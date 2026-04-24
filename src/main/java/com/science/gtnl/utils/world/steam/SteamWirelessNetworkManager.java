@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.science.gtnl.ScienceNotLeisure;
+
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.common.misc.spaceprojects.SpaceProjectManager;
 
@@ -16,9 +18,7 @@ public class SteamWirelessNetworkManager {
     public static void strongCheckOrAddUser(UUID user_uuid) {
         SpaceProjectManager.checkOrCreateTeam(user_uuid);
         user_uuid = SpaceProjectManager.getLeader(user_uuid);
-        if (!GlobalSteam.containsKey(user_uuid)) {
-            GlobalSteam.put(user_uuid, BigInteger.ZERO);
-        }
+        GlobalSteam.putIfAbsent(user_uuid, BigInteger.ZERO);
     }
 
     // ------------------------------------------------------------------------------------
@@ -30,8 +30,8 @@ public class SteamWirelessNetworkManager {
         try {
             GlobalSteamWorldSavedData.INSTANCE.markDirty();
         } catch (Exception exception) {
-            System.out.println("COULD NOT MARK GLOBAL STEAM AS DIRTY IN ADD STEAM");
-            exception.printStackTrace();
+            ScienceNotLeisure.LOG
+                .error("[SteamWirelessNetworkManager] Could not mark GlobalSteam dirty in addSteam", exception);
         }
 
         UUID teamUUID = SpaceProjectManager.getLeader(user_uuid);
@@ -88,8 +88,8 @@ public class SteamWirelessNetworkManager {
         try {
             GlobalSteamWorldSavedData.INSTANCE.markDirty();
         } catch (Exception exception) {
-            System.out.println("COULD NOT MARK GLOBAL STEAM AS DIRTY IN SET STEAM");
-            exception.printStackTrace();
+            ScienceNotLeisure.LOG
+                .error("[SteamWirelessNetworkManager] Could not mark GlobalSteam dirty in setSteam", exception);
         }
 
         GlobalSteam.put(SpaceProjectManager.getLeader(user_uuid), steamAmount);
