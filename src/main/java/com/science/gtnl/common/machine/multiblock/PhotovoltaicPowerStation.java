@@ -4,7 +4,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -42,7 +41,7 @@ import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 public abstract class PhotovoltaicPowerStation extends MultiMachineBase<PhotovoltaicPowerStation>
     implements ISurvivalConstructable {
 
-    public int fuelConsumption;
+    public static FluidStack DISTILLED_WATER = GTModHandler.getDistilledWater(1);
 
     public abstract long getOutputEUt();
 
@@ -94,71 +93,54 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
     @NotNull
     public CheckRecipeResult checkProcessing() {
         for (FluidStack tFluid : getStoredFluids()) {
-            if (GTUtility.areFluidsEqual(tFluid, GTModHandler.getDistilledWater(1))) {
-                boolean notAirBlocks = false;
-                IGregTechTileEntity base = this.getBaseMetaTileEntity();
-                int xCoord = base.getXCoord(), yCoord = base.getYCoord(), zCoord = base.getZCoord();
-                ForgeDirection front = base.getFrontFacing();
+            if (!GTUtility.areFluidsEqual(tFluid, DISTILLED_WATER)) continue;
+            boolean notAirBlocks = false;
+            IGregTechTileEntity base = this.getBaseMetaTileEntity();
+            int xCoord = base.getXCoord(), yCoord = base.getYCoord(), zCoord = base.getZCoord();
+            ForgeDirection front = base.getFrontFacing();
 
-                for (int x = xCoord - (front.offsetX * 2) + 4; x >= xCoord - 4; x--) {
-                    for (int z = zCoord + 4 - (front.offsetZ * 6); z >= zCoord - 4 + (front.offsetZ * 8); z--) {
-                        if (getBaseMetaTileEntity().getWorld()
-                            .getTopSolidOrLiquidBlock(x, z) > yCoord + 5) {
-                            notAirBlocks = true;
-                            break;
-                        }
+            for (int x = xCoord - (front.offsetX * 2) + 4; x >= xCoord - 4; x--) {
+                for (int z = zCoord + 4 - (front.offsetZ * 6); z >= zCoord - 4 + (front.offsetZ * 8); z--) {
+                    if (getBaseMetaTileEntity().getWorld()
+                        .getTopSolidOrLiquidBlock(x, z) > yCoord + 5) {
+                        notAirBlocks = true;
+                        break;
                     }
                 }
-
-                long output = getOutputEUt();
-                if (notAirBlocks) output /= 2;
-                if (base.getWorld()
-                    .isRaining()) output /= 2;
-
-                this.lEUt = output;
-                this.mEfficiency = 10000;
-                this.mProgresstime = 0;
-                this.mMaxProgresstime = (int) (1024 * mConfigSpeedBoost);
-                return CheckRecipeResultRegistry.GENERATING;
             }
+
+            long output = getOutputEUt();
+            if (notAirBlocks) output /= 2;
+            if (base.getWorld()
+                .isRaining()) output /= 2;
+
+            this.lEUt = output;
+            this.mEfficiency = 10000;
+            this.mProgresstime = 0;
+            this.mMaxProgresstime = (int) (1024 * mConfigSpeedBoost);
+            return CheckRecipeResultRegistry.GENERATING;
         }
 
         this.lEUt = 0;
-        this.mEfficiency = 0;
         return CheckRecipeResultRegistry.NO_FUEL_FOUND;
     }
 
     @Override
-    public void runMachine(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        if (mMaxProgresstime > 0 && doRandomMaintenanceDamage() && mProgresstime + 1 % 20 == 0) {
+    public boolean onRunningTick(ItemStack stack) {
+        if (mProgresstime + 1 % 20 == 0) {
             startRecipeProcessing();
             if (!depleteInput(GTModHandler.getDistilledWater(lEUt / 4))) {
                 stopMachine(ShutDownReasonRegistry.NONE);
             }
             endRecipeProcessing();
         }
+        return true;
     }
 
     @Override
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
         return checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) && checkHatch()
-            && mMaintenanceHatches.size() == 1
-            && mCountCasing >= 8;
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-    }
-
-    @Override
-    public int getDamageToComponent(ItemStack aStack) {
-        return 1;
+            && mCountCasing >= 4;
     }
 
     @Override
@@ -171,7 +153,7 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
                 + " EU/t",
             StatCollector.translateToLocal("GT5U.engine.consumption") + ": "
                 + EnumChatFormatting.YELLOW
-                + GTUtility.formatNumbers(fuelConsumption)
+                + GTUtility.formatNumbers(lEUt / 4)
                 + EnumChatFormatting.RESET
                 + " L/t" };
     }
