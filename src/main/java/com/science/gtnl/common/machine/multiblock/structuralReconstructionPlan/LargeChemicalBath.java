@@ -187,7 +187,7 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
     @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
-        this.machineMode = (this.machineMode + 1) % 2;
+        this.machineMode = (this.machineMode + 1) % 3;
         GTUtility
             .sendChatToPlayer(aPlayer, StatCollector.translateToLocal("LargeChemicalBath_Mode_" + this.machineMode));
     }
