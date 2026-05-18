@@ -240,19 +240,19 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     @Override
     public void setItemNBT(NBTTagCompound aNBT) {
         super.setItemNBT(aNBT);
-        aNBT.setBoolean("enableMnemonic", enableMnemonic);
+        if (enableMnemonic) aNBT.setBoolean("enableMnemonic", enableMnemonic);
     }
 
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
-        aNBT.setBoolean("enableMnemonic", enableMnemonic);
+        if (enableMnemonic) aNBT.setBoolean("enableMnemonic", enableMnemonic);
     }
 
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
-        enableMnemonic = aNBT.getBoolean("enableMnemonic");
+        if (aNBT.hasKey("enableMnemonic")) enableMnemonic = aNBT.getBoolean("enableMnemonic");
     }
 
     @Override

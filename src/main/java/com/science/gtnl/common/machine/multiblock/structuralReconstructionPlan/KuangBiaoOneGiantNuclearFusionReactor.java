@@ -124,7 +124,7 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
     @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
-        if (mMaxProgresstime <= 0 || !enableRender) return;
+        if (!getBaseMetaTileEntity().isActive() || !enableRender) return;
         KuangBiaoOneGiantNuclearFusionReactorRenderer.renderTileEntityAt(this, x, y, z, timeSinceLastTick);
     }
 

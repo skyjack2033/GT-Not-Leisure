@@ -150,7 +150,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
-        if (!mMachine || !enableRender || mTotalRunTime <= 0) return;
+        if (!mMachine || !enableRender) return;
         EyeOfHarmonyInjectorRenderer.renderTileEntity(this, x, y, z, timeSinceLastTick);
     }
 

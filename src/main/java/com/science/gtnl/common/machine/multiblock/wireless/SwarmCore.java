@@ -159,21 +159,21 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     public void setItemNBT(NBTTagCompound aNBT) {
         super.setItemNBT(aNBT);
         saveUpgradeNBTData(aNBT);
-        aNBT.setInteger("machineTier", machineTier);
+        if (machineTier > 1) aNBT.setInteger("machineTier", machineTier);
     }
 
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
         saveUpgradeNBTData(aNBT);
-        aNBT.setInteger("machineTier", machineTier);
+        if (machineTier > 1) aNBT.setInteger("machineTier", machineTier);
     }
 
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
         loadUpgradeNBTData(aNBT);
-        machineTier = aNBT.getInteger("machineTier");
+        if (aNBT.hasKey("machineTier")) machineTier = aNBT.getInteger("machineTier");
     }
 
     @Override
