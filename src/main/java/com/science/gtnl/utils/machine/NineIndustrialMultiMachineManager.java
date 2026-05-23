@@ -1,8 +1,6 @@
 package com.science.gtnl.utils.machine;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import bartworks.API.recipe.BartWorksRecipeMaps;
 import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
@@ -12,11 +10,15 @@ import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtnhlanth.api.recipe.LanthanidesRecipeMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import kubatech.loaders.DEFCRecipes;
 import lombok.Getter;
 import tectech.recipe.TecTechRecipeMaps;
 
 public class NineIndustrialMultiMachineManager {
+
+    public static final MachineMode[] MACHINE_MODES = MachineMode.values();
+    public static final int MACHINE_MODE_COUNT = MACHINE_MODES.length;
 
     public static String getModeLocalization(int machineMode) {
         MachineMode mode = MachineMode.fromId(machineMode);
@@ -24,10 +26,9 @@ public class NineIndustrialMultiMachineManager {
     }
 
     public int getNextMachineMode(int currentMode) {
-        MachineMode mode = MachineMode.fromId(currentMode);
+        final MachineMode mode = MachineMode.fromId(currentMode);
         if (mode == null) return 0;
-        MachineMode[] modes = MachineMode.values();
-        return modes[(mode.ordinal() + 1) % modes.length].getId();
+        return MACHINE_MODES[(mode.ordinal() + 1) % MACHINE_MODE_COUNT].getId();
     }
 
     public static Collection<RecipeMap<?>> getAllRecipeMaps() {
@@ -40,10 +41,9 @@ public class NineIndustrialMultiMachineManager {
     }
 
     public static int getModeMapIndex(int machineMode, int column) {
-        int totalModes = MachineMode.values().length;
-        int row = machineMode / 3;
-        int col = column % 3;
-        if (row * 3 + col >= totalModes) return -1;
+        final int row = machineMode / 3;
+        final int col = column % 3;
+        if (row * 3 + col >= MACHINE_MODE_COUNT) return -1;
         return row * 3 + col;
     }
 
@@ -172,10 +172,12 @@ public class NineIndustrialMultiMachineManager {
         }
 
         public static final Int2ObjectMap<MachineMode> BY_ID = new Int2ObjectOpenHashMap<>();
+        public static final Collection<RecipeMap<?>> ALL_RECIPE_MAPS = new ObjectArrayList<>(MACHINE_MODE_COUNT);
 
         static {
-            for (MachineMode mode : values()) {
+            for (MachineMode mode : MACHINE_MODES) {
                 BY_ID.put(mode.id, mode);
+                ALL_RECIPE_MAPS.add(mode.recipeMap);
             }
         }
 
@@ -184,9 +186,7 @@ public class NineIndustrialMultiMachineManager {
         }
 
         public static Collection<RecipeMap<?>> getAllRecipeMaps() {
-            return Arrays.stream(values())
-                .map(MachineMode::getRecipeMap)
-                .collect(Collectors.toList());
+            return ALL_RECIPE_MAPS;
         }
     }
 

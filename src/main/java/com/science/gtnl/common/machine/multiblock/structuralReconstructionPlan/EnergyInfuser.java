@@ -16,11 +16,8 @@ import static kekztech.common.Blocks.lscLapotronicEnergyUnit;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -73,6 +70,8 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.WirelessNetworkManager;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import tectech.thing.casing.TTCasingsContainer;
 import tectech.thing.metaTileEntity.hatch.MTEHatchEnergyMulti;
 import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
@@ -84,6 +83,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
     public static final int maxRepairedDamagePerOperation = 10000;
     public static final long usedEuPerDurability = 1000;
     public static final int usedUumPerDurability = 1;
+    public static final FluidStack UUM_TEMPLATE = Materials.UUMatter.getFluid(1);
     public int mCountCasing;
     public UUID ownerUUID;
     public boolean wirelessMode;
@@ -206,21 +206,17 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
             return;
         }
 
-        List<ItemStack> remaining = new ArrayList<>();
+        List<ItemStack> remaining = new ArrayList<>(mStoredItems.size());
         long totalEU = getMaxStoredEU();
         long euPerItem = totalEU / mStoredItems.size();
+        int remainingUum = getAvailableUumAmount();
 
         for (ItemStack stack : mStoredItems) {
             if (ItemUtil.isStackInvalid(stack)) continue;
 
-            int stackSize = stack.stackSize;
-            ItemStack[] stackArray = new ItemStack[stackSize];
-            for (int i = 0; i < stackSize; i++) {
-                stackArray[i] = stack.copy();
-                stackArray[i].stackSize = 1;
-            }
-
-            for (ItemStack individualStack : stackArray) {
+            for (int i = 0; i < stack.stackSize; i++) {
+                ItemStack individualStack = stack.copy();
+                individualStack.stackSize = 1;
                 Item item = individualStack.getItem();
 
                 if (item != null && item.isRepairable()) {
@@ -230,15 +226,9 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
                         long possibleRepair = Math.min(maxRepair, euPerItem / usedEuPerDurability);
                         int uumNeeded = (int) (possibleRepair * usedUumPerDurability);
 
-                        FluidStack availableUUM = getStoredFluids().stream()
-                            .filter(
-                                fluid -> Materials.UUMatter.getFluid(1)
-                                    .isFluidEqual(fluid))
-                            .findAny()
-                            .orElse(null);
-
-                        if (availableUUM != null
+                        if (possibleRepair > 0 && uumNeeded <= remainingUum
                             && depleteInput(new FluidStack(Materials.UUMatter.mFluid, uumNeeded))) {
+                            remainingUum -= uumNeeded;
                             item.setDamage(individualStack, currentDamage - (int) possibleRepair);
                             decreaseEUValue(possibleRepair * usedEuPerDurability);
                         }
@@ -278,6 +268,16 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         mStoredItems.addAll(remaining);
         saveNBTData(new NBTTagCompound());
         outputAllItems = false;
+    }
+
+    public int getAvailableUumAmount() {
+        int totalUum = 0;
+        for (FluidStack fluidStack : getStoredFluids()) {
+            if (fluidStack != null && GTUtility.areFluidsEqual(fluidStack, UUM_TEMPLATE)) {
+                totalUum += fluidStack.amount;
+            }
+        }
+        return totalUum;
     }
 
     private boolean isItemStackFullyCharged(ItemStack stack) {
@@ -486,32 +486,35 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
         final DynamicPositionedColumn processingDetails = new DynamicPositionedColumn();
 
         if (mStoredItems != null) {
-            final Map<ItemStack, Long> nameToAmount = new HashMap<>();
+            final Object2LongOpenHashMap<ItemStack> nameToAmount = new Object2LongOpenHashMap<>();
 
             for (ItemStack item : mStoredItems) {
                 if (item == null || item.stackSize <= 0) continue;
-                nameToAmount.merge(item, (long) item.stackSize, Long::sum);
+
+                nameToAmount.addTo(item, item.stackSize);
             }
 
-            final List<Map.Entry<ItemStack, Long>> sortedMap = nameToAmount.entrySet()
-                .stream()
-                .sorted(
-                    Map.Entry.<ItemStack, Long>comparingByValue()
-                        .reversed())
-                .collect(Collectors.toList());
+            final List<Object2LongMap.Entry<ItemStack>> sortedList = new ArrayList<>(
+                nameToAmount.object2LongEntrySet());
 
-            for (Map.Entry<ItemStack, Long> entry : sortedMap) {
-                Long itemCount = entry.getValue();
+            sortedList.sort((left, right) -> Long.compare(right.getLongValue(), left.getLongValue()));
+
+            for (Object2LongMap.Entry<ItemStack> entry : sortedList) {
+                long itemCount = entry.getLongValue();
+
                 String itemName = entry.getKey()
                     .getDisplayName();
+
                 String itemAmountString = EnumChatFormatting.WHITE + " x "
                     + EnumChatFormatting.GOLD
                     + GTUtility.formatShortenedLong(itemCount)
                     + EnumChatFormatting.WHITE
                     + appendRate(false, itemCount, true);
+
                 String lineText = EnumChatFormatting.AQUA
                     + GTUtility.truncateText(itemName, 40 - itemAmountString.length())
                     + itemAmountString;
+
                 String lineTooltip = EnumChatFormatting.AQUA + itemName + "\n" + appendRate(false, itemCount, false);
 
                 processingDetails.widget(
@@ -527,6 +530,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
                                 .setPos(10, 1)));
             }
         }
+
         return processingDetails;
     }
 

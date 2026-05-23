@@ -3,10 +3,7 @@ package com.science.gtnl.common.item;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.loader.ItemLoader.infinityCell;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,16 +64,22 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.util.GTUtility;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorageFluidCell {
 
-    public static final long StorageSIZE = Long.MAX_VALUE / 2;
-    public static final Map<String, IIcon> ICON_MAP = new HashMap<>();
-    public static final Set<String> REGISTERED_TEXTURES = new HashSet<>();
-    public static final List<ItemStack> REGISTERED_CELLS = new ArrayList<>();
+    public static final long STORAGE_SIZE = Long.MAX_VALUE / 2;
+    public static final String CUSTOM_TEXTURE_TAG = "CustomTexture";
+    public static final String DEFAULT_ICON_KEY = "default";
+    public static final String DEFAULT_TEXTURE_NAME = "InfinityCell";
+    public static final Map<String, IIcon> ICON_MAP = new Object2ObjectOpenHashMap<>();
+    public static final Set<String> REGISTERED_TEXTURES = new ObjectOpenHashSet<>();
+    public static final List<ItemStack> REGISTERED_CELLS = new ObjectArrayList<>();
 
     public ItemInfinityCell() {
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + "InfinityCell");
+        this.setTextureName(RESOURCE_ROOT_ID + ":" + DEFAULT_TEXTURE_NAME);
         this.setHasSubtypes(true);
         this.setUnlocalizedName("InfinityCell");
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
@@ -100,7 +103,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
             ICON_MAP.put(tex, register.registerIcon(RESOURCE_ROOT_ID + ":" + tex));
         }
 
-        ICON_MAP.put("default", register.registerIcon(RESOURCE_ROOT_ID + ":" + "InfinityCell"));
+        ICON_MAP.put(DEFAULT_ICON_KEY, register.registerIcon(RESOURCE_ROOT_ID + ":" + DEFAULT_TEXTURE_NAME));
     }
 
     @SideOnly(Side.CLIENT)
@@ -108,13 +111,13 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
     public IIcon getIcon(ItemStack stack, int pass) {
         if (stack.hasTagCompound()) {
             String texName = stack.getTagCompound()
-                .getString("CustomTexture");
+                .getString(CUSTOM_TEXTURE_TAG);
             IIcon icon = ICON_MAP.get(texName);
             if (icon != null) {
                 return icon;
             }
         }
-        return ICON_MAP.get("default");
+        return ICON_MAP.get(DEFAULT_ICON_KEY);
     }
 
     @Override
@@ -124,7 +127,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
 
     public static ItemStack getSubItem(StorageChannel s, String unlocalizedName, String textureName,
         List<SubItem> subItemsList) {
-        return getSubItem(s, unlocalizedName, textureName, subItemsList.toArray(new SubItem[0]));
+        return getSubItem(s, unlocalizedName, textureName, subItemsList.toArray(new SubItem[subItemsList.size()]));
     }
 
     public static ItemStack getSubItem(StorageChannel s, SubItem... subItems) {
@@ -143,7 +146,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
         var list = new NBTTagList();
 
         if (textureName != null) {
-            tag.setString("CustomTexture", textureName);
+            tag.setString(CUSTOM_TEXTURE_TAG, textureName);
             REGISTERED_TEXTURES.add(textureName);
         }
 
@@ -248,7 +251,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
     private List<? extends IAEStack<?>> getInfinityStack(NBTTagList list, @NotNull StorageChannel s) {
         return switch (s) {
             case ITEMS -> {
-                List<IAEItemStack> out = new ArrayList<>();
+                List<IAEItemStack> out = new ObjectArrayList<>();
                 for (int i = 0; i < list.tagCount(); i++) {
                     var tag = list.getCompoundTagAt(i);
                     var item = (Item) Item.itemRegistry.getObject(tag.getString("id"));
@@ -265,7 +268,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
                 yield out;
             }
             case FLUIDS -> {
-                List<IAEFluidStack> out = new ArrayList<>();
+                List<IAEFluidStack> out = new ObjectArrayList<>();
                 for (int i = 0; i < list.tagCount(); i++) {
                     var tag = list.getCompoundTagAt(i);
                     String fluidName = tag.getString("id");
@@ -435,7 +438,6 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
         }
 
         @Override
-        // TODO:图标渲染自己写去（
         @SideOnly(Side.CLIENT)
         public IIcon getTopTexture_Light() {
             return null;
@@ -473,7 +475,6 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
         }
 
         @Override
-        // TODO:耗电你自己填啦
         public double cellIdleDrain(ItemStack is, IMEInventory handler) {
             return 0;
         }
@@ -493,7 +494,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
 
         private InfinityItemCellHandler(List<IAEItemStack> stack) {
             this.record = stack;
-            this.record.forEach(i -> i.setStackSize(StorageSIZE));
+            this.record.forEach(i -> i.setStackSize(STORAGE_SIZE));
         }
 
         @Override
@@ -595,7 +596,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell implements IStorag
             throws AppEngException {
             super(o, container);
             this.record = stack;
-            this.record.forEach(i -> i.setStackSize(StorageSIZE));
+            this.record.forEach(i -> i.setStackSize(STORAGE_SIZE));
             this.loadCellFluids();
         }
 

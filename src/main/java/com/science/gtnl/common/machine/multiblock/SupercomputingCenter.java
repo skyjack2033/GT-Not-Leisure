@@ -148,6 +148,21 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
         return new SupercomputingCenter(mName);
     }
 
+    public ArrayList<MTEHatchRack> getValidRackHatches() {
+        ArrayList<MTEHatchRack> rackHatches = new ArrayList<>(mRackHatchs.size());
+        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+            rackHatches.add(rack);
+        }
+        return rackHatches;
+    }
+
+    public void setRackActiveState(boolean active) {
+        for (MTEHatchRack rack : getValidRackHatches()) {
+            rack.getBaseMetaTileEntity()
+                .setActive(active);
+        }
+    }
+
     @Override
     public RecipeMap<?> getRecipeMap() {
         return RecipeMaps.quantumComputerFakeRecipes;
@@ -165,17 +180,14 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     @Override
     public boolean checkMachine_EM(IGregTechTileEntity iGregTechTileEntity, ItemStack itemStack) {
         energyWirelessMode = false;
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
         mRackHatchs.clear();
 
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET)) {
             return false;
         }
 
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+        for (MTEHatchRack rack : getValidRackHatches()) {
             rack.getBaseMetaTileEntity()
                 .setActive(iGregTechTileEntity.isActive());
         }
@@ -223,7 +235,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
             && !aBaseMetaTileEntity.isActive()
             && aTick % 20 == CommonValues.MULTI_CHECK_AT) {
             double maxTemp = 0;
-            for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+            for (MTEHatchRack rack : getValidRackHatches()) {
                 if (rack.heat > maxTemp) {
                     maxTemp = rack.heat;
                 }
@@ -244,11 +256,12 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
             return SimpleCheckRecipeResult.ofFailure("no_computing");
         }
         if (overclock.getStatus(true).isOk && overvolt.getStatus(true).isOk) {
+            ArrayList<MTEHatchRack> rackHatches = getValidRackHatches();
             boolean useCryotheum = false;
             for (FluidStack fluidStack : getStoredFluids()) {
                 if (GTUtility.areFluidsEqual(fluidStack, cryotheum)) {
                     useCryotheum = true;
-                    for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+                    for (MTEHatchRack rack : rackHatches) {
                         if (fluidStack.amount <= 0) break;
                         if (rack.heat < 1) continue;
                         int consume = Math.min(fluidStack.amount, Math.max(0, rack.heat / 20));
@@ -264,7 +277,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
             int thingsActive = 0;
             int rackComputation;
 
-            for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+            for (MTEHatchRack rack : rackHatches) {
                 if (rack.heat > maxTemp) {
                     maxTemp = rack.heat;
                 }
@@ -401,10 +414,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     @Override
     public void onRemoval() {
         super.onRemoval();
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
     }
 
     @Override
@@ -424,19 +434,13 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     public void stopMachine(@NotNull ShutDownReason reason) {
         super.stopMachine(reason);
         eAvailableData = 0;
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
     }
 
     @Override
     public void afterRecipeCheckFailed() {
         super.afterRecipeCheckFailed();
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
     }
 
     public boolean addRackToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {

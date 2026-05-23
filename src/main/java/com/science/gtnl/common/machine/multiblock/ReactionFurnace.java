@@ -304,8 +304,8 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
         resetParallelTier();
 
         long baseParallel;
-        if (mParallelControllerHatches.size() == 1) {
-            ParallelControllerHatch module = mParallelControllerHatches.get(0);
+        ParallelControllerHatch module = getSingleParallelControllerHatch();
+        if (module != null) {
             mParallelTier = module.mTier;
             baseParallel = module.getParallel();
         } else if (mParallelTier <= 2) {

@@ -43,6 +43,7 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -55,6 +56,8 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
     private static final int HORIZONTAL_OFF_SET = 20;
     private static final int VERTICAL_OFF_SET = 24;
     private static final int DEPTH_OFF_SET = 0;
+    public static Object2ObjectOpenHashMap<GTUtility.ItemId, ArrayList<GTRecipe>> RECIPE_INDEX = new Object2ObjectOpenHashMap<>();
+    public static boolean recipeIndexInitialized = false;
 
     public CheatOreProcessingFactory(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -92,32 +95,31 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
     }
 
     public CheckRecipeResult OP_Process_Wireless() {
-        RecipeMap<?> recipeMap = getRecipeMap();
+        Object2ObjectOpenHashMap<GTUtility.ItemId, ArrayList<GTRecipe>> recipeIndex = getRecipeIndex();
         ArrayList<ItemStack> inputs = getStoredInputs();
-        ArrayList<ItemStack> outputs = new ArrayList<>();
-        // check every inputs
+        ArrayList<ItemStack> outputs = new ArrayList<>(inputs.size());
         for (ItemStack items : inputs) {
             boolean hasNotFound = true;
-            for (GTRecipe recipe : recipeMap.getAllRecipes()) {
-                if (recipe.mInputs == null || recipe.mInputs.length < 1) continue;
-                if (GTUtility.areStacksEqual(recipe.mInputs[0], items)
-                    && items.stackSize >= recipe.mInputs[0].stackSize) {
-                    // found the recipe
-                    hasNotFound = false;
+            ArrayList<GTRecipe> matchingRecipes = recipeIndex.get(GTUtility.ItemId.createNoCopy(items));
+            if (matchingRecipes != null) {
+                for (GTRecipe recipe : matchingRecipes) {
+                    if (recipe.mInputs == null || recipe.mInputs.length < 1) continue;
                     ItemStack recipeInput = recipe.mInputs[0];
+                    if (recipeInput == null || recipeInput.stackSize <= 0) continue;
+                    if (!GTUtility.areStacksEqual(recipeInput, items) || items.stackSize < recipeInput.stackSize) {
+                        continue;
+                    }
+                    hasNotFound = false;
                     int parallel = items.stackSize / recipeInput.stackSize;
-
-                    // decrease the input stack amount
                     items.stackSize -= parallel * recipeInput.stackSize;
-
-                    // process output stacks
                     for (ItemStack recipeOutput : recipe.mOutputs) {
+                        if (recipeOutput == null || recipeOutput.stackSize <= 0) {
+                            continue;
+                        }
                         if (Integer.MAX_VALUE / parallel >= recipeOutput.stackSize) {
-                            // direct output
                             outputs.add(
                                 GTUtility.copyAmountUnsafe(recipeOutput.stackSize * parallel, recipeOutput.copy()));
                         } else {
-                            // separate to any integer max stack
                             long outputAmount = (long) parallel * recipeOutput.stackSize;
                             while (outputAmount > 0) {
                                 if (outputAmount >= Integer.MAX_VALUE) {
@@ -132,8 +134,6 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
                     }
                 }
             }
-            // If is gt ore but not in recipe map
-            // Handle it specially
             if (hasNotFound) {
                 if (Objects.equals(items.getUnlocalizedName(), "gt.blockores")) {
                     ScienceNotLeisure.LOG.info("OP system recipe has not write this material's: {}", items);
@@ -143,9 +143,29 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
             }
         }
         if (outputs.isEmpty()) return CheckRecipeResultRegistry.NO_RECIPE;
-        // set these to machine outputs
-        mOutputItems = outputs.toArray(new ItemStack[0]);
+        mOutputItems = outputs.toArray(new ItemStack[outputs.size()]);
         return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
+
+    public Object2ObjectOpenHashMap<GTUtility.ItemId, ArrayList<GTRecipe>> getRecipeIndex() {
+        if (!recipeIndexInitialized) {
+            indexRecipes();
+        }
+        return RECIPE_INDEX;
+    }
+
+    public void indexRecipes() {
+        RECIPE_INDEX.clear();
+        RecipeMap<?> recipeMap = getRecipeMap();
+        for (GTRecipe recipe : recipeMap.getAllRecipes()) {
+            if (recipe.mInputs == null || recipe.mInputs.length < 1 || recipe.mInputs[0] == null) {
+                continue;
+            }
+            GTUtility.ItemId itemId = GTUtility.ItemId.createNoCopy(recipe.mInputs[0]);
+            ArrayList<GTRecipe> indexedRecipes = RECIPE_INDEX.computeIfAbsent(itemId, key -> new ArrayList<>());
+            indexedRecipes.add(recipe);
+        }
+        recipeIndexInitialized = true;
     }
 
     @NotNull

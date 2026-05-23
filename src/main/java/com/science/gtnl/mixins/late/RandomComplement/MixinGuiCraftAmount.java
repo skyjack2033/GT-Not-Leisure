@@ -33,8 +33,8 @@ public abstract class MixinGuiCraftAmount extends GuiAmount {
     public void onActionPerformed(GuiButton btn, CallbackInfo ci) {
         if (isShiftKeyDown()) {
             GuiScreen oldGui;
-            if ((oldGui = GTNLInputHandler.oldGui) != null) {
-                GTNLInputHandler.delayMethod = () -> Minecraft.getMinecraft()
+            if ((oldGui = GTNLInputHandler.LAST_GUI_SCREEN) != null) {
+                GTNLInputHandler.DELAY_METHOD = () -> Minecraft.getMinecraft()
                     .displayGuiScreen(oldGui);
                 ScienceNotLeisure.network.sendToServer(new ContainerRollBACK());
             }

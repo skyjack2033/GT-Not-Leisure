@@ -134,6 +134,16 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
 
     public abstract FluidStack getExtraGas();
 
+    public boolean hasExtraGasInput() {
+        FluidStack extraGas = getExtraGas();
+        for (FluidStack storedFluid : getStoredFluids()) {
+            if (GTUtility.areFluidsEqual(storedFluid, extraGas)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean isBatchModeEnabled() {
         return false;
@@ -147,15 +157,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
     @NotNull
     @Override
     public CheckRecipeResult checkProcessing() {
-        useExtraGas = false;
-
-        List<FluidStack> tFluids = getStoredFluids();
-        for (FluidStack fs : tFluids) {
-            if (GTUtility.areFluidsEqual(fs, getExtraGas())) {
-                useExtraGas = true;
-                break;
-            }
-        }
+        useExtraGas = hasExtraGasInput();
 
         setupProcessingLogic(processingLogic);
 
@@ -635,15 +637,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
         @Override
         public CheckRecipeResult checkProcessing() {
             bigEUt = null;
-            useExtraGas = false;
-
-            List<FluidStack> tFluids = getStoredFluids();
-            for (FluidStack fs : tFluids) {
-                if (GTUtility.areFluidsEqual(fs, getExtraGas())) {
-                    useExtraGas = true;
-                    break;
-                }
-            }
+            useExtraGas = hasExtraGasInput();
 
             setupProcessingLogic(processingLogic);
 

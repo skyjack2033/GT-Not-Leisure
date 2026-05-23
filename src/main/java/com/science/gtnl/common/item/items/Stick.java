@@ -46,7 +46,7 @@ import tectech.thing.CustomItemList;
 public class Stick extends Item implements IItemStackExtra, IKeyHandler {
 
     public IIcon defaultIcon;
-    public static String id = RESOURCE_ROOT_ID + ":" + "Stick";
+    public static final String ID = RESOURCE_ROOT_ID + ":" + "Stick";
 
     public Stick() {
         this.setMaxStackSize(64);
@@ -104,7 +104,7 @@ public class Stick extends Item implements IItemStackExtra, IKeyHandler {
                             Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
                     i++;
                 }
-                if (id.equals(s)) {
+                if (ID.equals(s)) {
                     list.add(Item.itemRegistry.getNameForObject(fake.getItem()));
                     continue;
                 }

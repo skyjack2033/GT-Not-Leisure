@@ -20,7 +20,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import com.brandon3055.brandonscore.common.handlers.ProcessHandler;
@@ -86,6 +85,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
         .getItemStack(Mods.Botania.ID, "specialFlower", 1, 0, "{type:\"asgardandelion\"}", null);
 
     public ArrayList<CustomFluidHatch> mFluidManaInputHatch = new ArrayList<>();
+    public final ArrayList<FluidStack> sharedManaRecipeFluids = new ArrayList<>();
 
     public TeleportationArrayToAlfheim(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -200,32 +200,19 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     public CheckRecipeResult doCheckRecipe() {
         CheckRecipeResult result = CheckRecipeResultRegistry.NO_RECIPE;
 
-        ArrayList<FluidStack> manaHatchStored = new ArrayList<>();
-        for (CustomFluidHatch tHatch : mFluidManaInputHatch) {
-            FluidStack fillableStack = tHatch.getFillableStack();
-            if (fillableStack != null) {
-                manaHatchStored.add(fillableStack);
-            }
-        }
+        List<FluidStack> manaHatchStored = collectManaInputFluids();
 
-        // check crafting input hatches first
+        // 优先复用双输入仓缓存并补入法力流体 / Reuse dual-input buffers first and append mana fluids
         for (IDualInputHatch dualInputHatch : mDualInputHatches) {
             ItemStack[] sharedItems = dualInputHatch.getSharedItems();
             for (var it = dualInputHatch.inventories(); it.hasNext();) {
                 IDualInputInventory slot = it.next();
 
                 if (!slot.isEmpty()) {
-                    // try to cache the possible recipes from pattern
-                    processingLogic.setInputItems(ArrayUtils.addAll(sharedItems, slot.getItemInputs()));
-
-                    List<FluidStack> fluids = new ArrayList<>(Arrays.asList(slot.getFluidInputs()));
-                    if (!manaHatchStored.isEmpty()) fluids.addAll(manaHatchStored);
-                    if (enableInfinityMana) {
-                        fluids.add(GTNLMaterials.FluidMana.getFluidOrGas(Integer.MAX_VALUE));
-                    }
-                    processingLogic.setInputFluids(fluids);
-
-                    CheckRecipeResult foundResult = processingLogic.process();
+                    loadDualInputBuffers(sharedItems, slot);
+                    appendSharedManaRecipeFluids(manaHatchStored);
+                    setProcessingInputFluids(recipeSearchFluidInputs);
+                    CheckRecipeResult foundResult = processRecipeSearch();
                     if (foundResult.wasSuccessful()) {
                         return foundResult;
                     }
@@ -249,18 +236,17 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
 
         for (byte color = 0; color < (doColorChecking ? 16 : 1); color++) {
             if (isColorAbsent(hatchColors, color)) continue;
-            List<FluidStack> fluids = new ArrayList<>(getStoredFluidsForColor(Optional.of(color)));
-            if (!manaHatchStored.isEmpty()) fluids.addAll(manaHatchStored);
-            if (enableInfinityMana) {
-                fluids.add(GTNLMaterials.FluidMana.getFluidOrGas(Integer.MAX_VALUE));
-            }
-            processingLogic.setInputFluids(fluids);
+            replaceRecipeSearchFluids(getStoredFluidsForColor(Optional.of(color)));
+            appendSharedManaRecipeFluids(manaHatchStored);
+            setProcessingInputFluids(recipeSearchFluidInputs);
 
             if (isInputSeparationEnabled()) {
                 if (mInputBusses.isEmpty()) {
-                    CheckRecipeResult foundResult = processingLogic.process();
+                    replaceRecipeSearchItems(getStoredInputsForColor(Optional.of(color)));
+                    addControllerSlotIfNeeded(recipeSearchItemInputs);
+                    setProcessingInputItems(recipeSearchItemInputs);
+                    CheckRecipeResult foundResult = processRecipeSearch();
                     if (foundResult.wasSuccessful()) return foundResult;
-                    // Recipe failed in interesting way, so remember that and continue searching
                     if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
                 } else {
                     for (MTEHatchInputBus bus : mInputBusses) {
@@ -268,34 +254,47 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
                             continue;
                         byte busColor = bus.getColor();
                         if (busColor != -1 && busColor != color) continue;
-                        List<ItemStack> inputItems = new ArrayList<>();
-                        for (int i = bus.getSizeInventory() - 1; i >= 0; i--) {
-                            ItemStack stored = bus.getStackInSlot(i);
-                            if (stored != null) inputItems.add(stored);
-                        }
-                        if (canUseControllerSlotForRecipe() && getControllerSlot() != null) {
-                            inputItems.add(getControllerSlot());
-                        }
-                        processingLogic.setInputItems(inputItems);
-                        CheckRecipeResult foundResult = processingLogic.process();
+                        recipeSearchItemInputs.clear();
+                        recipeSearchItemInputs.ensureCapacity(bus.getSizeInventory() + 1);
+                        collectBusInputs(bus, recipeSearchItemInputs);
+                        addControllerSlotIfNeeded(recipeSearchItemInputs);
+                        setProcessingInputItems(recipeSearchItemInputs);
+                        CheckRecipeResult foundResult = processRecipeSearch();
                         if (foundResult.wasSuccessful()) return foundResult;
-                        // Recipe failed in interesting way, so remember that and continue searching
                         if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
                     }
                 }
             } else {
-                List<ItemStack> inputItems = getStoredInputsForColor(Optional.of(color));
-                if (canUseControllerSlotForRecipe() && getControllerSlot() != null) {
-                    inputItems.add(getControllerSlot());
-                }
-                processingLogic.setInputItems(inputItems);
-                CheckRecipeResult foundResult = processingLogic.process();
+                replaceRecipeSearchItems(getStoredInputsForColor(Optional.of(color)));
+                addControllerSlotIfNeeded(recipeSearchItemInputs);
+                setProcessingInputItems(recipeSearchItemInputs);
+                CheckRecipeResult foundResult = processRecipeSearch();
                 if (foundResult.wasSuccessful()) return foundResult;
-                // Recipe failed in interesting way, so remember that
                 if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
             }
         }
         return result;
+    }
+
+    public List<FluidStack> collectManaInputFluids() {
+        sharedManaRecipeFluids.clear();
+        for (CustomFluidHatch tHatch : mFluidManaInputHatch) {
+            FluidStack fillableStack = tHatch.getFillableStack();
+            if (fillableStack != null) {
+                sharedManaRecipeFluids.add(fillableStack);
+            }
+        }
+        return sharedManaRecipeFluids;
+    }
+
+    public void appendSharedManaRecipeFluids(List<FluidStack> manaHatchStored) {
+        recipeSearchFluidInputs.ensureCapacity(recipeSearchFluidInputs.size() + manaHatchStored.size() + 1);
+        if (!manaHatchStored.isEmpty()) {
+            recipeSearchFluidInputs.addAll(manaHatchStored);
+        }
+        if (enableInfinityMana) {
+            recipeSearchFluidInputs.add(GTNLMaterials.FluidMana.getFluidOrGas(Integer.MAX_VALUE));
+        }
     }
 
     @Override

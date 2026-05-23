@@ -1,7 +1,7 @@
 package com.science.gtnl.common.item.items;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.SplittableRandom;
 
@@ -32,6 +32,7 @@ import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.item.MetaItemStackUtils;
+import com.science.gtnl.utils.item.MetaTooltipUtils;
 import com.sinthoras.visualprospecting.VisualProspecting_API;
 
 import bartworks.system.material.Werkstoff;
@@ -63,12 +64,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 public class ElectricProspectorTool extends Item {
 
     public String unlocalizedName = "ElectricProspectorTool";
-    public static int[] DISTANCEINTS = new int[] { 0, 4, 25, 64 };
+    public static final int[] DISTANCE_SQUARE_THRESHOLDS = new int[] { 0, 4, 25, 64 };
     public Object2IntMap<String> ores = new Object2IntOpenHashMap<>();
     public int distTextIndex;
     public int mCosts = 1;
-    public static Int2ObjectMap<IntLongPair> mRangeMap = new Int2ObjectOpenHashMap<>();
-    public static IntSet metaSet = new IntOpenHashSet();
+    public static final Int2ObjectMap<IntLongPair> RANGE_MAP = new Int2ObjectOpenHashMap<>();
+    public static final IntSet META_SET = new IntOpenHashSet();
 
     public static String CHAT_MSG_SEPARATOR = EnumChatFormatting.STRIKETHROUGH + "--------------------";
 
@@ -83,8 +84,8 @@ public class ElectricProspectorTool extends Item {
     }
 
     public static ItemStack initItem(int aMeta, int aRange, long maxDamage) {
-        mRangeMap.put(aMeta, IntLongPair.of(aRange, maxDamage));
-        ItemStack stack = MetaItemStackUtils.initMetaItemStack(aMeta, ItemLoader.electricProspectorTool, metaSet);
+        RANGE_MAP.put(aMeta, IntLongPair.of(aRange, maxDamage));
+        ItemStack stack = MetaItemStackUtils.initMetaItemStack(aMeta, ItemLoader.electricProspectorTool, META_SET);
         ItemUtils.setToolMaxDamage(stack, maxDamage);
         if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
         stack.stackTagCompound.setInteger("toolMeta", aMeta);
@@ -119,30 +120,28 @@ public class ElectricProspectorTool extends Item {
         super.registerIcons(iconRegister);
         this.itemIcon = iconRegister
             .registerIcon(ScienceNotLeisure.RESOURCE_ROOT_ID + ":" + "ElectricProspectorTool/0");
-        for (int meta : metaSet) {
-            ItemStaticDataClientOnly.iconsMapElectricProspectorTool.put(
-                meta,
-                iconRegister.registerIcon(ScienceNotLeisure.RESOURCE_ROOT_ID + ":" + "ElectricProspectorTool/" + meta));
-        }
+        MetaTooltipUtils.registerIcons(
+            META_SET,
+            ItemStaticDataClientOnly.ELECTRIC_PROSPECTOR_TOOL_ICONS,
+            iconRegister,
+            ScienceNotLeisure.RESOURCE_ROOT_ID + ":" + "ElectricProspectorTool/");
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int aMetaData) {
-        return ItemStaticDataClientOnly.iconsMapElectricProspectorTool.containsKey(aMetaData)
-            ? ItemStaticDataClientOnly.iconsMapElectricProspectorTool.get(aMetaData)
-            : ItemStaticDataClientOnly.iconsMapElectricProspectorTool.get(0);
+        return MetaTooltipUtils.getIcon(ItemStaticDataClientOnly.ELECTRIC_PROSPECTOR_TOOL_ICONS, aMetaData);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item aItem, CreativeTabs aCreativeTabs, List<ItemStack> aList) {
-        for (int meta : metaSet) {
+        for (int meta : META_SET) {
             ItemStack stack = new ItemStack(ItemLoader.electricProspectorTool, 1, 0);
 
             ItemUtils.setToolMaxDamage(
                 stack,
-                mRangeMap.get(meta)
+                RANGE_MAP.get(meta)
                     .rightLong());
 
             if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
@@ -157,7 +156,7 @@ public class ElectricProspectorTool extends Item {
         if (!aWorld.isRemote) {
             if (!aStack.hasTagCompound()) aStack.setTagCompound(new NBTTagCompound());
             int meta = aStack.stackTagCompound.getInteger("toolMeta");
-            IntLongPair rangeMap = mRangeMap.get(meta);
+            IntLongPair rangeMap = RANGE_MAP.get(meta);
             if (rangeMap == null) return aStack;
             ItemUtils.setToolMaxDamage(aStack, rangeMap.rightLong());
             int data = getDetravData(aStack);
@@ -176,7 +175,8 @@ public class ElectricProspectorTool extends Item {
             int cX = ((int) aPlayer.posX) >> 4;
             int cZ = ((int) aPlayer.posZ) >> 4;
             int size = rangeMap.leftInt();
-            List<Chunk> chunks = new ArrayList<>();
+            int chunkCapacity = Math.max(0, (size * 2 - 1) * (size * 2 - 1));
+            List<Chunk> chunks = new ArrayList<>(chunkCapacity);
             aPlayer.addChatMessage(new ChatComponentText("Scanning..."));
 
             for (int i = -size; i <= size; i++)
@@ -291,11 +291,11 @@ public class ElectricProspectorTool extends Item {
                             (int) aPlayer.posX,
                             (int) aPlayer.posZ,
                             size * 16),
-                        new ArrayList<>());
+                        Collections.emptyList());
                 } else if (data == 2) {
                     VisualProspecting_API.LogicalServer.sendProspectionResultsToClient(
                         (EntityPlayerMP) aPlayer,
-                        new ArrayList<>(),
+                        Collections.emptyList(),
                         VisualProspecting_API.LogicalServer.prospectUndergroundFluidsWithingRadius(
                             aWorld,
                             (int) aPlayer.posX,
@@ -366,7 +366,7 @@ public class ElectricProspectorTool extends Item {
         if (!aWorld.isRemote) {
             if (!aStack.hasTagCompound()) aStack.setTagCompound(new NBTTagCompound());
             int meta = aStack.stackTagCompound.getInteger("toolMeta");
-            IntLongPair rangeMap = mRangeMap.get(meta);
+            IntLongPair rangeMap = RANGE_MAP.get(meta);
             if (rangeMap == null) return true;
             ItemUtils.setToolMaxDamage(aStack, rangeMap.rightLong());
             int polution = getPollution(aWorld, aX, aZ);
@@ -383,11 +383,11 @@ public class ElectricProspectorTool extends Item {
         int bX = aX;
         int bZ = aZ;
 
-        ores = new Object2IntOpenHashMap<>();
+        ores.clear();
 
         if (!aStack.hasTagCompound()) aStack.setTagCompound(new NBTTagCompound());
         int meta = aStack.stackTagCompound.getInteger("toolMeta");
-        IntLongPair rangeMap = mRangeMap.get(meta);
+        IntLongPair rangeMap = RANGE_MAP.get(meta);
         if (rangeMap == null) return;
 
         int range = rangeMap.leftInt();
@@ -409,8 +409,8 @@ public class ElectricProspectorTool extends Item {
                 aZ = bZ + (z * 16);
                 int dist = x * x + z * z;
 
-                for (distTextIndex = 0; distTextIndex < DISTANCEINTS.length; distTextIndex++) {
-                    if (dist <= DISTANCEINTS[distTextIndex]) {
+                for (distTextIndex = 0; distTextIndex < DISTANCE_SQUARE_THRESHOLDS.length; distTextIndex++) {
+                    if (dist <= DISTANCE_SQUARE_THRESHOLDS[distTextIndex]) {
                         break;
                     }
                 }
@@ -438,22 +438,20 @@ public class ElectricProspectorTool extends Item {
         }
 
         // List to hold unsorted scanner messages
-        List<ChatComponentText> oreMessages = new ArrayList<>();
+        List<ChatComponentText> oreMessages = new ArrayList<>(ores.size());
 
-        for (String key : ores.keySet()) {
-            int value = ores.get(key);
-            appendChatMessageByValue(oreMessages, aPlayer, value, key);
+        for (Object2IntMap.Entry<String> entry : ores.object2IntEntrySet()) {
+            appendChatMessageByValue(oreMessages, aPlayer, entry.getIntValue(), entry.getKey());
         }
 
         // Define sort order by distance
-        List<String> sortOrder = Arrays.asList(
-            StatCollector.translateToLocal("detrav.scanner.distance.texts.4"),
+        String[] sortOrder = new String[] { StatCollector.translateToLocal("detrav.scanner.distance.texts.4"),
             StatCollector.translateToLocal("detrav.scanner.distance.texts.3"),
             StatCollector.translateToLocal("detrav.scanner.distance.texts.2"),
             StatCollector.translateToLocal("detrav.scanner.distance.texts.1"),
-            StatCollector.translateToLocal("detrav.scanner.distance.texts.0"));
+            StatCollector.translateToLocal("detrav.scanner.distance.texts.0") };
 
-        List<ChatComponentText> oreMessagesSorted = new ArrayList<>();
+        List<ChatComponentText> oreMessagesSorted = new ArrayList<>(oreMessages.size() + sortOrder.length + 2);
         oreMessagesSorted.add(new ChatComponentText(CHAT_MSG_SEPARATOR));
 
         // Sort ore messages by distance, separated by -----
@@ -473,7 +471,7 @@ public class ElectricProspectorTool extends Item {
             }
         }
 
-        oreMessages.add(
+        oreMessagesSorted.add(
             new ChatComponentText(EnumChatFormatting.WHITE + StatCollector.translateToLocal("detrav.scanner.success")));
 
         // Print the sorted messages
@@ -489,13 +487,13 @@ public class ElectricProspectorTool extends Item {
                     (int) aPlayer.posX,
                     (int) aPlayer.posZ,
                     range * 16),
-                new ArrayList<>());
+                Collections.emptyList());
         }
     }
 
     // Used by Electric scanner when scanning the chunk whacked by the scanner. 100% chance find rate
     public void prospectSingleChunk(ItemStack aStack, EntityPlayer aPlayer, World aWorld, int aX, int aY, int aZ) {
-        ores = new Object2IntOpenHashMap<>();
+        ores.clear();
         aPlayer.addChatMessage(
             new ChatComponentText(
                 EnumChatFormatting.GOLD + StatCollector.translateToLocal(
@@ -510,9 +508,8 @@ public class ElectricProspectorTool extends Item {
             new SplittableRandom(),
             1000);
 
-        for (String key : ores.keySet()) {
-            int value = ores.get(key);
-            addChatMassageByValue(aPlayer, value, key);
+        for (Object2IntMap.Entry<String> entry : ores.object2IntEntrySet()) {
+            addChatMassageByValue(aPlayer, entry.getIntValue(), entry.getKey());
         }
 
         if (Mods.VisualProspecting.isModLoaded()) {
@@ -523,7 +520,7 @@ public class ElectricProspectorTool extends Item {
                     (int) aPlayer.posX,
                     (int) aPlayer.posZ,
                     0),
-                new ArrayList<>());
+                Collections.emptyList());
         }
     }
 

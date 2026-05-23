@@ -25,13 +25,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,6 +45,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -107,6 +105,8 @@ import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchInputBusME;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtneioreplugin.plugin.block.ModBlocks;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tectech.TecTech;
 import tectech.recipe.EyeOfHarmonyRecipe;
 import tectech.thing.block.TileEntityEyeOfHarmony;
@@ -452,11 +452,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                 .setPos(0, height));
 
             mainDisp.widget(
-                SlotGroup.ofFluidTanks(
-                    Stream.of(heliumStack, hydrogenStack, rawStarMatterStack)
-                        .map(stack -> new FluidStackTank(() -> stack, s -> {}, Integer.MAX_VALUE))
-                        .collect(Collectors.toList()),
-                    3)
+                SlotGroup.ofFluidTanks(createDisplayFluidTanks(), 3)
                     .phantom(true)
                     .widgetCreator((slotIndex, h) -> (FluidSlotWidget) new FluidSlotWidget(h) {
 
@@ -502,12 +498,8 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                     .setSize(54, 18)
                     .setPos(18, height));
 
-            // Display machine name and status
-            String name = mte.getLocalName();
-            String statusString = name + " - " + unit.getStatusString();
-
             mainDisp.widget(
-                TextWidget.dynamicText(() -> new Text(statusString))
+                TextWidget.dynamicText(() -> new Text(mte.getLocalName() + " - " + unit.getStatusString()))
                     .setSynced(true)
                     .setTextAlignment(Alignment.CenterLeft)
                     .setPos(75, 5 + height));
@@ -824,7 +816,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new HashMap<>();
+        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -848,7 +840,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         }
 
         for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-            rList.addAll(Arrays.asList(dualInputHatch.getAllItems()));
+            appendNonNullItemStacks(rList, dualInputHatch.getAllItems());
         }
 
         ItemStack stackInSlot1 = getStackInSlot(1);
@@ -863,7 +855,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     @Override
     public ArrayList<FluidStack> getStoredFluidsForColor(Optional<Byte> color) {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
+        Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             byte hatchColor = tHatch.getColor();
             if (color.isPresent() && hatchColor != -1 && hatchColor != color.get()) continue;
@@ -890,7 +882,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         }
 
         for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-            rList.addAll(Arrays.asList(dualInputHatch.getAllFluids()));
+            appendNonNullFluidStacks(rList, dualInputHatch.getAllFluids());
         }
 
         if (!inputsFromME.isEmpty()) {
@@ -923,22 +915,31 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
 
     public long drainFluidLong(Fluid target, long amount, boolean doDrain) {
         long remaining = amount;
-        for (MTEHatch hatch : getAllInputHatches()) {
-            if (remaining <= 0) break;
+        for (MTEHatchInput inputHatch : GTUtility.validMTEList(mInputHatches)) {
+            if (remaining <= 0 || !inputHatch.isValid()) {
+                continue;
+            }
+            FluidStack request = new FluidStack(target, (int) Math.min(Integer.MAX_VALUE, remaining));
+            FluidStack drained = inputHatch.drain(ForgeDirection.UNKNOWN, request, doDrain);
+            if (drained != null) {
+                remaining -= drained.amount;
+            }
+        }
 
-            if (hatch instanceof IDualInputHatch dual && dual.supportsFluids()) {
-                for (FluidStack stack : dual.getAllFluids()) {
-                    if (stack != null && stack.getFluid() == target && stack.amount > 0) {
-                        long deduct = Math.min(remaining, stack.amount);
-                        if (doDrain) stack.amount -= (int) deduct;
-                        remaining -= deduct;
+        for (IDualInputHatch dualInputHatch : mDualInputHatches) {
+            if (remaining <= 0 || !dualInputHatch.supportsFluids()) {
+                continue;
+            }
+            if (!(dualInputHatch instanceof MTEHatch hatch) || !hatch.isValid()) {
+                continue;
+            }
+            for (FluidStack stack : dualInputHatch.getAllFluids()) {
+                if (stack != null && stack.getFluid() == target && stack.amount > 0) {
+                    long deduct = Math.min(remaining, stack.amount);
+                    if (doDrain) {
+                        stack.amount -= (int) deduct;
                     }
-                }
-            } else if (hatch instanceof MTEHatchInput inputHatch && inputHatch.isValid()) {
-                FluidStack request = new FluidStack(target, (int) Math.min(Integer.MAX_VALUE, remaining));
-                FluidStack drained = inputHatch.drain(ForgeDirection.UNKNOWN, request, doDrain);
-                if (drained != null) {
-                    remaining -= drained.amount;
+                    remaining -= deduct;
                 }
             }
         }
@@ -946,14 +947,46 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         return amount - remaining;
     }
 
+    public List<IFluidTank> createDisplayFluidTanks() {
+        List<IFluidTank> displayTanks = new ObjectArrayList<>(3);
+        displayTanks.add(new FluidStackTank(() -> heliumStack, stack -> {}, Integer.MAX_VALUE));
+        displayTanks.add(new FluidStackTank(() -> hydrogenStack, stack -> {}, Integer.MAX_VALUE));
+        displayTanks.add(new FluidStackTank(() -> rawStarMatterStack, stack -> {}, Integer.MAX_VALUE));
+        return displayTanks;
+    }
+
+    public void appendNonNullItemStacks(List<ItemStack> target, ItemStack[] itemStacks) {
+        if (itemStacks == null || itemStacks.length == 0) {
+            return;
+        }
+        for (ItemStack itemStack : itemStacks) {
+            if (itemStack != null) {
+                target.add(itemStack);
+            }
+        }
+    }
+
+    public void appendNonNullFluidStacks(List<FluidStack> target, FluidStack[] fluidStacks) {
+        if (fluidStacks == null || fluidStacks.length == 0) {
+            return;
+        }
+        for (FluidStack fluidStack : fluidStacks) {
+            if (fluidStack != null) {
+                target.add(fluidStack);
+            }
+        }
+    }
+
     public List<MTEHatch> getAllInputHatches() {
-        List<MTEHatch> dualHatches = mDualInputHatches.stream()
-            .map(h -> (MTEHatch) h)
-            .collect(Collectors.toList());
-
-        List<MTEHatch> allHatches = new ArrayList<>(mInputHatches);
-        allHatches.addAll(dualHatches);
-
+        List<MTEHatch> allHatches = new ArrayList<>(mInputHatches.size() + mDualInputHatches.size());
+        for (MTEHatchInput inputHatch : GTUtility.validMTEList(mInputHatches)) {
+            allHatches.add(inputHatch);
+        }
+        for (IDualInputHatch dualInputHatch : mDualInputHatches) {
+            if (dualInputHatch instanceof MTEHatch hatch && hatch.isValid()) {
+                allHatches.add(hatch);
+            }
+        }
         return allHatches;
     }
 

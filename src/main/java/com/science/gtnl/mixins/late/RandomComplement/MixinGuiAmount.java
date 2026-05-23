@@ -31,8 +31,8 @@ public abstract class MixinGuiAmount extends AEBaseGui {
             target = "Lappeng/core/sync/network/NetworkHandler;sendToServer(Lappeng/core/sync/AppEngPacket;)V"))
     public void onActionPerformed(NetworkHandler instance, AppEngPacket message) {
         GuiScreen oldGui;
-        if ((oldGui = GTNLInputHandler.oldGui) != null) {
-            GTNLInputHandler.delayMethod = () -> Minecraft.getMinecraft()
+        if ((oldGui = GTNLInputHandler.LAST_GUI_SCREEN) != null) {
+            GTNLInputHandler.DELAY_METHOD = () -> Minecraft.getMinecraft()
                 .displayGuiScreen(oldGui);
             ScienceNotLeisure.network.sendToServer(new ContainerRollBACK());
         } else {

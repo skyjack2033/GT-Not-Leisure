@@ -1,7 +1,7 @@
 package com.science.gtnl.common.block.casings.glass;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.common.block.casings.glass.ItemBlockGlass.metaSet;
+import static com.science.gtnl.common.block.casings.glass.ItemBlockGlass.META_SET;
 
 import java.util.List;
 
@@ -54,17 +54,16 @@ public class MetaBlockGlass extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
-        return meta < BlockStaticDataClientOnly.iconsBlockMapGlass.size()
-            ? BlockStaticDataClientOnly.iconsBlockMapGlass.get(meta)
-            : BlockStaticDataClientOnly.iconsBlockMapGlass.get(0);
+        return meta < BlockStaticDataClientOnly.GLASS_ICONS.size() ? BlockStaticDataClientOnly.GLASS_ICONS.get(meta)
+            : BlockStaticDataClientOnly.GLASS_ICONS.get(0);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister reg) {
         this.blockIcon = reg.registerIcon(RESOURCE_ROOT_ID + ":" + "MetaBlockGlass/0");
-        for (int Meta : metaSet) {
-            BlockStaticDataClientOnly.iconsBlockMapGlass
+        for (int Meta : META_SET) {
+            BlockStaticDataClientOnly.GLASS_ICONS
                 .put(Meta, reg.registerIcon(RESOURCE_ROOT_ID + ":" + "MetaBlockGlass/" + Meta));
         }
     }
@@ -72,7 +71,7 @@ public class MetaBlockGlass extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubBlocks(Item aItem, CreativeTabs aCreativeTabs, List<ItemStack> list) {
-        for (int Meta : metaSet) {
+        for (int Meta : META_SET) {
             list.add(new ItemStack(aItem, 1, Meta));
         }
     }

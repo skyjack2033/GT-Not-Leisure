@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -74,6 +73,7 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
 
     public static final ThreadLocal<GTNLOverclockCalculator> OC_CALC = ThreadLocal
         .withInitial(GTNLOverclockCalculator::new);
+    public FluidStack[] recipeInputFluids = new FluidStack[0];
 
     public SteamOreProcessorModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional, 8);
@@ -111,6 +111,7 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
         if (tInput.isEmpty() || tInputFluid.isEmpty()) {
             return CheckRecipeResultRegistry.NO_RECIPE;
         }
+        recipeInputFluids = tInputFluid.toArray(new FluidStack[tInputFluid.size()]);
 
         currentCircuitMultiplier = 0;
         ItemStack circuit = getControllerSlot();
@@ -428,12 +429,12 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
                         tID,
                         () -> RecipeMaps.chemicalBathRecipes.findRecipeQuery()
                             .items(aStack)
-                            .fluids(getStoredFluids().toArray(new FluidStack[0]))
+                            .fluids(recipeInputFluids)
                             .find());
                     if (tRecipe != null && tRecipe.getRepresentativeFluidInput(0) != null) {
                         FluidStack tInputFluid = tRecipe.getRepresentativeFluidInput(0)
                             .copy();
-                        int tStored = getFluidAmount(tInputFluid);
+                        int tStored = getFluidAmount(recipeInputFluids, tInputFluid);
                         int tWashed = Math.min(tStored / tInputFluid.amount, aStack.stackSize);
                         depleteInput(new FluidStack(tInputFluid.getFluid(), tWashed * tInputFluid.amount), false);
                         tProduct.addAll(getOutputStack(tRecipe, tWashed));
@@ -452,9 +453,13 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
     }
 
     public int getFluidAmount(FluidStack aFluid) {
+        return getFluidAmount(recipeInputFluids, aFluid);
+    }
+
+    public int getFluidAmount(FluidStack[] storedFluids, FluidStack aFluid) {
         int tAmt = 0;
         if (aFluid == null) return 0;
-        for (FluidStack fluid : getStoredFluids()) {
+        for (FluidStack fluid : storedFluids) {
             if (aFluid.isFluidEqual(fluid)) {
                 tAmt += fluid.amount;
             }
@@ -481,9 +486,13 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
                         .copyAmountUnsafe(Math.max(0, tAmount) * aRecipe.getOutput(i).stackSize, aRecipe.getOutput(i)));
             }
         }
-        return tOutput.stream()
-            .filter(i -> (i != null && i.stackSize > 0))
-            .collect(Collectors.toCollection(ObjectArrayList::new));
+        ObjectArrayList<ItemStack> filteredOutput = new ObjectArrayList<>(tOutput.size());
+        for (ItemStack output : tOutput) {
+            if (output != null && output.stackSize > 0) {
+                filteredOutput.add(output);
+            }
+        }
+        return filteredOutput;
     }
 
     private ItemStack stone;

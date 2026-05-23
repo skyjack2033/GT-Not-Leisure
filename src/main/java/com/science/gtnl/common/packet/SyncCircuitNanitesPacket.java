@@ -1,6 +1,6 @@
 package com.science.gtnl.common.packet;
 
-import static com.science.gtnl.utils.event.SubscribeEventUtils.circuitNanitesDataLoad;
+import static com.science.gtnl.utils.event.SubscribeEventUtils.CIRCUIT_NANITES_DATA_LOAD;
 
 import com.science.gtnl.loader.RecipeLoader;
 
@@ -31,10 +31,10 @@ public class SyncCircuitNanitesPacket implements IMessage, IMessageHandler<SyncC
 
     @Override
     public IMessage onMessage(SyncCircuitNanitesPacket message, MessageContext ctx) {
-        if (!circuitNanitesDataLoad) {
+        if (!CIRCUIT_NANITES_DATA_LOAD) {
             RecipeLoader.loadCircuitNanitesData(message.worldSeed);
         }
-        circuitNanitesDataLoad = true;
+        CIRCUIT_NANITES_DATA_LOAD = true;
         return null;
     }
 

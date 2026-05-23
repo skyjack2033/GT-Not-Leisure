@@ -1,6 +1,5 @@
 package com.science.gtnl.client;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
@@ -46,28 +45,49 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.util.AssemblyLineUtils;
 import gregtech.common.items.ItemFluidDisplay;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 @SideOnly(Side.CLIENT)
 public class GTNLInputHandler implements IContainerInputHandler {
 
-    public static GTNLInputHandler INSTANCE = new GTNLInputHandler();
-    public static Map<String, BooleanSupplier> keys = new HashMap<>() {
-
-        {
-            put("gui.ae_retrieve_item", () -> KeyboardUtil.isCtrlKeyDown() && Mouse.isButtonDown(2));
-            put("gui.ae_start_craft", () -> KeyboardUtil.isAltKeyDown() && Mouse.isButtonDown(2));
-        }
-    };
-
-    public static final Minecraft mc = Minecraft.getMinecraft();
-    public static int inputCooldownTicks = 0;
-    public static int animationTick = 0;
-    public static int frameCounter = 0;
-    public static GuiScreen oldGui = null;
-    public static Runnable delayMethod = null;
+    public static final GTNLInputHandler INSTANCE = new GTNLInputHandler();
+    public static final String AE_RETRIEVE_ITEM_KEY = "gui.ae_retrieve_item";
+    public static final String AE_START_CRAFT_KEY = "gui.ae_start_craft";
+    public static final int PICK_BLOCK_COOLDOWN_TICKS = 10;
+    public static final int ANIMATION_FRAME_COUNT = 14;
+    public static final Map<String, BooleanSupplier> KEY_BINDINGS = createKeyBindings();
+    public static final Minecraft MC = Minecraft.getMinecraft();
+    public static int INPUT_COOLDOWN_TICKS = 0;
+    public static int ANIMATION_TICK = 0;
+    public static int FRAME_COUNTER = 0;
+    public static GuiScreen LAST_GUI_SCREEN = null;
+    public static Runnable DELAY_METHOD = null;
 
     public GTNLInputHandler() {
         GuiContainerManager.addInputHandler(this);
+    }
+
+    public static Map<String, BooleanSupplier> createKeyBindings() {
+        Map<String, BooleanSupplier> keyBindings = new Object2ObjectOpenHashMap<>(2);
+        keyBindings.put(AE_RETRIEVE_ITEM_KEY, () -> KeyboardUtil.isCtrlKeyDown() && Mouse.isButtonDown(2));
+        keyBindings.put(AE_START_CRAFT_KEY, () -> KeyboardUtil.isAltKeyDown() && Mouse.isButtonDown(2));
+        return keyBindings;
+    }
+
+    public static boolean tryHandlePickBlockInput() {
+        EntityClientPlayerMP player = MC.thePlayer;
+        if (player == null || player.capabilities.isCreativeMode
+            || INPUT_COOLDOWN_TICKS != 0
+            || !MC.gameSettings.keyBindPickBlock.isPressed()) {
+            return false;
+        }
+        World world = player.worldObj;
+        if (world == null) {
+            return false;
+        }
+        ClientUtils.onBeforePickBlock(player, world, true);
+        INPUT_COOLDOWN_TICKS = PICK_BLOCK_COOLDOWN_TICKS;
+        return true;
     }
 
     @Override
@@ -77,7 +97,7 @@ public class GTNLInputHandler implements IContainerInputHandler {
         Item item = stack.getItem();
 
         if (item instanceof ICraftingPatternItem pattern) {
-            ICraftingPatternDetails details = pattern.getPatternForItem(stack, Minecraft.getMinecraft().theWorld);
+            ICraftingPatternDetails details = pattern.getPatternForItem(stack, MC.theWorld);
             if (details == null) return false;
 
             stack = details.getCondensedOutputs()[0].getItemStack();
@@ -118,54 +138,41 @@ public class GTNLInputHandler implements IContainerInputHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (inputCooldownTicks > 0) {
-            inputCooldownTicks--;
+        if (INPUT_COOLDOWN_TICKS > 0) {
+            INPUT_COOLDOWN_TICKS--;
         }
-        animationTick = (animationTick + ((++frameCounter & 1) == 0 ? 1 : 0)) % 14;
+        ANIMATION_TICK = (ANIMATION_TICK + ((++FRAME_COUNTER & 1) == 0 ? 1 : 0)) % ANIMATION_FRAME_COUNT;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onInputEvent(final InputEvent.KeyInputEvent event) {
-        if (!mc.thePlayer.capabilities.isCreativeMode && inputCooldownTicks == 0
-            && mc.gameSettings.keyBindPickBlock.isPressed()) {
-            EntityClientPlayerMP player = mc.thePlayer;
-            World world = player.worldObj;
-            ClientUtils.onBeforePickBlock(player, world, true);
-            inputCooldownTicks = 10;
-        }
+        tryHandlePickBlockInput();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onInputEvent(final InputEvent.MouseInputEvent event) {
-        if (!mc.thePlayer.capabilities.isCreativeMode && inputCooldownTicks == 0
-            && mc.gameSettings.keyBindPickBlock.isPressed()) {
-            EntityClientPlayerMP player = mc.thePlayer;
-            World world = player.worldObj;
-            ClientUtils.onBeforePickBlock(player, world, true);
-            inputCooldownTicks = 10;
-        }
+        tryHandlePickBlockInput();
     }
 
     public boolean startAEWork(ItemStack item, int mouseX, int mouseY) {
-        for (Map.Entry<String, BooleanSupplier> key : keys.entrySet()) {
-            if (!key.getValue()
+        for (Map.Entry<String, BooleanSupplier> keyBinding : KEY_BINDINGS.entrySet()) {
+            if (!keyBinding.getValue()
                 .getAsBoolean()) continue;
             final Widget focused = LayoutManager.instance()
                 .getWidgetUnderMouse(mouseX, mouseY);
 
             if (!(focused instanceof BookmarkPanel || focused instanceof ItemPanel)) return false;
-            final var oldGui = Minecraft.getMinecraft().currentScreen;
+            final GuiScreen currentGui = MC.currentScreen;
             ScienceNotLeisure.network.sendToServer(
                 new KeyBindingHandler(
-                    key.getKey(),
+                    keyBinding.getKey(),
                     item,
-                    oldGui instanceof GuiMEMonitorable || oldGui instanceof GuiItemMonitor));
-            if (key.getKey()
-                .equals("gui.ae_start_craft")) {
-                var player = Minecraft.getMinecraft().thePlayer;
+                    currentGui instanceof GuiMEMonitorable || currentGui instanceof GuiItemMonitor));
+            if (AE_START_CRAFT_KEY.equals(keyBinding.getKey())) {
+                var player = MC.thePlayer;
                 if (player.openContainer instanceof ContainerCraftAmount
                     || player.openContainer instanceof ContainerCraftConfirm) return false;
-                GTNLInputHandler.oldGui = oldGui;
+                LAST_GUI_SCREEN = currentGui;
             }
             return true;
         }

@@ -94,7 +94,7 @@ public class BlockEnderElevator extends BlockContainer {
     @SideOnly(Side.CLIENT)
     @Override
     public int getRenderType() {
-        return ClientProxy.enderElevatorRenderID;
+        return ClientProxy.ENDER_ELEVATOR_RENDER_ID;
     }
 
     @Override

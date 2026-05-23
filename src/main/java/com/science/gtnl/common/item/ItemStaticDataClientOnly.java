@@ -11,12 +11,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 public class ItemStaticDataClientOnly {
 
     @SideOnly(Side.CLIENT)
-    public static Int2ObjectMap<IIcon> iconsMapMetaItem01 = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<IIcon> META_ITEM_01_ICONS = new Int2ObjectOpenHashMap<>();
 
     @SideOnly(Side.CLIENT)
-    public static Int2ObjectMap<IIcon> iconsMapElectricProspectorTool = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<IIcon> ELECTRIC_PROSPECTOR_TOOL_ICONS = new Int2ObjectOpenHashMap<>();
 
     @SideOnly(Side.CLIENT)
-    public static Int2ObjectMap<IIcon> iconsMapIzumik = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<IIcon> IZUMIK_ICONS = new Int2ObjectOpenHashMap<>();
 
 }

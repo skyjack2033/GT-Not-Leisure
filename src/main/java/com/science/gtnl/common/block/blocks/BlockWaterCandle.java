@@ -54,7 +54,7 @@ public class BlockWaterCandle extends BlockContainer {
     @SideOnly(Side.CLIENT)
     @Override
     public int getRenderType() {
-        return ClientProxy.waterCandleRenderID;
+        return ClientProxy.WATER_CANDLE_RENDER_ID;
     }
 
     @SideOnly(Side.CLIENT)

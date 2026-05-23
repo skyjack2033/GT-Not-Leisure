@@ -1,8 +1,9 @@
 package com.science.gtnl.common.item;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -14,6 +15,8 @@ import net.minecraft.world.World;
 import baubles.api.IBauble;
 import baubles.common.container.InventoryBaubles;
 import baubles.common.lib.PlayerHandler;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import vazkii.botania.common.achievement.ModAchievements;
 import vazkii.botania.common.core.helper.ItemNBTHelper;
 import vazkii.botania.common.entity.EntityDoppleganger;
@@ -23,9 +26,9 @@ public abstract class BaubleItem extends Item implements IBauble {
     public static final String TAG_BAUBLE_UUID_MOST = "baubleUUIDMost";
     public static final String TAG_BAUBLE_UUID_LEAST = "baubleUUIDLeast";
 
-    public static final HashMap<UUID, UUID> itemToPlayerRemote = new HashMap<>();
-    public static final HashMap<UUID, UUID> itemToPlayer = new HashMap<>();
-    public static final HashSet<UUID> toRemoveItems = new HashSet<>();
+    public static final Map<UUID, UUID> ITEM_TO_PLAYER_REMOTE = new Object2ObjectOpenHashMap<>();
+    public static final Map<UUID, UUID> ITEM_TO_PLAYER = new Object2ObjectOpenHashMap<>();
+    public static final Set<UUID> TO_REMOVE_ITEMS = new ObjectOpenHashSet<>();
 
     @Override
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
@@ -60,11 +63,11 @@ public abstract class BaubleItem extends Item implements IBauble {
     @Override
     public void onWornTick(ItemStack stack, EntityLivingBase player) {
         UUID itemUUID = getBaubleUUID(stack);
-        if (toRemoveItems.contains(itemUUID)) {
+        if (TO_REMOVE_ITEMS.contains(itemUUID)) {
             // this is done like this because on server worn tick gets called after unequip
             // so it would get reapplied
             unapplyItem(itemUUID, player.worldObj.isRemote);
-            toRemoveItems.remove(itemUUID);
+            TO_REMOVE_ITEMS.remove(itemUUID);
             return;
         }
         if (!wasPlayerApplied(itemUUID, player.getUniqueID(), player.worldObj.isRemote)) {
@@ -91,7 +94,7 @@ public abstract class BaubleItem extends Item implements IBauble {
 
     @Override
     public void onUnequipped(ItemStack stack, EntityLivingBase player) {
-        toRemoveItems.add(getBaubleUUID(stack));
+        TO_REMOVE_ITEMS.add(getBaubleUUID(stack));
     }
 
     @Override
@@ -118,36 +121,38 @@ public abstract class BaubleItem extends Item implements IBauble {
     }
 
     public static boolean wasPlayerApplied(UUID itemUUID, UUID playerUUID, boolean remote) {
-        return playerUUID.equals(remote ? itemToPlayerRemote.get(itemUUID) : itemToPlayer.get(itemUUID));
+        return playerUUID.equals(remote ? ITEM_TO_PLAYER_REMOTE.get(itemUUID) : ITEM_TO_PLAYER.get(itemUUID));
     }
 
     public static void applyToPlayer(UUID itemUUID, UUID playerUUID, boolean remote) {
         if (remote) {
-            itemToPlayerRemote.put(itemUUID, playerUUID);
+            ITEM_TO_PLAYER_REMOTE.put(itemUUID, playerUUID);
         } else {
-            itemToPlayer.put(itemUUID, playerUUID);
+            ITEM_TO_PLAYER.put(itemUUID, playerUUID);
         }
     }
 
     public static void unapplyItem(UUID itemUUID, boolean remote) {
         if (remote) {
-            itemToPlayerRemote.remove(itemUUID);
+            ITEM_TO_PLAYER_REMOTE.remove(itemUUID);
         } else {
-            itemToPlayer.remove(itemUUID);
+            ITEM_TO_PLAYER.remove(itemUUID);
         }
     }
 
     public static void removePlayer(UUID playerUUID) {
-        for (UUID item : itemToPlayerRemote.keySet()
-            .toArray(new UUID[0])) {
-            if (playerUUID.equals(itemToPlayerRemote.get(item))) {
-                itemToPlayerRemote.remove(item);
-            }
-        }
-        for (UUID item : itemToPlayer.keySet()
-            .toArray(new UUID[0])) {
-            if (playerUUID.equals(itemToPlayer.get(item))) {
-                itemToPlayer.remove(item);
+        removePlayerEntries(ITEM_TO_PLAYER_REMOTE, playerUUID);
+        removePlayerEntries(ITEM_TO_PLAYER, playerUUID);
+    }
+
+    public static void removePlayerEntries(Map<UUID, UUID> itemToPlayerMap, UUID playerUUID) {
+        Iterator<Map.Entry<UUID, UUID>> iterator = itemToPlayerMap.entrySet()
+            .iterator();
+        while (iterator.hasNext()) {
+            if (playerUUID.equals(
+                iterator.next()
+                    .getValue())) {
+                iterator.remove();
             }
         }
     }

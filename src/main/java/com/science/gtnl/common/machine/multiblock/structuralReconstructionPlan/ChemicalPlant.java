@@ -195,8 +195,8 @@ public class ChemicalPlant extends GTMMultiMachineBase<ChemicalPlant> implements
     @Override
     public int getMaxParallelRecipes() {
         resetParallelTier();
-        if (mParallelControllerHatches.size() == 1) {
-            ParallelControllerHatch module = mParallelControllerHatches.get(0);
+        ParallelControllerHatch module = getSingleParallelControllerHatch();
+        if (module != null) {
             mParallelTier = module.mTier;
             return Math.min(module.getParallel(), 1024);
         }

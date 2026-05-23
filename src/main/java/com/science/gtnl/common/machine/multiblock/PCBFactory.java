@@ -8,7 +8,6 @@ import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,6 +78,7 @@ import gregtech.common.tileentities.machines.IRecipeProcessingAwareHatch;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import tectech.thing.CustomItemList;
@@ -488,7 +488,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
     public ArrayList<FluidStack> getStoredWater() {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
+        Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mWaterInputHatches)) {
             if (tHatch instanceof MTEHatchMultiInput multiInputHatch) {
                 for (FluidStack tFluid : multiInputHatch.getStoredFluid()) {

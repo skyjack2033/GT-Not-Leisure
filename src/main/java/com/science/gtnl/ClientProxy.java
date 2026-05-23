@@ -74,7 +74,6 @@ import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.utils.detrav.DetravScannerGUI;
 import com.science.gtnl.utils.enums.GuiType;
 import com.science.gtnl.utils.event.SubscribeEventClientUtils;
-import com.science.gtnl.utils.gui.NotificationTickHandler;
 
 import Forge.NullPointerException;
 import appeng.api.parts.IPart;
@@ -101,8 +100,11 @@ import micdoodle8.mods.galacticraft.core.proxy.ClientProxyCore;
 
 public class ClientProxy extends CommonProxy {
 
-    public static int waterCandleRenderID;
-    public static int enderElevatorRenderID;
+    public static final SubscribeEventClientUtils SUBSCRIBE_EVENT_CLIENT_UTILS = new SubscribeEventClientUtils();
+    public static final TitleDisplayHandler TITLE_DISPLAY_HANDLER = new TitleDisplayHandler();
+    public static final SpoceRenderHandler SPOCE_RENDER_HANDLER = new SpoceRenderHandler();
+    public static int WATER_CANDLE_RENDER_ID;
+    public static int ENDER_ELEVATOR_RENDER_ID;
 
     @Override
     public void init(FMLInitializationEvent event) {
@@ -110,8 +112,8 @@ public class ClientProxy extends CommonProxy {
 
         ClientCommandHandler.instance.registerCommand(new CommandSpoce());
 
-        waterCandleRenderID = RenderingRegistry.getNextAvailableRenderId();
-        enderElevatorRenderID = RenderingRegistry.getNextAvailableRenderId();
+        WATER_CANDLE_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
+        ENDER_ELEVATOR_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
 
         RenderingRegistry.registerBlockHandler(new EnderElevatorRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEnderElevator.class, new EnderElevatorRenderer());
@@ -201,29 +203,25 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
-        MinecraftForge.EVENT_BUS.register(new SubscribeEventClientUtils());
+        MinecraftForge.EVENT_BUS.register(SUBSCRIBE_EVENT_CLIENT_UTILS);
         FMLCommonHandler.instance()
             .bus()
-            .register(new SubscribeEventClientUtils());
+            .register(SUBSCRIBE_EVENT_CLIENT_UTILS);
         MinecraftForge.EVENT_BUS.register(GTNLInputHandler.INSTANCE);
         FMLCommonHandler.instance()
             .bus()
             .register(GTNLInputHandler.INSTANCE);
         GuiContainerManager.addTooltipHandler(new GTNLTooltipManager());
 
-        MinecraftForge.EVENT_BUS.register(new TitleDisplayHandler());
+        MinecraftForge.EVENT_BUS.register(TITLE_DISPLAY_HANDLER);
         FMLCommonHandler.instance()
             .bus()
-            .register(new TitleDisplayHandler());
+            .register(TITLE_DISPLAY_HANDLER);
 
+        MinecraftForge.EVENT_BUS.register(SPOCE_RENDER_HANDLER);
         FMLCommonHandler.instance()
             .bus()
-            .register(new NotificationTickHandler());
-
-        MinecraftForge.EVENT_BUS.register(new SpoceRenderHandler());
-        FMLCommonHandler.instance()
-            .bus()
-            .register(new SpoceRenderHandler());
+            .register(SPOCE_RENDER_HANDLER);
     }
 
     @Override

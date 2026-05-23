@@ -77,6 +77,11 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
     private static final int HORIZONTAL_OFF_SET = 12;
     private static final int VERTICAL_OFF_SET = 39;
     private static final int DEPTH_OFF_SET = 0;
+    public static final FluidStack PYROTHEUM_TEMPLATE = new FluidStack(GTPPFluids.Pyrotheum, 1);
+    public static final FluidStack DISTILLED_WATER_TEMPLATE = GTModHandler.getDistilledWater(1);
+    public static final FluidStack LIQUID_OXYGEN_TEMPLATE = Materials.LiquidOxygen.getFluid(1);
+    public static final FluidStack LIQUID_HELIUM_TEMPLATE = WerkstoffLoader.LiquidHelium.getFluidOrGas(1);
+    public static final FluidStack CRYOTHEUM_TEMPLATE = new FluidStack(GTPPFluids.Cryotheum, 1);
 
     public double excessFuel = 0;
     public int drillTier = 0;
@@ -209,12 +214,12 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
 
         if (excessFuel < 2000) {
             int consumptionCount = 0;
+            int pyrotheumConsumption = getPyrotheumConsumption();
 
             for (FluidStack tFluid : storedFluids) {
-                if (GTUtility.areFluidsEqual(tFluid, new FluidStack(GTPPFluids.Pyrotheum, 1))) {
-                    int consumption = (int) Math.pow(excessFuel, 1.3);
-                    if (tFluid.amount >= consumption) {
-                        tFluid.amount -= consumption;
+                if (GTUtility.areFluidsEqual(tFluid, PYROTHEUM_TEMPLATE)) {
+                    if (tFluid.amount >= pyrotheumConsumption) {
+                        tFluid.amount -= pyrotheumConsumption;
                         consumptionCount++;
                     }
                 }
@@ -259,11 +264,15 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
                     }
                 }
             }
-            mOutputFluids = outputFluids.toArray(new FluidStack[0]);
+            mOutputFluids = outputFluids.toArray(new FluidStack[outputFluids.size()]);
             this.mMaxProgresstime = (int) ((((double) 5750000 / excessFuel) - 475) * mConfigSpeedBoost);
             this.lEUt = -needEu;
             return CheckRecipeResultRegistry.SUCCESSFUL;
         }
+    }
+
+    public int getPyrotheumConsumption() {
+        return (int) Math.pow(excessFuel, 1.3);
     }
 
     @Override
@@ -295,34 +304,35 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
 
         if (mProgresstime > 0) {
             if (mProgresstime % 5 == 0 && excessFuel >= 2000) {
-                for (FluidStack tFluid : getStoredFluids()) {
+                int pyrotheumConsumption = getPyrotheumConsumption();
+                ArrayList<FluidStack> storedFluids = getStoredFluids();
+                for (FluidStack tFluid : storedFluids) {
                     if (tFluid == null || tFluid.getFluid() == null) continue;
                     int amount = tFluid.amount;
-                    if (GTUtility.areFluidsEqual(tFluid, new FluidStack(GTPPFluids.Pyrotheum, 1))) {
-                        int consumption = (int) Math.pow(excessFuel, 1.3);
-                        if (amount >= consumption) {
-                            tFluid.amount -= consumption;
+                    if (GTUtility.areFluidsEqual(tFluid, PYROTHEUM_TEMPLATE)) {
+                        if (amount >= pyrotheumConsumption) {
+                            tFluid.amount -= pyrotheumConsumption;
                             excessFuel += 1;
                         }
-                    } else if (GTUtility.areFluidsEqual(tFluid, GTModHandler.getDistilledWater(1))) {
+                    } else if (GTUtility.areFluidsEqual(tFluid, DISTILLED_WATER_TEMPLATE)) {
                         int multiplier = amount / 200_000;
                         if (multiplier > 0) {
                             tFluid.amount -= multiplier * 200_000;
                             excessFuel -= multiplier;
                         }
-                    } else if (GTUtility.areFluidsEqual(tFluid, Materials.LiquidOxygen.getFluid(1))) {
+                    } else if (GTUtility.areFluidsEqual(tFluid, LIQUID_OXYGEN_TEMPLATE)) {
                         int multiplier = amount / 200_000;
                         if (multiplier > 0) {
                             tFluid.amount -= multiplier * 200_000;
                             excessFuel -= multiplier * 2;
                         }
-                    } else if (GTUtility.areFluidsEqual(tFluid, WerkstoffLoader.LiquidHelium.getFluidOrGas(1))) {
+                    } else if (GTUtility.areFluidsEqual(tFluid, LIQUID_HELIUM_TEMPLATE)) {
                         int multiplier = amount / 200_000;
                         if (multiplier > 0) {
                             tFluid.amount -= multiplier * 200_000;
                             excessFuel -= multiplier * 4;
                         }
-                    } else if (GTUtility.areFluidsEqual(tFluid, new FluidStack(GTPPFluids.Cryotheum, 1))) {
+                    } else if (GTUtility.areFluidsEqual(tFluid, CRYOTHEUM_TEMPLATE)) {
                         int multiplier = amount / 200_000;
                         if (multiplier > 0) {
                             tFluid.amount -= multiplier * 200_000;

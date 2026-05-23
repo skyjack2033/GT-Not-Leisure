@@ -9,7 +9,6 @@ import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.ToLongFunction;
-import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -77,6 +75,7 @@ import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtnhlanth.common.register.LanthItemList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopying> implements ISurvivalConstructable {
 
@@ -192,10 +191,8 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
 
         if (needUUMPerUnit <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
 
-        long totalUUMAvailable = getStoredFluids().stream()
-            .filter(stack -> GTUtility.areFluidsEqual(stack, UUMatter))
-            .mapToLong(stack -> stack.amount)
-            .sum();
+        ArrayList<FluidStack> storedFluids = getStoredFluids();
+        long totalUUMAvailable = getTotalFluidAmount(storedFluids, UUMatter);
 
         int parallelByUUM = (int) Math.min(Integer.MAX_VALUE, totalUUMAvailable / needUUMPerUnit);
         int parallelByEU = (int) Math.min(Integer.MAX_VALUE, maxInputEU / needEUtPerUnit);
@@ -247,11 +244,23 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
+    public long getTotalFluidAmount(List<FluidStack> storedFluids, FluidStack targetFluid) {
+        long totalAmount = 0;
+        for (FluidStack storedFluid : storedFluids) {
+            if (storedFluid != null && GTUtility.areFluidsEqual(storedFluid, targetFluid)) {
+                totalAmount += storedFluid.amount;
+            }
+        }
+        return totalAmount;
+    }
+
     public boolean depleteInputList(List<FluidStack> fluids, boolean simulate) {
         if (fluids == null || fluids.isEmpty()) return false;
 
+        ArrayList<FluidStack> storedFluids = getStoredFluids();
+        List<MTEHatch> allInputHatches = getAllInputHatches();
         Map<Fluid, Long> mergedStorage = new HashMap<>();
-        for (FluidStack stored : getStoredFluids()) {
+        for (FluidStack stored : storedFluids) {
             if (stored != null) {
                 mergedStorage.merge(stored.getFluid(), (long) stored.amount, Long::sum);
             }
@@ -276,7 +285,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
             while (remaining > 0) {
                 int drainedThisRound = 0;
 
-                for (MTEHatch hatch : getAllInputHatches()) {
+                for (MTEHatch hatch : allInputHatches) {
                     int drained = drainFluid(hatch, new FluidStack(needed.getFluid(), remaining), true);
                     drainedThisRound += drained;
                 }
@@ -325,20 +334,22 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
     }
 
     public List<MTEHatch> getAllInputHatches() {
-        List<MTEHatch> dualHatches = mDualInputHatches.stream()
-            .map(h -> (MTEHatch) h)
-            .collect(Collectors.toList());
-
-        List<MTEHatch> allHatches = new ArrayList<>(mInputHatches);
-        allHatches.addAll(dualHatches);
-
-        return GTUtility.filterValidMTEs(allHatches);
+        List<MTEHatch> allHatches = new ArrayList<>(mInputHatches.size() + mDualInputHatches.size());
+        for (MTEHatchInput inputHatch : GTUtility.validMTEList(mInputHatches)) {
+            allHatches.add(inputHatch);
+        }
+        for (IDualInputHatch dualInputHatch : mDualInputHatches) {
+            if (dualInputHatch instanceof MTEHatch hatch && hatch.isValid()) {
+                allHatches.add(hatch);
+            }
+        }
+        return allHatches;
     }
 
     @Override
     public ArrayList<FluidStack> getStoredFluidsForColor(Optional<Byte> color) {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
+        Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             byte hatchColor = tHatch.getColor();
             if (color.isPresent() && hatchColor != -1 && hatchColor != color.get()) continue;
@@ -366,7 +377,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
 
         if (supportsCraftingMEBuffer()) {
             for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-                rList.addAll(Arrays.asList(dualInputHatch.getAllFluids()));
+                appendNonNullFluids(rList, dualInputHatch.getAllFluids());
             }
         }
 
@@ -374,6 +385,17 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
             rList.addAll(inputsFromME.values());
         }
         return rList;
+    }
+
+    public void appendNonNullFluids(List<FluidStack> target, FluidStack[] fluidStacks) {
+        if (fluidStacks == null || fluidStacks.length == 0) {
+            return;
+        }
+        for (FluidStack fluidStack : fluidStacks) {
+            if (fluidStack != null) {
+                target.add(fluidStack);
+            }
+        }
     }
 
     @Override

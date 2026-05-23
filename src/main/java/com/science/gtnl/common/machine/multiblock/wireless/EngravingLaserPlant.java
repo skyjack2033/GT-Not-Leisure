@@ -5,11 +5,12 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import static goodgenerator.loader.Loaders.compactFusionCoil;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -71,6 +72,7 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String ELP_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/engraving_laser_plant";
     private static final String[][] shape = StructureUtils.readStructureFromFile(ELP_STRUCTURE_FILE_PATH);
+    public static final List<Pair<Block, Integer>> COMPONENT_CASING_VARIANTS = createComponentCasingVariants();
 
     public static final ItemStack[] REQUIRED_ITEMS = new ItemStack[] {
         GTUtility.copyAmountUnsafe(114514, ItemList.Circuit_Silicon_Wafer7.get(1)) };
@@ -94,6 +96,14 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
 
     public EngravingLaserPlant(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+    }
+
+    public static List<Pair<Block, Integer>> createComponentCasingVariants() {
+        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(13);
+        for (int tier = 0; tier < 13; tier++) {
+            casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
+        }
+        return casingVariants;
     }
 
     @Override
@@ -189,9 +199,7 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
                 GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         (block, meta) -> block == Loaders.componentAssemblylineCasing ? meta : -1,
-                        IntStream.range(0, 13)
-                            .mapToObj(i -> Pair.of(Loaders.componentAssemblylineCasing, i))
-                            .collect(Collectors.toList()),
+                        COMPONENT_CASING_VARIANTS,
                         -2,
                         (t, meta) -> t.mCasingTier = meta,
                         t -> t.mCasingTier)))

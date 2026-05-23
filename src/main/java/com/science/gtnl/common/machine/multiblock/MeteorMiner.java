@@ -501,13 +501,24 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             return;
         }
 
-        if (!mInputBusses.isEmpty()) {
+        MTEHatchInputBus inputBus = getPrimaryInputBusForFortune();
+        if (inputBus != null) {
             Optional<ItemStack> input = Optional.ofNullable(
-                mInputBusses.get(0)
-                    .getInventoryHandler()
+                inputBus.getInventoryHandler()
                     .getStackInSlot(0));
             input.ifPresent(stack -> this.fortuneTier = getFortuneTierForItem(stack));
         }
+    }
+
+    public MTEHatchInputBus getPrimaryInputBusForFortune() {
+        if (mInputBusses.isEmpty()) {
+            return null;
+        }
+        MTEHatchInputBus inputBus = mInputBusses.get(0);
+        if (inputBus == null || !inputBus.isValid()) {
+            return null;
+        }
+        return inputBus;
     }
 
     public int getFortuneTierForItem(ItemStack stack) {

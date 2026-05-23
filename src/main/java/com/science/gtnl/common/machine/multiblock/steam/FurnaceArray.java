@@ -65,7 +65,8 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
 
     public long time;
 
-    public static ItemStack furnace = new ItemStack(Blocks.furnace), coal = new ItemStack(Items.coal);
+    public static final ItemStack FURNACE_STACK = new ItemStack(Blocks.furnace);
+    public static final ItemStack COAL_STACK = new ItemStack(Items.coal);
 
     public FurnaceArray(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -194,7 +195,7 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
         long remainingFurnace = furnaceCount - 1;
         while (remainingFurnace > 0) {
             int dropAmount = (int) Math.min(64, remainingFurnace);
-            ItemStack drop = furnace.copy();
+            ItemStack drop = FURNACE_STACK.copy();
             drop.stackSize = dropAmount;
             EntityItem ent = new EntityItem(world, x, y, z, drop);
             world.spawnEntityInWorld(ent);
@@ -204,7 +205,7 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
         long remainingCoal = coalCount / 2;
         while (remainingCoal > 0) {
             int dropAmount = (int) Math.min(64, remainingCoal);
-            ItemStack drop = coal.copy();
+            ItemStack drop = COAL_STACK.copy();
             drop.stackSize = dropAmount;
             EntityItem ent = new EntityItem(world, x, y, z, drop);
             world.spawnEntityInWorld(ent);
@@ -219,12 +220,12 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
         List<ItemStack> tInput = getAllStoredInputs();
 
         for (ItemStack input : tInput) {
-            if (GTUtility.areStacksEqual(input, furnace)) {
+            if (GTUtility.areStacksEqual(input, FURNACE_STACK)) {
                 furnaceCount += input.stackSize;
                 depleteInput(input);
                 continue;
             }
-            if (GTUtility.areStacksEqual(input, coal)) {
+            if (GTUtility.areStacksEqual(input, COAL_STACK)) {
                 coalCount += input.stackSize;
                 depleteInput(input);
             }
@@ -343,7 +344,7 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     @Override
     public boolean onRunningTick(ItemStack aStack) {
         if (++tick % 20 == 0) {
-            SubscribeEventUtils.sleepTime += time;
+            SubscribeEventUtils.queueServerSleep(time);
         }
         return super.onRunningTick(aStack);
     }

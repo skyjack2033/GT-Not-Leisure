@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,6 +54,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -438,27 +438,26 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
 
     @Override
     public String generateCurrentRecipeInfoString() {
+        double maxProgressSeconds = getSafeMaxProgressSeconds();
+        double progressPercent = getSafeProgressPercent();
         StringBuilder ret = new StringBuilder(
             EnumChatFormatting.WHITE + StatCollector.translateToLocal("GT5U.gui.text.progress"))
                 .append(String.format("%,.2f", (double) this.mProgresstime / 20))
                 .append("s / ")
-                .append(String.format("%,.2f", (double) this.mMaxProgresstime / 20))
+                .append(String.format("%,.2f", maxProgressSeconds))
                 .append("s (")
-                .append(String.format("%,.1f", (double) this.mProgresstime / this.mMaxProgresstime * 100))
+                .append(String.format("%,.1f", progressPercent))
                 .append("%)\n");
+        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = getOutputItemCounts(mOutputItems);
+        ArrayList<Map.Entry<ItemStack, Double>> sortedDrops = new ArrayList<>(this.synchedGUIDropTracker.entrySet());
+        sortedDrops.sort(
+            Comparator.comparing(
+                a -> a.getKey()
+                    .toString()
+                    .toLowerCase()));
 
-        for (Map.Entry<ItemStack, Double> drop : this.synchedGUIDropTracker.entrySet()
-            .stream()
-            .sorted(
-                Comparator.comparing(
-                    a -> a.getKey()
-                        .toString()
-                        .toLowerCase()))
-            .collect(Collectors.toList())) {
-            int outputSize = Arrays.stream(this.mOutputItems)
-                .filter(s -> s.isItemEqual(drop.getKey()))
-                .mapToInt(i -> i.stackSize)
-                .sum();
+        for (Map.Entry<ItemStack, Double> drop : sortedDrops) {
+            int outputSize = outputCounts.getInt(GTUtility.ItemId.createNoCopy(drop.getKey()));
             ret.append(EnumChatFormatting.AQUA)
                 .append(
                     drop.getKey()
@@ -475,10 +474,35 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
                             "x%d %s(+%.2f/s)\n",
                             outputSize,
                             EnumChatFormatting.WHITE,
-                            (double) outputSize / (mMaxProgresstime / 20)));
+                            outputSize / maxProgressSeconds));
             }
         }
         return ret.toString();
+    }
+
+    public double getSafeMaxProgressSeconds() {
+        return Math.max(mMaxProgresstime / 20.0D, 0.05D);
+    }
+
+    public double getSafeProgressPercent() {
+        if (mMaxProgresstime <= 0) {
+            return 0;
+        }
+        return (double) mProgresstime / mMaxProgresstime * 100;
+    }
+
+    public Object2IntOpenHashMap<GTUtility.ItemId> getOutputItemCounts(ItemStack[] outputItems) {
+        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = new Object2IntOpenHashMap<>(
+            outputItems == null ? 0 : outputItems.length);
+        if (outputItems == null) {
+            return outputCounts;
+        }
+        for (ItemStack outputItem : outputItems) {
+            if (outputItem != null && outputItem.stackSize > 0) {
+                outputCounts.addTo(GTUtility.ItemId.createNoCopy(outputItem), outputItem.stackSize);
+            }
+        }
+        return outputCounts;
     }
 
     @Override

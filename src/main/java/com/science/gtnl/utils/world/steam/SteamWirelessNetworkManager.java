@@ -1,24 +1,26 @@
 package com.science.gtnl.utils.world.steam;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.UUID;
 
 import com.science.gtnl.ScienceNotLeisure;
 
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.common.misc.spaceprojects.SpaceProjectManager;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class SteamWirelessNetworkManager {
 
-    public static HashMap<UUID, BigInteger> GlobalSteam = new HashMap<>(100, 0.9f);
+    public static final Object2ObjectOpenHashMap<UUID, BigInteger> GLOBAL_STEAM = new Object2ObjectOpenHashMap<>(
+        100,
+        0.9f);
 
     private SteamWirelessNetworkManager() {}
 
     public static void strongCheckOrAddUser(UUID user_uuid) {
         SpaceProjectManager.checkOrCreateTeam(user_uuid);
         user_uuid = SpaceProjectManager.getLeader(user_uuid);
-        GlobalSteam.putIfAbsent(user_uuid, BigInteger.ZERO);
+        GLOBAL_STEAM.putIfAbsent(user_uuid, BigInteger.ZERO);
     }
 
     // ------------------------------------------------------------------------------------
@@ -36,11 +38,11 @@ public class SteamWirelessNetworkManager {
 
         UUID teamUUID = SpaceProjectManager.getLeader(user_uuid);
 
-        BigInteger totalSteam = GlobalSteam.getOrDefault(teamUUID, BigInteger.ZERO);
+        BigInteger totalSteam = GLOBAL_STEAM.getOrDefault(teamUUID, BigInteger.ZERO);
         totalSteam = totalSteam.add(steamAmount);
 
         if (totalSteam.signum() >= 0) {
-            GlobalSteam.put(teamUUID, totalSteam);
+            GLOBAL_STEAM.put(teamUUID, totalSteam);
             return true;
         }
 
@@ -56,23 +58,23 @@ public class SteamWirelessNetworkManager {
     }
 
     // Ticks between steam additions to the hatch. For a boiler this is how often steam is sent.
-    public static long ticks_between_steam_addition = 100L * 20L;
+    public static long TICKS_BETWEEN_STEAM_ADDITION = 100L * 20L;
 
     // Total number of steam additions this multi can store before it is full.
-    public static long number_of_steam_additions = 4L;
+    public static long NUMBER_OF_STEAM_ADDITIONS = 4L;
 
     public static long totalStorage(long tier_steam_per_tick) {
-        return tier_steam_per_tick * ticks_between_steam_addition * number_of_steam_additions;
+        return tier_steam_per_tick * TICKS_BETWEEN_STEAM_ADDITION * NUMBER_OF_STEAM_ADDITIONS;
     }
 
     // ------------------------------------------------------------------------------------
 
     public static BigInteger getUserSteam(UUID user_uuid) {
-        return GlobalSteam.getOrDefault(SpaceProjectManager.getLeader(user_uuid), BigInteger.ZERO);
+        return GLOBAL_STEAM.getOrDefault(SpaceProjectManager.getLeader(user_uuid), BigInteger.ZERO);
     }
 
     public static int getUserSteamInt(UUID user_uuid) {
-        BigInteger value = GlobalSteam.getOrDefault(SpaceProjectManager.getLeader(user_uuid), BigInteger.ZERO);
+        BigInteger value = GLOBAL_STEAM.getOrDefault(SpaceProjectManager.getLeader(user_uuid), BigInteger.ZERO);
 
         if (value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
             return Integer.MAX_VALUE;
@@ -92,11 +94,11 @@ public class SteamWirelessNetworkManager {
                 .error("[SteamWirelessNetworkManager] Could not mark GlobalSteam dirty in setSteam", exception);
         }
 
-        GlobalSteam.put(SpaceProjectManager.getLeader(user_uuid), steamAmount);
+        GLOBAL_STEAM.put(SpaceProjectManager.getLeader(user_uuid), steamAmount);
     }
 
     public static void clearGlobalSteamInformationMaps() {
-        GlobalSteam.clear();
+        GLOBAL_STEAM.clear();
     }
 
     public static UUID processInitialSettings(final IGregTechTileEntity machine) {

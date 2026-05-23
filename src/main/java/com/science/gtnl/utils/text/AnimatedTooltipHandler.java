@@ -27,9 +27,9 @@ import cpw.mods.fml.relauncher.Side;
 @EventBusSubscriber(side = Side.CLIENT)
 public class AnimatedTooltipHandler {
 
-    public static Map<ItemStack, List<Supplier<String>>> tooltipMap = new ItemStackMap<>(false);
-    public static Map<ItemStack, List<Supplier<String>>> tooltipMapShift = new ItemStackMap<>(false);
-    public static Map<ItemStack, List<Supplier<String>>> tooltipMapCtrl = new ItemStackMap<>(false);
+    public static Map<ItemStack, List<Supplier<String>>> TOOLTIP_MAP = new ItemStackMap<>(false);
+    public static Map<ItemStack, List<Supplier<String>>> TOOLTIP_MAP_SHIFT = new ItemStackMap<>(false);
+    public static Map<ItemStack, List<Supplier<String>>> TOOLTIP_MAP_CTRL = new ItemStackMap<>(false);
 
     public static final String BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY,
         BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE, OBFUSCATED, BOLD, STRIKETHROUGH, UNDERLINE, ITALIC, RESET;
@@ -140,68 +140,88 @@ public class AnimatedTooltipHandler {
 
     public static void addItemTooltip(ItemStack item, Supplier<String> tooltip) {
         if (item == null || tooltip == null) return;
-        List<Supplier<String>> list = tooltipMap.computeIfAbsent(item, k -> new ArrayList<>());
+        List<Supplier<String>> list = TOOLTIP_MAP.computeIfAbsent(item, k -> new ArrayList<>());
         list.add(tooltip);
     }
 
     public static void removeItemTooltip(ItemStack item, Supplier<String> tooltip) {
         if (item == null || tooltip == null) return;
-        List<Supplier<String>> list = tooltipMap.get(item);
+        List<Supplier<String>> list = TOOLTIP_MAP.get(item);
         if (list != null) {
             list.removeIf(t -> t.equals(tooltip));
             if (list.isEmpty()) {
-                tooltipMap.remove(item);
+                TOOLTIP_MAP.remove(item);
             }
         }
     }
 
     public static void clearItemTooltips(ItemStack item) {
         if (item == null) return;
-        tooltipMap.remove(item);
+        TOOLTIP_MAP.remove(item);
     }
 
     public static void addItemTooltipShift(ItemStack item, Supplier<String> tooltip) {
         if (item == null || tooltip == null) return;
-        List<Supplier<String>> list = tooltipMapShift.computeIfAbsent(item, k -> new ArrayList<>());
+        List<Supplier<String>> list = TOOLTIP_MAP_SHIFT.computeIfAbsent(item, k -> new ArrayList<>());
         list.add(tooltip);
     }
 
     public static void removeItemTooltipShift(ItemStack item, Supplier<String> tooltip) {
         if (item == null || tooltip == null) return;
-        List<Supplier<String>> list = tooltipMapShift.get(item);
+        List<Supplier<String>> list = TOOLTIP_MAP_SHIFT.get(item);
         if (list != null) {
             list.removeIf(t -> t.equals(tooltip));
             if (list.isEmpty()) {
-                tooltipMapShift.remove(item);
+                TOOLTIP_MAP_SHIFT.remove(item);
             }
         }
     }
 
     public static void clearItemTooltipsShift(ItemStack item) {
         if (item == null) return;
-        tooltipMapShift.remove(item);
+        TOOLTIP_MAP_SHIFT.remove(item);
     }
 
     public static void addItemTooltipCtrl(ItemStack item, Supplier<String> tooltip) {
         if (item == null || tooltip == null) return;
-        List<Supplier<String>> list = tooltipMapCtrl.computeIfAbsent(item, k -> new ArrayList<>());
+        List<Supplier<String>> list = TOOLTIP_MAP_CTRL.computeIfAbsent(item, k -> new ArrayList<>());
         list.add(tooltip);
     }
 
     public static void removeItemTooltipCtrl(ItemStack item, Supplier<String> tooltip) {
         if (item == null || tooltip == null) return;
-        List<Supplier<String>> list = tooltipMapCtrl.get(item);
+        List<Supplier<String>> list = TOOLTIP_MAP_CTRL.get(item);
         if (list != null) {
             list.removeIf(t -> t.equals(tooltip));
             if (list.isEmpty()) {
-                tooltipMapCtrl.remove(item);
+                TOOLTIP_MAP_CTRL.remove(item);
             }
         }
     }
 
     public static void clearItemTooltipsCtrl(ItemStack item) {
         if (item == null) return;
-        tooltipMapCtrl.remove(item);
+        TOOLTIP_MAP_CTRL.remove(item);
+    }
+
+    public static void appendTooltipLines(List<String> tooltips, String text) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+        int lineStart = 0;
+        int newLineIndex = text.indexOf('\n');
+        while (newLineIndex >= 0) {
+            tooltips.add(text.substring(lineStart, newLineIndex));
+            lineStart = newLineIndex + 1;
+            newLineIndex = text.indexOf('\n', lineStart);
+        }
+        tooltips.add(text.substring(lineStart));
+    }
+
+    public static void appendTooltipText(List<String> tooltips, List<Supplier<String>> tooltipSuppliers) {
+        for (Supplier<String> tooltip : tooltipSuppliers) {
+            appendTooltipLines(tooltips, tooltip.get());
+        }
     }
 
     @SubscribeEvent
@@ -213,39 +233,24 @@ public class AnimatedTooltipHandler {
             if (stack == null) return;
         }
 
-        List<Supplier<String>> baseTooltips = tooltipMap.get(stack);
+        List<Supplier<String>> baseTooltips = TOOLTIP_MAP.get(stack);
         if (baseTooltips != null) {
-            for (Supplier<String> tooltip : baseTooltips) {
-                String text = tooltip.get();
-                if (text != null) {
-                    event.toolTip.addAll(Arrays.asList(text.split("\n")));
-                }
-            }
+            appendTooltipText(event.toolTip, baseTooltips);
         }
 
-        List<Supplier<String>> shiftTooltips = tooltipMapShift.get(stack);
+        List<Supplier<String>> shiftTooltips = TOOLTIP_MAP_SHIFT.get(stack);
         if (shiftTooltips != null && !shiftTooltips.isEmpty()) {
             if (GuiScreen.isShiftKeyDown()) {
-                for (Supplier<String> tooltip : shiftTooltips) {
-                    String text = tooltip.get();
-                    if (text != null) {
-                        event.toolTip.addAll(Arrays.asList(text.split("\n")));
-                    }
-                }
+                appendTooltipText(event.toolTip, shiftTooltips);
             } else {
                 event.toolTip.add(StatCollector.translateToLocal("Tooltip_PressShift"));
             }
         }
 
-        List<Supplier<String>> ctrlTooltips = tooltipMapCtrl.get(stack);
+        List<Supplier<String>> ctrlTooltips = TOOLTIP_MAP_CTRL.get(stack);
         if (ctrlTooltips != null && !ctrlTooltips.isEmpty()) {
             if (GuiScreen.isCtrlKeyDown()) {
-                for (Supplier<String> tooltip : ctrlTooltips) {
-                    String text = tooltip.get();
-                    if (text != null) {
-                        event.toolTip.addAll(Arrays.asList(text.split("\n")));
-                    }
-                }
+                appendTooltipText(event.toolTip, ctrlTooltips);
             } else {
                 event.toolTip.add(StatCollector.translateToLocal("Tooltip_PressCtrl"));
             }

@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -95,14 +96,14 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
         for (FluidStack tFluid : getStoredFluids()) {
             if (!GTUtility.areFluidsEqual(tFluid, DISTILLED_WATER)) continue;
             boolean notAirBlocks = false;
-            IGregTechTileEntity base = this.getBaseMetaTileEntity();
+            IGregTechTileEntity base = getBaseMetaTileEntity();
             int xCoord = base.getXCoord(), yCoord = base.getYCoord(), zCoord = base.getZCoord();
             ForgeDirection front = base.getFrontFacing();
+            World world = base.getWorld();
 
             for (int x = xCoord - (front.offsetX * 2) + 4; x >= xCoord - 4; x--) {
                 for (int z = zCoord + 4 - (front.offsetZ * 6); z >= zCoord - 4 + (front.offsetZ * 8); z--) {
-                    if (getBaseMetaTileEntity().getWorld()
-                        .getTopSolidOrLiquidBlock(x, z) > yCoord + 5) {
+                    if (world.getTopSolidOrLiquidBlock(x, z) > yCoord + 5) {
                         notAirBlocks = true;
                         break;
                     }
@@ -111,8 +112,7 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
 
             long output = getOutputEUt();
             if (notAirBlocks) output /= 2;
-            if (base.getWorld()
-                .isRaining()) output /= 2;
+            if (world.isRaining()) output /= 2;
 
             this.lEUt = output;
             this.mEfficiency = 10000;
@@ -127,7 +127,7 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
 
     @Override
     public boolean onRunningTick(ItemStack stack) {
-        if (mProgresstime + 1 % 20 == 0) {
+        if ((mProgresstime + 1) % 20 == 0) {
             startRecipeProcessing();
             if (!depleteInput(GTModHandler.getDistilledWater(lEUt / 4))) {
                 stopMachine(ShutDownReasonRegistry.NONE);

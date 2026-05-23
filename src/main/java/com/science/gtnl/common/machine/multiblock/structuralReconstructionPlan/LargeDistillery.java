@@ -320,10 +320,19 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
 
     @Override
     public boolean canDumpFluidToME() {
-        return this.mOutputHatchesByLayer.stream()
-            .allMatch(
-                tLayerOutputHatches -> tLayerOutputHatches.stream()
-                    .anyMatch(tHatch -> (tHatch instanceof MTEHatchOutputME tMEHatch) && (tMEHatch.canAcceptFluid())));
+        for (List<MTEHatchOutput> layerOutputHatches : mOutputHatchesByLayer) {
+            boolean layerAcceptsFluid = false;
+            for (MTEHatchOutput outputHatch : layerOutputHatches) {
+                if (outputHatch instanceof MTEHatchOutputME meOutputHatch && meOutputHatch.canAcceptFluid()) {
+                    layerAcceptsFluid = true;
+                    break;
+                }
+            }
+            if (!layerAcceptsFluid) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

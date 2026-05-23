@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -37,6 +35,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidTank;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -137,6 +136,7 @@ import gregtech.common.tileentities.machines.IDualInputHatchWithPattern;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.IDualInputInventoryWithPattern;
 import gregtech.common.tileentities.machines.ISmartInputHatch;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -324,6 +324,14 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             fluidStacks[slotIndex] = stack;
         }, capacity);
 
+    }
+
+    public List<IFluidTank> createFluidTankList(FluidStack[] fluidStacks, int capacity) {
+        ObjectArrayList<IFluidTank> fluidTanks = new ObjectArrayList<>(SLOT_COUNT);
+        for (int slotIndex = 0; slotIndex < SLOT_COUNT; slotIndex++) {
+            fluidTanks.add(createTankForFluidStack(fluidStacks, slotIndex, capacity));
+        }
+        return fluidTanks;
     }
 
     @Override
@@ -648,11 +656,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         itemScrollable.widget(itemPage);
 
         MultiChildWidget fluidPage = new MultiChildWidget().addChild(
-            SlotGroup.ofFluidTanks(
-                IntStream.range(0, SLOT_COUNT)
-                    .mapToObj(index -> createTankForFluidStack(f_mark, index, 1))
-                    .collect(Collectors.toList()),
-                10)
+            SlotGroup.ofFluidTanks(createFluidTankList(f_mark, 1), 10)
                 .phantom(true)
                 .widgetCreator((slotIndex, h) -> (FluidSlotWidget) new FluidSlotWidget(h) {
 
@@ -726,11 +730,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
                 .setPos(7, 0))
 
             .addChild(
-                SlotGroup.ofFluidTanks(
-                    IntStream.range(0, SLOT_COUNT)
-                        .mapToObj(index -> createTankForFluidStack(f_display, index, Integer.MAX_VALUE))
-                        .collect(Collectors.toList()),
-                    10)
+                SlotGroup.ofFluidTanks(createFluidTankList(f_display, Integer.MAX_VALUE), 10)
                     .tankHandlerCreator(s -> new FluidTanksHandler(new FluidTankLongDelegate(s)) {
 
                         @Override

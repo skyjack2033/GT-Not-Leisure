@@ -8,7 +8,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +28,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -100,6 +98,7 @@ import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteam
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusOutput;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.MTEHatchCustomFluidBase;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.MTESteamMultiBase;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -133,6 +132,9 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     public UUID teamUUID;
     public boolean isInTeam;
     public BigInteger steamDisplay;
+    public static final Optional<Byte>[] HATCH_COLOR_OPTIONS = createHatchColorOptions();
+    public ArrayList<ItemStack> recipeSearchItemInputs = new ArrayList<>();
+    public ArrayList<FluidStack> recipeSearchFluidInputs = new ArrayList<>();
 
     public static final UITexture STEAM_GAUGE_BG = UITexture
         .fullImage(ModList.ScienceNotLeisure.ID, "gui/background/steam_dial");
@@ -145,6 +147,15 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
     public SteamMultiMachineBase(String aName) {
         super(aName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Optional<Byte>[] createHatchColorOptions() {
+        Optional<Byte>[] colorOptions = new Optional[16];
+        for (byte color = 0; color < colorOptions.length; color++) {
+            colorOptions[color] = Optional.of(color);
+        }
+        return colorOptions;
     }
 
     @Nullable
@@ -523,11 +534,11 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
         if (supportsCraftingMEBuffer()) {
             for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-                rList.addAll(Arrays.asList(dualInputHatch.getAllItems()));
+                appendNonNullInputItems(rList, dualInputHatch.getAllItems());
             }
         }
 
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new HashMap<>();
+        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -565,6 +576,17 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
             rList.addAll(inputsFromME.values());
         }
         return rList;
+    }
+
+    public void appendNonNullInputItems(List<ItemStack> target, ItemStack[] itemStacks) {
+        if (itemStacks == null || itemStacks.length == 0) {
+            return;
+        }
+        for (ItemStack itemStack : itemStacks) {
+            if (itemStack != null) {
+                target.add(itemStack);
+            }
+        }
     }
 
     @Override
@@ -702,7 +724,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new HashMap<>();
+        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -870,7 +892,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     @Override
     public ArrayList<FluidStack> getStoredFluids() {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
+        Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             setHatchRecipeMap(tHatch);
             if (tHatch instanceof MTEHatchMultiInput multiInputHatch) {
@@ -1190,8 +1212,9 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                         }
                     }
 
-                    processingLogic.setInputItems(ArrayUtils.addAll(sharedItems, slot.getItemInputs()));
-                    processingLogic.setInputFluids(slot.getFluidInputs());
+                    loadDualInputBuffers(sharedItems, slot);
+                    processingLogic.setInputItems(recipeSearchItemInputs);
+                    processingLogic.setInputFluids(recipeSearchFluidInputs);
 
                     CheckRecipeResult foundResult = processingLogic.process();
                     if (foundResult.wasSuccessful()) {
@@ -1217,9 +1240,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
         for (byte color = 0; color < (doColorChecking ? 16 : 1); color++) {
             if (isColorAbsent(hatchColors, color)) continue;
-            processingLogic.setInputFluids(getStoredFluidsForColor(Optional.of(color)));
+            replaceRecipeSearchFluids(getStoredFluidsForColor(HATCH_COLOR_OPTIONS[color]));
             if (isInputSeparationEnabled()) {
                 if (mInputBusses.isEmpty() && mSteamInputs.isEmpty()) {
+                    processingLogic.setInputFluids(recipeSearchFluidInputs);
                     CheckRecipeResult foundResult = processingLogic.process();
                     if (foundResult.wasSuccessful()) return foundResult;
                     // Recipe failed in interesting way, so remember that and continue searching
@@ -1229,15 +1253,13 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                         if (bus instanceof MTEHatchCraftingInputME) continue;
                         byte busColor = bus.getColor();
                         if (busColor != -1 && busColor != color) continue;
-                        List<ItemStack> inputItems = new ArrayList<>();
-                        for (int i = bus.getSizeInventory() - 1; i >= 0; i--) {
-                            ItemStack stored = bus.getStackInSlot(i);
-                            if (stored != null) inputItems.add(stored);
-                        }
-                        if (canUseControllerSlotForRecipe() && getControllerSlot() != null) {
-                            inputItems.add(getControllerSlot());
-                        }
-                        processingLogic.setInputItems(inputItems);
+                        recipeSearchItemInputs.clear();
+                        recipeSearchItemInputs.ensureCapacity(bus.getSizeInventory() + 1);
+                        appendInputBusItems(recipeSearchItemInputs, bus);
+                        if (recipeSearchItemInputs.isEmpty() && getControllerSlot() == null) continue;
+                        appendControllerSlotIfPresent(recipeSearchItemInputs);
+                        processingLogic.setInputItems(recipeSearchItemInputs);
+                        processingLogic.setInputFluids(recipeSearchFluidInputs);
                         CheckRecipeResult foundResult = processingLogic.process();
                         if (foundResult.wasSuccessful()) return foundResult;
                         // Recipe failed in interesting way, so remember that and continue searching
@@ -1246,15 +1268,13 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                     for (MTEHatchSteamBusInput bus : mSteamInputs) {
                         byte busColor = bus.getColor();
                         if (busColor != -1 && busColor != color) continue;
-                        List<ItemStack> inputItems = new ArrayList<>();
-                        for (int i = bus.getSizeInventory() - 1; i >= 0; i--) {
-                            ItemStack stored = bus.getStackInSlot(i);
-                            if (stored != null) inputItems.add(stored);
-                        }
-                        if (canUseControllerSlotForRecipe() && getControllerSlot() != null) {
-                            inputItems.add(getControllerSlot());
-                        }
-                        processingLogic.setInputItems(inputItems);
+                        recipeSearchItemInputs.clear();
+                        recipeSearchItemInputs.ensureCapacity(bus.getSizeInventory() + 1);
+                        appendSteamBusItems(recipeSearchItemInputs, bus);
+                        if (recipeSearchItemInputs.isEmpty() && getControllerSlot() == null) continue;
+                        appendControllerSlotIfPresent(recipeSearchItemInputs);
+                        processingLogic.setInputItems(recipeSearchItemInputs);
+                        processingLogic.setInputFluids(recipeSearchFluidInputs);
                         CheckRecipeResult foundResult = processingLogic.process();
                         if (foundResult.wasSuccessful()) return foundResult;
                         // Recipe failed in interesting way, so remember that and continue searching
@@ -1262,11 +1282,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                     }
                 }
             } else {
-                List<ItemStack> inputItems = getStoredInputsForColor(Optional.of(color));
-                if (canUseControllerSlotForRecipe() && getControllerSlot() != null) {
-                    inputItems.add(getControllerSlot());
-                }
-                processingLogic.setInputItems(inputItems);
+                replaceRecipeSearchItems(getStoredInputsForColor(HATCH_COLOR_OPTIONS[color]));
+                appendControllerSlotIfPresent(recipeSearchItemInputs);
+                processingLogic.setInputItems(recipeSearchItemInputs);
+                processingLogic.setInputFluids(recipeSearchFluidInputs);
                 CheckRecipeResult foundResult = processingLogic.process();
                 if (foundResult.wasSuccessful()) return foundResult;
                 // Recipe failed in interesting way, so remember that
@@ -1276,10 +1295,59 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return result;
     }
 
+    public void replaceRecipeSearchItems(Collection<ItemStack> inputs) {
+        recipeSearchItemInputs.clear();
+        recipeSearchItemInputs.ensureCapacity(inputs.size());
+        recipeSearchItemInputs.addAll(inputs);
+    }
+
+    public void replaceRecipeSearchFluids(Collection<FluidStack> inputs) {
+        recipeSearchFluidInputs.clear();
+        recipeSearchFluidInputs.ensureCapacity(inputs.size());
+        recipeSearchFluidInputs.addAll(inputs);
+    }
+
+    public void loadDualInputBuffers(ItemStack[] sharedItems, IDualInputInventory inventory) {
+        ItemStack[] inventoryItemInputs = inventory.getItemInputs();
+        FluidStack[] inventoryFluidInputs = inventory.getFluidInputs();
+        recipeSearchItemInputs.clear();
+        recipeSearchFluidInputs.clear();
+        recipeSearchItemInputs.ensureCapacity(sharedItems.length + inventoryItemInputs.length);
+        recipeSearchFluidInputs.ensureCapacity(inventoryFluidInputs.length);
+        recipeSearchItemInputs.addAll(Arrays.asList(sharedItems));
+        recipeSearchItemInputs.addAll(Arrays.asList(inventoryItemInputs));
+        recipeSearchFluidInputs.addAll(Arrays.asList(inventoryFluidInputs));
+    }
+
+    public void appendInputBusItems(List<ItemStack> inputItems, MTEHatchInputBus bus) {
+        for (int i = bus.getSizeInventory() - 1; i >= 0; i--) {
+            ItemStack stored = bus.getStackInSlot(i);
+            if (stored != null) {
+                inputItems.add(stored);
+            }
+        }
+    }
+
+    public void appendSteamBusItems(List<ItemStack> inputItems, MTEHatchSteamBusInput bus) {
+        for (int i = bus.getSizeInventory() - 1; i >= 0; i--) {
+            ItemStack stored = bus.getStackInSlot(i);
+            if (stored != null) {
+                inputItems.add(stored);
+            }
+        }
+    }
+
+    public void appendControllerSlotIfPresent(List<ItemStack> inputItems) {
+        ItemStack controllerSlot = getControllerSlot();
+        if (canUseControllerSlotForRecipe() && controllerSlot != null) {
+            inputItems.add(controllerSlot);
+        }
+    }
+
     @Override
     public ArrayList<FluidStack> getStoredFluidsForColor(Optional<Byte> color) {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
+        Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             byte hatchColor = tHatch.getColor();
             if (color.isPresent() && hatchColor != -1 && hatchColor != color.get()) continue;

@@ -1,8 +1,6 @@
 package com.science.gtnl.mixins.late.TwistSpaceTechnology;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,6 +22,7 @@ import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchInputBusME;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 @Mixin(value = TST_OreProcessingFactory.class, remap = false)
 public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBase<TST_OreProcessingFactory> {
@@ -40,7 +39,7 @@ public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBas
     @Override
     public ArrayList<FluidStack> getStoredFluidsForColor(Optional<Byte> color) {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
+        Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             byte hatchColor = tHatch.getColor();
             if (color.isPresent() && hatchColor != -1 && hatchColor != color.get()) continue;
@@ -68,7 +67,11 @@ public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBas
 
         if (supportsCraftingMEBuffer()) {
             for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-                rList.addAll(Arrays.asList(dualInputHatch.getAllFluids()));
+                for (FluidStack fluidStack : dualInputHatch.getAllFluids()) {
+                    if (fluidStack != null) {
+                        rList.add(fluidStack);
+                    }
+                }
             }
         }
 
@@ -81,7 +84,7 @@ public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBas
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new HashMap<>();
+        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -106,7 +109,11 @@ public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBas
 
         if (supportsCraftingMEBuffer()) {
             for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-                rList.addAll(Arrays.asList(dualInputHatch.getAllItems()));
+                for (ItemStack itemStack : dualInputHatch.getAllItems()) {
+                    if (itemStack != null) {
+                        rList.add(itemStack);
+                    }
+                }
             }
         }
 

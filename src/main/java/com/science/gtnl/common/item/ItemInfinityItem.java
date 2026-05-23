@@ -4,7 +4,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -41,6 +40,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.util.GTUtility;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import vazkii.botania.common.Botania;
 
 public class ItemInfinityItem extends Item implements IFluidContainerItem {
@@ -48,7 +48,7 @@ public class ItemInfinityItem extends Item implements IFluidContainerItem {
     public Block block;
     public Fluid fluid;
     public boolean isBlockItem;
-    public static ExecutorService FLUID_CLEAR_EXECUTOR = Executors.newFixedThreadPool(1);
+    public static final ExecutorService FLUID_CLEAR_EXECUTOR = Executors.newFixedThreadPool(1);
 
     public ItemInfinityItem(String name, Block block, Fluid fluid, GTNLItemList itemList) {
         this(name, block, fluid, true, itemList);
@@ -260,7 +260,7 @@ public class ItemInfinityItem extends Item implements IFluidContainerItem {
         }
     }
 
-    public static final HashSet<UUID> playersWithReach = new HashSet<>();
+    public static final ObjectOpenHashSet<UUID> PLAYERS_WITH_REACH = new ObjectOpenHashSet<>();
 
     @SubscribeEvent
     public void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
@@ -271,14 +271,12 @@ public class ItemInfinityItem extends Item implements IFluidContainerItem {
         UUID uuid = player.getUniqueID();
 
         if (holdingInfinity) {
-            if (!playersWithReach.contains(uuid)) {
+            if (PLAYERS_WITH_REACH.add(uuid)) {
                 Botania.proxy.setExtraReach(player, 2F);
-                playersWithReach.add(uuid);
             }
         } else {
-            if (playersWithReach.contains(uuid)) {
+            if (PLAYERS_WITH_REACH.remove(uuid)) {
                 Botania.proxy.setExtraReach(player, -2F);
-                playersWithReach.remove(uuid);
             }
         }
     }

@@ -10,9 +10,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 @SideOnly(Side.CLIENT)
 public class BlockStaticDataClientOnly {
 
-    public static final Int2ObjectMap<IIcon> iconsBlockMapBase = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<IIcon> BASE_ICONS = new Int2ObjectOpenHashMap<>();
 
-    public static final Int2ObjectMap<IIcon> iconsBlockMapGlow = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<IIcon> GLOW_ICONS = new Int2ObjectOpenHashMap<>();
 
-    public static final Int2ObjectMap<IIcon> iconsBlockMapGlass = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<IIcon> GLASS_ICONS = new Int2ObjectOpenHashMap<>();
 }

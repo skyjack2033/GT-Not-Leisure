@@ -36,7 +36,7 @@ public abstract class MixinGuiCraftConfirm {
             target = "Lappeng/client/gui/implementations/GuiCraftConfirm;switchToOriginalGUI()V"))
     public void onActionPerformed0(GuiCraftConfirm instance) {
         GuiScreen oldGui;
-        if ((oldGui = GTNLInputHandler.oldGui) != null) {
+        if ((oldGui = GTNLInputHandler.LAST_GUI_SCREEN) != null) {
             ScienceNotLeisure.network.sendToServer(new ContainerRollBACK());
             return;
         }
@@ -47,8 +47,8 @@ public abstract class MixinGuiCraftConfirm {
     public void onActionPerformed1(GuiButton btn, CallbackInfo ci) {
         if (btn == this.start || btn == this.startWithFollow) {
             GuiScreen oldGui;
-            if ((oldGui = GTNLInputHandler.oldGui) != null) {
-                GTNLInputHandler.delayMethod = () -> Minecraft.getMinecraft()
+            if ((oldGui = GTNLInputHandler.LAST_GUI_SCREEN) != null) {
+                GTNLInputHandler.DELAY_METHOD = () -> Minecraft.getMinecraft()
                     .displayGuiScreen(oldGui);
             }
         }

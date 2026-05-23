@@ -12,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
@@ -55,6 +54,7 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
     private static final int VERTICAL_OFF_SET = 2;
     private static final int DEPTH_OFF_SET = 0;
     private static final String[][] shape = StructureUtils.readStructureFromFile(LGC_STRUCTURE_FILE_PATH);
+    public final ArrayList<ItemStack> dimensionRecipeInputs = new ArrayList<>(2);
 
     public LargeGasCollector(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -95,30 +95,16 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
     @Override
     @NotNull
     public CheckRecipeResult doCheckRecipe() {
-        for (ItemStack item : getAllStoredInputs()) {
-            if (item != null) {
-                if (Objects.equals(item.getItem(), ItemList.Circuit_Integrated.getItem())) {
-                    return super.doCheckRecipe();
-                }
-            }
+        if (hasIntegratedCircuitInStoredInputs()) {
+            return super.doCheckRecipe();
         }
 
-        List<ItemStack> itemInputs = new ArrayList<>();
         int dimID = getBaseMetaTileEntity().getWorld().provider.dimensionId;
-
-        if (dimID == 0) {
-            itemInputs.add(GTUtility.getIntegratedCircuit(1));
-        } else if (dimID == 1) {
-            itemInputs.add(GTUtility.getIntegratedCircuit(3));
-            itemInputs.add(new ItemStack(ModBlocks.getBlock("ED"), 1));
-        } else if (dimID == -1) {
-            itemInputs.add(GTUtility.getIntegratedCircuit(5));
-            itemInputs.add(new ItemStack(ModBlocks.getBlock("Ne"), 1));
-        }
+        fillDimensionRecipeInputs(dimID);
 
         CheckRecipeResult result = CheckRecipeResultRegistry.NO_RECIPE;
 
-        // check crafting input hatches first
+        // 优先复用双输入仓缓存并补充维度输入 / Reuse dual-input buffers first and append dimension-specific inputs
         for (IDualInputHatch dualInputHatch : mDualInputHatches) {
             ItemStack[] sharedItems = dualInputHatch.getSharedItems();
             for (var it = dualInputHatch.inventories(); it.hasNext();) {
@@ -134,13 +120,8 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
                         }
                     }
 
-                    ArrayUtils.addAll(sharedItems, slot.getItemInputs());
-                    ArrayUtils.addAll(sharedItems, itemInputs.toArray(new ItemStack[0]));
-
-                    processingLogic.setInputItems(sharedItems);
-                    processingLogic.setInputFluids(slot.getFluidInputs());
-
-                    CheckRecipeResult foundResult = processingLogic.process();
+                    loadGasCollectorRecipeInputs(sharedItems, slot, dimensionRecipeInputs);
+                    CheckRecipeResult foundResult = processRecipeSearch();
                     if (foundResult.wasSuccessful()) {
                         return foundResult;
                     }
@@ -164,13 +145,14 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
 
         for (byte color = 0; color < (doColorChecking ? 16 : 1); color++) {
             if (isColorAbsent(hatchColors, color)) continue;
-            processingLogic.setInputFluids(getStoredFluidsForColor(Optional.of(color)));
+            replaceRecipeSearchFluids(getStoredFluidsForColor(Optional.of(color)));
+            setProcessingInputFluids(recipeSearchFluidInputs);
             if (isInputSeparationEnabled()) {
                 if (mInputBusses.isEmpty()) {
-                    processingLogic.setInputItems(itemInputs);
-                    CheckRecipeResult foundResult = processingLogic.process();
+                    replaceRecipeSearchItems(dimensionRecipeInputs);
+                    setProcessingInputItems(recipeSearchItemInputs);
+                    CheckRecipeResult foundResult = processRecipeSearch();
                     if (foundResult.wasSuccessful()) return foundResult;
-                    // Recipe failed in interesting way, so remember that and continue searching
                     if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
                 } else {
                     for (MTEHatchInputBus bus : mInputBusses) {
@@ -178,36 +160,74 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
                             continue;
                         byte busColor = bus.getColor();
                         if (busColor != -1 && busColor != color) continue;
-                        List<ItemStack> inputItems = new ArrayList<>();
-                        for (int i = bus.getSizeInventory() - 1; i >= 0; i--) {
-                            ItemStack stored = bus.getStackInSlot(i);
-                            if (stored != null) inputItems.add(stored);
-                        }
+                        recipeSearchItemInputs.clear();
+                        recipeSearchItemInputs
+                            .ensureCapacity(bus.getSizeInventory() + dimensionRecipeInputs.size() + 1);
+                        collectBusInputs(bus, recipeSearchItemInputs);
+                        recipeSearchItemInputs.addAll(dimensionRecipeInputs);
                         if (canUseControllerSlotForRecipe() && getControllerSlot() != null) {
-                            inputItems.add(getControllerSlot());
+                            recipeSearchItemInputs.add(getControllerSlot());
                         }
-                        ArrayUtils.addAll(inputItems.toArray(new ItemStack[0]), itemInputs.toArray(new ItemStack[0]));
-                        processingLogic.setInputItems(inputItems);
-                        CheckRecipeResult foundResult = processingLogic.process();
+                        setProcessingInputItems(recipeSearchItemInputs);
+                        CheckRecipeResult foundResult = processRecipeSearch();
                         if (foundResult.wasSuccessful()) return foundResult;
-                        // Recipe failed in interesting way, so remember that and continue searching
                         if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
                     }
                 }
             } else {
-                List<ItemStack> inputItems = getStoredInputsForColor(Optional.of(color));
+                replaceRecipeSearchItems(getStoredInputsForColor(Optional.of(color)));
+                recipeSearchItemInputs.addAll(dimensionRecipeInputs);
                 if (canUseControllerSlotForRecipe() && getControllerSlot() != null) {
-                    inputItems.add(getControllerSlot());
+                    recipeSearchItemInputs.add(getControllerSlot());
                 }
-                ArrayUtils.addAll(inputItems.toArray(new ItemStack[0]), itemInputs.toArray(new ItemStack[0]));
-                processingLogic.setInputItems(inputItems);
-                CheckRecipeResult foundResult = processingLogic.process();
+                setProcessingInputItems(recipeSearchItemInputs);
+                CheckRecipeResult foundResult = processRecipeSearch();
                 if (foundResult.wasSuccessful()) return foundResult;
-                // Recipe failed in interesting way, so remember that
                 if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
             }
         }
         return result;
+    }
+
+    public boolean hasIntegratedCircuitInStoredInputs() {
+        for (ItemStack item : getAllStoredInputs()) {
+            if (item != null && Objects.equals(item.getItem(), ItemList.Circuit_Integrated.getItem())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void fillDimensionRecipeInputs(int dimID) {
+        dimensionRecipeInputs.clear();
+        if (dimID == 0) {
+            dimensionRecipeInputs.add(GTUtility.getIntegratedCircuit(1));
+            return;
+        }
+        if (dimID == 1) {
+            dimensionRecipeInputs.add(GTUtility.getIntegratedCircuit(3));
+            dimensionRecipeInputs.add(new ItemStack(ModBlocks.getBlock("ED"), 1));
+            return;
+        }
+        if (dimID == -1) {
+            dimensionRecipeInputs.add(GTUtility.getIntegratedCircuit(5));
+            dimensionRecipeInputs.add(new ItemStack(ModBlocks.getBlock("Ne"), 1));
+        }
+    }
+
+    public void loadGasCollectorRecipeInputs(ItemStack[] sharedItems, IDualInputInventory inventory,
+        List<ItemStack> additionalItems) {
+        loadDualInputBuffers(sharedItems, inventory);
+        if (additionalItems.isEmpty()) {
+            return;
+        }
+        recipeSearchItemInputs.ensureCapacity(recipeSearchItemInputs.size() + additionalItems.size());
+        for (ItemStack additionalItem : additionalItems) {
+            if (additionalItem != null) {
+                recipeSearchItemInputs.add(additionalItem);
+            }
+        }
+        setProcessingInputItems(recipeSearchItemInputs);
     }
 
     @Override

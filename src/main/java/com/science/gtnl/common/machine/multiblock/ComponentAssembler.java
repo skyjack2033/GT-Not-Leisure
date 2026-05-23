@@ -3,9 +3,10 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gtPlusPlus.core.block.ModBlocks.blockCasings3Misc;
 
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -60,6 +61,7 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
     private static final int HORIZONTAL_OFF_SET = 3;
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 0;
+    public static final List<Pair<Block, Integer>> COMPONENT_CASING_VARIANTS = createComponentCasingVariants();
 
     @Override
     public IStructureDefinition<ComponentAssembler> getStructureDefinition() {
@@ -71,9 +73,7 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
                 GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         (block, meta) -> block == Loaders.componentAssemblylineCasing ? meta : -1,
-                        IntStream.range(0, 8)
-                            .mapToObj(i -> Pair.of(Loaders.componentAssemblylineCasing, i))
-                            .collect(Collectors.toList()),
+                        COMPONENT_CASING_VARIANTS,
                         -2,
                         (t, meta) -> t.mCasingTier = meta,
                         t -> t.mCasingTier)))
@@ -117,6 +117,14 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
 
     public ComponentAssembler(String aName) {
         super(aName);
+    }
+
+    public static List<Pair<Block, Integer>> createComponentCasingVariants() {
+        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(8);
+        for (int tier = 0; tier < 8; tier++) {
+            casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
+        }
+        return casingVariants;
     }
 
     @Override

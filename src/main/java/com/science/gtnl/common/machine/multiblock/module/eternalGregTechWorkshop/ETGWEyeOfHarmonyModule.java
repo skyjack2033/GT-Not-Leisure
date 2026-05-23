@@ -29,6 +29,7 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.metatileentity.BaseTileEntity;
+import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
@@ -205,8 +206,11 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     public CheckRecipeResult processRecipe(EyeOfHarmonyRecipe recipeObject) {
         // Get circuit damage, clamp it and then use it later for overclocking.
         currentCircuitMultiplier = 0;
-        for (ItemStack itemStack : mInputBusses.get(0)
-            .getRealInventory()) {
+        MTEHatchInputBus inputBus = getPrimaryInputBus();
+        if (inputBus == null) {
+            return CheckRecipeResultRegistry.NO_RECIPE;
+        }
+        for (ItemStack itemStack : inputBus.getRealInventory()) {
             if (GTUtility.isAnyIntegratedCircuit(itemStack)) {
                 currentCircuitMultiplier = MathHelper.clamp_int(itemStack.getItemDamage(), 0, 24);
                 break;
@@ -493,32 +497,38 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
 
     private void outputItemToAENetwork(ItemStack item, long amount) {
         if (item == null || amount <= 0) return;
+        MTEHatchOutputBusME outputBus = getPrimaryOutputBusME();
+        if (outputBus == null) {
+            return;
+        }
 
         while (amount >= Integer.MAX_VALUE) {
             ItemStack tmpItem = item.copy();
             tmpItem.stackSize = Integer.MAX_VALUE;
-            mOutputBusses.get(0)
-                .storePartial(tmpItem);
+            outputBus.storePartial(tmpItem);
             amount -= Integer.MAX_VALUE;
         }
         ItemStack tmpItem = item.copy();
         tmpItem.stackSize = (int) amount;
-        mOutputBusses.get(0)
-            .storePartial(tmpItem);
+        outputBus.storePartial(tmpItem);
     }
 
     private void outputFluidToAENetwork(FluidStack fluid, long amount) {
         if (fluid == null || amount <= 0) return;
+        MTEHatchOutputME outputHatch = getPrimaryOutputHatchME();
+        if (outputHatch == null) {
+            return;
+        }
 
         while (amount >= Integer.MAX_VALUE) {
             FluidStack tmpFluid = fluid.copy();
             tmpFluid.amount = Integer.MAX_VALUE;
-            ((MTEHatchOutputME) mOutputHatches.get(0)).tryFillAE(tmpFluid);
+            outputHatch.tryFillAE(tmpFluid);
             amount -= Integer.MAX_VALUE;
         }
         FluidStack tmpFluid = fluid.copy();
         tmpFluid.amount = (int) amount;
-        ((MTEHatchOutputME) mOutputHatches.get(0)).tryFillAE(tmpFluid);
+        outputHatch.tryFillAE(tmpFluid);
     }
 
     @Override
@@ -706,7 +716,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
             return false;
         }
 
-        if (!(mOutputBusses.get(0) instanceof MTEHatchOutputBusME)) {
+        if (getPrimaryOutputBusME() == null) {
             return false;
         }
 
@@ -714,7 +724,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
             return false;
         }
 
-        if (!(mOutputHatches.get(0) instanceof MTEHatchOutputME)) {
+        if (getPrimaryOutputHatchME() == null) {
             return false;
         }
 
@@ -722,7 +732,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
             return false;
         }
 
-        if (mInputBusses.get(0) instanceof MTEHatchInputBusME) {
+        if (getPrimaryInputBus() instanceof MTEHatchInputBusME) {
             return false;
         }
 
@@ -735,6 +745,37 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         }
 
         return mInputHatches.size() == 2;
+    }
+
+    public MTEHatchInputBus getPrimaryInputBus() {
+        if (mInputBusses.size() != 1) {
+            return null;
+        }
+        MTEHatchInputBus inputBus = mInputBusses.get(0);
+        if (inputBus == null || !inputBus.isValid()) {
+            return null;
+        }
+        return inputBus;
+    }
+
+    public MTEHatchOutputBusME getPrimaryOutputBusME() {
+        if (mOutputBusses.size() != 1) {
+            return null;
+        }
+        if (!(mOutputBusses.get(0) instanceof MTEHatchOutputBusME outputBus) || !outputBus.isValid()) {
+            return null;
+        }
+        return outputBus;
+    }
+
+    public MTEHatchOutputME getPrimaryOutputHatchME() {
+        if (mOutputHatches.size() != 1) {
+            return null;
+        }
+        if (!(mOutputHatches.get(0) instanceof MTEHatchOutputME outputHatch) || !outputHatch.isValid()) {
+            return null;
+        }
+        return outputHatch;
     }
 
     @SideOnly(Side.CLIENT)

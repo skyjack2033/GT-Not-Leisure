@@ -486,7 +486,7 @@ public class DisassemblerHelper {
 
                 if (reversedRecipes.isEmpty()) continue;
 
-                GTRecipe reversedFirst = reversedRecipes.remove(0);
+                GTRecipe reversedFirst = reversedRecipes.get(0);
                 ItemStack revInput = reversedFirst.mInputs[0];
 
                 ObjectArrayList<ItemStack> transformedOutputs = handleRecipeTransformation(
@@ -518,9 +518,11 @@ public class DisassemblerHelper {
 
             } catch (Exception e) {
                 ScienceNotLeisure.LOG.warn("Failed to process assembler -> disassembler recipe.");
-                GTRecipe first = recipes.get(0);
-                ScienceNotLeisure.LOG.warn("mInputs: {}", Arrays.toString(first.mInputs));
-                ScienceNotLeisure.LOG.warn("mOutputs: {}", Arrays.toString(first.mOutputs));
+                GTRecipe first = recipes.isEmpty() ? null : recipes.get(0);
+                if (first != null) {
+                    ScienceNotLeisure.LOG.warn("mInputs: {}", Arrays.toString(first.mInputs));
+                    ScienceNotLeisure.LOG.warn("mOutputs: {}", Arrays.toString(first.mOutputs));
+                }
                 ScienceNotLeisure.LOG.warn("Exception: ", e);
 
                 if (e instanceof ArrayIndexOutOfBoundsException) throw e;

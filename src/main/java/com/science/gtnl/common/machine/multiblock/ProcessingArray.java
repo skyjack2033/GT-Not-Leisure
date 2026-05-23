@@ -65,6 +65,8 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     public RecipeMap<?> mLastRecipeMap;
     public ItemStack lastControllerStack;
     public int tTier = 0;
+    public boolean controllerStateDirty = true;
+    public boolean hatchRecipeMapDirty = true;
     private static final int HORIZONTAL_OFF_SET = 2;
     private static final int VERTICAL_OFF_SET = 3;
     private static final int DEPTH_OFF_SET = 0;
@@ -164,19 +166,44 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
         return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
     }
 
-    public RecipeMap<?> fetchRecipeMap() {
-        if (isCorrectMachinePart(getControllerSlot())) {
-            RecipeMap<?> recipeMap = ProcessingArrayManager
-                .giveRecipeMap(ProcessingArrayManager.getMachineName(getControllerSlot()));
+    public void invalidateControllerState() {
+        controllerStateDirty = true;
+        hatchRecipeMapDirty = true;
+    }
 
-            if (recipeMap == null) {
-                recipeMap = ProcessingArrayManager
-                    .giveRecipeMap(ProcessingArrayManager.getFullMachineName(getControllerSlot()));
-            }
-
-            return recipeMap;
+    public RecipeMap<?> resolveRecipeMap(ItemStack controllerSlot) {
+        if (!isCorrectMachinePart(controllerSlot)) {
+            return null;
         }
-        return null;
+
+        RecipeMap<?> recipeMap = ProcessingArrayManager
+            .giveRecipeMap(ProcessingArrayManager.getMachineName(controllerSlot));
+        if (recipeMap == null) {
+            recipeMap = ProcessingArrayManager.giveRecipeMap(ProcessingArrayManager.getFullMachineName(controllerSlot));
+        }
+        return recipeMap;
+    }
+
+    public void refreshMachineTier(ItemStack controllerSlot) {
+        IMetaTileEntity aMachine = ItemMachines.getMetaTileEntity(controllerSlot);
+        if (aMachine instanceof MTETieredMachineBlock tieredMachineBlock) {
+            tTier = tieredMachineBlock.mTier;
+            return;
+        }
+        tTier = 0;
+    }
+
+    public void refreshControllerStateIfNeeded() {
+        ItemStack controllerSlot = getControllerSlot();
+        if (!controllerStateDirty && GTUtility.areStacksEqual(lastControllerStack, controllerSlot)) {
+            return;
+        }
+
+        lastControllerStack = controllerSlot == null ? null : controllerSlot.copy();
+        mLastRecipeMap = resolveRecipeMap(controllerSlot);
+        refreshMachineTier(controllerSlot);
+        controllerStateDirty = false;
+        hatchRecipeMapDirty = true;
     }
 
     @Override
@@ -217,11 +244,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     @Override
     @NotNull
     public CheckRecipeResult checkProcessing() {
-        if (!GTUtility.areStacksEqual(lastControllerStack, getControllerSlot())) {
-            lastControllerStack = getControllerSlot();
-            mLastRecipeMap = fetchRecipeMap();
-            setTierAndMult();
-        }
+        refreshControllerStateIfNeeded();
         if (mLastRecipeMap == null) return SimpleCheckRecipeResult.ofFailure("no_machine");
         if (mLockedToSingleRecipe && mSingleRecipeCheck != null) {
             if (mSingleRecipeCheck.getRecipeMap() != mLastRecipeMap) {
@@ -229,6 +252,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
             }
         }
 
+        syncInputRecipeMapsIfNeeded();
         return super.checkProcessing();
     }
 
@@ -282,26 +306,24 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
         logic.setAmperageOC(!useSingleAmp);
     }
 
-    public void setTierAndMult() {
-        IMetaTileEntity aMachine = ItemMachines.getMetaTileEntity(getControllerSlot());
-        if (aMachine instanceof MTETieredMachineBlock tieredMachineBlock) {
-            tTier = tieredMachineBlock.mTier;
-        } else {
-            tTier = 0;
+    public void syncInputRecipeMapsIfNeeded() {
+        if (!mMachine || !hatchRecipeMapDirty) {
+            return;
         }
+
+        for (MTEHatchInputBus inputBus : mInputBusses) {
+            inputBus.mRecipeMap = mLastRecipeMap;
+        }
+        for (MTEHatchInput inputHatch : mInputHatches) {
+            inputHatch.mRecipeMap = mLastRecipeMap;
+        }
+        hatchRecipeMapDirty = false;
     }
 
     @Override
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPostTick(aBaseMetaTileEntity, aTick);
-        if (mMachine && aTick % 20 == 0) {
-            for (MTEHatchInputBus tInputBus : mInputBusses) {
-                tInputBus.mRecipeMap = mLastRecipeMap;
-            }
-            for (MTEHatchInput tInputHatch : mInputHatches) {
-                tInputHatch.mRecipeMap = mLastRecipeMap;
-            }
-        }
+        syncInputRecipeMapsIfNeeded();
     }
 
     @Override
@@ -367,11 +389,11 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
         super.loadNBTData(aNBT);
         mCoilLevel = HeatingCoilLevel.getFromTier(aNBT.getByte("coilTier"));
         if (aNBT.hasKey("mSeparate")) {
-            // backward compatibility
+            // 兼容旧存档字段 / Keep compatibility with legacy save data
             inputSeparation = aNBT.getBoolean("mSeparate");
         }
         if (aNBT.hasKey("mUseMultiparallelMode")) {
-            // backward compatibility
+            // 兼容旧存档字段 / Keep compatibility with legacy save data
             batchMode = aNBT.getBoolean("mUseMultiparallelMode");
         }
     }
@@ -386,7 +408,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
 
     @Override
     public boolean checkHatch() {
-        setTierAndMult();
+        refreshControllerStateIfNeeded();
         setupParameters();
         return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None
             && GTUtility.getTier(this.getMaxInputVoltage()) <= tTier + 4
@@ -397,6 +419,15 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     public void clearHatches() {
         super.clearHatches();
         tTier = 0;
+        mLastRecipeMap = null;
+        lastControllerStack = null;
+        invalidateControllerState();
+    }
+
+    @Override
+    public void onMachineModeSwitchClick() {
+        invalidateControllerState();
+        super.onMachineModeSwitchClick();
     }
 
     @Override

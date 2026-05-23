@@ -1,6 +1,6 @@
 package com.science.gtnl.utils.world.steam;
 
-import static com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager.GlobalSteam;
+import static com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager.GLOBAL_STEAM;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,11 +27,11 @@ public class GlobalSteamWorldSavedData extends WorldSavedData {
 
     public static final String DATA_NAME = "GregTech_WirelessSteamWorldSavedData";
 
-    public static final String GlobalSteamNBTTag = "GregTech_GlobalSteam_MapNBTTag";
-    public static final String GlobalSteamTeamNBTTag = "GregTech_GlobalSteamTeam_MapNBTTag";
+    public static final String GLOBAL_STEAM_NBT_TAG = "GregTech_GlobalSteam_MapNBTTag";
+    public static final String GLOBAL_STEAM_TEAM_NBT_TAG = "GregTech_GlobalSteamTeam_MapNBTTag";
 
     public static void loadInstance(World world) {
-        GlobalSteam.clear();
+        GLOBAL_STEAM.clear();
 
         MapStorage storage = world.mapStorage;
         INSTANCE = (GlobalSteamWorldSavedData) storage.loadData(GlobalSteamWorldSavedData.class, DATA_NAME);
@@ -54,7 +54,7 @@ public class GlobalSteamWorldSavedData extends WorldSavedData {
     @SuppressWarnings("unchecked")
     public void readFromNBT(NBTTagCompound nbtTagCompound) {
         try {
-            byte[] ba = nbtTagCompound.getByteArray(GlobalSteamNBTTag);
+            byte[] ba = nbtTagCompound.getByteArray(GLOBAL_STEAM_NBT_TAG);
             if (ba.length == 0) return;
 
             try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ba);
@@ -65,7 +65,7 @@ public class GlobalSteamWorldSavedData extends WorldSavedData {
 
                 for (Map.Entry<Object, BigInteger> entry : hashData.entrySet()) {
                     try {
-                        GlobalSteam.put(
+                        GLOBAL_STEAM.put(
                             UUID.fromString(
                                 entry.getKey()
                                     .toString()),
@@ -78,13 +78,13 @@ public class GlobalSteamWorldSavedData extends WorldSavedData {
                 }
             }
         } catch (IOException | ClassNotFoundException exception) {
-            ScienceNotLeisure.LOG.error("[GlobalSteamWorldSavedData] {} LOAD FAILED", GlobalSteamNBTTag, exception);
+            ScienceNotLeisure.LOG.error("[GlobalSteamWorldSavedData] {} LOAD FAILED", GLOBAL_STEAM_NBT_TAG, exception);
         }
 
         try {
-            if (!nbtTagCompound.hasKey(GlobalSteamTeamNBTTag)) return;
+            if (!nbtTagCompound.hasKey(GLOBAL_STEAM_TEAM_NBT_TAG)) return;
 
-            byte[] ba = nbtTagCompound.getByteArray(GlobalSteamTeamNBTTag);
+            byte[] ba = nbtTagCompound.getByteArray(GLOBAL_STEAM_TEAM_NBT_TAG);
             if (ba.length == 0) return;
 
             try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ba);
@@ -105,7 +105,8 @@ public class GlobalSteamWorldSavedData extends WorldSavedData {
                 }
             }
         } catch (IOException | ClassNotFoundException exception) {
-            ScienceNotLeisure.LOG.error("[GlobalSteamWorldSavedData] {} LOAD FAILED", GlobalSteamTeamNBTTag, exception);
+            ScienceNotLeisure.LOG
+                .error("[GlobalSteamWorldSavedData] {} LOAD FAILED", GLOBAL_STEAM_TEAM_NBT_TAG, exception);
         }
     }
 
@@ -114,13 +115,13 @@ public class GlobalSteamWorldSavedData extends WorldSavedData {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
 
-            objectOutputStream.writeObject(GlobalSteam);
+            objectOutputStream.writeObject(GLOBAL_STEAM);
             objectOutputStream.flush();
 
-            nbtTagCompound.setByteArray(GlobalSteamNBTTag, byteArrayOutputStream.toByteArray());
+            nbtTagCompound.setByteArray(GLOBAL_STEAM_NBT_TAG, byteArrayOutputStream.toByteArray());
 
         } catch (IOException exception) {
-            ScienceNotLeisure.LOG.error("[GlobalSteamWorldSavedData] {} SAVE FAILED", GlobalSteamNBTTag, exception);
+            ScienceNotLeisure.LOG.error("[GlobalSteamWorldSavedData] {} SAVE FAILED", GLOBAL_STEAM_NBT_TAG, exception);
         }
     }
 }

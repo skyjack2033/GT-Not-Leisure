@@ -3,11 +3,12 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -78,6 +79,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     private static final String IAF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":"
         + "multiblock/integrated_assembly_facility";
     private static final String[][] shape = StructureUtils.readStructureFromFile(IAF_STRUCTURE_FILE_PATH);
+    public static final List<Pair<Block, Integer>> COMPONENT_CASING_VARIANTS = createComponentCasingVariants();
 
     private static final int MACHINEMODE_ASSEM = 0;
     private static final int MACHINEMODE_COMPO = 1;
@@ -117,6 +119,14 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
 
     public IntegratedAssemblyFacility(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+    }
+
+    public static List<Pair<Block, Integer>> createComponentCasingVariants() {
+        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(13);
+        for (int tier = 0; tier < 13; tier++) {
+            casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
+        }
+        return casingVariants;
     }
 
     @Override
@@ -187,9 +197,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
                 GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         (block, meta) -> block == Loaders.componentAssemblylineCasing ? meta : -1,
-                        IntStream.range(0, 13)
-                            .mapToObj(i -> Pair.of(Loaders.componentAssemblylineCasing, i))
-                            .collect(Collectors.toList()),
+                        COMPONENT_CASING_VARIANTS,
                         -2,
                         (t, meta) -> t.mCasingTier = meta,
                         t -> t.mCasingTier)))

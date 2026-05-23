@@ -12,6 +12,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -273,13 +274,19 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
         return ItemGenericChemBase.getMaxBallDurability(aStack);
     }
 
-    private ItemStack findMillingBall(int recipeReq) {
-        final ItemStack AluminaMillingBall = GregtechItemList.Milling_Ball_Alumina.get(1);
-        final ItemStack SoapstoneMillingBall = GregtechItemList.Milling_Ball_Soapstone.get(1);
+    public MTEHatchMillingBalls getPrimaryMillingBallBus() {
         if (mMillingBallBuses.size() != 1) {
             return null;
         }
-        MTEHatchMillingBalls aBus = mMillingBallBuses.get(0);
+        MTEHatchMillingBalls millingBallBus = mMillingBallBuses.get(0);
+        return millingBallBus != null && millingBallBus.isValid() ? millingBallBus : null;
+    }
+
+    @Nullable
+    public ItemStack findMillingBall(int recipeReq) {
+        final ItemStack AluminaMillingBall = GregtechItemList.Milling_Ball_Alumina.get(1);
+        final ItemStack SoapstoneMillingBall = GregtechItemList.Milling_Ball_Soapstone.get(1);
+        MTEHatchMillingBalls aBus = getPrimaryMillingBallBus();
         if (aBus != null) {
             ArrayList<ItemStack> aAvailableItems = aBus.getContentUsageSlots();
             if (!aAvailableItems.isEmpty()) {

@@ -188,16 +188,16 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     }
 
     public int getInputCapacity() {
-        return this.mInputHatches.stream()
-            .mapToInt(MTEHatchInput::getCapacity)
-            .sum();
+        int totalCapacity = 0;
+        for (MTEHatchInput inputHatch : mInputHatches) {
+            totalCapacity += inputHatch.getCapacity();
+        }
+        return totalCapacity;
     }
 
     @Override
     public int getCapacity() {
-        int ret = 0;
-        ret += this.getInputCapacity();
-        return ret;
+        return getInputCapacity();
     }
 
     @Override
@@ -253,7 +253,8 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
             @Override
             public GTNLParallelHelper createParallelHelper(@NotNull GTRecipe recipe) {
                 return super.createParallelHelper(
-                    LargeIncubator.recipeWithMultiplier(recipe, inputFluids, mOutputHatches.get(0), getTrueParallel()));
+                    LargeIncubator
+                        .recipeWithMultiplier(recipe, inputFluids, getPrimaryOutputHatch(), getTrueParallel()));
             }
         };
     }
@@ -324,16 +325,20 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     }
 
     public int reCalculateFluidAmount() {
-        return this.getStoredFluids()
-            .stream()
-            .mapToInt(fluidStack -> fluidStack.amount)
-            .sum();
+        int totalFluidAmount = 0;
+        for (FluidStack fluidStack : getStoredFluids()) {
+            totalFluidAmount += fluidStack.amount;
+        }
+        return totalFluidAmount;
     }
 
     public int reCalculateHeight() {
-        return this.reCalculateFluidAmount() > this.getCapacity() / 4 - 1
-            ? this.reCalculateFluidAmount() >= this.getCapacity() / 2 ? 3 : 2
-            : 1;
+        int fluidAmount = reCalculateFluidAmount();
+        int capacity = getCapacity();
+        if (fluidAmount <= capacity / 4 - 1) {
+            return 1;
+        }
+        return fluidAmount >= capacity / 2 ? 3 : 2;
     }
 
     @Override
@@ -341,16 +346,27 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
         super.onPostTick(aBaseMetaTileEntity, aTick);
         if (this.height != this.reCalculateHeight()) this.needsVisualUpdate = true;
         this.doAllVisualThings();
+        MTERadioHatch radioHatch = getPrimaryRadiationHatch();
         if (this.getBaseMetaTileEntity()
-            .isServerSide() && this.mRadHatches.size() == 1) {
-            this.mSievert = this.mRadHatches.get(0)
-                .getSievert();
+            .isServerSide() && radioHatch != null) {
+            this.mSievert = radioHatch.getSievert();
             if (this.getBaseMetaTileEntity()
                 .isActive() && this.mNeededSievert > this.mSievert) this.mOutputFluids = null;
         }
         if (aBaseMetaTileEntity.isServerSide() && this.mMaxProgresstime <= 0) {
             this.mMaxProgresstime = 0;
         }
+    }
+
+    public MTERadioHatch getPrimaryRadiationHatch() {
+        if (mRadHatches.isEmpty()) {
+            return null;
+        }
+        MTERadioHatch radioHatch = mRadHatches.get(0);
+        if (radioHatch == null || !radioHatch.isValid()) {
+            return null;
+        }
+        return radioHatch;
     }
 
     @Override

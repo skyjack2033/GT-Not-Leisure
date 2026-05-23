@@ -1,7 +1,7 @@
 package com.science.gtnl.common.block.casings.column;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.common.block.casings.column.ItemBlockColumn.metaSet;
+import static com.science.gtnl.common.block.casings.column.ItemBlockColumn.META_SET;
 
 import java.util.List;
 
@@ -53,7 +53,7 @@ public class MetaBlockColumn extends Block {
     @SideOnly(Side.CLIENT)
     @Override
     public void registerBlockIcons(IIconRegister reg) {
-        for (int meta : metaSet) {
+        for (int meta : META_SET) {
             IIcon[] textures = new IIcon[textureName.length];
             for (int i = 0; i < this.textureName.length; ++i) {
                 textures[i] = reg
@@ -66,7 +66,7 @@ public class MetaBlockColumn extends Block {
     @SideOnly(Side.CLIENT)
     @Override
     public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list) {
-        for (int meta : metaSet) {
+        for (int meta : META_SET) {
             list.add(new ItemStack(item, 1, meta));
         }
     }

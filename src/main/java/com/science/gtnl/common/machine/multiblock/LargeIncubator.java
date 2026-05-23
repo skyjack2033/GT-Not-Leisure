@@ -155,16 +155,16 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
     }
 
     public int getInputCapacity() {
-        return this.mInputHatches.stream()
-            .mapToInt(MTEHatchInput::getCapacity)
-            .sum();
+        int totalCapacity = 0;
+        for (MTEHatchInput inputHatch : mInputHatches) {
+            totalCapacity += inputHatch.getCapacity();
+        }
+        return totalCapacity;
     }
 
     @Override
     public int getCapacity() {
-        int ret = 0;
-        ret += this.getInputCapacity();
-        return ret;
+        return getInputCapacity();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
             @Override
             public GTNLParallelHelper createParallelHelper(@NotNull GTRecipe recipe) {
                 return super.createParallelHelper(
-                    recipeWithMultiplier(recipe, inputFluids, mOutputHatches.get(0), getTrueParallel()));
+                    recipeWithMultiplier(recipe, inputFluids, getPrimaryOutputHatch(), getTrueParallel()));
             }
         };
     }
@@ -342,33 +342,44 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
     }
 
     public int reCalculateFluidAmmount() {
-        return this.getStoredFluids()
-            .stream()
-            .mapToInt(fluidStack -> fluidStack.amount)
-            .sum();
+        int totalFluidAmount = 0;
+        for (FluidStack fluidStack : getStoredFluids()) {
+            totalFluidAmount += fluidStack.amount;
+        }
+        return totalFluidAmount;
     }
 
     public void reCalculateHeight() {
-        if (this.reCalculateFluidAmmount() > this.getCapacity() / 4 - 1) {
-            this.reCalculateFluidAmmount();
-            this.getCapacity();
-        }
+        int fluidAmount = reCalculateFluidAmmount();
+        int capacity = getCapacity();
+        if (fluidAmount > capacity / 4 - 1) return;
     }
 
     @Override
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPostTick(aBaseMetaTileEntity, aTick);
         this.reCalculateHeight();
+        MTERadioHatch radioHatch = getPrimaryRadiationHatch();
         if (this.getBaseMetaTileEntity()
-            .isServerSide() && this.mRadHatches.size() == 1) {
-            this.mSievert = this.mRadHatches.get(0)
-                .getSievert();
+            .isServerSide() && radioHatch != null) {
+            this.mSievert = radioHatch.getSievert();
             if (this.getBaseMetaTileEntity()
                 .isActive() && this.mNeededSievert > this.mSievert) this.mOutputFluids = null;
         }
         if (aBaseMetaTileEntity.isServerSide() && this.mMaxProgresstime <= 0) {
             this.mMaxProgresstime = 0;
         }
+    }
+
+    public MTERadioHatch getPrimaryRadiationHatch() {
+        if (mRadHatches.isEmpty()) {
+            return null;
+        }
+        MTERadioHatch radioHatch = mRadHatches.get(0);
+        if (radioHatch == null || !radioHatch.isValid()) {
+            return null;
+        }
+        return radioHatch;
     }
 
     @Override

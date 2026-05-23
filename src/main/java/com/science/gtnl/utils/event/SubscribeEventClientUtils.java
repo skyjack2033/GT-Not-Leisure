@@ -52,19 +52,19 @@ import gregtech.client.ElectricJukeboxSound;
 
 public class SubscribeEventClientUtils {
 
-    public static final Random random = new Random();
-    public static String haloNoiseIconTexture = ModList.ScienceNotLeisure.resourceDomain + ":halonoise";
+    public static final Random RANDOM = new Random();
+    public static String HALO_NOISE_ICON_TEXTURE = ModList.ScienceNotLeisure.resourceDomain + ":halonoise";
     public static IIcon haloNoiseIcon;
 
-    public static String cheatWrenchIconTexture = "nei:cheat_speical";
+    public static String CHEAT_WRENCH_ICON_TEXTURE = "nei:cheat_speical";
     public static IIcon cheatWrenchIcon;
 
-    public static boolean hasHandledDeathMessage = false;
-    public static float lastHealth = 20.0f;
+    public static boolean HAS_HANDLED_DEATH_MESSAGE = false;
+    public static float LAST_HEALTH = 20.0f;
 
     public static void registerAllIcons(net.minecraft.client.renderer.texture.IIconRegister ir) {
-        haloNoiseIcon = ir.registerIcon(haloNoiseIconTexture);
-        cheatWrenchIcon = ir.registerIcon(cheatWrenchIconTexture);
+        haloNoiseIcon = ir.registerIcon(HALO_NOISE_ICON_TEXTURE);
+        cheatWrenchIcon = ir.registerIcon(CHEAT_WRENCH_ICON_TEXTURE);
     }
 
     // Player
@@ -147,21 +147,21 @@ public class SubscribeEventClientUtils {
 
         float currentHealth = mc.thePlayer.getHealth();
 
-        if (lastHealth > 0 && currentHealth <= 0
-            && !hasHandledDeathMessage
+        if (LAST_HEALTH > 0 && currentHealth <= 0
+            && !HAS_HANDLED_DEATH_MESSAGE
             && mc.currentScreen instanceof GuiChat guiChat) {
             String chat = ((AccessorGuiChat) guiChat).getInputField()
                 .getText();
             mc.thePlayer.sendChatMessage(chat + (chat.startsWith("/") ? "" : "-"));
             mc.thePlayer.closeScreen();
-            hasHandledDeathMessage = true;
+            HAS_HANDLED_DEATH_MESSAGE = true;
         }
 
         if (currentHealth > 0) {
-            hasHandledDeathMessage = false;
+            HAS_HANDLED_DEATH_MESSAGE = false;
         }
 
-        lastHealth = currentHealth;
+        LAST_HEALTH = currentHealth;
     }
 
     @SubscribeEvent
@@ -190,7 +190,7 @@ public class SubscribeEventClientUtils {
 
             if (effect != null && event.gui instanceof GuiInventory) {
                 String[] messages = { "Awe_Cancel_02_01", "Awe_Cancel_02_02" };
-                String message = messages[random.nextInt(messages.length)];
+                String message = messages[RANDOM.nextInt(messages.length)];
                 TitleDisplayHandler.displayTitle(StatCollector.translateToLocal(message), 100, 0xFFFFFF, 3, 10, 20);
 
                 event.setCanceled(true);

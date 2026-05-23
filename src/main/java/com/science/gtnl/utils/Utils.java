@@ -17,8 +17,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
@@ -366,9 +364,15 @@ public class Utils {
     }
 
     public static boolean areItemsValid(ItemStack... stacks) {
-        return stacks != null && stacks.length >= 1
-            && Arrays.stream(stacks)
-                .allMatch(GTUtility::isStackValid);
+        if (stacks == null || stacks.length == 0) {
+            return false;
+        }
+        for (ItemStack stack : stacks) {
+            if (!GTUtility.isStackValid(stack)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Contract(value = "_ -> new", pure = true)
@@ -403,10 +407,28 @@ public class Utils {
     }
 
     public static ItemStack[] mergeItemStackArrays(ItemStack[]... itemStacks) {
-        return Arrays.stream(itemStacks)
-            .filter(Objects::nonNull)
-            .flatMap(Arrays::stream)
-            .toArray(ItemStack[]::new);
+        if (itemStacks == null || itemStacks.length == 0) {
+            return new ItemStack[0];
+        }
+        int totalLength = 0;
+        for (ItemStack[] itemStack : itemStacks) {
+            if (itemStack != null) {
+                totalLength += itemStack.length;
+            }
+        }
+        if (totalLength == 0) {
+            return new ItemStack[0];
+        }
+        ItemStack[] merged = new ItemStack[totalLength];
+        int offset = 0;
+        for (ItemStack[] itemStack : itemStacks) {
+            if (itemStack == null || itemStack.length == 0) {
+                continue;
+            }
+            System.arraycopy(itemStack, 0, merged, offset, itemStack.length);
+            offset += itemStack.length;
+        }
+        return merged;
     }
 
     public static <T> T[] mergeArray(T[] array1, T[] array2) {
@@ -473,19 +495,17 @@ public class Utils {
             }
         }
 
-        return uniqueStacks.stream()
-            .flatMap(stack -> {
-                long total = counts.getLong(stack);
-                long chunks = (total + (long) Integer.MAX_VALUE - 1) / (long) Integer.MAX_VALUE;
-
-                return LongStream.range(0, chunks)
-                    .mapToObj(i -> {
-                        ItemStack copy = stack.copy();
-                        copy.stackSize = (int) Math.min(total - i * (long) Integer.MAX_VALUE, Integer.MAX_VALUE);
-                        return copy;
-                    });
-            })
-            .collect(Collectors.toList());
+        List<ItemStack> result = new ArrayList<>(uniqueStacks.size());
+        for (ItemStack stack : uniqueStacks) {
+            long remaining = counts.getLong(stack);
+            while (remaining > 0L) {
+                ItemStack copy = stack.copy();
+                copy.stackSize = (int) Math.min(remaining, Integer.MAX_VALUE);
+                result.add(copy);
+                remaining -= copy.stackSize;
+            }
+        }
+        return result;
     }
 
     public static <T extends Collection<?>> T filterValidMTE(T metaTileEntities) {
@@ -503,35 +523,59 @@ public class Utils {
 
     public static ItemStack[] sortNoNullArray(ItemStack... itemStacks) {
         if (itemStacks == null) return null;
-        List<ItemStack> list = new ArrayList<>();
+        int size = 0;
         for (ItemStack itemStack : itemStacks) {
-            if (itemStack == null) continue;
-            list.add(itemStack);
+            if (itemStack != null) {
+                size++;
+            }
         }
-        if (list.isEmpty()) return new ItemStack[0];
-        return list.toArray(new ItemStack[0]);
+        if (size == 0) return new ItemStack[0];
+        ItemStack[] sorted = new ItemStack[size];
+        int index = 0;
+        for (ItemStack itemStack : itemStacks) {
+            if (itemStack != null) {
+                sorted[index++] = itemStack;
+            }
+        }
+        return sorted;
     }
 
     public static FluidStack[] sortNoNullArray(FluidStack... fluidStacks) {
         if (fluidStacks == null) return null;
-        List<FluidStack> list = new ArrayList<>();
+        int size = 0;
         for (FluidStack fluidStack : fluidStacks) {
-            if (fluidStack == null) continue;
-            list.add(fluidStack);
+            if (fluidStack != null) {
+                size++;
+            }
         }
-        if (list.isEmpty()) return new FluidStack[0];
-        return list.toArray(new FluidStack[0]);
+        if (size == 0) return new FluidStack[0];
+        FluidStack[] sorted = new FluidStack[size];
+        int index = 0;
+        for (FluidStack fluidStack : fluidStacks) {
+            if (fluidStack != null) {
+                sorted[index++] = fluidStack;
+            }
+        }
+        return sorted;
     }
 
     public static Object[] sortNoNullArray(Object... objects) {
         if (objects == null) return null;
-        List<Object> list = new ArrayList<>();
+        int size = 0;
         for (Object object : objects) {
-            if (object == null) continue;
-            list.add(object);
+            if (object != null) {
+                size++;
+            }
         }
-        if (list.isEmpty()) return new Object[0];
-        return list.toArray(new Object[0]);
+        if (size == 0) return new Object[0];
+        Object[] sorted = new Object[size];
+        int index = 0;
+        for (Object object : objects) {
+            if (object != null) {
+                sorted[index++] = object;
+            }
+        }
+        return sorted;
     }
 
     public static <T extends Collection<E>, E extends MetaTileEntity> T filterValidMTEs(T metaTileEntities) {
@@ -540,23 +584,47 @@ public class Utils {
     }
 
     public static int min(int... values) {
-        Arrays.sort(values);
-        return values[0];
+        validateRangeValues(values);
+        int minValue = values[0];
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] < minValue) {
+                minValue = values[i];
+            }
+        }
+        return minValue;
     }
 
     public static int max(int... values) {
-        Arrays.sort(values);
-        return values[values.length - 1];
+        validateRangeValues(values);
+        int maxValue = values[0];
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] > maxValue) {
+                maxValue = values[i];
+            }
+        }
+        return maxValue;
     }
 
     public static long min(long... values) {
-        Arrays.sort(values);
-        return values[0];
+        validateRangeValues(values);
+        long minValue = values[0];
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] < minValue) {
+                minValue = values[i];
+            }
+        }
+        return minValue;
     }
 
     public static long max(long... values) {
-        Arrays.sort(values);
-        return values[values.length - 1];
+        validateRangeValues(values);
+        long maxValue = values[0];
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] > maxValue) {
+                maxValue = values[i];
+            }
+        }
+        return maxValue;
     }
 
     public static double calculatePowerTier(double voltage) {
@@ -623,10 +691,38 @@ public class Utils {
         }
     }
 
-    public static VargsFunction<ItemStack[], ItemStack[]> filterStack = (s) -> Arrays.stream(s)
-        .flatMap(Arrays::stream)
-        .filter(Objects::nonNull)
-        .toArray(ItemStack[]::new);
+    public static VargsFunction<ItemStack[], ItemStack[]> filterStack = (s) -> {
+        if (s == null || s.length == 0) {
+            return new ItemStack[0];
+        }
+        int size = 0;
+        for (ItemStack[] stacks : s) {
+            if (stacks == null) {
+                continue;
+            }
+            for (ItemStack stack : stacks) {
+                if (stack != null) {
+                    size++;
+                }
+            }
+        }
+        if (size == 0) {
+            return new ItemStack[0];
+        }
+        ItemStack[] filtered = new ItemStack[size];
+        int index = 0;
+        for (ItemStack[] stacks : s) {
+            if (stacks == null) {
+                continue;
+            }
+            for (ItemStack stack : stacks) {
+                if (stack != null) {
+                    filtered[index++] = stack;
+                }
+            }
+        }
+        return filtered;
+    };
 
     public interface VargsFunction<T, R> {
 
@@ -634,18 +730,69 @@ public class Utils {
     }
 
     public static ItemStack[] flat(ItemStackG[] mStoredItemInternal2) {
-        return Arrays.stream(mStoredItemInternal2)
-            .filter(Objects::nonNull)
-            .flatMap(s -> Arrays.stream(s.flat()))
-            .toArray(ItemStack[]::new);
-
+        if (mStoredItemInternal2 == null || mStoredItemInternal2.length == 0) {
+            return new ItemStack[0];
+        }
+        int size = 0;
+        for (ItemStackG itemStackG : mStoredItemInternal2) {
+            if (itemStackG != null) {
+                size += itemStackG.flat().length;
+            }
+        }
+        if (size == 0) {
+            return new ItemStack[0];
+        }
+        ItemStack[] flattened = new ItemStack[size];
+        int index = 0;
+        for (ItemStackG itemStackG : mStoredItemInternal2) {
+            if (itemStackG == null) {
+                continue;
+            }
+            ItemStack[] stacks = itemStackG.flat();
+            System.arraycopy(stacks, 0, flattened, index, stacks.length);
+            index += stacks.length;
+        }
+        return flattened;
     }
 
     public static FluidStack[] flat(FluidTankG[] mStoredItemInternal2) {
-        return Arrays.stream(mStoredItemInternal2)
-            .flatMap(s -> Arrays.stream(s.flat()))
-            .toArray(FluidStack[]::new);
+        if (mStoredItemInternal2 == null || mStoredItemInternal2.length == 0) {
+            return new FluidStack[0];
+        }
+        int size = 0;
+        for (FluidTankG fluidTankG : mStoredItemInternal2) {
+            if (fluidTankG != null) {
+                size += fluidTankG.flat().length;
+            }
+        }
+        if (size == 0) {
+            return new FluidStack[0];
+        }
+        FluidStack[] flattened = new FluidStack[size];
+        int index = 0;
+        for (FluidTankG fluidTankG : mStoredItemInternal2) {
+            if (fluidTankG == null) {
+                continue;
+            }
+            FluidStack[] stacks = fluidTankG.flat();
+            System.arraycopy(stacks, 0, flattened, index, stacks.length);
+            index += stacks.length;
+        }
+        return flattened;
+    }
 
+    public static void validateRangeValues(int[] values) {
+        Objects.requireNonNull(values, "values");
+        if (values.length == 0) {
+            throw new IllegalArgumentException("values must not be empty");
+        }
+    }
+
+    public static void validateRangeValues(long[] values) {
+        Objects.requireNonNull(values, "values");
+        if (values.length == 0) {
+            throw new IllegalArgumentException("values must not be empty");
+        }
     }
 
     public static MovingObjectPosition rayTraceBlock(EntityPlayer player, double reachDistance) {

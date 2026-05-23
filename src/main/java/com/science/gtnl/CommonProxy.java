@@ -58,33 +58,39 @@ import gregtech.api.enums.Mods;
 
 public class CommonProxy implements IGuiHandler {
 
+    public static final SubscribeEventUtils SUBSCRIBE_EVENT_UTILS = new SubscribeEventUtils();
+    public static final VoidWorldHandler VOID_WORLD_HANDLER = new VoidWorldHandler();
+    public static final GTNLWorldgenloader GTNL_WORLDGEN_LOADER = new GTNLWorldgenloader();
+    public static final VMTweakHelper VM_TWEAK_HELPER = new VMTweakHelper();
+    public static final WorldListener WORLD_LISTENER = new WorldListener();
+
     // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(new SubscribeEventUtils());
+        MinecraftForge.EVENT_BUS.register(SUBSCRIBE_EVENT_UTILS);
         FMLCommonHandler.instance()
             .bus()
-            .register(new SubscribeEventUtils());
-        MinecraftForge.EVENT_BUS.register(new VoidWorldHandler());
+            .register(SUBSCRIBE_EVENT_UTILS);
+        MinecraftForge.EVENT_BUS.register(VOID_WORLD_HANDLER);
         FMLCommonHandler.instance()
             .bus()
-            .register(new VoidWorldHandler());
-        MinecraftForge.TERRAIN_GEN_BUS.register(new GTNLWorldgenloader());
+            .register(VOID_WORLD_HANDLER);
+        MinecraftForge.TERRAIN_GEN_BUS.register(GTNL_WORLDGEN_LOADER);
 
         NetWorkHandler.registerAllMessage();
     }
 
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
     public void init(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(new VMTweakHelper());
+        MinecraftForge.EVENT_BUS.register(VM_TWEAK_HELPER);
         FMLCommonHandler.instance()
             .bus()
-            .register(new VMTweakHelper());
+            .register(VM_TWEAK_HELPER);
 
         FMLCommonHandler.instance()
             .bus()
-            .register(new WorldListener());
-        MinecraftForge.EVENT_BUS.register(new WorldListener());
+            .register(WORLD_LISTENER);
+        MinecraftForge.EVENT_BUS.register(WORLD_LISTENER);
 
         if (Mods.MobsInfo.isModLoaded()) {
             MinecraftForge.EVENT_BUS.register(new ExtremeExtremeEntityCrusherRecipes());

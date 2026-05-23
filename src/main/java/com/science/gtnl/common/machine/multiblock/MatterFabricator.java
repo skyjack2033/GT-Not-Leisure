@@ -234,7 +234,7 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
                 outputItems.add(new ItemStack(outputItem.getItem(), stackSize, outputItem.getItemDamage()));
                 remaining -= stackSize;
             }
-            mOutputItems = outputItems.toArray(new ItemStack[0]);
+            mOutputItems = outputItems.toArray(new ItemStack[outputItems.size()]);
         } else {
             List<FluidStack> outputFluids = new ArrayList<>();
             long fluidAmount = totalOutput * 100000L;
@@ -243,7 +243,7 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
                 outputFluids.add(new FluidStack(Materials.UUAmplifier.getFluid(1), amount));
                 fluidAmount -= amount;
             }
-            mOutputFluids = outputFluids.toArray(new FluidStack[0]);
+            mOutputFluids = outputFluids.toArray(new FluidStack[outputFluids.size()]);
         }
 
         this.lEUt = -totalOutput * 4L;

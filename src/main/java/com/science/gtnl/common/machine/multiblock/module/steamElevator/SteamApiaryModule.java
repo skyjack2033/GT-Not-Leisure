@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -805,23 +804,22 @@ public class SteamApiaryModule extends SteamElevatorModule {
     public Widget generateCurrentRecipeInfoWidget() {
         DynamicPositionedColumn processingDetails = new DynamicPositionedColumn();
         if (mOutputItems == null || GUIDropProgress == null) return processingDetails;
-        LinkedHashMap<ItemStack, Double> sortedMap = GUIDropProgress.entrySet()
-            .stream()
-            .sorted(
-                Comparator.comparingInt(
-                    (Map.Entry<ItemStack, Double> entry) -> Arrays.stream(mOutputItems)
-                        .filter(s -> s.isItemEqual(entry.getKey()))
-                        .mapToInt(i -> i.stackSize)
-                        .sum())
-                    .reversed())
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = getOutputItemCounts(mOutputItems);
+        List<Map.Entry<ItemStack, Double>> sortedEntries = new ArrayList<>(GUIDropProgress.entrySet());
+        sortedEntries.sort(
+            Comparator
+                .comparingInt(
+                    (Map.Entry<ItemStack, Double> entry) -> outputCounts
+                        .getInt(GTUtility.ItemId.createNoCopy(entry.getKey())))
+                .reversed());
+
+        LinkedHashMap<ItemStack, Double> sortedMap = new LinkedHashMap<>(sortedEntries.size());
+        for (Map.Entry<ItemStack, Double> entry : sortedEntries) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
 
         for (Map.Entry<ItemStack, Double> drop : sortedMap.entrySet()) {
-            assert mOutputItems != null;
-            int outputSize = Arrays.stream(mOutputItems)
-                .filter(s -> s.isItemEqual(drop.getKey()))
-                .mapToInt(i -> i.stackSize)
-                .sum();
+            int outputSize = outputCounts.getInt(GTUtility.ItemId.createNoCopy(drop.getKey()));
             if (outputSize != 0) {
                 Long itemCount = (long) outputSize;
                 String itemName = drop.getKey()
@@ -850,17 +848,21 @@ public class SteamApiaryModule extends SteamElevatorModule {
         return processingDetails;
     }
 
+    public Object2IntOpenHashMap<GTUtility.ItemId> getOutputItemCounts(ItemStack[] outputItems) {
+        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = new Object2IntOpenHashMap<>(outputItems.length);
+        for (ItemStack outputItem : outputItems) {
+            if (outputItem != null && outputItem.stackSize > 0) {
+                outputCounts.addTo(GTUtility.ItemId.createNoCopy(outputItem), outputItem.stackSize);
+            }
+        }
+        return outputCounts;
+    }
+
     @Override
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
         screenElements.widget(new FakeSyncWidget<>(() -> {
-            HashMap<ItemStack, Double> ret = new HashMap<>();
-            HashMap<GTUtility.ItemId, Double> dropProgress = new HashMap<>();
-
+            HashMap<ItemStack, Double> ret = new HashMap<>(this.dropProgress.size());
             for (Map.Entry<GTUtility.ItemId, Double> drop : this.dropProgress.entrySet()) {
-                dropProgress.merge(drop.getKey(), drop.getValue(), Double::sum);
-            }
-
-            for (Map.Entry<GTUtility.ItemId, Double> drop : dropProgress.entrySet()) {
                 ret.put(BeeSimulator.dropstacks.get(drop.getKey()), drop.getValue());
             }
             return ret;
@@ -902,15 +904,17 @@ public class SteamApiaryModule extends SteamElevatorModule {
                 if (i.isValidSlot(j)) if (i.getStackInSlot(j) == null) emptySlots++;
         }
         if (emptySlots == 0 && !ignoreEmptiness) return;
-        while (!list.isEmpty()) {
-            List<ItemStack> toOutputNow = mappingFunction.apply(list.get(0));
+        // Use iterator removal to avoid repeated head-shift costs on ArrayList / 使用迭代器移除，避免 ArrayList 头删反复搬移元素
+        for (var iterator = list.iterator(); iterator.hasNext();) {
+            Y pendingOutput = iterator.next();
+            List<ItemStack> toOutputNow = mappingFunction.apply(pendingOutput);
             if (toOutputNow == null) {
-                list.remove(0);
+                iterator.remove();
                 continue;
             }
             if (!ignoreEmptiness && emptySlots < toOutputNow.size()) break;
             emptySlots -= toOutputNow.size();
-            list.remove(0);
+            iterator.remove();
             for (ItemStack stack : toOutputNow) {
                 addOutput(stack);
             }

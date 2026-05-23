@@ -227,7 +227,8 @@ public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<Microorg
             @Override
             public GTNLParallelHelper createParallelHelper(@NotNull GTRecipe recipe) {
                 return super.createParallelHelper(
-                    LargeIncubator.recipeWithMultiplier(recipe, inputFluids, mOutputHatches.get(0), getTrueParallel()));
+                    LargeIncubator
+                        .recipeWithMultiplier(recipe, inputFluids, getPrimaryOutputHatch(), getTrueParallel()));
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
     }

@@ -1,6 +1,5 @@
 package com.science.gtnl.utils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.block.Block;
@@ -14,21 +13,22 @@ import net.minecraftforge.event.entity.player.FillBucketEvent;
 
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class BucketHandler {
 
-    public static BucketHandler instance = new BucketHandler();
+    public static final BucketHandler INSTANCE = new BucketHandler();
 
     static {
-        MinecraftForge.EVENT_BUS.register(instance);
+        MinecraftForge.EVENT_BUS.register(INSTANCE);
     }
 
-    private Map<Block, Item> buckets = new HashMap<Block, Item>();
+    public Map<Block, Item> bucketMap = new Object2ObjectOpenHashMap<>();
 
     private BucketHandler() {}
 
     public void registerFluid(Block fluidBlock, Item fullBucket) {
-        buckets.put(fluidBlock, fullBucket);
+        bucketMap.put(fluidBlock, fullBucket);
     }
 
     @SubscribeEvent
@@ -46,7 +46,7 @@ public class BucketHandler {
     private ItemStack getFilledBucket(World world, MovingObjectPosition pos) {
 
         Block block = world.getBlock(pos.blockX, pos.blockY, pos.blockZ);
-        Item bucket = buckets.get(block);
+        Item bucket = bucketMap.get(block);
         if (bucket != null && world.getBlockMetadata(pos.blockX, pos.blockY, pos.blockZ) == 0) {
             world.setBlockToAir(pos.blockX, pos.blockY, pos.blockZ);
             return new ItemStack(bucket);

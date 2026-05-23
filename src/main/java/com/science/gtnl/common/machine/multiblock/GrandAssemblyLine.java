@@ -30,7 +30,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.bsideup.jabel.Desugar;
@@ -206,13 +205,14 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                 IDualInputInventory inventory = inventoryIterator.next();
                 if (inventory.isEmpty()) continue;
                 IDualInputInventory wrappedInventory = new WrappedInventory(
-                    ArrayUtils.addAll(sharedItems, inventory.getItemInputs()),
+                    mergeItemInputs(sharedItems, inventory.getItemInputs()),
                     inventory.getFluidInputs());
                 inputInventories.add(wrappedInventory);
             }
         }
 
         // 将常规输入仓/总线包装成总成
+        // 将常规输入仓与总线包装为统一库存视图 / Wrap regular hatches and buses into one inventory view
         short hatchColors = getHatchColors();
         boolean doColorChecking = hatchColors != 0;
         if (!doColorChecking) hatchColors = 0b1;
@@ -754,6 +754,43 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         copy.setPersistentHash(original.getPersistentHash());
 
         return copy;
+    }
+
+    public static ItemStack[] mergeItemInputs(ItemStack[] firstInputs, ItemStack[] secondInputs) {
+        int mergedSize = countNonNullItemStacks(firstInputs) + countNonNullItemStacks(secondInputs);
+        if (mergedSize == 0) {
+            return new ItemStack[0];
+        }
+        ItemStack[] mergedInputs = new ItemStack[mergedSize];
+        int insertIndex = appendItemInputs(firstInputs, mergedInputs, 0);
+        appendItemInputs(secondInputs, mergedInputs, insertIndex);
+        return mergedInputs;
+    }
+
+    public static int countNonNullItemStacks(ItemStack[] itemStacks) {
+        if (itemStacks == null || itemStacks.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        for (ItemStack itemStack : itemStacks) {
+            if (itemStack != null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static int appendItemInputs(ItemStack[] sourceStacks, ItemStack[] targetStacks, int startIndex) {
+        if (sourceStacks == null || sourceStacks.length == 0) {
+            return startIndex;
+        }
+        int targetIndex = startIndex;
+        for (ItemStack sourceStack : sourceStacks) {
+            if (sourceStack != null) {
+                targetStacks[targetIndex++] = sourceStack;
+            }
+        }
+        return targetIndex;
     }
 
     @Override

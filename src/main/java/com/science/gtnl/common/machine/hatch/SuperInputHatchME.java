@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -17,6 +15,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
@@ -65,6 +64,7 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class SuperInputHatchME extends MTEHatchInputME {
 
@@ -715,11 +715,7 @@ public class SuperInputHatchME extends MTEHatchInputME {
         }
 
         final Scrollable scrollable = new Scrollable().setVerticalScroll();
-        SlotGroup leftFluidSlotGroup = SlotGroup.ofFluidTanks(
-            IntStream.range(0, SLOT_COUNT)
-                .mapToObj(index -> createTankForFluidStack(storedFluids, index, 1))
-                .collect(Collectors.toList()),
-            10)
+        SlotGroup leftFluidSlotGroup = SlotGroup.ofFluidTanks(createFluidTankList(storedFluids, 1), 10)
             .phantom(true)
             .widgetCreator((slotIndex, h) -> (FluidSlotWidget) new FluidSlotWidget(h) {
 
@@ -783,11 +779,8 @@ public class SuperInputHatchME extends MTEHatchInputME {
             .build();
         scrollable.widget(leftFluidSlotGroup);
 
-        SlotGroup rightFluidSlotGroup = SlotGroup.ofFluidTanks(
-            IntStream.range(0, SLOT_COUNT)
-                .mapToObj(index -> createTankForFluidStack(storedInformationFluids, index, Integer.MAX_VALUE))
-                .collect(Collectors.toList()),
-            10)
+        SlotGroup rightFluidSlotGroup = SlotGroup
+            .ofFluidTanks(createFluidTankList(storedInformationFluids, Integer.MAX_VALUE), 10)
             .phantom(true)
             .widgetCreator((slotIndex, h) -> (FluidSlotWidget) new FluidSlotWidget(h) {
 
@@ -874,6 +867,14 @@ public class SuperInputHatchME extends MTEHatchInputME {
             .setSize(130, 9)
             .setPos(131, 84));
         addGregTechLogo(builder);
+    }
+
+    public List<IFluidTank> createFluidTankList(FluidStack[] fluidStacks, int capacity) {
+        ObjectArrayList<IFluidTank> fluidTanks = new ObjectArrayList<>(SLOT_COUNT);
+        for (int slotIndex = 0; slotIndex < SLOT_COUNT; slotIndex++) {
+            fluidTanks.add(createTankForFluidStack(fluidStacks, slotIndex, capacity));
+        }
+        return fluidTanks;
     }
 
     public FluidStackTank createTankForFluidStack(FluidStack[] fluidStacks, int slotIndex, int capacity) {

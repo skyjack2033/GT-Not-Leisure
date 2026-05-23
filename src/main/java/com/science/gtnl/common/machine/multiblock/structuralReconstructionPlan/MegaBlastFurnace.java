@@ -275,8 +275,8 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     public int getMaxParallelRecipes() {
         resetParallelTier();
 
-        if (mParallelControllerHatches.size() == 1) {
-            ParallelControllerHatch module = mParallelControllerHatches.get(0);
+        ParallelControllerHatch module = getSingleParallelControllerHatch();
+        if (module != null) {
             mParallelTier = module.mTier;
             return 4 << (2 * (module.mTier - 2));
         }

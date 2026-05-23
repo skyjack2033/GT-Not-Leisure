@@ -202,7 +202,7 @@ public class PartBeamFormer extends GTNLBasePartState implements IBlockStateList
 
     @Override
     public void unregisterListener() {
-        WorldListener.instance.unregisterBlockStateListener(this);
+        WorldListener.INSTANCE.unregisterBlockStateListener(this);
     }
 
     public void connect(IBeamFormer potentialFormer, Iterable<BlockPos> locs) throws FailedConnection {
@@ -225,7 +225,7 @@ public class PartBeamFormer extends GTNLBasePartState implements IBlockStateList
         this.listenerLinkedList = new Long2ObjectLinkedOpenHashMap<>();
         for (var loc : locs) this.listenerLinkedList.put(loc.asLong(), loc);
 
-        WorldListener.instance.registerBlockStateListener(this, locs);
+        WorldListener.INSTANCE.registerBlockStateListener(this, locs);
 
         this.beamLength = this.listenerLinkedList.size();
         potentialFormer.setBeamLength(0);

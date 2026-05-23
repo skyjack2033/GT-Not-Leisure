@@ -1,6 +1,5 @@
 package com.science.gtnl.common.block.casings.glow;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -11,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.item.MetaItemStackUtils;
+import com.science.gtnl.utils.item.MetaTooltipUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -21,8 +21,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ItemBlockGlow extends ItemBlock {
 
-    public static Int2ObjectMap<String[]> metaItemTooltipsMap = new Int2ObjectOpenHashMap<>();
-    public static IntSet metaSet = new IntOpenHashSet();
+    public static final Int2ObjectMap<String[]> META_ITEM_TOOLTIPS_MAP = new Int2ObjectOpenHashMap<>();
+    public static final IntSet META_SET = new IntOpenHashSet();
 
     public ItemBlockGlow(Block aBlock) {
         super(aBlock);
@@ -32,12 +32,12 @@ public class ItemBlockGlow extends ItemBlock {
     }
 
     public static ItemStack initMetaBlockGlow(int meta) {
-        return MetaItemStackUtils.initMetaItemStack(meta, BlockLoader.metaBlockGlow, metaSet);
+        return MetaItemStackUtils.initMetaItemStack(meta, BlockLoader.metaBlockGlow, META_SET);
     }
 
     public static ItemStack initMetaBlockGlow(int Meta, String[] tooltips) {
         if (tooltips != null) {
-            MetaItemStackUtils.metaItemStackTooltipsAdd(metaItemTooltipsMap, Meta, tooltips);
+            MetaItemStackUtils.metaItemStackTooltipsAdd(META_ITEM_TOOLTIPS_MAP, Meta, tooltips);
         }
         return initMetaBlockGlow(Meta);
     }
@@ -46,11 +46,7 @@ public class ItemBlockGlow extends ItemBlock {
     @Override
     public void addInformation(ItemStack aItemStack, EntityPlayer p_77624_2_, List<String> theTooltipsList,
         boolean p_77624_4_) {
-        int meta = aItemStack.getItemDamage();
-        if (null != metaItemTooltipsMap.get(meta)) {
-            String[] tooltips = metaItemTooltipsMap.get(meta);
-            theTooltipsList.addAll(Arrays.asList(tooltips));
-        }
+        MetaTooltipUtils.appendTooltips(META_ITEM_TOOLTIPS_MAP, aItemStack.getItemDamage(), theTooltipsList);
     }
 
     @Override

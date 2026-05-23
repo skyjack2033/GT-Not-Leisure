@@ -2,7 +2,6 @@ package com.science.gtnl.common.item;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -14,6 +13,7 @@ import net.minecraft.util.IIcon;
 
 import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.utils.item.MetaItemStackUtils;
+import com.science.gtnl.utils.item.MetaTooltipUtils;
 
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
@@ -32,8 +32,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 @Optional.Interface(iface = "fox.spiteful.avaritia.render.IHaloRenderItem", modid = "Avaritia")
 public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
 
-    public static Int2ObjectMap<String[]> metaItemTooltipsMap = new Int2ObjectOpenHashMap<>();
-    public static IntSet metaSet = new IntOpenHashSet();
+    public static final Int2ObjectMap<String[]> META_ITEM_TOOLTIPS_MAP = new Int2ObjectOpenHashMap<>();
+    public static final IntSet META_SET = new IntOpenHashSet();
 
     public final String unlocalizedName;
     public IIcon[] halo;
@@ -55,14 +55,14 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
      */
     public static ItemStack initItem(int aMeta) {
 
-        return MetaItemStackUtils.initMetaItemStack(aMeta, ItemLoader.metaItem, metaSet);
+        return MetaItemStackUtils.initMetaItemStack(aMeta, ItemLoader.metaItem, META_SET);
 
     }
 
     public static ItemStack initItem(int aMeta, String[] tooltips) {
 
         if (tooltips != null) {
-            MetaItemStackUtils.metaItemStackTooltipsAdd(metaItemTooltipsMap, aMeta, tooltips);
+            MetaItemStackUtils.metaItemStackTooltipsAdd(META_ITEM_TOOLTIPS_MAP, aMeta, tooltips);
         }
 
         return initItem(aMeta);
@@ -84,10 +84,11 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
     public void registerIcons(IIconRegister iconRegister) {
         super.registerIcons(iconRegister);
         this.itemIcon = iconRegister.registerIcon(RESOURCE_ROOT_ID + ":" + "MetaItem/0");
-        for (int meta : metaSet) {
-            ItemStaticDataClientOnly.iconsMapMetaItem01
-                .put(meta, iconRegister.registerIcon(RESOURCE_ROOT_ID + ":" + "MetaItem/" + meta));
-        }
+        MetaTooltipUtils.registerIcons(
+            META_SET,
+            ItemStaticDataClientOnly.META_ITEM_01_ICONS,
+            iconRegister,
+            RESOURCE_ROOT_ID + ":" + "MetaItem/");
         halo = new IIcon[1];
         halo[0] = iconRegister.registerIcon(RESOURCE_ROOT_ID + ":" + "halonoise");
     }
@@ -95,26 +96,20 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int aMetaData) {
-        return ItemStaticDataClientOnly.iconsMapMetaItem01.containsKey(aMetaData)
-            ? ItemStaticDataClientOnly.iconsMapMetaItem01.get(aMetaData)
-            : ItemStaticDataClientOnly.iconsMapMetaItem01.get(0);
+        return MetaTooltipUtils.getIcon(ItemStaticDataClientOnly.META_ITEM_01_ICONS, aMetaData);
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack aItemStack, EntityPlayer p_77624_2_, List<String> theTooltipsList,
         boolean p_77624_4_) {
-        int meta = aItemStack.getItemDamage();
-        if (null != metaItemTooltipsMap.get(meta)) {
-            String[] tooltips = metaItemTooltipsMap.get(meta);
-            theTooltipsList.addAll(Arrays.asList(tooltips));
-        }
+        MetaTooltipUtils.appendTooltips(META_ITEM_TOOLTIPS_MAP, aItemStack.getItemDamage(), theTooltipsList);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item aItem, CreativeTabs aCreativeTabs, List<ItemStack> aList) {
-        for (int meta : metaSet) {
+        for (int meta : META_SET) {
             aList.add(new ItemStack(ItemLoader.metaItem, 1, meta));
         }
     }

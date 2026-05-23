@@ -24,8 +24,8 @@ public class MixinFCGuiAmount {
             target = "Lcom/glodblock/github/inventory/InventoryHandler;switchGui(Lcom/glodblock/github/inventory/gui/GuiType;)V"))
     public void onActionPerformed(GuiType guiType) {
         GuiScreen oldGui;
-        if ((oldGui = GTNLInputHandler.oldGui) != null) {
-            GTNLInputHandler.delayMethod = () -> Minecraft.getMinecraft()
+        if ((oldGui = GTNLInputHandler.LAST_GUI_SCREEN) != null) {
+            GTNLInputHandler.DELAY_METHOD = () -> Minecraft.getMinecraft()
                 .displayGuiScreen(oldGui);
             ScienceNotLeisure.network.sendToServer(new ContainerRollBACK());
         } else {

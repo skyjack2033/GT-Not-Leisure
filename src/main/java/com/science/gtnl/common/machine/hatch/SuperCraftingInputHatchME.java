@@ -35,7 +35,6 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -269,7 +268,16 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
         @Override
         public ItemStack[] getItemInputs() {
             if (isItemEmpty()) return GTValues.emptyItemStackArray;
-            return ArrayUtils.addAll(itemInventory.toArray(new ItemStack[0]), getNonNullManualInventory());
+            ItemStack[] manualInventory = getNonNullManualInventory();
+            ItemStack[] itemInputs = new ItemStack[itemInventory.size() + manualInventory.length];
+            int current = 0;
+            for (ItemStack itemStack : itemInventory) {
+                itemInputs[current++] = itemStack;
+            }
+            for (ItemStack itemStack : manualInventory) {
+                itemInputs[current++] = itemStack;
+            }
+            return itemInputs;
         }
 
         @Override
@@ -282,24 +290,33 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
         public GTDualInputPattern getPatternInputs() {
             GTDualInputPattern dualInputs = new GTDualInputPattern();
 
-            ItemStack[] inputItems = this.parentMTE.getSharedItems();
-            FluidStack[] inputFluids = GTValues.emptyFluidStackArray;
+            ItemStack[] sharedItems = this.parentMTE.getSharedItems();
+            ItemStack[] manualInventory = getNonNullManualInventory();
+            IAEItemStack[] patternInputs = this.patternDetails.getInputs();
+            ObjectArrayList<ItemStack> inputItems = new ObjectArrayList<>(
+                sharedItems.length + manualInventory.length + patternInputs.length);
+            ObjectArrayList<FluidStack> inputFluids = new ObjectArrayList<>(patternInputs.length);
 
-            for (IAEItemStack singleInput : this.patternDetails.getInputs()) {
+            Collections.addAll(inputItems, sharedItems);
+
+            for (IAEItemStack singleInput : patternInputs) {
                 if (singleInput == null) continue;
                 ItemStack singleInputItemStack = singleInput.getItemStack();
                 if (singleInputItemStack.getItem() instanceof ItemFluidDrop) {
                     FluidStack fluidStack = ItemFluidDrop.getFluidStack(singleInputItemStack);
-                    if (fluidStack != null) inputFluids = ArrayUtils.addAll(inputFluids, fluidStack);
+                    if (fluidStack != null) {
+                        inputFluids.add(fluidStack);
+                    }
                 } else {
-                    inputItems = ArrayUtils.addAll(inputItems, singleInputItemStack);
+                    inputItems.add(singleInputItemStack);
                 }
             }
 
-            inputItems = ArrayUtils.addAll(inputItems, getNonNullManualInventory());
+            Collections.addAll(inputItems, manualInventory);
 
-            dualInputs.inputItems = inputItems;
-            dualInputs.inputFluid = inputFluids;
+            dualInputs.inputItems = inputItems.toArray(new ItemStack[inputItems.size()]);
+            dualInputs.inputFluid = inputFluids.isEmpty() ? GTValues.emptyFluidStackArray
+                : inputFluids.toArray(new FluidStack[inputFluids.size()]);
             return dualInputs;
         }
 

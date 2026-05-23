@@ -2,8 +2,6 @@ package com.science.gtnl.utils.event;
 
 import static com.science.gtnl.utils.world.steam.GlobalSteamWorldSavedData.loadInstance;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -71,6 +69,7 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.metatileentity.BaseMetaTileEntity;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry;
 import tectech.thing.casing.TTCasingsContainer;
 import vazkii.botania.api.BotaniaAPI;
@@ -82,28 +81,22 @@ import vazkii.botania.api.recipe.RecipeManaInfusion;
 
 public class SubscribeEventUtils {
 
-    public static Set<String> MOD_BLACKLIST = new HashSet<>(
-        Arrays.asList(
-            ModList.QzMiner.ID,
-            ModList.Baubles.ID,
-            ModList.ReAvaritia.ID,
-            ModList.ScienceNotLeisure.ID,
-            ModList.Sudoku.ID,
-            ModList.GiveCount.ID,
-            ModList.ChromaticTooltips.ID,
-            ModList.ChromaticTooltipsCompat.ID,
-            ModList.NewHorizonsCoreMod.ID,
-            ModList.GalaxySpace.ID,
-            ModList.EnhancedLootBags.ID,
-            ModList.NotEnoughEnergistics.ID,
-            ModList.NEICustomDiagrams.ID,
-            ModList.AvaritiaAddons.ID));
+    public static final ModList[] MOD_LIST_VALUES = ModList.values();
+    public static final Set<String> MOD_BLACKLIST = new ObjectOpenHashSet<>(
+        new String[] { ModList.QzMiner.ID, ModList.Baubles.ID, ModList.ReAvaritia.ID, ModList.ScienceNotLeisure.ID,
+            ModList.Sudoku.ID, ModList.GiveCount.ID, ModList.ChromaticTooltips.ID, ModList.ChromaticTooltipsCompat.ID,
+            ModList.NewHorizonsCoreMod.ID, ModList.GalaxySpace.ID, ModList.EnhancedLootBags.ID,
+            ModList.NotEnoughEnergistics.ID, ModList.NEICustomDiagrams.ID, ModList.AvaritiaAddons.ID });
 
-    public static Object2IntMap<UUID> foodTickTimers = new Object2IntOpenHashMap<>();
+    public static final Object2IntMap<UUID> FOOD_TICK_TIMERS = new Object2IntOpenHashMap<>();
 
-    public static DamageSource CRUSHING_DAMAGE = new DamageSource("damage.gtnl.crushing").setDamageBypassesArmor();
+    public static final DamageSource CRUSHING_DAMAGE = new DamageSource("damage.gtnl.crushing")
+        .setDamageBypassesArmor();
 
-    public static boolean circuitNanitesDataLoad = false;
+    public static boolean CIRCUIT_NANITES_DATA_LOAD = false;
+    public static long SLEEP_TIME = 0;
+    public static long SERVER_TICK = 0;
+    public static final long MAX_SERVER_SLEEP_MILLIS = 2000L;
 
     // Player
     @SubscribeEvent
@@ -119,9 +112,7 @@ public class SubscribeEventUtils {
 
             TimeStopPocketWatch.setTimeStopped(false);
 
-            boolean giveAchievement = Arrays.stream(ModList.values())
-                .filter(mod -> !MOD_BLACKLIST.contains(mod.getID()))
-                .allMatch(ModList::isModLoaded);
+            boolean giveAchievement = shouldGrantAllCommunityModAchievement();
 
             if (giveAchievement) {
                 AchievementsLoader.gtnlAchievementsPage.getAchievements()
@@ -132,7 +123,7 @@ public class SubscribeEventUtils {
             if (MainConfig.message.enableShowJoinMessage || MainConfig.debug.enableDebugMode) {
 
                 if (MainConfig.message.enableShowAddMods) {
-                    for (ModList mod : ModList.values()) {
+                    for (ModList mod : MOD_LIST_VALUES) {
                         if (mod.isModLoaded() && !MOD_BLACKLIST.contains(mod.getID())) {
                             String translatedPrefix = StatCollector.translateToLocal("Welcome_GTNL_ModInstall");
                             player.addChatMessage(
@@ -214,7 +205,8 @@ public class SubscribeEventUtils {
     public void onPlayerLoginOut(PlayerEvent.PlayerLoggedOutEvent event) {
         TimeStopPocketWatch.setTimeStopped(false);
         BaubleItem.removePlayer(event.player.getUniqueID());
-        circuitNanitesDataLoad = false;
+        FOOD_TICK_TIMERS.removeInt(event.player.getUniqueID());
+        CIRCUIT_NANITES_DATA_LOAD = false;
     }
 
     @SubscribeEvent
@@ -297,7 +289,7 @@ public class SubscribeEventUtils {
 
         if (stats.getFoodLevel() >= 20) {
             UUID uuid = player.getUniqueID();
-            int timer = foodTickTimers.getOrDefault(uuid, 0) + 1;
+            int timer = FOOD_TICK_TIMERS.getOrDefault(uuid, 0) + 1;
 
             if (timer >= 10) {
                 timer = 0;
@@ -313,26 +305,26 @@ public class SubscribeEventUtils {
                 }
             }
 
-            foodTickTimers.put(uuid, timer);
+            FOOD_TICK_TIMERS.put(uuid, timer);
         } else {
-            foodTickTimers.removeInt(player.getUniqueID());
+            FOOD_TICK_TIMERS.removeInt(player.getUniqueID());
         }
     }
-
-    public static long sleepTime = 0;
-    public static long tick = 0;
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
-            ++tick;
-        } else if (sleepTime > 0 && tick % 20 == 0) {
+            ++SERVER_TICK;
+        } else if (SLEEP_TIME > 0 && SERVER_TICK % 20 == 0) {
             try {
-                sleepTime = Math.min(2000, sleepTime);
-                Thread.sleep(sleepTime);
-                sleepTime = 0;
+                long sleepMillis = Math.min(MAX_SERVER_SLEEP_MILLIS, SLEEP_TIME);
+                Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread()
+                    .interrupt();
+                ScienceNotLeisure.LOG.warn("Server tick sleep was interrupted", e);
+            } finally {
+                SLEEP_TIME = 0;
             }
         }
     }
@@ -361,9 +353,9 @@ public class SubscribeEventUtils {
     public void onWorldLoad(WorldEvent.Load event) {
         World world = event.world;
         if (world.isRemote) return;
-        if (!circuitNanitesDataLoad) {
+        if (!CIRCUIT_NANITES_DATA_LOAD) {
             RecipeLoader.loadCircuitNanitesData(world.getSeed());
-            circuitNanitesDataLoad = true;
+            CIRCUIT_NANITES_DATA_LOAD = true;
         }
         if (event.world.provider.dimensionId == 0) {
             loadInstance(event.world);
@@ -373,7 +365,8 @@ public class SubscribeEventUtils {
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
         PlayerDollRenderManager.offlineMode = false;
-        circuitNanitesDataLoad = false;
+        CIRCUIT_NANITES_DATA_LOAD = false;
+        FOOD_TICK_TIMERS.clear();
         PlayerDollRenderManager.BLACKLISTED_UUIDS.clear();
         PlayerDollRenderManager.BLACKLISTED_NAMES.clear();
         PlayerDollRenderManager.BLACKLISTED_SKIN_URLS.clear();
@@ -586,5 +579,21 @@ public class SubscribeEventUtils {
             manaPool.recieveMana(move);
         }
         return true;
+    }
+
+    public static boolean shouldGrantAllCommunityModAchievement() {
+        for (ModList mod : MOD_LIST_VALUES) {
+            if (!MOD_BLACKLIST.contains(mod.getID()) && !mod.isModLoaded()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void queueServerSleep(long sleepMillis) {
+        if (sleepMillis <= 0L) {
+            return;
+        }
+        SLEEP_TIME = Math.min(MAX_SERVER_SLEEP_MILLIS, SLEEP_TIME + sleepMillis);
     }
 }

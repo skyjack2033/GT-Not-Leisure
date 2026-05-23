@@ -28,7 +28,7 @@ public class WaterCandleRenderer extends TileEntitySpecialRenderer implements IS
 
     @Override
     public int getRenderId() {
-        return ClientProxy.waterCandleRenderID;
+        return ClientProxy.WATER_CANDLE_RENDER_ID;
     }
 
     @Override

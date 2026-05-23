@@ -464,7 +464,9 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
     @Override
     public String[] getInfoData() {
         double plasmaOut = 0;
-        if (mMaxProgresstime > 0) plasmaOut = (double) mOutputFluids[0].amount / mMaxProgresstime;
+        if (mMaxProgresstime > 0 && mOutputFluids != null && mOutputFluids.length > 0 && mOutputFluids[0] != null) {
+            plasmaOut = (double) mOutputFluids[0].amount / mMaxProgresstime;
+        }
 
         return new String[] {
             StatCollector.translateToLocal("scanner.info.UX.0") + ": "
@@ -1021,8 +1023,8 @@ public abstract class KuangBiaoOneGiantNuclearFusionReactor
                 return maxParallelStored;
             }
 
-            if (mParallelControllerHatches.size() == 1) {
-                ParallelControllerHatch module = mParallelControllerHatches.get(0);
+            ParallelControllerHatch module = getSingleParallelControllerHatch();
+            if (module != null) {
                 mParallelTier = module.mTier;
                 return 16 << (2 * (module.mTier - 2));
             } else if (mParallelTier <= 1) {

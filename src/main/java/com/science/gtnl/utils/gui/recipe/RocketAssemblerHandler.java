@@ -22,7 +22,7 @@ public class RocketAssemblerHandler extends GTNEIDefaultHandler {
 
     public RocketAssemblerHandler(RecipeCategory recipeCategory) {
         super(recipeCategory);
-        if (NEIGTNLConfig.isAdded) return;
+        if (NEIGTNLConfig.IS_ADDED) return;
         FMLInterModComms.sendRuntimeMessage(
             ScienceNotLeisure.instance,
             "NEIPlugins",

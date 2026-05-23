@@ -32,7 +32,7 @@ public class EnderElevatorRenderer extends TileEntitySpecialRenderer implements 
 
     @Override
     public int getRenderId() {
-        return ClientProxy.enderElevatorRenderID;
+        return ClientProxy.ENDER_ELEVATOR_RENDER_ID;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.science.gtnl.utils;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -10,6 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 /**
  * Original Author: Mekanism
  * License: MIT
@@ -17,10 +18,10 @@ import net.minecraftforge.oredict.OreDictionary;
  */
 public class CardboardBoxUtils {
 
-    public static Set<BlockInfo> cardboardBoxIgnore = new HashSet<>();
+    public static Set<BlockInfo> CARDBOARD_BOX_IGNORE = new ObjectOpenHashSet<>();
 
     public static boolean isBlockCompatible(Item item, int meta) {
-        for (BlockInfo i : cardboardBoxIgnore) {
+        for (BlockInfo i : CARDBOARD_BOX_IGNORE) {
             if (i.block == Block.getBlockFromItem(item) && (i.meta == OreDictionary.WILDCARD_VALUE || i.meta == meta)) {
                 return false;
             }
@@ -30,7 +31,7 @@ public class CardboardBoxUtils {
     }
 
     public static void addBoxBlacklist(Block block, int meta) {
-        cardboardBoxIgnore.add(new BlockInfo(block, meta));
+        CARDBOARD_BOX_IGNORE.add(new BlockInfo(block, meta));
     }
 
     public static void addBoxBlacklist(Item item, int meta) {
@@ -51,11 +52,11 @@ public class CardboardBoxUtils {
     }
 
     public static void removeBoxBlacklist(Block block, int meta) {
-        cardboardBoxIgnore.remove(new BlockInfo(block, meta));
+        CARDBOARD_BOX_IGNORE.remove(new BlockInfo(block, meta));
     }
 
     public static Set<BlockInfo> getBoxIgnore() {
-        return cardboardBoxIgnore;
+        return CARDBOARD_BOX_IGNORE;
     }
 
     public static void setBlockData(ItemStack itemstack, CardboardBoxUtils.BlockData data) {

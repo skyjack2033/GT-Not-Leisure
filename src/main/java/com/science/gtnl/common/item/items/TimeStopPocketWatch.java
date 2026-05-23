@@ -18,14 +18,11 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import lombok.Getter;
-import lombok.Setter;
 
 public class TimeStopPocketWatch extends Item {
 
-    @Getter
-    @Setter
-    public static boolean timeStopped = false;
+    public static boolean TIME_STOPPED = false;
+    public static final String WATCH_ACTIVE_TAG = "WatchActive";
 
     private boolean playSound = false;
 
@@ -46,14 +43,14 @@ public class TimeStopPocketWatch extends Item {
             stack.setTagCompound(nbt);
         }
 
-        if (nbt.getBoolean("WatchActive")) {
+        if (nbt.getBoolean(WATCH_ACTIVE_TAG)) {
             if (world.isRemote) {
                 EntityRenderer renderer = Minecraft.getMinecraft().entityRenderer;
                 if (renderer instanceof CustomEntityRenderer customEntityRenderer) {
                     customEntityRenderer.resetShader();
                 }
             } else {
-                nbt.setBoolean("WatchActive", false);
+                nbt.setBoolean(WATCH_ACTIVE_TAG, false);
                 playSound = false;
             }
             setTimeStopped(false);
@@ -69,7 +66,7 @@ public class TimeStopPocketWatch extends Item {
                         .playSoundAtEntity(player, ScienceNotLeisure.RESOURCE_ROOT_ID + ":" + "time.stop", 1.0F, 1.0F);
                     playSound = true;
                 }
-                nbt.setBoolean("WatchActive", true);
+                nbt.setBoolean(WATCH_ACTIVE_TAG, true);
             }
             setTimeStopped(true);
         }
@@ -81,6 +78,14 @@ public class TimeStopPocketWatch extends Item {
     @SideOnly(Side.CLIENT)
     public boolean hasEffect(ItemStack stack, int pass) {
         NBTTagCompound nbt = stack.getTagCompound();
-        return nbt != null && nbt.getBoolean("WatchActive");
+        return nbt != null && nbt.getBoolean(WATCH_ACTIVE_TAG);
+    }
+
+    public static boolean isTimeStopped() {
+        return TIME_STOPPED;
+    }
+
+    public static void setTimeStopped(boolean timeStopped) {
+        TIME_STOPPED = timeStopped;
     }
 }

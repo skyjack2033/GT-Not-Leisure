@@ -145,6 +145,21 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
         return new HighPerformanceComputationArray(mName);
     }
 
+    public ArrayList<MTEHatchRack> getValidRackHatches() {
+        ArrayList<MTEHatchRack> rackHatches = new ArrayList<>(mRackHatchs.size());
+        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+            rackHatches.add(rack);
+        }
+        return rackHatches;
+    }
+
+    public void setRackActiveState(boolean active) {
+        for (MTEHatchRack rack : getValidRackHatches()) {
+            rack.getBaseMetaTileEntity()
+                .setActive(active);
+        }
+    }
+
     @Override
     public void parametersInstantiation_EM() {
         Parameters.Group hatch_0 = parametrization.getGroup(0);
@@ -158,10 +173,7 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
     @Override
     public boolean checkMachine_EM(IGregTechTileEntity iGregTechTileEntity, ItemStack itemStack) {
         this.totalLens = 0;
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
         mRackHatchs.clear();
         rackTable.clear();
 
@@ -180,7 +192,7 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
 
         totalLens--;
         eCertainMode = (byte) Math.min(this.totalLens / 3, 5);
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+        for (MTEHatchRack rack : getValidRackHatches()) {
             rack.getBaseMetaTileEntity()
                 .setActive(iGregTechTileEntity.isActive());
         }
@@ -298,8 +310,8 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
                             ? randomColor[1][rackIndex]
                             : 0;
 
-                        HPCAModifier modifierX = HPCAModifier.values()[colorIndexX % HPCAModifier.values().length];
-                        HPCAModifier modifierY = HPCAModifier.values()[colorIndexY % HPCAModifier.values().length];
+                        HPCAModifier modifierX = HPCAModifier.VALUES[colorIndexX % HPCAModifier.VALUES.length];
+                        HPCAModifier modifierY = HPCAModifier.VALUES[colorIndexY % HPCAModifier.VALUES.length];
 
                         double computationMultiplier = modifierX.computationCoefficientX
                             * modifierY.computationCoefficientY;
@@ -366,7 +378,7 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
     }
 
     public int[][] generateTwoModifierIndexGroups(UUID uuid, int totalLen) {
-        int enumLen = HPCAModifier.values().length;
+        int enumLen = HPCAModifier.VALUES.length;
         int[][] result = new int[2][Math.max(3, totalLen)];
 
         Random randomA = new XSTR(uuid.getMostSignificantBits());
@@ -390,8 +402,9 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
         lEUt = -GTValues.V[7];
         int thingsActive = 0;
         int rackComputation;
+        ArrayList<MTEHatchRack> rackHatches = getValidRackHatches();
 
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
+        for (MTEHatchRack rack : rackHatches) {
 
             if (rack.heat > maxTemp) {
                 maxTemp = rack.heat;
@@ -490,10 +503,7 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
     @Override
     public void onRemoval() {
         super.onRemoval();
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
     }
 
     @Override
@@ -518,19 +528,13 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
     public void stopMachine(@NotNull ShutDownReason reason) {
         super.stopMachine(reason);
         this.eAvailableData = 0;
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
     }
 
     @Override
     public void afterRecipeCheckFailed() {
         super.afterRecipeCheckFailed();
-        for (MTEHatchRack rack : GTUtility.validMTEList(mRackHatchs)) {
-            rack.getBaseMetaTileEntity()
-                .setActive(false);
-        }
+        setRackActiveState(false);
     }
 
     @Override

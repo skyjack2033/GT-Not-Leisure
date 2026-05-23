@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,6 +50,7 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator> implements ISurvivalConstructable {
 
@@ -241,24 +243,13 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
         outputFluid = null;
 
         ArrayList<FluidStack> fluidStacks = getStoredFluids();
+        Object2IntOpenHashMap<Fluid> availableFluids = getAvailableFluidAmounts(fluidStacks);
 
         for (GTRecipe recipe : GTNLRecipeMaps.ElectrocellGeneratorRecipes.getAllRecipes()) {
             if (depleteInput(mLeftInputBusses, recipe.mInputs[0], true)
                 && depleteInput(mRightInputBusses, recipe.mInputs[1], true)) {
-                if (recipe.mFluidInputs != null && !fluidStacks.isEmpty()) {
-                    double multiplier = 1;
-
-                    for (int i = 0; i < recipe.mFluidInputs.length; i++) {
-                        for (FluidStack stored : fluidStacks) {
-                            if (GTUtility.areFluidsEqual(recipe.mFluidInputs[i], stored)) {
-                                matchedFluid = recipe.mFluidInputs[i].copy();
-                                if (i < FLUID_MULTIPLIERS.length) {
-                                    multiplier = FLUID_MULTIPLIERS[i];
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                if (recipe.mFluidInputs != null && !availableFluids.isEmpty()) {
+                    double multiplier = resolveFluidMultiplier(recipe, availableFluids);
 
                     if (matchedFluid != null) {
                         depleteInput(mLeftInputBusses, recipe.mInputs[0]);
@@ -269,7 +260,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                         lastEUt = lEUt;
                         outputFluid = recipe.mFluidOutputs[0];
 
-                        List<ItemStack> outputList = new ArrayList<>();
+                        List<ItemStack> outputList = new ArrayList<>(recipe.mOutputs.length);
 
                         for (int i = 0; i < recipe.mOutputs.length; i++) {
                             int chance = (recipe.mChances != null && i < recipe.mChances.length) ? recipe.mChances[i]
@@ -280,7 +271,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                             }
                         }
 
-                        mOutputItems = outputList.toArray(new ItemStack[0]);
+                        mOutputItems = outputList.toArray(new ItemStack[outputList.size()]);
 
                         for (MTEHatchMaintenance maintenance : mMaintenanceHatches) {
                             if (maintenance instanceof IConfigurationMaintenance customMaintenance
@@ -298,6 +289,35 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
         }
 
         return CheckRecipeResultRegistry.NO_RECIPE;
+    }
+
+    public Object2IntOpenHashMap<Fluid> getAvailableFluidAmounts(List<FluidStack> fluidStacks) {
+        Object2IntOpenHashMap<Fluid> availableFluids = new Object2IntOpenHashMap<>(fluidStacks.size());
+        for (FluidStack storedFluid : fluidStacks) {
+            if (storedFluid != null && storedFluid.getFluid() != null) {
+                availableFluids.addTo(storedFluid.getFluid(), storedFluid.amount);
+            }
+        }
+        return availableFluids;
+    }
+
+    public double resolveFluidMultiplier(GTRecipe recipe, Object2IntOpenHashMap<Fluid> availableFluids) {
+        double multiplier = 1;
+        matchedFluid = null;
+        for (int i = 0; i < recipe.mFluidInputs.length; i++) {
+            FluidStack recipeFluid = recipe.mFluidInputs[i];
+            if (recipeFluid == null || recipeFluid.getFluid() == null) {
+                continue;
+            }
+            if (availableFluids.getInt(recipeFluid.getFluid()) <= 0) {
+                continue;
+            }
+            matchedFluid = recipeFluid.copy();
+            if (i < FLUID_MULTIPLIERS.length) {
+                multiplier = FLUID_MULTIPLIERS[i];
+            }
+        }
+        return multiplier;
     }
 
     public boolean depleteInput(MTEHatchInputBus hatchInput, ItemStack aStack) {

@@ -26,4 +26,6 @@ public enum HPCAModifier {
         this.coolantCoefficientY = coolantY;
         this.heatCoefficientY = heatY;
     }
+
+    public static final HPCAModifier[] VALUES = HPCAModifier.values();
 }

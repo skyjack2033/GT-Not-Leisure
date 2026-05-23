@@ -14,12 +14,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 public class WorldListener implements IWorldAccess {
 
-    public static WorldListener instance;
+    public static WorldListener INSTANCE;
 
     private final Long2ObjectOpenHashMap<IBlockStateListener> blockStateListeners = new Long2ObjectOpenHashMap<>();
 
     public WorldListener() {
-        instance = this;
+        INSTANCE = this;
     }
 
     public void registerBlockStateListener(IBlockStateListener listener, Iterable<BlockPos> blocks) {

@@ -5,9 +5,7 @@ import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,6 +74,8 @@ import gregtech.common.tileentities.machines.MTEHatchInputBusME;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gregtech.common.tileentities.machines.multi.purification.MTEPurificationPlant;
 import gregtech.common.tileentities.machines.multi.purification.MTEPurificationUnitBase;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -371,22 +371,22 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
     public boolean gtnl$depleteInputList(List<FluidStack> fluids, boolean simulate) {
         if (fluids == null || fluids.isEmpty()) return false;
 
-        Map<Fluid, Long> mergedStorage = new HashMap<>();
+        Object2LongOpenHashMap<Fluid> mergedStorage = new Object2LongOpenHashMap<>();
         for (FluidStack stored : getStoredFluids()) {
             if (stored != null) {
-                mergedStorage.merge(stored.getFluid(), (long) stored.amount, Long::sum);
+                mergedStorage.addTo(stored.getFluid(), stored.amount);
             }
         }
 
-        Map<Fluid, Long> mergedNeeded = new HashMap<>();
+        Object2LongOpenHashMap<Fluid> mergedNeeded = new Object2LongOpenHashMap<>();
         for (FluidStack needed : fluids) {
             if (needed != null) {
-                mergedNeeded.merge(needed.getFluid(), (long) needed.amount, Long::sum);
+                mergedNeeded.addTo(needed.getFluid(), needed.amount);
             }
         }
 
         for (Map.Entry<Fluid, Long> neededEntry : mergedNeeded.entrySet()) {
-            long availableAmount = mergedStorage.getOrDefault(neededEntry.getKey(), 0L);
+            long availableAmount = mergedStorage.getLong(neededEntry.getKey());
             if (availableAmount < neededEntry.getValue()) return false;
         }
 
@@ -461,7 +461,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
     @Override
     public ArrayList<FluidStack> getStoredFluidsForColor(Optional<Byte> color) {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        Map<Fluid, FluidStack> inputsFromME = new HashMap<>();
+        Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
             byte hatchColor = tHatch.getColor();
             if (color.isPresent() && hatchColor != -1 && hatchColor != color.get()) continue;
@@ -489,7 +489,11 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
 
         if (supportsCraftingMEBuffer()) {
             for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-                rList.addAll(Arrays.asList(dualInputHatch.getAllFluids()));
+                for (FluidStack fluidStack : dualInputHatch.getAllFluids()) {
+                    if (fluidStack != null) {
+                        rList.add(fluidStack);
+                    }
+                }
             }
         }
 
@@ -502,7 +506,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new HashMap<>();
+        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -527,7 +531,11 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
 
         if (supportsCraftingMEBuffer()) {
             for (IDualInputHatch dualInputHatch : mDualInputHatches) {
-                rList.addAll(Arrays.asList(dualInputHatch.getAllItems()));
+                for (ItemStack itemStack : dualInputHatch.getAllItems()) {
+                    if (itemStack != null) {
+                        rList.add(itemStack);
+                    }
+                }
             }
         }
 

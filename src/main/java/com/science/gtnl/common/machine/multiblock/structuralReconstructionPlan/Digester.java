@@ -3,16 +3,19 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.dreammaster.fluids.FluidList;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -43,7 +46,6 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.util.minecraft.FluidUtils;
 import gtnhlanth.api.recipe.LanthanidesRecipeMaps;
 import ic2.core.init.BlocksItems;
 import ic2.core.init.InternalName;
@@ -264,6 +266,13 @@ public class Digester extends GTMMultiMachineBase<Digester> implements ISurvival
         IGregTechTileEntity aBaseMetaTileEntity = this.getBaseMetaTileEntity();
         ForgeDirection backFacing = aBaseMetaTileEntity.getBackFacing();
         ForgeDirection leftDir = backFacing.getRotation(ForgeDirection.UP);
+        FluidStack nitricAcidTemplate = getNitricAcidTemplate();
+        Block nitricAcidBlock = getNitricAcidBlock();
+        List<FluidStack> storedFluids = getStoredFluids();
+
+        if (nitricAcidTemplate == null || nitricAcidBlock == null) {
+            return false;
+        }
 
         int tAmount = 0;
 
@@ -283,16 +292,15 @@ public class Digester extends GTMMultiMachineBase<Digester> implements ISurvival
                     Block tBlock = aBaseMetaTileEntity.getBlock(x, y, z);
                     int metadata = aBaseMetaTileEntity.getMetaID(x, y, z);
 
-                    if (tBlock == Blocks.air || (tBlock == FluidList.NitricAcid.Fluid && metadata != 0)) {
-                        if (this.getStoredFluids() != null) {
-                            for (FluidStack stored : this.getStoredFluids()) {
-                                if (stored.isFluidEqual(FluidUtils.getFluidStack("nitricacid", 1))) {
+                    if (tBlock == Blocks.air || (tBlock == nitricAcidBlock && metadata != 0)) {
+                        if (storedFluids != null) {
+                            for (FluidStack stored : storedFluids) {
+                                if (stored.isFluidEqual(nitricAcidTemplate)) {
                                     if (stored.amount >= 1000) {
                                         stored.amount -= 1000;
                                         Block fluidUsed = null;
-                                        if (tBlock == Blocks.air
-                                            || (tBlock == FluidList.NitricAcid.Fluid && metadata != 0)) {
-                                            fluidUsed = FluidList.NitricAcid.Fluid;
+                                        if (tBlock == Blocks.air || (tBlock == nitricAcidBlock && metadata != 0)) {
+                                            fluidUsed = nitricAcidBlock;
                                         } else if (tBlock == Blocks.water) {
                                             fluidUsed = BlocksItems.getFluidBlock(InternalName.fluidDistilledWater);
                                         }
@@ -303,7 +311,7 @@ public class Digester extends GTMMultiMachineBase<Digester> implements ISurvival
                             }
                         }
                     }
-                    if (tBlock == FluidList.NitricAcid.Fluid && metadata == 0) {
+                    if (tBlock == nitricAcidBlock && metadata == 0) {
                         ++tAmount;
                     }
                 }
@@ -311,5 +319,16 @@ public class Digester extends GTMMultiMachineBase<Digester> implements ISurvival
         }
 
         return tAmount >= 42;
+    }
+
+    public FluidStack getNitricAcidTemplate() {
+        return FluidRegistry.getFluidStack("nitricacid", 1);
+    }
+
+    public Block getNitricAcidBlock() {
+        // 按名称延迟解析可避免可选模组缺失时的类加载崩溃 / Resolve by registry name lazily to avoid classloading crashes when the optional mod
+        // is absent.
+        Fluid nitricAcid = FluidRegistry.getFluid("nitricacid");
+        return nitricAcid == null ? null : nitricAcid.getBlock();
     }
 }

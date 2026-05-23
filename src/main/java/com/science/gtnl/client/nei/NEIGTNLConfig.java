@@ -22,7 +22,7 @@ import gregtech.api.enums.OrePrefixes;
 @SuppressWarnings("unused")
 public class NEIGTNLConfig implements IConfigureNEI {
 
-    public static boolean isAdded = true;
+    public static boolean IS_ADDED = true;
 
     @Override
     public String getName() {
@@ -37,9 +37,9 @@ public class NEIGTNLConfig implements IConfigureNEI {
     @Override
     public void loadConfig() {
 
-        isAdded = false;
+        IS_ADDED = false;
         new RocketAssemblerHandler(GTNLRecipeMaps.RocketAssemblerRecipes.getDefaultRecipeCategory());
-        isAdded = true;
+        IS_ADDED = true;
 
         API.registerGuiOverlay(GuiPortableAdvancedWorkbench.class, "crafting");
         API.registerGuiOverlay(GuiPortableBasicWorkbench.class, "crafting");
