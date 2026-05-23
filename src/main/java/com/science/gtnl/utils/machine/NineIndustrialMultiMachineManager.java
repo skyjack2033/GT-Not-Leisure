@@ -17,7 +17,7 @@ import tectech.recipe.TecTechRecipeMaps;
 
 public class NineIndustrialMultiMachineManager {
 
-    public static final MachineMode[] MACHINE_MODES = MachineMode.values();
+    public static final MachineMode[] MACHINE_MODES = MachineMode.VALUES;
     public static final int MACHINE_MODE_COUNT = MACHINE_MODES.length;
 
     public static String getModeLocalization(int machineMode) {
@@ -171,11 +171,12 @@ public class NineIndustrialMultiMachineManager {
             return "NineIndustrialMultiMachine_Mode_" + id;
         }
 
-        public static final Int2ObjectMap<MachineMode> BY_ID = new Int2ObjectOpenHashMap<>();
-        public static final Collection<RecipeMap<?>> ALL_RECIPE_MAPS = new ObjectArrayList<>(MACHINE_MODE_COUNT);
+        public static final MachineMode[] VALUES = values();
+        public static final Int2ObjectMap<MachineMode> BY_ID = new Int2ObjectOpenHashMap<>(VALUES.length);
+        public static final Collection<RecipeMap<?>> ALL_RECIPE_MAPS = new ObjectArrayList<>(VALUES.length);
 
         static {
-            for (MachineMode mode : MACHINE_MODES) {
+            for (MachineMode mode : VALUES) {
                 BY_ID.put(mode.id, mode);
                 ALL_RECIPE_MAPS.add(mode.recipeMap);
             }
