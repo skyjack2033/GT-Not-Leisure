@@ -394,6 +394,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
         motorTier = 0;
         wirelessMode = false;
         mTier = 0;
+        mCountCasing = 0;
 
         if (!structureCheck_EM(
             STRUCTURE_PIECE_MAIN,
@@ -429,7 +430,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
 
         if (motorTier > 2 && mExoticEnergyHatches.isEmpty() && mEnergyHatches.isEmpty()) wirelessMode = true;
 
-        return mCountCasing > 1000;
+        return mCountCasing > 100;
     }
 
     @Override
@@ -658,7 +659,15 @@ public class SuperSpaceElevator extends TTMultiblockBase
     }
 
     @Override
+    public void checkMaintenance() {}
+
+    @Override
     public boolean getDefaultHasMaintenanceChecks() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldCheckMaintenance() {
         return false;
     }
 
