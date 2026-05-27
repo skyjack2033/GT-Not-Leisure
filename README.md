@@ -218,6 +218,12 @@ We gratefully acknowledge the use of code and assets from the open-source commun
 | **Programmable-Hatches-Mod** | [zyf051520](https://github.com/reobf/Programmable-Hatches-Mod)  | [MIT](https://www.gnu.org/licenses/gpl-3.0.html)                      |
 | **NAE2**                     | [Neeve](https://github.com/AE2-UEL/NAE2)                        | [LGPLv3](https://www.gnu.org/licenses/lgpl-3.0.html)                  |
 
+Thanks to the following developers for their contributions to GT-Not-Leisure:
+
+<a href="https://github.com/ABKQPO/GT-Not-Leisure/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ABKQPO/GT-Not-Leisure&max=1000" alt="contributors" />
+</a>
+
 ---
 
 <p align="center">Made with ❤️ for the GTNH Community. Licensed under <strong>GPLv3</strong>.</p>
