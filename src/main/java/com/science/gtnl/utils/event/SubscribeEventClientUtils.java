@@ -12,8 +12,10 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
@@ -24,15 +26,21 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderItemInFrameEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import com.brandon3055.draconicevolution.common.ModItems;
 import com.reavaritia.client.render.CustomEntityRenderer;
+import com.science.gtnl.api.TickrateAPI;
+import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.common.item.items.NullPointerException;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
+import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionState;
+import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionType;
 import com.science.gtnl.common.packet.NBTUpdatePacket;
 import com.science.gtnl.common.packet.client.TitleDisplayHandler;
 import com.science.gtnl.common.render.item.ItemNullPointerExceptionRender;
@@ -61,6 +69,14 @@ public class SubscribeEventClientUtils {
 
     public static boolean HAS_HANDLED_DEATH_MESSAGE = false;
     public static float LAST_HEALTH = 20.0f;
+    private static ItemStack wyvernHelmetProjection;
+    private static ItemStack wyvernChestProjection;
+    private static ItemStack wyvernLegsProjection;
+    private static ItemStack wyvernBootsProjection;
+    private static ItemStack draconicHelmetProjection;
+    private static ItemStack draconicChestProjection;
+    private static ItemStack draconicLegsProjection;
+    private static ItemStack draconicBootsProjection;
 
     public static void registerAllIcons(net.minecraft.client.renderer.texture.IIconRegister ir) {
         haloNoiseIcon = ir.registerIcon(HALO_NOISE_ICON_TEXTURE);
@@ -71,6 +87,17 @@ public class SubscribeEventClientUtils {
     @SubscribeEvent
     public void onClientConnectedToServerEvent(FMLNetworkEvent.ClientConnectedToServerEvent aEvent) {
         PLAYING_SOUNDS.clear();
+    }
+
+    @SubscribeEvent
+    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        if (minecraft.thePlayer != null) {
+            BaubleItem.removePlayer(minecraft.thePlayer.getUniqueID());
+            DraconicArmorProjectionState.clear(minecraft.thePlayer.getUniqueID());
+        }
+        TickrateAPI.changeServerTickrate(MainConfig.tickrate.defaultTickrate);
+        TickrateAPI.changeClientTickrate(null, MainConfig.tickrate.defaultTickrate);
     }
 
     @SubscribeEvent
@@ -238,6 +265,34 @@ public class SubscribeEventClientUtils {
         }
     }
 
+    @SubscribeEvent
+    public void onRenderProjectedArmor(RenderPlayerEvent.SetArmorModel event) {
+        if (event.stack != null) {
+            return;
+        }
+
+        DraconicArmorProjectionType projectionType = DraconicArmorProjectionState.get(event.entityPlayer);
+        if (projectionType == null) {
+            return;
+        }
+
+        ItemStack projectedArmor = getProjectedArmorStack(projectionType, event.slot);
+        if (projectedArmor == null || !(projectedArmor.getItem() instanceof ItemArmor itemArmor)) {
+            return;
+        }
+
+        ModelBiped model = itemArmor.getArmorModel(event.entityPlayer, projectedArmor, event.slot);
+        if (model == null) {
+            return;
+        }
+
+        event.renderer.setRenderPassModel(model);
+        model.onGround = event.renderer.modelBipedMain.onGround;
+        model.isRiding = event.renderer.modelBipedMain.isRiding;
+        model.isChild = event.renderer.modelBipedMain.isChild;
+        event.result = 1;
+    }
+
     // Sound
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
@@ -278,5 +333,88 @@ public class SubscribeEventClientUtils {
             }
         }
         TimeStopPocketWatch.setTimeStopped(false);
+    }
+
+    private ItemStack getProjectedArmorStack(DraconicArmorProjectionType projectionType, int slot) {
+        return switch (projectionType) {
+            case WYVERN -> switch (slot) {
+                    case 0 -> getWyvernHelmetProjection();
+                    case 1 -> getWyvernChestProjection();
+                    case 2 -> getWyvernLegsProjection();
+                    case 3 -> getWyvernBootsProjection();
+                    default -> null;
+                };
+            case DRACONIC -> switch (slot) {
+                    case 0 -> getDraconicHelmetProjection();
+                    case 1 -> getDraconicChestProjection();
+                    case 2 -> getDraconicLegsProjection();
+                    case 3 -> getDraconicBootsProjection();
+                    default -> null;
+                };
+        };
+    }
+
+    private ItemStack getWyvernHelmetProjection() {
+        if (wyvernHelmetProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            wyvernHelmetProjection = new ItemStack(ModItems.wyvernHelm);
+        }
+        return wyvernHelmetProjection;
+    }
+
+    private ItemStack getWyvernChestProjection() {
+        if (wyvernChestProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            wyvernChestProjection = new ItemStack(ModItems.wyvernChest);
+        }
+        return wyvernChestProjection;
+    }
+
+    private ItemStack getWyvernLegsProjection() {
+        if (wyvernLegsProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            wyvernLegsProjection = new ItemStack(ModItems.wyvernLeggs);
+        }
+        return wyvernLegsProjection;
+    }
+
+    private ItemStack getWyvernBootsProjection() {
+        if (wyvernBootsProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            wyvernBootsProjection = new ItemStack(ModItems.wyvernBoots);
+        }
+        return wyvernBootsProjection;
+    }
+
+    private ItemStack getDraconicHelmetProjection() {
+        if (draconicHelmetProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            draconicHelmetProjection = new ItemStack(ModItems.draconicHelm);
+        }
+        return draconicHelmetProjection;
+    }
+
+    private ItemStack getDraconicChestProjection() {
+        if (draconicChestProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            draconicChestProjection = new ItemStack(ModItems.draconicChest);
+        }
+        return draconicChestProjection;
+    }
+
+    private ItemStack getDraconicLegsProjection() {
+        if (draconicLegsProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            draconicLegsProjection = new ItemStack(ModItems.draconicLeggs);
+        }
+        return draconicLegsProjection;
+    }
+
+    private ItemStack getDraconicBootsProjection() {
+        if (draconicBootsProjection == null) {
+            // Reused as a render-only sentinel stack. Do not mutate.
+            draconicBootsProjection = new ItemStack(ModItems.draconicBoots);
+        }
+        return draconicBootsProjection;
     }
 }

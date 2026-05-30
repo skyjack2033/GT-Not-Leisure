@@ -377,6 +377,8 @@ public enum GTNLItemList implements IItemContainer {
     RoyalGel,
     PhysicsCape,
     LuckyHorseshoe,
+    WyvernProjectionNecklace,
+    DraconicProjectionNecklace,
 
     CircuitIntegratedPlus,
 

@@ -34,6 +34,11 @@ public class NetWorkHandler {
         registerMessage(StatusMessage.class, i++, Side.CLIENT);
         registerMessage(SyncCircuitNanitesPacket.class, i++, Side.CLIENT);
         registerMessage(SyncRecipePacket.class, i++, Side.CLIENT);
+        network.registerMessage(
+            DraconicArmorProjectionSyncPacket.Handler.class,
+            DraconicArmorProjectionSyncPacket.class,
+            i++,
+            Side.CLIENT);
         registerMessage(PlaceItemInHotbarPacket.class, i++, Side.CLIENT);
         registerMessage(RequestGameProfilePacket.class, i++, Side.SERVER);
         registerMessage(SwitchToCustomGuiPacket.class, i++, Side.SERVER);

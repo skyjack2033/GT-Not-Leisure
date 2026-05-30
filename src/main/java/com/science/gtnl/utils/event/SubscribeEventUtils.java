@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -41,6 +40,7 @@ import com.science.gtnl.api.TickrateAPI;
 import com.science.gtnl.common.command.CommandTickrate;
 import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
+import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionState;
 import com.science.gtnl.common.machine.hatch.ExplosionDynamoHatch;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.packet.SoundPacket;
@@ -205,15 +205,9 @@ public class SubscribeEventUtils {
     public void onPlayerLoginOut(PlayerEvent.PlayerLoggedOutEvent event) {
         TimeStopPocketWatch.setTimeStopped(false);
         BaubleItem.removePlayer(event.player.getUniqueID());
+        DraconicArmorProjectionState.clear(event.player.getUniqueID());
         FOOD_TICK_TIMERS.removeInt(event.player.getUniqueID());
         CIRCUIT_NANITES_DATA_LOAD = false;
-    }
-
-    @SubscribeEvent
-    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        if (Minecraft.getMinecraft().thePlayer != null) {
-            BaubleItem.removePlayer(Minecraft.getMinecraft().thePlayer.getUniqueID());
-        }
     }
 
     @SubscribeEvent
@@ -235,12 +229,6 @@ public class SubscribeEventUtils {
         } else {
             TickrateAPI.changeClientTickrate(null, 20F);
         }
-    }
-
-    @SubscribeEvent
-    public void disconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        TickrateAPI.changeServerTickrate(MainConfig.tickrate.defaultTickrate);
-        TickrateAPI.changeClientTickrate(null, MainConfig.tickrate.defaultTickrate);
     }
 
     @SubscribeEvent

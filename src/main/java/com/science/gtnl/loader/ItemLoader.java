@@ -39,6 +39,8 @@ import com.science.gtnl.common.item.items.TimeStopPocketWatch;
 import com.science.gtnl.common.item.items.TwilightSword;
 import com.science.gtnl.common.item.items.VeinMiningPickaxe;
 import com.science.gtnl.common.item.items.WirelessUpgradeChip;
+import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionBauble;
+import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionType;
 import com.science.gtnl.common.item.items.bauble.LuckyHorseshoe;
 import com.science.gtnl.common.item.items.bauble.PhysicsCape;
 import com.science.gtnl.common.item.items.bauble.RejectionRing;
@@ -145,6 +147,14 @@ public class ItemLoader {
     public static PhysicsCape physicsCape = new PhysicsCape();
     public static RoyalGel royalGel = new RoyalGel();
     public static LuckyHorseshoe luckyHorseshoe = new LuckyHorseshoe();
+    public static DraconicArmorProjectionBauble wyvernProjectionNecklace = new DraconicArmorProjectionBauble(
+        "WyvernProjectionNecklace",
+        DraconicArmorProjectionType.WYVERN,
+        GTNLItemList.WyvernProjectionNecklace);
+    public static DraconicArmorProjectionBauble draconicProjectionNecklace = new DraconicArmorProjectionBauble(
+        "DraconicProjectionNecklace",
+        DraconicArmorProjectionType.DRACONIC,
+        GTNLItemList.DraconicProjectionNecklace);
 
     public static Stick stick = new Stick();
 
