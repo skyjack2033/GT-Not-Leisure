@@ -1,124 +1,77 @@
 package com.science.gtnl.utils.machine;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-
-import com.github.bsideup.jabel.Desugar;
-
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import thaumcraft.api.aspects.Aspect;
 
 public class LargeEssentiaEnergyData {
 
-    public static final Map<Aspect, FuelData> ASPECT_FUEL_DATA = new IdentityHashMap<>(128);
+    private static final int TYPE_NORMAL = 0;
+    private static final int TYPE_AIR = 1;
+    private static final int TYPE_THERMAL = 2;
+    private static final int TYPE_UNSTABLE = 3;
+    private static final int TYPE_VICTUS = 4;
+    private static final int TYPE_TAINTED = 5;
+    private static final int TYPE_MECHANIC = 6;
+    private static final int TYPE_SPIRIT = 7;
+    private static final int TYPE_RADIATION = 8;
+    private static final int TYPE_ELECTRIC = 9;
+
+    private static final Object2IntOpenHashMap<String> TYPE_MAP = new Object2IntOpenHashMap<>();
+    private static final Object2LongOpenHashMap<String> FUEL_MAP = new Object2LongOpenHashMap<>();
+    private static final Object2DoubleOpenHashMap<String> CEO_MAP = new Object2DoubleOpenHashMap<>();
 
     static {
-        add("Aer", 1000, 1, 1.0f);
-        add("Terra", 800, 0, 0.0f);
-        add("Ignis", 16000, 2, 1.0f);
-        add("Aqua", 5000, 0, 0.0f);
-        add("Ordo", 12000, 0, 0.0f);
-        add("Perditio", 4500, 3, 1.0f);
-        add("Vacuos", 8200, 3, 1.5f);
-        add("Lux", 13000, 0, 0.0f);
-        add("Tempestas", 61200, 0, 0.0f);
-        add("Motus", 20000, 1, 0.5f);
-        add("Gelum", 3900, 0, 0.0f);
-        add("Vitreus", 2000, 0, 0.0f);
-        add("Victus", 20000, 4, 1.0f);
-        add("Venenum", 17000, 3, 2.0f);
-        add("Potentia", 25600, 0, 0.0f);
-        add("Permutatio", 6000, 0, 0.0f);
-        add("Metallum", 2600, 0, 0.0f);
-        add("Mortuus", 7200, 5, 1.0f);
-        add("Volatus", 56000, 1, 2.0f);
-        add("Tenebrae", 9000, 0, 0.0f);
-        add("Spiritus", 37600, 4, 0.7f);
-        add("Sano", 24600, 4, 1.2f);
-        add("Iter", 16000, 6, 1.0f);
-        add("Alienis", 9700, 5, 1.7f);
-        add("Praecantatio", 36000, 0, 0.0f);
-        add("Auram", 42000, 1, 2.7f);
-        add("Vitium", 4700, 5, 10.0f);
-        add("Limus", 11800, 6, 1.0f);
-        add("Herba", 2600, 0, 0.0f);
-        add("Arbor", 4500, 0, 0.0f);
-        add("Bestia", 1000, 0, 0.0f);
-        add("Corpus", 5200, 4, 0.9f);
-        add("Exanimis", 9000, 5, 1.2f);
-        add("Cognitio", 2200, 7, 1.2f);
-        add("Sensus", 1400, 7, 0.7f);
-        add("Humanus", 16700, 4, 1.3f);
-        add("Messis", 9800, 0, 0.0f);
-        add("Perfodio", 1300, 0, 0.0f);
-        add("Instrumentum", 1200, 0, 0.0f);
-        add("Meto", 3600, 0, 0.0f);
-        add("Telum", 14200, 3, 2.5f);
-        add("Tutamen", 6200, 0, 0.0f);
-        add("Fames", 17600, 4, 1.1f);
-        add("Lucrum", 6000, 7, 2.0f);
-        add("Fabrico", 1100, 0, 0.0f);
-        add("Pannus", 600, 0, 0.0f);
-        add("Machina", 61200, 6, 1.0f);
-        add("Vinculum", 500, 0, 0.0f);
-        add("Strontio", 200, 7, 0.03f);
-        add("Nebrisum", 24300, 7, 2.0f);
-        add("Electrum", 8, 9, 0.0f);
-        add("Magneto", 108000, 0, 0.0f);
-        add("Radio", 238000, 8, 1.0f);
-        add("Custom1", 300000, 2, 7.0f);
-        add("Custom2", 1, 0, 0.0f);
-        add("Custom3", 217000, 0, 0.0f);
-        add("Custom4", 118000, 8, 0.5f);
-        add("Custom5", 120000, 4, 0.6f);
-        add("Luxuria", 79200, 7, 3.7f);
-        add("Infernus", 35700, 2, 3.0f);
-        add("Superbia", 10900, 7, 2.1f);
-        add("Gula", 64000, 0, 0.0f);
-        add("Invidia", 7700, 7, 1.0f);
-        add("Desidia", 600, 7, 0.1f);
-        add("Ira", 86200, 2, 5.0f);
-        add("Tempus", 142857, 0, 0.0f);
-        add("Terminus", 300000, 3, 10.0f);
+        TYPE_MAP.defaultReturnValue(TYPE_NORMAL);
+        FUEL_MAP.defaultReturnValue(2048L);
+        CEO_MAP.defaultReturnValue(1.0D);
+
+        registerDefaults();
     }
 
-    private static void add(String name, int fuel, int category, float ceo) {
-        Aspect aspect = Aspect.getAspect(name.toLowerCase(java.util.Locale.ROOT));
-        if (aspect != null) {
-            ASPECT_FUEL_DATA.put(aspect, new FuelData(fuel, (short) category, ceo));
-        }
+    private static void registerDefaults() {
+        register("aer", TYPE_AIR, 512L, 2.0D);
+        register("terra", TYPE_NORMAL, 768L, 3.0D);
+        register("ignis", TYPE_THERMAL, 1024L, 3.5D);
+        register("aqua", TYPE_NORMAL, 640L, 2.5D);
+        register("ordo", TYPE_MECHANIC, 896L, 2.0D);
+        register("perditio", TYPE_UNSTABLE, 896L, 2.0D);
+
+        register("victus", TYPE_VICTUS, 4096L, 12.0D);
+        register("mortuus", TYPE_SPIRIT, 4096L, 6.0D);
+        register("spiritus", TYPE_SPIRIT, 8192L, 8.0D);
+        register("praecantatio", TYPE_ELECTRIC, 12288L, 4.0D);
+        register("potentia", TYPE_ELECTRIC, 16384L, 6.0D);
+        register("permutatio", TYPE_MECHANIC, 6144L, 5.0D);
+        register("machina", TYPE_MECHANIC, 12288L, 10.0D);
+        register("motus", TYPE_AIR, 3072L, 4.0D);
+        register("tempestas", TYPE_AIR, 8192L, 10.0D);
+        register("gelum", TYPE_THERMAL, 6144L, 5.0D);
+        register("vacuos", TYPE_UNSTABLE, 12288L, 6.0D);
+        register("venenum", TYPE_TAINTED, 4096L, 4.0D);
+        register("vitium", TYPE_TAINTED, 32768L, 12.0D);
+        register("radio", TYPE_RADIATION, 65536L, 16.0D);
+        register("lux", TYPE_ELECTRIC, 6144L, 3.0D);
+        register("tenebrae", TYPE_SPIRIT, 6144L, 3.0D);
+        register("iter", TYPE_AIR, 6144L, 4.0D);
     }
 
-    public static FuelData get(Aspect aspect) {
-        return ASPECT_FUEL_DATA.get(aspect);
+    private static void register(String tag, int type, long fuel, double ceo) {
+        TYPE_MAP.put(tag, type);
+        FUEL_MAP.put(tag, fuel);
+        CEO_MAP.put(tag, ceo);
     }
 
-    /**
-     * <li>0 - NORMAL</li>
-     * <li>1 - AIR</li>
-     * <li>2 - THERMAL</li>
-     * <li>3 - UNSTABLE</li>
-     * <li>4 - VICTUS</li>
-     * <li>5 - TAINTED</li>
-     * <li>6 - MECHANICS</li>
-     * <li>7 - SPRITE</li>
-     * <li>8 - RADIATION</li>
-     * <li>9 - ELECTRIC</li>
-     */
     public static int getAspectTypeIndex(Aspect aspect) {
-        FuelData d = ASPECT_FUEL_DATA.get(aspect);
-        return d == null ? -1 : d.categoryIndex;
+        return aspect == null ? -1 : TYPE_MAP.getInt(aspect.getTag());
     }
 
-    public static int getAspectFuelValue(Aspect aspect) {
-        FuelData d = ASPECT_FUEL_DATA.get(aspect);
-        return d == null ? 0 : d.fuelValue;
+    public static long getAspectFuelValue(Aspect aspect) {
+        return aspect == null ? 0L : FUEL_MAP.getLong(aspect.getTag());
     }
 
-    public static float getAspectCeo(Aspect aspect) {
-        FuelData d = ASPECT_FUEL_DATA.get(aspect);
-        return d == null ? 0f : d.consumeSpeed;
+    public static double getAspectCeo(Aspect aspect) {
+        return aspect == null ? 0.0D : CEO_MAP.getDouble(aspect.getTag());
     }
-
-    @Desugar
-    public record FuelData(int fuelValue, short categoryIndex, float consumeSpeed) {}
 }

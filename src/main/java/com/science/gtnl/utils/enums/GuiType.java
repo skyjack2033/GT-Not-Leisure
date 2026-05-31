@@ -25,7 +25,8 @@ public enum GuiType {
     MEChiselGUI(20),
     SuperInterfaceGUI(21),
     CustomPriorityGUI(22),
-    ActiveFormationPlaneGUI(23);
+    ActiveFormationPlaneGUI(23),
+    SuperDualInterfaceGUI(24);
 
     private final int id;
 

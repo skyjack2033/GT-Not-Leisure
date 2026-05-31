@@ -28,6 +28,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -40,9 +41,11 @@ import com.science.gtnl.api.TickrateAPI;
 import com.science.gtnl.common.command.CommandTickrate;
 import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
+import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionHitEffectState;
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionState;
 import com.science.gtnl.common.machine.hatch.ExplosionDynamoHatch;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
+import com.science.gtnl.common.packet.DraconicArmorProjectionHitEffectPacket;
 import com.science.gtnl.common.packet.SoundPacket;
 import com.science.gtnl.common.packet.SyncCircuitNanitesPacket;
 import com.science.gtnl.common.packet.SyncRecipePacket;
@@ -64,6 +67,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import gregtech.api.enums.Mods;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.metatileentity.BaseMetaTileEntity;
@@ -206,8 +210,33 @@ public class SubscribeEventUtils {
         TimeStopPocketWatch.setTimeStopped(false);
         BaubleItem.removePlayer(event.player.getUniqueID());
         DraconicArmorProjectionState.clear(event.player.getUniqueID());
+        DraconicArmorProjectionHitEffectState.clear(event.player.getUniqueID());
         FOOD_TICK_TIMERS.removeInt(event.player.getUniqueID());
         CIRCUIT_NANITES_DATA_LOAD = false;
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onProjectedArmorPlayerAttacked(LivingAttackEvent event) {
+        if (!(event.entityLiving instanceof EntityPlayer player)) {
+            return;
+        }
+        if (player.worldObj.isRemote || event.isCanceled() || event.ammount <= 0.0F) {
+            return;
+        }
+        if (DraconicArmorProjectionState.get(player) == null) {
+            return;
+        }
+
+        ScienceNotLeisure.network.sendToAllAround(
+            new DraconicArmorProjectionHitEffectPacket(player, 1.0F),
+            new NetworkRegistry.TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 64.0D));
+        player.worldObj.playSoundEffect(
+            player.posX + 0.5D,
+            player.posY + 0.5D,
+            player.posZ + 0.5D,
+            "draconicevolution:shieldStrike",
+            0.9F,
+            player.worldObj.rand.nextFloat() * 0.1F + 1.055F);
     }
 
     @SubscribeEvent

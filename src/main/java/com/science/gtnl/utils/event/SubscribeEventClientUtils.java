@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -28,17 +29,22 @@ import net.minecraftforge.client.event.RenderItemInFrameEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.client.model.IModelCustom;
+import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.reavaritia.client.render.CustomEntityRenderer;
 import com.science.gtnl.api.TickrateAPI;
 import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.common.item.items.NullPointerException;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
+import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionHitEffectState;
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionState;
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionType;
 import com.science.gtnl.common.packet.NBTUpdatePacket;
@@ -60,6 +66,11 @@ import gregtech.client.ElectricJukeboxSound;
 
 public class SubscribeEventClientUtils {
 
+    private static final ResourceLocation PROJECTED_SHIELD_MODEL = ResourceHandler
+        .getResource("models/shieldSphere.obj");
+    private static final ResourceLocation PROJECTED_SHIELD_TEXTURE = ResourceHandler
+        .getResource("textures/models/ShieldSphere.png");
+    private static IModelCustom projectedShieldModel;
     public static final Random RANDOM = new Random();
     public static String HALO_NOISE_ICON_TEXTURE = ModList.ScienceNotLeisure.resourceDomain + ":halonoise";
     public static IIcon haloNoiseIcon;
@@ -95,7 +106,9 @@ public class SubscribeEventClientUtils {
         if (minecraft.thePlayer != null) {
             BaubleItem.removePlayer(minecraft.thePlayer.getUniqueID());
             DraconicArmorProjectionState.clear(minecraft.thePlayer.getUniqueID());
+            DraconicArmorProjectionHitEffectState.clear(minecraft.thePlayer.getUniqueID());
         }
+        DraconicArmorProjectionHitEffectState.clearAll();
         TickrateAPI.changeServerTickrate(MainConfig.tickrate.defaultTickrate);
         TickrateAPI.changeClientTickrate(null, MainConfig.tickrate.defaultTickrate);
     }
@@ -171,6 +184,16 @@ public class SubscribeEventClientUtils {
 
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer == null || mc.theWorld == null) return;
+
+        if (event.phase == TickEvent.Phase.END) {
+            suppressProjectedArmorHurtVisual(mc.thePlayer);
+            for (Object playerObject : mc.theWorld.playerEntities) {
+                if (playerObject instanceof EntityPlayer player && player != mc.thePlayer) {
+                    suppressProjectedArmorHurtVisual(player);
+                }
+            }
+            DraconicArmorProjectionHitEffectState.tick();
+        }
 
         float currentHealth = mc.thePlayer.getHealth();
 
@@ -293,6 +316,71 @@ public class SubscribeEventClientUtils {
         event.result = 1;
     }
 
+    @SubscribeEvent
+    public void onRenderProjectedShield(RenderPlayerEvent.Post event) {
+        EntityPlayer player = event.entityPlayer;
+        if (!DraconicArmorProjectionHitEffectState.isActive(player)) {
+            return;
+        }
+
+        float shieldPower = DraconicArmorProjectionHitEffectState.getShieldPower(player);
+        int remainingTicks = DraconicArmorProjectionHitEffectState.getRemainingTicks(player);
+        float alpha = remainingTicks / 5.0F;
+        float red = 1.0F - shieldPower;
+        float blue = shieldPower;
+
+        GL11.glPushMatrix();
+        GL11.glDepthMask(false);
+        GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        Minecraft.getMinecraft()
+            .getTextureManager()
+            .bindTexture(PROJECTED_SHIELD_TEXTURE);
+
+        if (Minecraft.getMinecraft().thePlayer == player) {
+            GL11.glTranslated(0.0D, -0.5D, 0.0D);
+        } else {
+            EntityPlayer viewingPlayer = Minecraft.getMinecraft().thePlayer;
+            double translationXLT = player.prevPosX - viewingPlayer.prevPosX;
+            double translationYLT = player.prevPosY - viewingPlayer.prevPosY;
+            double translationZLT = player.prevPosZ - viewingPlayer.prevPosZ;
+            double translationX = translationXLT
+                + (((player.posX - viewingPlayer.posX) - translationXLT) * event.partialRenderTick);
+            double translationY = translationYLT
+                + (((player.posY - viewingPlayer.posY) - translationYLT) * event.partialRenderTick);
+            double translationZ = translationZLT
+                + (((player.posZ - viewingPlayer.posZ) - translationZLT) * event.partialRenderTick);
+            GL11.glTranslated(translationX, translationY + 1.1D, translationZ);
+        }
+
+        GL11.glScalef(1.0F, 1.5F, 1.0F);
+        GL11.glColor4f(red, 0.0F, blue, alpha);
+        getProjectedShieldModel().renderAll();
+
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glDepthMask(true);
+        GL11.glPopMatrix();
+    }
+
+    @SubscribeEvent
+    public void onPlaySoundAtEntity(PlaySoundAtEntityEvent event) {
+        if (!(event.entity instanceof EntityPlayer player)) {
+            return;
+        }
+        if (!DraconicArmorProjectionHitEffectState.isActive(player)) {
+            return;
+        }
+        if (event.name != null && event.name.startsWith("damage.hit")) {
+            event.setCanceled(true);
+        }
+    }
+
     // Sound
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
@@ -332,7 +420,23 @@ public class SubscribeEventClientUtils {
                 customEntityRenderer.resetShader();
             }
         }
+        DraconicArmorProjectionHitEffectState.clearAll();
         TimeStopPocketWatch.setTimeStopped(false);
+    }
+
+    private void suppressProjectedArmorHurtVisual(EntityPlayer player) {
+        if (!DraconicArmorProjectionHitEffectState.isActive(player)) {
+            return;
+        }
+        player.hurtTime = 0;
+        player.maxHurtTime = 0;
+    }
+
+    private IModelCustom getProjectedShieldModel() {
+        if (projectedShieldModel == null) {
+            projectedShieldModel = AdvancedModelLoader.loadModel(PROJECTED_SHIELD_MODEL);
+        }
+        return projectedShieldModel;
     }
 
     private ItemStack getProjectedArmorStack(DraconicArmorProjectionType projectionType, int slot) {

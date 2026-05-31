@@ -39,9 +39,15 @@ public class NetWorkHandler {
             DraconicArmorProjectionSyncPacket.class,
             i++,
             Side.CLIENT);
+        network.registerMessage(
+            DraconicArmorProjectionHitEffectPacket.Handler.class,
+            DraconicArmorProjectionHitEffectPacket.class,
+            i++,
+            Side.CLIENT);
         registerMessage(PlaceItemInHotbarPacket.class, i++, Side.CLIENT);
         registerMessage(RequestGameProfilePacket.class, i++, Side.SERVER);
         registerMessage(SwitchToCustomGuiPacket.class, i++, Side.SERVER);
+        registerMessage(SwitchSuperInterfaceViewPacket.class, i++, Side.SERVER);
         if (Mods.EtFuturumRequiem.isModLoaded()) registerMessage(ElytraBoostPacket.class, i++, Side.SERVER);
     }
 

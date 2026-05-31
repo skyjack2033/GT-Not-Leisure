@@ -25,6 +25,7 @@ import com.science.gtnl.common.item.items.FakeItemSiren;
 import com.science.gtnl.common.item.items.GTNLItemBucket;
 import com.science.gtnl.common.item.items.ItemPartActiveFormationPlane;
 import com.science.gtnl.common.item.items.ItemPartBeamFormer;
+import com.science.gtnl.common.item.items.ItemPartSuperDualInterface;
 import com.science.gtnl.common.item.items.ItemPartSuperInterface;
 import com.science.gtnl.common.item.items.KFCFamily;
 import com.science.gtnl.common.item.items.NetherTeleporter;
@@ -161,6 +162,7 @@ public class ItemLoader {
     public static VeinMiningPickaxe veinMiningPickaxe = new VeinMiningPickaxe();
 
     public static ItemPartSuperInterface superInterface = new ItemPartSuperInterface();
+    public static ItemPartSuperDualInterface superDualInterface = new ItemPartSuperDualInterface();
     public static ItemPartActiveFormationPlane activeFormationPlane = new ItemPartActiveFormationPlane();
     public static ItemPartBeamFormer beamFormer = new ItemPartBeamFormer();
 

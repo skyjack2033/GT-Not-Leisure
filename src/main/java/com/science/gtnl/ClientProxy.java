@@ -20,6 +20,7 @@ import com.science.gtnl.client.gui.GuiActiveFormationPlane;
 import com.science.gtnl.client.gui.GuiCustomPriority;
 import com.science.gtnl.client.gui.GuiDirePatternEncoder;
 import com.science.gtnl.client.gui.GuiMEChisel;
+import com.science.gtnl.client.gui.GuiSuperDualInterface;
 import com.science.gtnl.client.gui.GuiSuperInterface;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAdvancedWorkbench;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAnvil;
@@ -41,6 +42,7 @@ import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
 import com.science.gtnl.common.block.blocks.tile.TileEntityMEChisel;
 import com.science.gtnl.common.block.blocks.tile.TileEntityNanoPhagocytosisPlant;
 import com.science.gtnl.common.block.blocks.tile.TileEntityPlayerDoll;
+import com.science.gtnl.common.block.blocks.tile.TileEntitySuperDualInterface;
 import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
 import com.science.gtnl.common.block.blocks.tile.TileEntityWaterCandle;
 import com.science.gtnl.common.command.CommandSpoce;
@@ -50,6 +52,7 @@ import com.science.gtnl.common.entity.EntitySaddleSlime;
 import com.science.gtnl.common.entity.EntitySteamRocket;
 import com.science.gtnl.common.packet.client.TitleDisplayHandler;
 import com.science.gtnl.common.part.PartActiveFormationPlane;
+import com.science.gtnl.common.part.PartSuperDualInterface;
 import com.science.gtnl.common.part.PartSuperInterface;
 import com.science.gtnl.common.render.SpoceRenderHandler;
 import com.science.gtnl.common.render.entity.NullPointerExceptionRender;
@@ -134,6 +137,8 @@ public class ClientProxy extends CommonProxy {
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockLoader.meChisel), ItemRenderer.INSTANCE);
         MinecraftForgeClient
             .registerItemRenderer(Item.getItemFromBlock(BlockLoader.superInterface), ItemRenderer.INSTANCE);
+        MinecraftForgeClient
+            .registerItemRenderer(Item.getItemFromBlock(BlockLoader.superDualInterface), ItemRenderer.INSTANCE);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPlayerDoll.class, new PlayerDollRenderer());
         MinecraftForgeClient
@@ -279,6 +284,18 @@ public class ClientProxy extends CommonProxy {
                 }
                 yield null;
             }
+            case SuperDualInterfaceGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                if (t instanceof TileEntitySuperDualInterface si) {
+                    yield new GuiSuperDualInterface(player.inventory, si);
+                } else if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartSuperDualInterface si) {
+                        yield new GuiSuperDualInterface(player.inventory, si);
+                    }
+                }
+                yield null;
+            }
             case ActiveFormationPlaneGUI -> {
                 var t = world.getTileEntity(x, y, z);
                 if (t instanceof IPartHost host) {
@@ -297,11 +314,17 @@ public class ClientProxy extends CommonProxy {
                 if (t instanceof TileEntitySuperInterface si) {
                     priorityHost = si;
                     type = GuiType.SuperInterfaceGUI;
+                } else if (t instanceof TileEntitySuperDualInterface si) {
+                    priorityHost = si;
+                    type = GuiType.SuperDualInterfaceGUI;
                 } else if (t instanceof IPartHost host) {
                     IPart part = host.getPart(side);
                     if (part instanceof PartSuperInterface si) {
                         priorityHost = si;
                         type = GuiType.SuperInterfaceGUI;
+                    } else if (part instanceof PartSuperDualInterface si) {
+                        priorityHost = si;
+                        type = GuiType.SuperDualInterfaceGUI;
                     } else if (part instanceof PartActiveFormationPlane si) {
                         priorityHost = si;
                         type = GuiType.ActiveFormationPlaneGUI;

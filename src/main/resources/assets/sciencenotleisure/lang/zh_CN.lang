@@ -223,8 +223,10 @@ nei.bookmark.ae_no_craft=此物品无对应合成
 error.rc.cpu=§6这个CPU正在工作！
 
 text.SuperInterface.page=页码：%d/%d
+text.SuperInterface.tooltip.switch=切换到超级二合一ME接口GUI
 text.SuperInterface.tooltip.0=上一页
 text.SuperInterface.tooltip.1=下一页
+text.SuperDualInterface.tooltip.switch=切换到超级ME接口GUI
 
 channels.sciencenotleisure.structure_render=决定是否应该渲染并放置该结构，防止结构过大引起的卡顿。
 channels.sciencenotleisure.component_casing=决定部件装配线外壳等级。最低为§6部件装配线外壳(LV)§r等级1，最高为§6部件装配线外壳(MAX)§r等级14。
@@ -1234,6 +1236,9 @@ container.DirePatternEncoder=终极样板编码台
 item.PartSuperInterface.name=超级ME接口
 tile.SuperInterface.name=超级ME接口
 container.SuperInterface=超级ME接口
+item.PartSuperDualInterface.name=超级二合一ME接口
+tile.SuperDualInterface.name=超级二合一ME接口
+container.SuperDualInterface=超级二合一ME接口
 
 item.PartActiveFormationPlane.name=ME主动成型面板
 

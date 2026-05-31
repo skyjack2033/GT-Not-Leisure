@@ -18,7 +18,6 @@ import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.WrapperInvSlot;
 
-// TODO:再加个二合一ME接口
 public class PartSuperInterface extends PartInterface implements ICustomGui {
 
     public int configSlots = 27;

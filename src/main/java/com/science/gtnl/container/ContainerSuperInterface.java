@@ -14,7 +14,6 @@ import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
 import appeng.util.Platform;
 
-// TODO:再加个二合一ME接口
 public class ContainerSuperInterface extends ContainerInterface {
 
     public final DualityInterface myDuality;
@@ -56,11 +55,11 @@ public class ContainerSuperInterface extends ContainerInterface {
         this.inventoryItemStacks.clear();
         this.bindPlayerInventory(ip, 0, this.getHeight() - PLAYER_INV_HEIGHT);
 
-        this.addUpgradeSlots();
+        this.setupUpgrades();
 
         if (this.hasToolbox()) {
             int size = this.getToolboxSize();
-            // For advanced toolbox to move down a little bit
+            // Shift the larger toolbox layout slightly downward.
             int yBias = size == 3 ? 0 : 7;
             for (int v = 0; v < size; v++) {
                 for (int u = 0; u < size; u++) {
@@ -142,6 +141,16 @@ public class ContainerSuperInterface extends ContainerInterface {
         }
     }
 
+    public void setCurrentPage(int page) {
+        int targetPage = Math.max(0, Math.min(page, maxPage - 1));
+        if (targetPage == currentPage) {
+            return;
+        }
+        setPageSlotsVisible(currentPage, false);
+        currentPage = targetPage;
+        setPageSlotsVisible(currentPage, true);
+    }
+
     private void setPageSlotsVisible(int page, boolean visible) {
         for (var slot : patternSlotPages[page]) {
             if (slot != null) slot.xDisplayPosition = visible ? slot.getX() : Integer.MIN_VALUE;
@@ -158,7 +167,9 @@ public class ContainerSuperInterface extends ContainerInterface {
     public void setupConfig() {}
 
     @Override
-    public void setupUpgrades() {}
+    public void setupUpgrades() {
+        addUpgradeSlots();
+    }
 
     public void addUpgradeSlots() {
         for (int i = 0; i < upgradeSlots; i++) {
@@ -189,11 +200,13 @@ public class ContainerSuperInterface extends ContainerInterface {
 
     @Override
     public boolean isSlotEnabled(final int idx) {
-        if (Platform.isClient()) {
-            if (!isEmpty && !isConfigEmpty) {
-                return idx == currentPage || idx < 0 || !init;
-            } else return false;
-        } else return true;
+        if (!Platform.isClient()) {
+            return true;
+        }
+        if (idx < 0 || !init) {
+            return true;
+        }
+        return !isEmpty && !isConfigEmpty;
     }
 
     @Override

@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.common.part.PartSuperInterface;
+import com.science.gtnl.common.part.PartSuperDualInterface;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.AEApi;
@@ -19,24 +19,24 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPartSuperInterface extends Item implements IPartItem {
+public class ItemPartSuperDualInterface extends Item implements IPartItem {
 
-    public ItemPartSuperInterface() {
-        this.setMaxStackSize(64);
-        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
-        this.setUnlocalizedName("PartSuperInterface");
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + "SuperInterface");
+    public ItemPartSuperDualInterface() {
+        setMaxStackSize(64);
+        setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
+        setUnlocalizedName("PartSuperDualInterface");
+        setTextureName(RESOURCE_ROOT_ID + ":SuperDualInterface");
         GameRegistry.registerItem(this, getUnlocalizedName());
         AEApi.instance()
             .partHelper()
             .setItemBusRenderer(this);
-        GTNLItemList.PartSuperInterface.set(new ItemStack(this, 1));
+        GTNLItemList.PartSuperDualInterface.set(new ItemStack(this, 1));
     }
 
     @Nullable
     @Override
-    public PartSuperInterface createPartFromItemStack(ItemStack is) {
-        return new PartSuperInterface(is);
+    public PartSuperDualInterface createPartFromItemStack(ItemStack is) {
+        return new PartSuperDualInterface(is);
     }
 
     @Override

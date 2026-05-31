@@ -223,8 +223,10 @@ nei.bookmark.ae_no_craft=This item has no corresponding crafting
 error.rc.cpu=§6The CPU is working!
 
 text.SuperInterface.page=Page: %d/%d
+text.SuperInterface.tooltip.switch=Switch to Super Dual ME Interface
 text.SuperInterface.tooltip.0=Prev Page
 text.SuperInterface.tooltip.1=Next Page
+text.SuperDualInterface.tooltip.switch=Switch to Super ME Interface
 
 channels.sciencenotleisure.structure_render=Decides whether the structure should be rendered and placed, preventing lag caused by excessively large structures.
 channels.sciencenotleisure.component_casing=Decides the tier of component assemblyline casing. Starts at §6LV§r at value 1 and ends at §6MAX§r at value 14.
@@ -1234,6 +1236,9 @@ container.DirePatternEncoder=Dire Pattern Encoder
 item.PartSuperInterface.name=Super ME Interface
 tile.SuperInterface.name=Super ME Interface
 container.SuperInterface=Super ME Interface
+item.PartSuperDualInterface.name=Super Dual ME Interface
+tile.SuperDualInterface.name=Super Dual ME Interface
+container.SuperDualInterface=Super Dual ME Interface
 
 item.PartActiveFormationPlane.name=ME Active Formation Plane
 
