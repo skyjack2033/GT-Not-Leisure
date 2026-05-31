@@ -3,7 +3,6 @@ package com.science.gtnl.client.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -12,12 +11,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.common.block.blocks.tile.TileEntitySuperInterface;
-import com.science.gtnl.common.packet.SwitchSuperInterfaceViewPacket;
 import com.science.gtnl.common.packet.SwitchToCustomGuiPacket;
-import com.science.gtnl.common.part.PartSuperInterface;
 import com.science.gtnl.container.ContainerSuperInterface;
-import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.config.AdvancedBlockingMode;
@@ -51,19 +46,10 @@ public class GuiSuperInterface extends GuiUpgradeable {
     public GuiToggleButton interfaceMode, patternOptimization;
     public GuiSimpleImgButton doublePatterns;
     public GuiTextAeButton prevPage, nextPage;
-    protected GuiTabButton switcher;
-    protected final IInterfaceHost host;
 
     public GuiSuperInterface(InventoryPlayer inventoryPlayer, IInterfaceHost te) {
         super(new ContainerSuperInterface(inventoryPlayer, te));
-        this.host = te;
         this.ySize = ((ContainerSuperInterface) this.inventorySlots).getHeight();
-    }
-
-    protected GuiSuperInterface(ContainerSuperInterface container) {
-        super(container);
-        this.host = null;
-        this.ySize = container.getHeight();
     }
 
     @Override
@@ -79,17 +65,6 @@ public class GuiSuperInterface extends GuiUpgradeable {
             GuiText.Priority.getLocal(),
             itemRender);
         this.buttonList.add(this.priority);
-
-        if (supportsDualView()) {
-            ItemStack switchStack = getDualViewSwitchStack();
-            this.switcher = new GuiTabButton(
-                this.guiLeft + 132,
-                this.guiTop,
-                switchStack,
-                StatCollector.translateToLocal("text.SuperInterface.tooltip.switch"),
-                itemRender);
-            this.buttonList.add(this.switcher);
-        }
 
         this.BlockMode = new GuiImgButton(btnX, this.guiTop + offset, Settings.BLOCK, YesNo.NO);
         this.buttonList.add(this.BlockMode);
@@ -224,14 +199,6 @@ public class GuiSuperInterface extends GuiUpgradeable {
             container.previousPage();
         } else if (btn == nextPage) {
             container.nextPage();
-        } else if (btn == switcher) {
-            ForgeDirection side = ForgeDirection.UNKNOWN;
-            if (this.bc instanceof AEBasePart part) {
-                side = part.getSide();
-            }
-            AEBaseGui.setSwitchingGuis(true);
-            ScienceNotLeisure.network.sendToServer(
-                new SwitchSuperInterfaceViewPacket(GuiType.SuperDualInterfaceGUI, side, container.currentPage));
         } else if (btn == this.priority) {
             ForgeDirection side = ForgeDirection.UNKNOWN;
             if (this.bc instanceof AEBasePart part) {
@@ -281,16 +248,6 @@ public class GuiSuperInterface extends GuiUpgradeable {
         if (this.lockCraftingMode != null)
             this.lockCraftingMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.LOCK_CRAFTING) > 0);
         if (this.fuzzyMode != null) this.fuzzyMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.FUZZY) > 0);
-        if (this.switcher != null) this.switcher.visible = supportsDualView();
-    }
-
-    protected boolean supportsDualView() {
-        return this.bc instanceof PartSuperInterface || this.bc instanceof TileEntitySuperInterface;
-    }
-
-    protected ItemStack getDualViewSwitchStack() {
-        return this.host instanceof PartSuperInterface ? GTNLItemList.PartSuperDualInterface.get(1)
-            : GTNLItemList.SuperDualInterface.get(1);
     }
 
     public static class GuiTextAeButton extends GuiAeButton {

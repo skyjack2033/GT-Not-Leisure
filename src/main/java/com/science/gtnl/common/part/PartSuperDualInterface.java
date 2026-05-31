@@ -1,7 +1,10 @@
 package com.science.gtnl.common.part;
 
+import java.io.IOException;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -16,11 +19,15 @@ import com.science.gtnl.api.ICustomGui;
 import com.science.gtnl.api.mixinHelper.IDualityInterface;
 import com.science.gtnl.common.me.dual.DualInterfaceHostSupport;
 import com.science.gtnl.common.me.dual.IDualInterfaceHost;
+import com.science.gtnl.common.me.dual.SuperDualInterfaceSlots;
 import com.science.gtnl.mixins.late.AppliedEnergistics.AccessorPartInterface;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.events.MENetworkChannelsChanged;
+import appeng.api.networking.events.MENetworkEventSubscribe;
+import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.data.IAEFluidStack;
@@ -30,6 +37,8 @@ import appeng.parts.misc.PartInterface;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.WrapperInvSlot;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 
 public class PartSuperDualInterface extends PartInterface implements ICustomGui, IDualInterfaceHost {
 
@@ -59,8 +68,26 @@ public class PartSuperDualInterface extends PartInterface implements ICustomGui,
                 upgradeSlots));
         duality.setRequireWork(new IAEItemStack[storageSlots]);
         duality.setHasFuzzyConfig(new boolean[configSlots]);
-        var fluidConfig = new AppEngInternalAEInventory(this, DualityFluidInterface.NUMBER_OF_TANKS);
+        var fluidConfig = new AppEngInternalAEInventory(this, SuperDualInterfaceSlots.FLUID_SLOT_COUNT);
         dualHostSupport = new DualInterfaceHostSupport(fluidConfig, this);
+    }
+
+    @MENetworkEventSubscribe
+    public void stateChange(final MENetworkChannelsChanged c) {
+        getDualityFluid().onChannelStateChange(c);
+        super.stateChange(c);
+    }
+
+    @MENetworkEventSubscribe
+    public void stateChange(final MENetworkPowerStatusChange c) {
+        getDualityFluid().onPowerStateChange(c);
+        super.stateChange(c);
+    }
+
+    @Override
+    public void gridChanged() {
+        super.gridChanged();
+        getDualityFluid().gridChanged();
     }
 
     @Override
@@ -109,7 +136,49 @@ public class PartSuperDualInterface extends PartInterface implements ICustomGui,
 
     @Override
     public void onFluidInventoryChanged(IAEFluidTank tank, int slot) {
+        saveChanges();
+        getTileEntity().markDirty();
         dualHostSupport.onFluidInventoryChanged(tank, slot);
+    }
+
+    @Override
+    public void writeToStream(ByteBuf data) throws IOException {
+        super.writeToStream(data);
+        for (int i = 0; i < getConfig().getSizeInventory(); i++) {
+            ByteBufUtils.writeItemStack(data, getConfig().getStackInSlot(i));
+        }
+        getInternalFluid().writeToBuf(data);
+    }
+
+    @Override
+    public boolean readFromStream(ByteBuf data) throws IOException {
+        super.readFromStream(data);
+        boolean changed = false;
+        for (int i = 0; i < getConfig().getSizeInventory(); i++) {
+            ItemStack stack = ByteBufUtils.readItemStack(data);
+            if (!ItemStack.areItemStacksEqual(stack, getConfig().getStackInSlot(i))) {
+                getConfig().setInventorySlotContents(i, stack);
+                changed = true;
+            }
+        }
+        getDualityFluid().loadConfigFromPacket(getConfig());
+        changed |= getInternalFluid().readFromBuf(data);
+        return changed;
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound data) {
+        super.readFromNBT(data);
+        getConfig().readFromNBT(data, "ConfigInv");
+        getDualityFluid().loadConfigFromPacket(getConfig());
+        getInternalFluid().readFromNBT(data, "FluidInv");
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound data) {
+        super.writeToNBT(data);
+        getConfig().writeToNBT(data, "ConfigInv");
+        getInternalFluid().writeToNBT(data, "FluidInv");
     }
 
     @Override

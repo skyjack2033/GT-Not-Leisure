@@ -1,7 +1,13 @@
 package com.science.gtnl.common.block.blocks.tile;
 
-import net.minecraft.item.ItemStack;
+import java.io.IOException;
+import java.util.List;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+
+import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.util.DualityFluidInterface;
@@ -9,21 +15,29 @@ import com.science.gtnl.api.ICustomGui;
 import com.science.gtnl.api.mixinHelper.IDualityInterface;
 import com.science.gtnl.common.me.dual.DualInterfaceHostSupport;
 import com.science.gtnl.common.me.dual.IDualInterfaceHost;
+import com.science.gtnl.common.me.dual.SuperDualInterfaceSlots;
 import com.science.gtnl.mixins.late.AppliedEnergistics.AccessorTileInterface;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.config.Settings;
 import appeng.api.config.SidelessMode;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.events.MENetworkChannelsChanged;
+import appeng.api.networking.events.MENetworkEventSubscribe;
+import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.parts.automation.StackUpgradeInventory;
+import appeng.tile.TileEvent;
+import appeng.tile.events.TileEventType;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.misc.TileInterface;
 import appeng.util.inv.WrapperInvSlot;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 
 public class TileEntitySuperDualInterface extends TileInterface implements ICustomGui, IDualInterfaceHost {
 
@@ -53,10 +67,28 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
                 upgradeSlots));
         duality.setRequireWork(new IAEItemStack[storageSlots]);
         duality.setHasFuzzyConfig(new boolean[configSlots]);
-        var fluidConfig = new AppEngInternalAEInventory(this, DualityFluidInterface.NUMBER_OF_TANKS);
+        var fluidConfig = new AppEngInternalAEInventory(this, SuperDualInterfaceSlots.FLUID_SLOT_COUNT);
         dualHostSupport = new DualInterfaceHostSupport(fluidConfig, this);
         getInterfaceDuality().getConfigManager()
             .registerSetting(Settings.SIDELESS_MODE, SidelessMode.SIDELESS);
+    }
+
+    @MENetworkEventSubscribe
+    public void stateChange(final MENetworkChannelsChanged c) {
+        getDualityFluid().onChannelStateChange(c);
+        super.stateChange(c);
+    }
+
+    @MENetworkEventSubscribe
+    public void stateChange(final MENetworkPowerStatusChange c) {
+        getDualityFluid().onPowerStateChange(c);
+        super.stateChange(c);
+    }
+
+    @Override
+    public void gridChanged() {
+        super.gridChanged();
+        getDualityFluid().gridChanged();
     }
 
     @Override
@@ -96,7 +128,61 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
 
     @Override
     public void onFluidInventoryChanged(IAEFluidTank tank, int slot) {
+        saveChanges();
+        markForUpdate();
         dualHostSupport.onFluidInventoryChanged(tank, slot);
+    }
+
+    @TileEvent(TileEventType.NETWORK_WRITE)
+    protected void writeToStream(ByteBuf data) throws IOException {
+        for (int i = 0; i < getConfig().getSizeInventory(); i++) {
+            ByteBufUtils.writeItemStack(data, getConfig().getStackInSlot(i));
+        }
+        getInternalFluid().writeToBuf(data);
+    }
+
+    @TileEvent(TileEventType.NETWORK_READ)
+    protected boolean readFromStream(ByteBuf data) throws IOException {
+        boolean changed = false;
+        for (int i = 0; i < getConfig().getSizeInventory(); i++) {
+            ItemStack stack = ByteBufUtils.readItemStack(data);
+            if (!ItemStack.areItemStacksEqual(stack, getConfig().getStackInSlot(i))) {
+                getConfig().setInventorySlotContents(i, stack);
+                changed = true;
+            }
+        }
+        getDualityFluid().loadConfigFromPacket(getConfig());
+        changed |= getInternalFluid().readFromBuf(data);
+        return changed;
+    }
+
+    @TileEvent(TileEventType.WORLD_NBT_READ)
+    public void readFromNBTEvent(NBTTagCompound data) {
+        getConfig().readFromNBT(data, "ConfigInv");
+        getDualityFluid().loadConfigFromPacket(getConfig());
+        getInternalFluid().readFromNBT(data, "FluidInv");
+    }
+
+    @TileEvent(TileEventType.WORLD_NBT_WRITE)
+    public NBTTagCompound writeToNBTEvent(NBTTagCompound data) {
+        getConfig().writeToNBT(data, "ConfigInv");
+        getInternalFluid().writeToNBT(data, "FluidInv");
+        return data;
+    }
+
+    @Override
+    public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
+        getDualityFluid().addDrops(drops);
+        if (getInterfaceDuality().getWaitingToSend() != null) {
+            for (ItemStack is : getInterfaceDuality().getWaitingToSend()) {
+                if (is != null && is.getItem() instanceof com.glodblock.github.common.item.ItemFluidDrop) {
+                    drops.add(
+                        ItemFluidPacket.newStack(com.glodblock.github.common.item.ItemFluidDrop.getFluidStack(is)));
+                    is.stackSize = 0;
+                }
+            }
+        }
+        super.getDrops(w, x, y, z, drops);
     }
 
     @Override

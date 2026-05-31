@@ -47,7 +47,12 @@ public class NetWorkHandler {
         registerMessage(PlaceItemInHotbarPacket.class, i++, Side.CLIENT);
         registerMessage(RequestGameProfilePacket.class, i++, Side.SERVER);
         registerMessage(SwitchToCustomGuiPacket.class, i++, Side.SERVER);
-        registerMessage(SwitchSuperInterfaceViewPacket.class, i++, Side.SERVER);
+        registerMessage(SwitchSuperDualInterfaceGuiPacket.class, i++, Side.SERVER);
+        network.registerMessage(
+            SuperDualInterfaceFluidSyncPacket.class,
+            SuperDualInterfaceFluidSyncPacket.class,
+            i++,
+            Side.CLIENT);
         if (Mods.EtFuturumRequiem.isModLoaded()) registerMessage(ElytraBoostPacket.class, i++, Side.SERVER);
     }
 

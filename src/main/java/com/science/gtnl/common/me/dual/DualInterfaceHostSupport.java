@@ -9,7 +9,6 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
-import com.glodblock.github.util.DualityFluidInterface;
 import com.science.gtnl.api.mixinHelper.IDualityInterface;
 
 import appeng.api.storage.data.IAEFluidStack;
@@ -18,18 +17,21 @@ import appeng.tile.inventory.AppEngInternalAEInventory;
 public class DualInterfaceHostSupport {
 
     private final AppEngInternalAEInventory fluidConfig;
-    private final DualityFluidInterface fluidDuality;
+    private final SuperDualityFluidInterface fluidDuality;
 
     public DualInterfaceHostSupport(AppEngInternalAEInventory fluidConfigHost, IDualInterfaceHost host) {
         fluidConfig = fluidConfigHost;
-        fluidDuality = new DualityFluidInterface(((IDualityInterface) host.getInterfaceDuality()).getGridProxy(), host);
+        fluidDuality = new SuperDualityFluidInterface(
+            ((IDualityInterface) host.getInterfaceDuality()).getGridProxy(),
+            host,
+            fluidConfigHost.getSizeInventory());
     }
 
     public AppEngInternalAEInventory getConfig() {
         return fluidConfig;
     }
 
-    public DualityFluidInterface getDualityFluid() {
+    public SuperDualityFluidInterface getDualityFluid() {
         return fluidDuality;
     }
 

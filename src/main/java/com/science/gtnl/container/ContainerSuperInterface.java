@@ -55,7 +55,7 @@ public class ContainerSuperInterface extends ContainerInterface {
         this.inventoryItemStacks.clear();
         this.bindPlayerInventory(ip, 0, this.getHeight() - PLAYER_INV_HEIGHT);
 
-        this.setupUpgrades();
+        this.addUpgradeSlots();
 
         if (this.hasToolbox()) {
             int size = this.getToolboxSize();
@@ -141,16 +141,6 @@ public class ContainerSuperInterface extends ContainerInterface {
         }
     }
 
-    public void setCurrentPage(int page) {
-        int targetPage = Math.max(0, Math.min(page, maxPage - 1));
-        if (targetPage == currentPage) {
-            return;
-        }
-        setPageSlotsVisible(currentPage, false);
-        currentPage = targetPage;
-        setPageSlotsVisible(currentPage, true);
-    }
-
     private void setPageSlotsVisible(int page, boolean visible) {
         for (var slot : patternSlotPages[page]) {
             if (slot != null) slot.xDisplayPosition = visible ? slot.getX() : Integer.MIN_VALUE;
@@ -167,9 +157,7 @@ public class ContainerSuperInterface extends ContainerInterface {
     public void setupConfig() {}
 
     @Override
-    public void setupUpgrades() {
-        addUpgradeSlots();
-    }
+    public void setupUpgrades() {}
 
     public void addUpgradeSlots() {
         for (int i = 0; i < upgradeSlots; i++) {
@@ -200,13 +188,11 @@ public class ContainerSuperInterface extends ContainerInterface {
 
     @Override
     public boolean isSlotEnabled(final int idx) {
-        if (!Platform.isClient()) {
-            return true;
-        }
-        if (idx < 0 || !init) {
-            return true;
-        }
-        return !isEmpty && !isConfigEmpty;
+        if (Platform.isClient()) {
+            if (!isEmpty && !isConfigEmpty) {
+                return idx == currentPage || idx < 0 || !init;
+            } else return false;
+        } else return true;
     }
 
     @Override

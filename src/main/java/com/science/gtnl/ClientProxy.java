@@ -21,6 +21,7 @@ import com.science.gtnl.client.gui.GuiCustomPriority;
 import com.science.gtnl.client.gui.GuiDirePatternEncoder;
 import com.science.gtnl.client.gui.GuiMEChisel;
 import com.science.gtnl.client.gui.GuiSuperDualInterface;
+import com.science.gtnl.client.gui.GuiSuperDualInterfaceFluid;
 import com.science.gtnl.client.gui.GuiSuperInterface;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAdvancedWorkbench;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAnvil;
@@ -292,6 +293,18 @@ public class ClientProxy extends CommonProxy {
                     IPart part = host.getPart(side);
                     if (part instanceof PartSuperDualInterface si) {
                         yield new GuiSuperDualInterface(player.inventory, si);
+                    }
+                }
+                yield null;
+            }
+            case SuperDualInterfaceFluidGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                if (t instanceof TileEntitySuperDualInterface si) {
+                    yield new GuiSuperDualInterfaceFluid(player.inventory, si);
+                } else if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartSuperDualInterface si) {
+                        yield new GuiSuperDualInterfaceFluid(player.inventory, si);
                     }
                 }
                 yield null;

@@ -26,7 +26,7 @@ import com.science.gtnl.container.ContainerActiveFormationPlane;
 import com.science.gtnl.container.ContainerCustomPriority;
 import com.science.gtnl.container.ContainerDirePatternEncoder;
 import com.science.gtnl.container.ContainerMEChisel;
-import com.science.gtnl.container.ContainerSuperDualInterface;
+import com.science.gtnl.container.ContainerSuperDualInterfaceFluid;
 import com.science.gtnl.container.ContainerSuperInterface;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAdvancedWorkbench;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAnvil;
@@ -256,7 +256,7 @@ public class CommonProxy implements IGuiHandler {
             case SuperDualInterfaceGUI -> {
                 var t = world.getTileEntity(x, y, z);
                 if (t instanceof TileEntitySuperDualInterface si) {
-                    var container = new ContainerSuperDualInterface(player.inventory, si);
+                    var container = new ContainerSuperInterface(player.inventory, si);
                     ContainerOpenContext ctx = new ContainerOpenContext(si);
                     ctx.setWorld(world);
                     ctx.setX(x);
@@ -269,7 +269,35 @@ public class CommonProxy implements IGuiHandler {
                 } else if (t instanceof IPartHost host) {
                     IPart part = host.getPart(side);
                     if (part instanceof PartSuperDualInterface si) {
-                        var container = new ContainerSuperDualInterface(player.inventory, si);
+                        var container = new ContainerSuperInterface(player.inventory, si);
+                        ContainerOpenContext ctx = new ContainerOpenContext(si);
+                        ctx.setWorld(world);
+                        ctx.setX(x);
+                        ctx.setY(y);
+                        ctx.setZ(z);
+                        ctx.setSide(side);
+                        container.setOpenContext(ctx);
+                        yield container;
+                    }
+                }
+                yield null;
+            }
+            case SuperDualInterfaceFluidGUI -> {
+                var t = world.getTileEntity(x, y, z);
+                if (t instanceof TileEntitySuperDualInterface si) {
+                    var container = new ContainerSuperDualInterfaceFluid(player.inventory, si);
+                    ContainerOpenContext ctx = new ContainerOpenContext(si);
+                    ctx.setWorld(world);
+                    ctx.setX(x);
+                    ctx.setY(y);
+                    ctx.setZ(z);
+                    ctx.setSide(side);
+                    container.setOpenContext(ctx);
+                    yield container;
+                } else if (t instanceof IPartHost host) {
+                    IPart part = host.getPart(side);
+                    if (part instanceof PartSuperDualInterface si) {
+                        var container = new ContainerSuperDualInterfaceFluid(player.inventory, si);
                         ContainerOpenContext ctx = new ContainerOpenContext(si);
                         ctx.setWorld(world);
                         ctx.setX(x);

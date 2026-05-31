@@ -3,7 +3,6 @@ package com.science.gtnl.common.packet;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import com.science.gtnl.CommonProxy;
 import com.science.gtnl.utils.enums.GuiType;
@@ -15,49 +14,41 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class SwitchSuperInterfaceViewPacket
-    implements IMessage, IMessageHandler<SwitchSuperInterfaceViewPacket, IMessage> {
+public class SwitchSuperDualInterfaceGuiPacket
+    implements IMessage, IMessageHandler<SwitchSuperDualInterfaceGuiPacket, IMessage> {
 
     private int targetGuiId;
-    private int sideOrdinal;
-    private int page;
 
-    public SwitchSuperInterfaceViewPacket() {}
+    public SwitchSuperDualInterfaceGuiPacket() {}
 
-    public SwitchSuperInterfaceViewPacket(GuiType targetGuiType, ForgeDirection side, int page) {
-        targetGuiId = targetGuiType.ordinal();
-        sideOrdinal = side.ordinal();
-        this.page = page;
+    public SwitchSuperDualInterfaceGuiPacket(GuiType targetGuiType) {
+        this.targetGuiId = targetGuiType.ordinal();
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        targetGuiId = buf.readInt();
-        sideOrdinal = buf.readInt();
-        page = buf.readInt();
+        this.targetGuiId = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(targetGuiId);
-        buf.writeInt(sideOrdinal);
-        buf.writeInt(page);
+        buf.writeInt(this.targetGuiId);
     }
 
     @Override
-    public IMessage onMessage(SwitchSuperInterfaceViewPacket message, MessageContext ctx) {
+    public IMessage onMessage(SwitchSuperDualInterfaceGuiPacket message, MessageContext ctx) {
         EntityPlayerMP player = ctx.getServerHandler().playerEntity;
         Container container = player.openContainer;
         if (!(container instanceof AEBaseContainer aeContainer)) {
             return null;
         }
 
-        ContainerOpenContext context = aeContainer.getOpenContext();
-        if (context == null) {
+        ContainerOpenContext openContext = aeContainer.getOpenContext();
+        if (openContext == null) {
             return null;
         }
 
-        TileEntity tile = context.getTile();
+        TileEntity tile = openContext.getTile();
         if (tile == null) {
             return null;
         }
@@ -65,14 +56,11 @@ public class SwitchSuperInterfaceViewPacket
         CommonProxy.openGui(
             player,
             GuiType.values()[message.targetGuiId],
-            ForgeDirection.getOrientation(message.sideOrdinal),
+            openContext.getSide(),
             tile.getWorldObj(),
             tile.xCoord,
             tile.yCoord,
             tile.zCoord);
-        if (player.openContainer instanceof com.science.gtnl.container.ContainerSuperInterface superInterfaceContainer) {
-            superInterfaceContainer.setCurrentPage(message.page);
-        }
         return null;
     }
 }

@@ -26,7 +26,8 @@ public enum GuiType {
     SuperInterfaceGUI(21),
     CustomPriorityGUI(22),
     ActiveFormationPlaneGUI(23),
-    SuperDualInterfaceGUI(24);
+    SuperDualInterfaceGUI(24),
+    SuperDualInterfaceFluidGUI(25);
 
     private final int id;
 
