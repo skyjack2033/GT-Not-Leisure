@@ -230,13 +230,25 @@ public class SubscribeEventUtils {
         ScienceNotLeisure.network.sendToAllAround(
             new DraconicArmorProjectionHitEffectPacket(player, 1.0F),
             new NetworkRegistry.TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 64.0D));
-        player.worldObj.playSoundEffect(
-            player.posX + 0.5D,
-            player.posY + 0.5D,
-            player.posZ + 0.5D,
-            "draconicevolution:shieldStrike",
-            0.9F,
-            player.worldObj.rand.nextFloat() * 0.1F + 1.055F);
+
+        if (isFirstProjectedHitInResistanceWindow(player)) {
+            player.worldObj.playSoundEffect(
+                player.posX + 0.5D,
+                player.posY + 0.5D,
+                player.posZ + 0.5D,
+                "draconicevolution:shieldStrike",
+                0.9F,
+                player.worldObj.rand.nextFloat() * 0.1F + 1.055F);
+        }
+    }
+
+    private boolean isFirstProjectedHitInResistanceWindow(EntityPlayer player) {
+        int hurtResistantTime = player.hurtResistantTime;
+        int maxHurtResistantTime = player.maxHurtResistantTime;
+        if (maxHurtResistantTime <= 0) {
+            return true;
+        }
+        return hurtResistantTime <= Math.max(0, maxHurtResistantTime - 2);
     }
 
     @SubscribeEvent
