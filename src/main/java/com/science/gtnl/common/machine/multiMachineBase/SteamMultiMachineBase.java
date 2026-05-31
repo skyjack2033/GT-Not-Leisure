@@ -434,23 +434,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         if (aBaseMetaTileEntity.isServerSide()) {
             if (aTick % 200 == 0L) {
                 isInTeam = SpaceProjectManager.isInTeam(ownerUUID);
-
                 if (isInTeam) {
                     teamUUID = SpaceProjectManager.getLeader(ownerUUID);
                     steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
                 }
-            }
-            if (this.mUpdate == 1 || this.mStartUpCheck == 1) {
-                this.mSteamInputs.clear();
-                this.mSteamOutputs.clear();
-                this.mInputHatches.clear();
-                this.mSteamInputFluids.clear();
-                this.mSteamBigInputFluids.clear();
-                this.mSteamWirelessInputFluids.clear();
-            }
-            if (mUpdate < -250) mUpdate = 50;
-            if ((aTick % 1200) == 0) {
-                isBroken = true;
             }
         }
         super.onPostTick(aBaseMetaTileEntity, aTick);
