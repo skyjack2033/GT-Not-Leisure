@@ -206,7 +206,7 @@ public class GuiSuperDualInterface extends GuiUpgradeable {
             4210752);
         String pageLabel = StatCollector
             .translateToLocalFormatted("text.SuperInterface.page", container.currentPage + 1, container.getMaxPages());
-        this.fontRendererObj.drawString(pageLabel, 110, 6, 4210752);
+        this.fontRendererObj.drawString(pageLabel, 100, 6, 4210752);
 
         this.prevPage.enabled = container.currentPage > 0;
         this.nextPage.enabled = container.currentPage < container.getMaxPages() - 1;

@@ -1341,6 +1341,16 @@ public class CraftingTableRecipes implements IRecipePool {
                 'C', GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 1) });
 
         GTModHandler.addCraftingRecipe(
+            GTNLItemList.SuperDualInterface.get(1),
+            recipeFlags,
+            new Object[] { "ABC", "BAB", "CBA", 'A',
+                GTModHandler.getModItem(Mods.AE2FluidCraft.ID, "fluid_interface", 1), 'B',
+                aeMaterials.cardPatternCapacity()
+                    .maybeStack(1)
+                    .orNull(),
+                'C', GTOreDictUnificator.get(OrePrefixes.screw, Materials.TungstenSteel, 1) });
+
+        GTModHandler.addCraftingRecipe(
             GTNLItemList.PartActiveFormationPlane.get(1),
             new Object[] { "ABA", "BCB", "DED", 'A', aeMaterials.formationCore()
                 .maybeStack(1)
@@ -1367,6 +1377,14 @@ public class CraftingTableRecipes implements IRecipePool {
         GTModHandler.addShapelessCraftingRecipe(
             GTNLItemList.SuperInterface.get(1),
             new Object[] { GTNLItemList.PartSuperInterface.get(1) });
+
+        GTModHandler.addShapelessCraftingRecipe(
+            GTNLItemList.PartSuperDualInterface.get(1),
+            new Object[] { GTNLItemList.SuperDualInterface.get(1) });
+
+        GTModHandler.addShapelessCraftingRecipe(
+            GTNLItemList.SuperDualInterface.get(1),
+            new Object[] { GTNLItemList.PartSuperDualInterface.get(1) });
 
         GTModHandler.addShapelessCraftingRecipe(
             GTNLItemList.EnderElevatorSlab.get(1),
