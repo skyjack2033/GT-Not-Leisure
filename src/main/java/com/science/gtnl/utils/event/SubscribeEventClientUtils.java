@@ -166,8 +166,8 @@ public class SubscribeEventClientUtils {
             }
 
             if (newAmount < 0) newAmount = 0;
-            if (newAmount > MainConfig.item.vein_miner_pickaxe.maxRange)
-                newAmount = MainConfig.item.vein_miner_pickaxe.maxRange;
+            if (newAmount > MainConfig.item.vein_miner_pickaxe.maxAmount)
+                newAmount = MainConfig.item.vein_miner_pickaxe.maxAmount;
 
             if (newAmount != oldAmount) {
                 nbt.setInteger("amount", newAmount);
