@@ -3,6 +3,7 @@ package com.science.gtnl.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -216,9 +217,7 @@ public class GuiSuperDualInterface extends GuiUpgradeable {
 
     @Override
     public void drawBG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        mc.getTextureManager()
-            .bindTexture(appeng.client.texture.ExtraBlockTextures.GuiTexture("guis/super_interface.png"));
-        drawTexturedModalRect(offsetX, offsetY, 0, 0, xSize, ySize);
+        super.drawBG(offsetX, offsetY, mouseX, mouseY);
         this.drawTexturedModalRect(offsetX + 7, offsetY + 14, 7, 71, 162, 18);
         this.drawTexturedModalRect(offsetX + 7, offsetY + 32, 7, 107, 162, 18);
         int patternStartY = 14 + 36 + 3;
@@ -236,7 +235,7 @@ public class GuiSuperDualInterface extends GuiUpgradeable {
         } else if (btn == nextPage) {
             container.nextPage();
         } else if (btn == this.priority) {
-            net.minecraftforge.common.util.ForgeDirection side = net.minecraftforge.common.util.ForgeDirection.UNKNOWN;
+            ForgeDirection side = ForgeDirection.UNKNOWN;
             if (this.bc instanceof AEBasePart part) {
                 side = part.getSide();
             }

@@ -124,11 +124,13 @@ public class CommonProxy implements IGuiHandler {
         Upgrades.FAKE_CRAFTING.registerItem(GTNLItemList.SuperInterface.get(1), 1);
         Upgrades.FUZZY.registerItem(GTNLItemList.SuperInterface.get(1), 1);
         Upgrades.LOCK_CRAFTING.registerItem(GTNLItemList.SuperInterface.get(1), 1);
+
         Upgrades.ADVANCED_BLOCKING.registerItem(GTNLItemList.PartSuperDualInterface.get(1), 1);
         Upgrades.CRAFTING.registerItem(GTNLItemList.PartSuperDualInterface.get(1), 1);
         Upgrades.FAKE_CRAFTING.registerItem(GTNLItemList.PartSuperDualInterface.get(1), 1);
         Upgrades.FUZZY.registerItem(GTNLItemList.PartSuperDualInterface.get(1), 1);
         Upgrades.LOCK_CRAFTING.registerItem(GTNLItemList.PartSuperDualInterface.get(1), 1);
+
         Upgrades.ADVANCED_BLOCKING.registerItem(GTNLItemList.SuperDualInterface.get(1), 1);
         Upgrades.CRAFTING.registerItem(GTNLItemList.SuperDualInterface.get(1), 1);
         Upgrades.FAKE_CRAFTING.registerItem(GTNLItemList.SuperDualInterface.get(1), 1);

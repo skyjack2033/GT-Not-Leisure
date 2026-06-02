@@ -23,6 +23,8 @@ public class TileEntitySuperInterface extends TileInterface implements ICustomGu
 
     public TileEntitySuperInterface() {
         super();
+        ItemStack upgradeHost = getOriginGuiIcon();
+        getProxy().setVisualRepresentation(upgradeHost);
         var duality = (IDualityInterface) ((AccessorTileInterface) this).getDuality();
         duality.setConfigSlots(configSlots);
         duality.setStorageSlots(storageSlots);
@@ -32,12 +34,7 @@ public class TileEntitySuperInterface extends TileInterface implements ICustomGu
         duality.setStorage(new AppEngInternalInventory(this, storageSlots));
         duality.setPatterns(new AppEngInternalInventory(this, patternSlots));
         duality.setSlotInv(new WrapperInvSlot(duality.getStorage()));
-        duality.setUpgrades(
-            new StackUpgradeInventory(
-                duality.getGridProxy()
-                    .getMachineRepresentation(),
-                this,
-                upgradeSlots));
+        duality.setUpgrades(new StackUpgradeInventory(upgradeHost, this, upgradeSlots));
         duality.setRequireWork(new IAEItemStack[storageSlots]);
         duality.setHasFuzzyConfig(new boolean[configSlots]);
     }

@@ -6,7 +6,12 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
@@ -50,6 +55,8 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
 
     public TileEntitySuperDualInterface() {
         super();
+        ItemStack upgradeHost = getOriginGuiIcon();
+        getProxy().setVisualRepresentation(upgradeHost);
         var duality = (IDualityInterface) ((AccessorTileInterface) this).getDuality();
         duality.setConfigSlots(configSlots);
         duality.setStorageSlots(storageSlots);
@@ -59,12 +66,7 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
         duality.setStorage(new AppEngInternalInventory(this, storageSlots));
         duality.setPatterns(new AppEngInternalInventory(this, patternSlots));
         duality.setSlotInv(new WrapperInvSlot(duality.getStorage()));
-        duality.setUpgrades(
-            new StackUpgradeInventory(
-                duality.getGridProxy()
-                    .getMachineRepresentation(),
-                this,
-                upgradeSlots));
+        duality.setUpgrades(new StackUpgradeInventory(upgradeHost, this, upgradeSlots));
         duality.setRequireWork(new IAEItemStack[storageSlots]);
         duality.setHasFuzzyConfig(new boolean[configSlots]);
         var fluidConfig = new AppEngInternalAEInventory(this, SuperDualInterfaceSlots.FLUID_SLOT_COUNT);
@@ -175,9 +177,8 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
         getDualityFluid().addDrops(drops);
         if (getInterfaceDuality().getWaitingToSend() != null) {
             for (ItemStack is : getInterfaceDuality().getWaitingToSend()) {
-                if (is != null && is.getItem() instanceof com.glodblock.github.common.item.ItemFluidDrop) {
-                    drops.add(
-                        ItemFluidPacket.newStack(com.glodblock.github.common.item.ItemFluidDrop.getFluidStack(is)));
+                if (is != null && is.getItem() instanceof ItemFluidDrop) {
+                    drops.add(ItemFluidPacket.newStack(ItemFluidDrop.getFluidStack(is)));
                     is.stackSize = 0;
                 }
             }
@@ -196,35 +197,32 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
     }
 
     @Override
-    public int fill(net.minecraftforge.common.util.ForgeDirection from, net.minecraftforge.fluids.FluidStack resource,
-        boolean doFill) {
+    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
         return dualHostSupport.fill(from, resource, doFill);
     }
 
     @Override
-    public net.minecraftforge.fluids.FluidStack drain(net.minecraftforge.common.util.ForgeDirection from,
-        net.minecraftforge.fluids.FluidStack resource, boolean doDrain) {
+    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
         return dualHostSupport.drain(from, resource, doDrain);
     }
 
     @Override
-    public net.minecraftforge.fluids.FluidStack drain(net.minecraftforge.common.util.ForgeDirection from, int maxDrain,
-        boolean doDrain) {
+    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
         return dualHostSupport.drain(from, maxDrain, doDrain);
     }
 
     @Override
-    public boolean canFill(net.minecraftforge.common.util.ForgeDirection from, net.minecraftforge.fluids.Fluid fluid) {
+    public boolean canFill(ForgeDirection from, Fluid fluid) {
         return dualHostSupport.canFill(from, fluid);
     }
 
     @Override
-    public boolean canDrain(net.minecraftforge.common.util.ForgeDirection from, net.minecraftforge.fluids.Fluid fluid) {
+    public boolean canDrain(ForgeDirection from, Fluid fluid) {
         return dualHostSupport.canDrain(from, fluid);
     }
 
     @Override
-    public net.minecraftforge.fluids.FluidTankInfo[] getTankInfo(net.minecraftforge.common.util.ForgeDirection from) {
+    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
         return dualHostSupport.getTankInfo(from);
     }
 }
