@@ -189,10 +189,7 @@ public class GuiSuperDualInterface extends GuiUpgradeable {
         if (this.lockCraftingMode != null) this.lockCraftingMode.set(container.lockCraftingMode);
         if (this.fuzzyMode != null) this.fuzzyMode.set(container.fuzzyMode);
         if (this.sidelessMode != null && host instanceof TileEntitySuperDualInterface tile) {
-            this.sidelessMode.set(
-                tile.getInterfaceDuality()
-                    .getConfigManager()
-                    .getSetting(Settings.SIDELESS_MODE));
+            this.sidelessMode.set(container.sidelessMode);
         }
         if (this.doublePatterns != null) {
             this.doublePatterns.enabled = container.isAllowedToMultiplyPatterns;

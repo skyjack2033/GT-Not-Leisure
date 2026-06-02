@@ -5,6 +5,10 @@ import net.minecraft.entity.player.InventoryPlayer;
 import com.science.gtnl.api.mixinHelper.IDualityInterface;
 import com.science.gtnl.mixins.late.AppliedEnergistics.AccessorContainerUpgradeable;
 
+import appeng.api.config.Settings;
+import appeng.api.config.SidelessMode;
+import appeng.api.util.IConfigManager;
+import appeng.container.guisync.GuiSync;
 import appeng.container.implementations.ContainerInterface;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.OptionalSlotRestrictedInput;
@@ -31,6 +35,9 @@ public class ContainerSuperInterface extends ContainerInterface {
     public static final int TITLE_HEIGHT = 15;
     public static final int SECTION_GAP = 3;
     public static final int PLAYER_INV_HEIGHT = 82;
+
+    @GuiSync(19)
+    public SidelessMode sidelessMode = SidelessMode.SIDELESS;
 
     public ContainerSuperInterface(InventoryPlayer ip, IInterfaceHost te) {
         super(ip, te);
@@ -158,6 +165,15 @@ public class ContainerSuperInterface extends ContainerInterface {
 
     @Override
     public void setupUpgrades() {}
+
+    @Override
+    protected void loadSettingsFromHost(IConfigManager cm) {
+        super.loadSettingsFromHost(cm);
+        if (cm.getSettings()
+            .contains(Settings.SIDELESS_MODE)) {
+            sidelessMode = (SidelessMode) cm.getSetting(Settings.SIDELESS_MODE);
+        }
+    }
 
     public void addUpgradeSlots() {
         for (int i = 0; i < upgradeSlots; i++) {
