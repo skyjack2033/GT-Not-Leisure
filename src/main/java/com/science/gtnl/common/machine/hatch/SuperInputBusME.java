@@ -147,12 +147,14 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
-        int[] sizes = new int[100];
-        for (int i = 0; i < 100; ++i) sizes[i] = mInventory[i + 100] == null ? 0 : mInventory[i + 100].stackSize;
+        int[] sizes = new int[SIDE_SLOT_COUNT];
+        for (int i = 0; i < SIDE_SLOT_COUNT; ++i) {
+            sizes[i] = mInventory[i + SIDE_SLOT_COUNT] == null ? 0 : mInventory[i + SIDE_SLOT_COUNT].stackSize;
+        }
         aNBT.setIntArray("sizes", sizes);
 
         NBTTagList stackSizeList = new NBTTagList();
-        for (int i = 0; i < SLOT_COUNT; i++) {
+        for (int i = 0; i < SIDE_SLOT_COUNT; i++) {
             int size = storedStackSizes[i];
             if (size != Integer.MAX_VALUE) continue;
             NBTTagCompound tag = new NBTTagCompound();
@@ -186,12 +188,12 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         super.loadNBTData(aNBT);
         if (aNBT.hasKey("sizes")) {
             int[] sizes = aNBT.getIntArray("sizes");
-            if (sizes.length == 100) {
-                for (int i = 0; i < 100; ++i) {
+            if (sizes.length == SIDE_SLOT_COUNT) {
+                for (int i = 0; i < SIDE_SLOT_COUNT; ++i) {
                     if (sizes[i] != 0 && mInventory[i] != null) {
                         ItemStack s = mInventory[i].copy();
                         s.stackSize = sizes[i];
-                        mInventory[i + 100] = s;
+                        mInventory[i + SIDE_SLOT_COUNT] = s;
                     }
                 }
             }
@@ -203,7 +205,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
                 NBTTagCompound tag = list.getCompoundTagAt(i);
                 int slot = tag.getInteger("slot");
                 int size = tag.getInteger("size");
-                if (slot < SLOT_COUNT) {
+                if (slot < SIDE_SLOT_COUNT) {
                     storedStackSizes[slot] = size;
                 }
             }
@@ -242,7 +244,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
             int slot = tag.getInteger("slot");
             int size = tag.getInteger("size");
 
-            if (slot < SLOT_COUNT) {
+            if (slot < SIDE_SLOT_COUNT) {
                 storedStackSizes[slot] = size;
             }
         }
@@ -268,7 +270,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         NBTTagCompound nbt = super.getCopiedData(player);
 
         NBTTagList stackSizeList = new NBTTagList();
-        for (int i = 0; i < SLOT_COUNT; i++) {
+        for (int i = 0; i < SIDE_SLOT_COUNT; i++) {
             int size = storedStackSizes[i];
             if (size == Integer.MAX_VALUE) continue;
             NBTTagCompound tag = new NBTTagCompound();
@@ -546,7 +548,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
             buildContext.addSyncedWindow(CONFIG_WINDOW_ID, this::createStackSizeConfigurationWindow);
         }
 
-        for (int i = 15; i < SLOT_COUNT + 15; i++) {
+        for (int i = 15; i < SIDE_SLOT_COUNT + 15; i++) {
             int slotID = i;
             buildContext.addSyncedWindow(i, (player) -> createStroedStackSizeWindow(player, slotID - 15));
         }
