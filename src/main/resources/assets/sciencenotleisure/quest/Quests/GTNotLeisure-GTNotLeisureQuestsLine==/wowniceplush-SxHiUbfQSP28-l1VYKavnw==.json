@@ -1,8 +1,9 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 0,
-      "questIDLow:4": 35
+      "questIDHigh:4": 6847415236197435677,
+      "questIDLow:4": -8791625680506399327,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -35,11 +36,15 @@
   "rewards:9": {},
   "tasks:9": {
     "0:10": {
+      "index:3": 0,
+      "taskID:8": "bq_standard:checkbox"
+    },
+    "1:10": {
       "autoConsume:1": 0,
-      "consume:1": 1,
+      "consume:1": 0,
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
-      "index:3": 0,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requiredItems:9": {
         "0:10": {
@@ -49,7 +54,7 @@
           "id:8": "sciencenotleisure:tile.PlayerDoll"
         }
       },
-      "taskID:8": "bq_standard:retrieval"
+      "taskID:8": "bq_standard:optional_retrieval"
     }
   }
 }

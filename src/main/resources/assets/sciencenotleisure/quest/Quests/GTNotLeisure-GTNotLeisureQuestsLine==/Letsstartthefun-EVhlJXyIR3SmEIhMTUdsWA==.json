@@ -3,23 +3,27 @@
     "0:10": {
       "questIDHigh:4": 0,
       "questIDLow:4": 35
+    },
+    "1:10": {
+      "questIDHigh:4": 9042902219946806108,
+      "questIDLow:4": -6986714446281427653
     }
   },
   "properties:10": {
     "betterquesting:10": {
       "autoClaim:1": 0,
-      "desc:8": "[warn]Don't believe the guy above this is not fun[/warn]\nMade by the same tuber that port steam gate quest\nPotato2022",
+      "desc:8": "[warn]Don\u0027t believe the guy above this is not fun[/warn]\nMade by the same tuber that port steam gate quest\nPotato2022",
       "globalShare:1": 0,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "minecraft:fire"
+        "id:8": "minecraft:potato"
       },
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Let's start the fun",
+      "name:8": "Let\u0027s start the fun",
       "questLogic:8": "AND",
       "repeatTime:3": -1,
       "repeat_relative:1": 1,
@@ -47,5 +51,10 @@
       }
     }
   },
-  "tasks:9": {}
+  "tasks:9": {
+    "0:10": {
+      "index:3": 0,
+      "taskID:8": "bq_standard:checkbox"
+    }
+  }
 }

@@ -1,14 +1,15 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 9042902219946806108,
-      "questIDLow:4": -6986714446281427653
+      "questIDHigh:4": 7750110628732027731,
+      "questIDLow:4": -5943814191564532233,
+      "type:1": 1
     }
   },
   "properties:10": {
     "betterquesting:10": {
       "autoClaim:1": 0,
-      "desc:8": "No Description",
+      "desc:8": "新增多方块结构相关仓室。",
       "globalShare:1": 0,
       "icon:10": {
         "Count:3": 1,
