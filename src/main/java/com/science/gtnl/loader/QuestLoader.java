@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.hfstudio.bqapi.BQApi;
 import com.hfstudio.bqapi.api.builder.Chapters;
 import com.hfstudio.bqapi.api.definition.ChapterDefinition;
-import com.science.gtnl.config.MainConfig;
 
 import betterquesting.api.utils.UuidConverter;
 
@@ -37,14 +36,12 @@ public class QuestLoader {
                 .uuidFromResource()
                 .orderAfter(UuidConverter.decodeUuid("GTNotLeisure75SteamAge=="))
                 .build());
-        if (MainConfig.debug.enableQuest) {
-            CHAPTERS.add(
-                Chapters.imported("GTNotLeisureQuestsLine")
-                    .resourceFolder(RESOURCE_MOD_ID, RESOURCE_ROOT)
-                    .lineDirectory("GTNotLeisure-GTNotLeisureQuestsLine==")
-                    .uuidFromResource()
-                    .build());
-        }
+        CHAPTERS.add(
+            Chapters.imported("GTNotLeisureQuestsLine")
+                .resourceFolder(RESOURCE_MOD_ID, RESOURCE_ROOT)
+                .lineDirectory("GTNotLeisure-GTNotLeisureQuestsLine==")
+                .uuidFromResource()
+                .build());
     }
 
     public QuestLoader() {}
