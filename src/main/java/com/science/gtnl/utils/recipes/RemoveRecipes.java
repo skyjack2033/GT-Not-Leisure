@@ -18,19 +18,18 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.config.MainConfig;
 
 import bartworks.system.material.WerkstoffLoader;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsGTNH;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.recipe.RecipeMapBackend;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
-import gregtech.api.util.GTUtility;
 import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -47,7 +46,6 @@ public class RemoveRecipes {
         RecipeMapBackend blastFurnaceRecipe = RecipeMaps.blastFurnaceRecipes.getBackend();
         RecipeMapBackend alloyBlastSmelterRecipe = GTPPRecipeMaps.alloyBlastSmelterRecipes.getBackend();
         RecipeMapBackend vacuumFreezerRecipe = RecipeMaps.vacuumFreezerRecipes.getBackend();
-        RecipeMapBackend cryogenicFreezerRecipe = GTPPRecipeMaps.advancedFreezerRecipes.getBackend();
         RecipeMapBackend chemicalBathRecipe = RecipeMaps.chemicalBathRecipes.getBackend();
         RecipeMapBackend chemicalPlantRecipe = GTPPRecipeMaps.chemicalPlantRecipes.getBackend();
         RecipeMapBackend mixerRecipe = RecipeMaps.mixerRecipes.getBackend();
@@ -85,7 +83,7 @@ public class RemoveRecipes {
                         break;
                     }
                     // 海晶石碎片
-                    if (output.isItemEqual(GTOreDictUnificator.get(OrePrefixes.shard, MaterialsGTNH.Prismarine, 1))) {
+                    if (output.isItemEqual(GTOreDictUnificator.get(OrePrefixes.shard, Materials.Prismarine, 1))) {
                         recipesToRemoveFromAutoClave.add(recipe);
                         break;
                     }
@@ -184,26 +182,6 @@ public class RemoveRecipes {
         }
         vacuumFreezerRecipe.removeRecipes(recipesToRemoveFromVacuumFreezer);
 
-        // 凛冰冷冻机
-        List<GTRecipe> recipesToRemoveFromCryogenicFreezer = new ArrayList<>();
-        for (GTRecipe recipe : cryogenicFreezerRecipe.getAllRecipes()) {
-            for (FluidStack output : recipe.mFluidOutputs) {
-                if (output != null) {
-                    // 半流质下界气体
-                    if (output.isFluidEqual(Materials.NetherSemiFluid.getFluid(1))) {
-                        recipesToRemoveFromCryogenicFreezer.add(recipe);
-                        break;
-                    }
-                    // 海晶石酸
-                    if (output.isFluidEqual(Materials.PrismaticAcid.getFluid(1))) {
-                        recipesToRemoveFromCryogenicFreezer.add(recipe);
-                        break;
-                    }
-                }
-            }
-        }
-        cryogenicFreezerRecipe.removeRecipes(recipesToRemoveFromCryogenicFreezer);
-
         // 化学浸洗机
         List<GTRecipe> recipesToRemoveFromChemicalBath = new ArrayList<>();
         for (GTRecipe recipe : chemicalBathRecipe.getAllRecipes()) {
@@ -272,7 +250,6 @@ public class RemoveRecipes {
             removedRecipeCounts.put("Vacuum Freezer", recipesToRemoveFromVacuumFreezer.size());
             removedRecipeCounts.put("Chemical Plant", recipesToRemoveFromChemicalPlant.size());
             removedRecipeCounts.put("Alloy Blast Smelter", recipesToRemoveFromAlloyBlastSmelter.size());
-            removedRecipeCounts.put("Cryogenic Freezer", recipesToRemoveFromCryogenicFreezer.size());
             removedRecipeCounts.put("Chemical Bath", recipesToRemoveFromChemicalBath.size());
             removedRecipeCounts.put("Mixer", recipesToRemoveFromMixer.size());
             removedRecipeCounts.put("Multiblock Mixer", recipesToRemoveFromMixerNonCell.size());
@@ -345,8 +322,8 @@ public class RemoveRecipes {
             List<?> rInputs = (r instanceof ShapelessOreRecipe ? ((ShapelessOreRecipe) r).getInput()
                 : ((ShapelessRecipes) r).recipeItems);
             for (Object rInput : rInputs) {
-                HashSet<GTUtility.ItemId> rInputHashed;
-                HashSet<GTUtility.ItemId> rInputHashedNoWildcard;
+                HashSet<ItemId> rInputHashed;
+                HashSet<ItemId> rInputHashedNoWildcard;
                 try {
                     rInputHashed = getItemsHashed(rInput, true);
                     rInputHashedNoWildcard = getItemsHashed(rInput, false);
@@ -356,7 +333,7 @@ public class RemoveRecipes {
                 boolean found = false;
                 for (Iterator<Object> iterator = recipe.iterator(); iterator.hasNext();) {
                     Object o = iterator.next();
-                    for (GTUtility.ItemId id : getItemsHashed(o, false)) {
+                    for (ItemId id : getItemsHashed(o, false)) {
                         if (rInputHashed.contains(id)) {
                             found = true;
                             iterator.remove();
@@ -364,7 +341,7 @@ public class RemoveRecipes {
                         }
                     }
                     if (!found) {
-                        for (GTUtility.ItemId id : getItemsHashed(o, true)) {
+                        for (ItemId id : getItemsHashed(o, true)) {
                             if (rInputHashedNoWildcard.contains(id)) {
                                 found = true;
                                 iterator.remove();
@@ -380,33 +357,33 @@ public class RemoveRecipes {
         });
     }
 
-    public static HashMap<GTUtility.ItemId, List<Function<IRecipe, Boolean>>> bufferMap;
+    public static HashMap<ItemId, List<Function<IRecipe, Boolean>>> bufferMap;
 
-    public static void addToBuffer(HashSet<GTUtility.ItemId> outputs, Function<IRecipe, Boolean> whenToRemove) {
-        for (GTUtility.ItemId output : outputs) {
+    public static void addToBuffer(HashSet<ItemId> outputs, Function<IRecipe, Boolean> whenToRemove) {
+        for (ItemId output : outputs) {
             bufferMap.computeIfAbsent(output, o -> new ArrayList<>())
                 .add(whenToRemove);
         }
     }
 
-    public static HashSet<GTUtility.ItemId> getItemsHashed(Object item, boolean includeWildcardVariants) {
-        HashSet<GTUtility.ItemId> hashedItems = new HashSet<>();
-        if (item instanceof ItemStack) {
-            ItemStack iCopy = ((ItemStack) item).copy();
+    public static HashSet<ItemId> getItemsHashed(Object item, boolean includeWildcardVariants) {
+        HashSet<ItemId> hashedItems = new HashSet<>();
+        if (item instanceof ItemStack i) {
+            ItemStack iCopy = i.copy();
             iCopy.stackTagCompound = null;
-            hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
+            hashedItems.add(ItemId.createNoCopy(iCopy));
             if (includeWildcardVariants) {
                 iCopy = iCopy.copy();
                 Items.feather.setDamage(iCopy, 32767);
-                hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
+                hashedItems.add(ItemId.createNoCopy(iCopy));
             }
-        } else if (item instanceof String) {
-            for (ItemStack stack : OreDictionary.getOres((String) item)) {
-                hashedItems.add(GTUtility.ItemId.createNoCopy(stack));
+        } else if (item instanceof String s) {
+            for (ItemStack stack : OreDictionary.getOres(s)) {
+                hashedItems.add(ItemId.createNoCopy(stack));
                 if (includeWildcardVariants) {
                     stack = stack.copy();
                     Items.feather.setDamage(stack, 32767);
-                    hashedItems.add(GTUtility.ItemId.createNoCopy(stack));
+                    hashedItems.add(ItemId.createNoCopy(stack));
                 }
             }
         } else if (item instanceof ArrayList) {
@@ -414,11 +391,11 @@ public class RemoveRecipes {
             for (ItemStack stack : (ArrayList<ItemStack>) item) {
                 ItemStack iCopy = stack.copy();
                 iCopy.stackTagCompound = null;
-                hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
+                hashedItems.add(ItemId.createNoCopy(iCopy));
                 if (includeWildcardVariants) {
                     iCopy = iCopy.copy();
                     Items.feather.setDamage(iCopy, 32767);
-                    hashedItems.add(GTUtility.ItemId.createNoCopy(iCopy));
+                    hashedItems.add(ItemId.createNoCopy(iCopy));
                 }
             }
         } else throw new IllegalArgumentException("Invalid input " + item.toString());
@@ -442,10 +419,10 @@ public class RemoveRecipes {
                 rCopy = rCopy.copy();
                 rCopy.stackTagCompound = null;
             }
-            GTUtility.ItemId key = GTUtility.ItemId.createNoCopy(rCopy);
+            ItemId key = ItemId.createNoCopy(rCopy);
             rCopy = rCopy.copy();
             Items.feather.setDamage(rCopy, 32767);
-            GTUtility.ItemId keyWildcard = GTUtility.ItemId.createNoCopy(rCopy);
+            ItemId keyWildcard = ItemId.createNoCopy(rCopy);
             List<Function<IRecipe, Boolean>> listWhenToRemove = bufferMap.get(key);
             if (listWhenToRemove == null) listWhenToRemove = bufferMap.get(keyWildcard);
             if (listWhenToRemove == null) return false;

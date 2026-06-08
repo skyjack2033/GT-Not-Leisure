@@ -17,6 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -56,7 +57,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
     private static final int HORIZONTAL_OFF_SET = 20;
     private static final int VERTICAL_OFF_SET = 24;
     private static final int DEPTH_OFF_SET = 0;
-    public static Object2ObjectOpenHashMap<GTUtility.ItemId, ArrayList<GTRecipe>> RECIPE_INDEX = new Object2ObjectOpenHashMap<>();
+    public static Object2ObjectOpenHashMap<ItemId, ArrayList<GTRecipe>> RECIPE_INDEX = new Object2ObjectOpenHashMap<>();
     public static boolean recipeIndexInitialized = false;
 
     public CheatOreProcessingFactory(int aID, String aName, String aNameRegional) {
@@ -95,12 +96,12 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
     }
 
     public CheckRecipeResult OP_Process_Wireless() {
-        Object2ObjectOpenHashMap<GTUtility.ItemId, ArrayList<GTRecipe>> recipeIndex = getRecipeIndex();
+        Object2ObjectOpenHashMap<ItemId, ArrayList<GTRecipe>> recipeIndex = getRecipeIndex();
         ArrayList<ItemStack> inputs = getStoredInputs();
         ArrayList<ItemStack> outputs = new ArrayList<>(inputs.size());
         for (ItemStack items : inputs) {
             boolean hasNotFound = true;
-            ArrayList<GTRecipe> matchingRecipes = recipeIndex.get(GTUtility.ItemId.createNoCopy(items));
+            ArrayList<GTRecipe> matchingRecipes = recipeIndex.get(ItemId.createNoCopy(items));
             if (matchingRecipes != null) {
                 for (GTRecipe recipe : matchingRecipes) {
                     if (recipe.mInputs == null || recipe.mInputs.length < 1) continue;
@@ -147,7 +148,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
-    public Object2ObjectOpenHashMap<GTUtility.ItemId, ArrayList<GTRecipe>> getRecipeIndex() {
+    public Object2ObjectOpenHashMap<ItemId, ArrayList<GTRecipe>> getRecipeIndex() {
         if (!recipeIndexInitialized) {
             indexRecipes();
         }
@@ -161,7 +162,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
             if (recipe.mInputs == null || recipe.mInputs.length < 1 || recipe.mInputs[0] == null) {
                 continue;
             }
-            GTUtility.ItemId itemId = GTUtility.ItemId.createNoCopy(recipe.mInputs[0]);
+            ItemId itemId = ItemId.createNoCopy(recipe.mInputs[0]);
             ArrayList<GTRecipe> indexedRecipes = RECIPE_INDEX.computeIfAbsent(itemId, key -> new ArrayList<>());
             indexedRecipes.add(recipe);
         }

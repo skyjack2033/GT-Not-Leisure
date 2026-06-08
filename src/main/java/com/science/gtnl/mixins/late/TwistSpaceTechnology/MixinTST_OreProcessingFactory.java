@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import com.Nxer.TwistSpaceTechnology.common.machine.multiMachineClasses.GTCM_MultiMachineBase;
 import com.Nxer.TwistSpaceTechnology.system.OreProcess.machines.TST_OreProcessingFactory;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchInput;
@@ -84,7 +85,7 @@ public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBas
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
+        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -99,7 +100,7 @@ public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBas
                 if (itemStack != null) {
                     if (isMEBus) {
                         // Prevent the same item from different ME buses from being recognized
-                        inputsFromME.put(GTUtility.ItemId.createNoCopy(itemStack), itemStack);
+                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
                     } else {
                         rList.add(itemStack);
                     }

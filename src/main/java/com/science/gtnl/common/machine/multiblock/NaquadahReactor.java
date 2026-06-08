@@ -120,7 +120,7 @@ public abstract class NaquadahReactor<T extends NaquadahReactor<T>> extends Mult
             }
 
             @Override
-            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
                 return GTNLOverclockCalculator.ofNoOverclock(recipe);
             }
         }.setMaxParallelSupplier(this::getTrueParallel);

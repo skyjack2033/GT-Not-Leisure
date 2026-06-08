@@ -36,7 +36,6 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
@@ -103,8 +102,7 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
             GTUtility.copyAmountUnsafe(1024, ItemList.PrecisionFieldSyncCasing.get(1)),
             GTUtility.copyAmountUnsafe(128, ItemList.NaniteFramework.get(1)),
             GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.MagMatter, 8),
-            GTOreDictUnificator
-                .get(OrePrefixes.plateSuperdense, Materials.MHDCSM, 64),
+            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.MHDCSM, 64),
             GTUtility.copyAmountUnsafe(128, ItemList.Field_Generator_UXV.get(1)),
             GTUtility.copyAmountUnsafe(32, GTNLItemList.TransdimensionalMnemonicMatrix.get(1)),
             GTUtility.copyAmountUnsafe(16, ItemList.Transdimensional_Alignment_Matrix.get(1)),

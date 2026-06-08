@@ -299,7 +299,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             }
 
             @Override
-            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
                 return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
                     .setHeatOC(getHeatOC())
                     .setMachineHeat(getMachineHeat())

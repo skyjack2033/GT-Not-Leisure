@@ -20,8 +20,6 @@ import appeng.api.util.AEColor;
 import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Materials;
-import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.ToolDictNames;
@@ -426,9 +424,8 @@ public class CraftingTableRecipes implements IRecipePool {
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.SteamAssemblerSteel.get(1),
-            new Object[] { "AAA", "BCB", "DBD", 'A',
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 1L), 'B',
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Steel, 1L), 'C',
+            new Object[] { "AAA", "BCB", "DBD", 'A', GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 1L),
+                'B', GTOreDictUnificator.get(OrePrefixes.plate, Materials.Steel, 1L), 'C',
                 GTNLItemList.SteamAssemblerBronze.get(1), 'D',
                 GTOreDictUnificator.get(OrePrefixes.pipeSmall, Materials.Steel, 1L) });
 
@@ -586,9 +583,8 @@ public class CraftingTableRecipes implements IRecipePool {
             GTNLItemList.PortableAdvancedWorkBench.get(1),
             new Object[] { " AB", "CDA", "EF ", 'A', GTOreDictUnificator.get(OrePrefixes.screw, Materials.Steel, 1),
                 'B', GTModHandler.getModItem(Mods.TinkerConstruct.ID, "CraftingStation", 1), 'C',
-                ToolDictNames.craftingToolFile, 'D',
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 1), 'E',
-                GTOreDictUnificator.get(OrePrefixes.stickLong, Materials.CastIron, 1), 'F',
+                ToolDictNames.craftingToolFile, 'D', GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 1),
+                'E', GTOreDictUnificator.get(OrePrefixes.stickLong, Materials.CastIron, 1), 'F',
                 ToolDictNames.craftingToolHardHammer });
 
         GTModHandler.addCraftingRecipe(
@@ -963,10 +959,10 @@ public class CraftingTableRecipes implements IRecipePool {
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.AdvancedIndustrialSteamCasing.get(1),
-            new Object[] { "ABA", "ACA", "ADA", 'A',
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 1), 'B',
-                ToolDictNames.craftingToolWrench, 'C', GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Steel, 1),
-                'D', ToolDictNames.craftingToolHardHammer });
+            new Object[] { "ABA", "ACA", "ADA", 'A', GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 1),
+                'B', ToolDictNames.craftingToolWrench, 'C',
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Steel, 1), 'D',
+                ToolDictNames.craftingToolHardHammer });
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.BronzeMachineFrame.get(1),
@@ -1184,8 +1180,8 @@ public class CraftingTableRecipes implements IRecipePool {
             GTNLItemList.PhysicsCape.get(1),
             new Object[] { "ABA", "CDC", "EDE", 'A', OrePrefixes.plate.get(Materials.AnyRubber), 'B',
                 ItemList.Circuit_Parts_Coil.get(1), 'C',
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Manasteel, 1L), 'D',
-                ItemList.HV_Coil.get(1), 'E', GTModHandler.getModItem(Mods.DraconicEvolution.ID, "magnet", 1) });
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Manasteel, 1L), 'D', ItemList.HV_Coil.get(1), 'E',
+                GTModHandler.getModItem(Mods.DraconicEvolution.ID, "magnet", 1) });
 
         GTModHandler.addCraftingRecipe(
             GTNLItemList.RecordSus.get(1),

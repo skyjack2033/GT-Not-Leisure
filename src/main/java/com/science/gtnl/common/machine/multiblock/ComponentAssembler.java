@@ -220,7 +220,7 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
             }
 
             @Override
-            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
                 return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
                     .setEUtDiscount(getEUtDiscount())
                     .setDurationModifier(getDurationModifier());

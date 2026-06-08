@@ -23,6 +23,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizons.modularui.api.drawable.ItemDrawable;
 import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.math.MainAxisAlignment;
@@ -448,7 +449,7 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
                 .append("s (")
                 .append(String.format("%,.1f", progressPercent))
                 .append("%)\n");
-        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = getOutputItemCounts(mOutputItems);
+        Object2IntOpenHashMap<ItemId> outputCounts = getOutputItemCounts(mOutputItems);
         ArrayList<Map.Entry<ItemStack, Double>> sortedDrops = new ArrayList<>(this.synchedGUIDropTracker.entrySet());
         sortedDrops.sort(
             Comparator.comparing(
@@ -457,7 +458,7 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
                     .toLowerCase()));
 
         for (Map.Entry<ItemStack, Double> drop : sortedDrops) {
-            int outputSize = outputCounts.getInt(GTUtility.ItemId.createNoCopy(drop.getKey()));
+            int outputSize = outputCounts.getInt(ItemId.createNoCopy(drop.getKey()));
             ret.append(EnumChatFormatting.AQUA)
                 .append(
                     drop.getKey()
@@ -491,15 +492,15 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
         return (double) mProgresstime / mMaxProgresstime * 100;
     }
 
-    public Object2IntOpenHashMap<GTUtility.ItemId> getOutputItemCounts(ItemStack[] outputItems) {
-        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = new Object2IntOpenHashMap<>(
+    public Object2IntOpenHashMap<ItemId> getOutputItemCounts(ItemStack[] outputItems) {
+        Object2IntOpenHashMap<ItemId> outputCounts = new Object2IntOpenHashMap<>(
             outputItems == null ? 0 : outputItems.length);
         if (outputItems == null) {
             return outputCounts;
         }
         for (ItemStack outputItem : outputItems) {
             if (outputItem != null && outputItem.stackSize > 0) {
-                outputCounts.addTo(GTUtility.ItemId.createNoCopy(outputItem), outputItem.stackSize);
+                outputCounts.addTo(ItemId.createNoCopy(outputItem), outputItem.stackSize);
             }
         }
         return outputCounts;

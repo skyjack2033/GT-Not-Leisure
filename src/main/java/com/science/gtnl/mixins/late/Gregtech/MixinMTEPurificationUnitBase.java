@@ -37,6 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.google.common.collect.Lists;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.math.Alignment;
@@ -506,7 +507,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
+        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -521,7 +522,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
                 if (itemStack != null) {
                     if (isMEBus) {
                         // Prevent the same item from different ME buses from being recognized
-                        inputsFromME.put(GTUtility.ItemId.createNoCopy(itemStack), itemStack);
+                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
                     } else {
                         rList.add(itemStack);
                     }

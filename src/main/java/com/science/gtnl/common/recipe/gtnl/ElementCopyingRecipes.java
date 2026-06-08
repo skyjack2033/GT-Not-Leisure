@@ -3,6 +3,7 @@ package com.science.gtnl.common.recipe.gtnl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.machine.multiblock.ElementCopying;
 
@@ -22,7 +23,7 @@ public class ElementCopyingRecipes implements IRecipePool {
                 && recipe.mFluidInputs.length > 0) {
                 ENTRIES.add(
                     new ElementCopying.ItemCopyingEntry(
-                        GTUtility.ItemId.createWithoutNBT(recipe.mOutputs[0]),
+                        ItemId.createWithoutNBT(recipe.mOutputs[0]),
                         Math.max(1, recipe.mFluidInputs[0].amount / 10),
                         (long) recipe.mEUt * recipe.mDuration));
 

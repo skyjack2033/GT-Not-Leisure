@@ -77,17 +77,25 @@ public class ChanceBonusManager {
         return result != null ? OptionalDouble.of(result) : OptionalDouble.empty();
     }
 
+    public static int[] applyBonusChance(int[] chances, double bonus) {
+        if (chances == null) return null;
+
+        int[] result = new int[chances.length];
+        int add = (int) (bonus * 10000);
+
+        for (int i = 0; i < chances.length; i++) {
+            result[i] = Math.min(chances[i] + add, 10000);
+        }
+
+        return result;
+    }
+
     public static GTRecipe copyAndBonusChance(GTRecipe recipe, double bonus) {
         if (isBlacklisted(recipe)) return recipe;
 
-        if (recipe.mChances == null) return recipe;
-
         GTRecipe copy = recipe.copy();
-        int[] newChances = new int[copy.mChances.length];
-        for (int i = 0; i < copy.mChances.length; i++) {
-            newChances[i] = Math.min((int) (copy.mChances[i] + (bonus * 10000)), 10000);
-        }
-        copy.mChances = newChances;
+        copy.mOutputChances = applyBonusChance(copy.mOutputChances, bonus);
+        copy.mFluidOutputChances = applyBonusChance(copy.mFluidOutputChances, bonus);
         return copy;
     }
 

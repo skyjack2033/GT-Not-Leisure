@@ -32,6 +32,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.ItemDrawable;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
@@ -448,7 +449,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return new GTNLProcessingLogic() {
 
             @Override
-            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
                 return super.createOverclockCalculator(recipe).setExtraDurationModifier(configSpeedBoost)
                     .setEUtDiscount(getEUtDiscount())
                     .setDurationModifier(getDurationModifier())
@@ -525,7 +526,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
             }
         }
 
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
+        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -538,7 +539,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                 if (itemStack != null) {
                     if (isMEBus) {
                         // Prevent the same item from different ME buses from being recognized
-                        inputsFromME.put(GTUtility.ItemId.createNoCopy(itemStack), itemStack);
+                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
                     } else {
                         rList.add(itemStack);
                     }
@@ -711,7 +712,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
+        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -726,7 +727,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                 if (itemStack != null) {
                     if (isMEBus) {
                         // Prevent the same item from different ME buses from being recognized
-                        inputsFromME.put(GTUtility.ItemId.createNoCopy(itemStack), itemStack);
+                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
                     } else {
                         rList.add(itemStack);
                     }

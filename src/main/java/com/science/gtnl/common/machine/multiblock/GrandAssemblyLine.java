@@ -33,6 +33,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.bsideup.jabel.Desugar;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -96,7 +97,7 @@ import tectech.thing.casing.BlockGTCasingsTT;
 
 public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> implements ISurvivalConstructable {
 
-    public static Object2IntMap<GTUtility.ItemId> specialRecipe = new Object2IntOpenHashMap<>();
+    public static Object2IntMap<ItemId> specialRecipe = new Object2IntOpenHashMap<>();
 
     public static int PARALLEL_WINDOW_ID = 10;
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -268,12 +269,12 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
             FluidStack[] invFluids = inventory.getFluidInputs();
             if (invItems == null || invItems.length == 0) continue;
 
-            Object2LongOpenHashMap<GTUtility.ItemId> itemMap = getInventoryItemMap(invItems);
+            Object2LongOpenHashMap<ItemId> itemMap = getInventoryItemMap(invItems);
             Object2LongOpenHashMap<Fluid> fluidMap = getInventoryFluidMap(invFluids);
 
             for (GTRecipe.RecipeAssemblyLine oldRecipe : validRecipes) {
                 GTRecipe.RecipeAssemblyLine recipe = copyRecipe(oldRecipe);
-                int circuit = specialRecipe.getOrDefault(GTUtility.ItemId.create(recipe.mOutput), -1);
+                int circuit = specialRecipe.getOrDefault(ItemId.create(recipe.mOutput), -1);
                 if (circuit != -1) {
                     ItemStack[] inputsArray = recipe.mInputs;
                     ItemStack[] newInputsArray = new ItemStack[inputsArray.length + 1];
@@ -508,14 +509,14 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
-    public static Object2LongOpenHashMap<GTUtility.ItemId> getInventoryItemMap(ItemStack[] inputs) {
-        Object2LongOpenHashMap<GTUtility.ItemId> itemMap = new Object2LongOpenHashMap<>();
+    public static Object2LongOpenHashMap<ItemId> getInventoryItemMap(ItemStack[] inputs) {
+        Object2LongOpenHashMap<ItemId> itemMap = new Object2LongOpenHashMap<>();
         if (inputs == null) return itemMap;
         for (ItemStack is : inputs) {
             if (is == null || is.stackSize < 0) continue;
 
-            itemMap.merge(GTUtility.ItemId.createNoCopy(is), is.stackSize, Long::sum);
-            itemMap.merge(GTUtility.ItemId.createAsWildcard(is), is.stackSize, Long::sum);
+            itemMap.merge(ItemId.createNoCopy(is), is.stackSize, Long::sum);
+            itemMap.merge(ItemId.createAsWildcard(is), is.stackSize, Long::sum);
         }
         return itemMap;
     }
@@ -530,8 +531,8 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         return fluidMap;
     }
 
-    public static double calculateParallelByItemsUnordered(Object2LongOpenHashMap<GTUtility.ItemId> availableMap,
-        int maxParallel, GTRecipe.RecipeAssemblyLine recipe) {
+    public static double calculateParallelByItemsUnordered(Object2LongOpenHashMap<ItemId> availableMap, int maxParallel,
+        GTRecipe.RecipeAssemblyLine recipe) {
         if (recipe.mInputs == null || recipe.mInputs.length == 0) return 0;
 
         double currentParallel = maxParallel;
@@ -540,9 +541,8 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
             ItemStack mainReq = recipe.mInputs[i];
             if (mainReq == null) continue;
 
-            GTUtility.ItemId searchKey = (mainReq.getItemDamage() == GTRecipeBuilder.WILDCARD)
-                ? GTUtility.ItemId.createAsWildcard(mainReq)
-                : GTUtility.ItemId.createNoCopy(mainReq);
+            ItemId searchKey = (mainReq.getItemDamage() == GTRecipeBuilder.WILDCARD) ? ItemId.createAsWildcard(mainReq)
+                : ItemId.createNoCopy(mainReq);
 
             long mainAvailable = availableMap.getOrDefault(searchKey, -1L);
 
@@ -560,9 +560,9 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                 for (ItemStack alt : recipe.mOreDictAlt[i]) {
                     if (alt == null) continue;
 
-                    GTUtility.ItemId altSearchKey = (alt.getItemDamage() == GTRecipeBuilder.WILDCARD)
-                        ? GTUtility.ItemId.createAsWildcard(alt)
-                        : GTUtility.ItemId.createNoCopy(alt);
+                    ItemId altSearchKey = (alt.getItemDamage() == GTRecipeBuilder.WILDCARD)
+                        ? ItemId.createAsWildcard(alt)
+                        : ItemId.createNoCopy(alt);
 
                     long altAvailable = availableMap.getOrDefault(altSearchKey, -1L);
 
@@ -605,7 +605,7 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
     }
 
     public void consumeItemsUnordered(GTRecipe.RecipeAssemblyLine recipe, int parallel, ItemStack[] invItems,
-        Object2LongOpenHashMap<GTUtility.ItemId> availableMap) {
+        Object2LongOpenHashMap<ItemId> availableMap) {
         if (recipe.mInputs == null) return;
 
         for (int i = 0; i < recipe.mInputs.length; i++) {
@@ -614,9 +614,9 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
             ItemStack chosenStack = mainReq;
 
-            GTUtility.ItemId mainSearchKey = (mainReq.getItemDamage() == GTRecipeBuilder.WILDCARD)
-                ? GTUtility.ItemId.createAsWildcard(mainReq)
-                : GTUtility.ItemId.createNoCopy(mainReq);
+            ItemId mainSearchKey = (mainReq.getItemDamage() == GTRecipeBuilder.WILDCARD)
+                ? ItemId.createAsWildcard(mainReq)
+                : ItemId.createNoCopy(mainReq);
 
             long mainAvailable = availableMap.getOrDefault(mainSearchKey, 0L);
             long maxPossible = mainAvailable / mainReq.stackSize;
@@ -625,9 +625,9 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
                 for (ItemStack alt : recipe.mOreDictAlt[i]) {
                     if (alt == null || alt.stackSize <= 0) continue;
 
-                    GTUtility.ItemId altSearchKey = (alt.getItemDamage() == GTRecipeBuilder.WILDCARD)
-                        ? GTUtility.ItemId.createAsWildcard(alt)
-                        : GTUtility.ItemId.createNoCopy(alt);
+                    ItemId altSearchKey = (alt.getItemDamage() == GTRecipeBuilder.WILDCARD)
+                        ? ItemId.createAsWildcard(alt)
+                        : ItemId.createNoCopy(alt);
 
                     long altAvailable = availableMap.getOrDefault(altSearchKey, 0L);
                     if (altAvailable >= (long) alt.stackSize) {

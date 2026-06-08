@@ -1,12 +1,11 @@
 package com.science.gtnl.utils.enums;
 
-import galacticgreg.WorldgenOreLayerSpace;
 import galacticgreg.api.enums.DimensionDef;
-import gregtech.api.enums.Materials;
 import gregtech.api.enums.Materials;
 import gregtech.common.OreMixBuilder;
 import gregtech.common.WorldgenGTOreLayer;
 
+// See gregtech.api.enums.OreMixes
 public enum GTNLOreMixer {
 
     SulfuricAcid(new OreMixBuilder().name("ore.mix.sulfuricacid")
@@ -14,7 +13,7 @@ public enum GTNLOreMixer {
         .weight(160)
         .density(999)
         .size(32)
-        .enableInDim(OreMixBuilder.OW, OreMixBuilder.NETHER, OreMixBuilder.THE_END, OreMixBuilder.TWILIGHT_FOREST)
+        .enableInDim(DimensionDef.Overworld, DimensionDef.Nether, DimensionDef.TheEnd, DimensionDef.TwilightForest)
         .enableInDim(DimensionDef.values())
         .primary(Materials.SulfuricAcid)
         .secondary(Materials.NitricAcid)
@@ -26,7 +25,7 @@ public enum GTNLOreMixer {
         .weight(160)
         .density(999)
         .size(32)
-        .enableInDim(OreMixBuilder.OW, OreMixBuilder.NETHER, OreMixBuilder.THE_END, OreMixBuilder.TWILIGHT_FOREST)
+        .enableInDim(DimensionDef.Overworld, DimensionDef.Nether, DimensionDef.TheEnd, DimensionDef.TwilightForest)
         .enableInDim(DimensionDef.values())
         .primary(Materials.OilLight)
         .secondary(Materials.OilHeavy)
@@ -38,7 +37,7 @@ public enum GTNLOreMixer {
         .weight(160)
         .density(999)
         .size(32)
-        .enableInDim(OreMixBuilder.OW, OreMixBuilder.NETHER, OreMixBuilder.THE_END, OreMixBuilder.TWILIGHT_FOREST)
+        .enableInDim(DimensionDef.Overworld, DimensionDef.Nether, DimensionDef.TheEnd, DimensionDef.TwilightForest)
         .enableInDim(DimensionDef.values())
         .primary(Materials.Oxygen)
         .secondary(Materials.Hydrogen)

@@ -214,8 +214,10 @@ public class DisassemblerHelper {
             // 3. unprocessed fallback
             Materials unprocessed = getUnprocessedMaterials(thisMaterial);
             if (unprocessed != null) {
-                retOutputs[idx] = GTOreDictUnificator
-                    .get(OrePrefixes.getPrefix(itemDataInSlotIdx.mPrefix.getName()), unprocessed, itemInSlotIdx.stackSize);
+                retOutputs[idx] = GTOreDictUnificator.get(
+                    OrePrefixes.getPrefix(itemDataInSlotIdx.mPrefix.getName()),
+                    unprocessed,
+                    itemInSlotIdx.stackSize);
             }
 
             // 4. replace circuit

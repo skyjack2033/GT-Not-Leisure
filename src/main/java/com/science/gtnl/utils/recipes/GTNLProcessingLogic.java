@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -18,6 +20,7 @@ import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.IConfigurationMaintenance;
 import com.science.gtnl.mixins.early.Gregtech.AccessorProcessingLogic;
 
+import gregtech.api.enums.GTValues;
 import gregtech.api.interfaces.tileentity.IRecipeLockable;
 import gregtech.api.interfaces.tileentity.IVoidable;
 import gregtech.api.logic.ProcessingLogic;
@@ -157,6 +160,9 @@ public class GTNLProcessingLogic extends ProcessingLogic {
      */
     @Override
     public boolean tryCachePossibleRecipesFromPattern(IDualInputInventoryWithPattern inv) {
+        // call getCurrentRecipeMap here to clear dualInv recipe cache if recipe map changes
+        RecipeMap<?> recipeMap = getCurrentRecipeMap();
+
         if (!inv.shouldBeCached()) {
             return true;
         }
@@ -420,13 +426,21 @@ public class GTNLProcessingLogic extends ProcessingLogic {
             maxParallel = maxParallelSupplier.get();
         }
 
-        if (inputItems == null) {
-            inputItems = new ItemStack[0];
-        }
-        if (inputFluids == null) {
-            inputFluids = new FluidStack[0];
+        if (euModSupplier != null) {
+            euModifier = euModSupplier.get();
         }
 
+        if (speedBoostSupplier != null) {
+            speedBoost = speedBoostSupplier.get();
+        }
+
+        if (inputItems == null) {
+            inputItems = GTValues.emptyItemStackArray;
+        }
+        if (inputFluids == null) {
+            inputFluids = GTValues.emptyFluidStackArray;
+        }
+        inputItems = prepareCatalyst(inputItems);
         if (activeDualInv != null) {
             Set<GTRecipe> matchedRecipes = dualInvWithPatternToRecipeCache.get(activeDualInv);
             for (GTRecipe matchedRecipe : matchedRecipes) {
@@ -435,8 +449,12 @@ public class GTNLProcessingLogic extends ProcessingLogic {
                     return foundResult.checkRecipeResult;
                 }
             }
+
+            // recipe cache does not match, this might be caused by changes of return value of
+            // prepareCatalyst(ItemStack[]) or changes of Encoded Patterns in the CRIB
+            // so clear the cache and proceed, the new cache will be generated in the next recipe check
+            dualInvWithPatternToRecipeCache.remove(activeDualInv);
             activeDualInv = null;
-            return CheckRecipeResultRegistry.NO_RECIPE;
         }
 
         if (isRecipeLocked && recipeLockableMachine != null && recipeLockableMachine.getSingleRecipeCheck() != null) {
@@ -498,6 +516,7 @@ public class GTNLProcessingLogic extends ProcessingLogic {
      * Check has been succeeded, so it applies the recipe and calculated parameters.
      * At this point, inputs have been already consumed.
      */
+    @Nonnull
     public CheckRecipeResult applyRecipe(@NotNull GTRecipe recipe, @NotNull GTNLParallelHelper helper,
         @NotNull GTNLOverclockCalculator calculator, @NotNull CheckRecipeResult result) {
         if (recipe.mCanBeBuffered) {
@@ -636,6 +655,15 @@ public class GTNLProcessingLogic extends ProcessingLogic {
     @Override
     public CheckRecipeResult onRecipeStart(@NotNull GTRecipe recipe) {
         return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
+
+    /**
+     * Add some catalyst items into input items array, like Milling Ball or Chemical Plant Catalyst.
+     * Do not modify, return a new array if something is changed.
+     */
+    @Override
+    public ItemStack[] prepareCatalyst(ItemStack[] inputs) {
+        return inputs;
     }
 
     // endregion

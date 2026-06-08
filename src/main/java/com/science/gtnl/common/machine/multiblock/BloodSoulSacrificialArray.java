@@ -566,17 +566,17 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
 
     @Optional.Method(modid = "dreamcraft")
     public static Block getBloodyIchorium() {
-        return BlockList.BloodyIchorium.getBlock();
+        return BlockList.BloodyIchorium.block;
     }
 
     @Optional.Method(modid = "dreamcraft")
     public static Block getBloodyThaumium() {
-        return BlockList.BloodyThaumium.getBlock();
+        return BlockList.BloodyThaumium.block;
     }
 
     @Optional.Method(modid = "dreamcraft")
     public static Block getBloodyVoid() {
-        return BlockList.BloodyVoid.getBlock();
+        return BlockList.BloodyVoid.block;
     }
 
     @Optional.Method(modid = "BloodArsenal")

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -14,13 +13,14 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.science.gtnl.ScienceNotLeisure;
+
 import gregtech.api.enums.ItemList;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
-import gtPlusPlus.api.objects.Logger;
 import gtPlusPlus.core.util.minecraft.ItemUtils;
 
 public class RecipeUtil {
@@ -51,7 +51,7 @@ public class RecipeUtil {
             List<GTRecipe> matches = targetMap.getAllRecipes()
                 .stream()
                 .filter(target -> recipesAreEquivalent(source, target))
-                .collect(Collectors.toList());
+                .toList();
 
             for (GTRecipe match : matches) {
                 targetMap.getBackend()
@@ -163,21 +163,20 @@ public class RecipeUtil {
                 continue; // Skip this recipe entirely if we find an item we don't like
             }
 
-            int[] newChances = x.mChances;
-            if (chanceMultiplier > 0 && x.mChances != null) {
-                newChances = new int[x.mChances.length];
-                for (int i = 0; i < x.mChances.length; i++) {
-                    int scaledChance = (int) (chanceMultiplier * x.mChances[i]);
-                    newChances[i] = Math.min(scaledChance, 10000);
-                }
-            }
+            int[] newInputChances = scaleChances(x.mInputChances, chanceMultiplier);
+            int[] newOutputChances = scaleChances(x.mOutputChances, chanceMultiplier);
+            int[] newFluidInputChances = scaleChances(x.mFluidInputChances, chanceMultiplier);
+            int[] newFluidOutputChances = scaleChances(x.mFluidOutputChances, chanceMultiplier);
 
             GTRecipe newRecipe = new GTRecipe(
                 false,
                 newItemsIn,
                 newItemsOut,
                 specialItem ? null : x.mSpecialItems,
-                newChances,
+                newInputChances,
+                newOutputChances,
+                newFluidInputChances,
+                newFluidOutputChances,
                 newFluidsIn,
                 newFluidsOut,
                 x.mDuration,
@@ -247,10 +246,10 @@ public class RecipeUtil {
             aOutputs.add(r);
         }
 
-        Logger.INFO("Generated Recipes for " + aOutputs.unlocalizedName);
-        Logger.INFO("Original Map contains " + aOriginalCount + " recipes.");
-        Logger.INFO("Output Map contains " + aRecipesHandled + " recipes.");
-        Logger.INFO("There were " + aInvalidRecipesToConvert + " invalid recipes.");
+        ScienceNotLeisure.LOG.info("Generated Recipes for {}", aOutputs.unlocalizedName);
+        ScienceNotLeisure.LOG.info("Original Map contains {} recipes.", aOriginalCount);
+        ScienceNotLeisure.LOG.info("Output Map contains {} recipes.", aRecipesHandled);
+        ScienceNotLeisure.LOG.info("There were {} invalid recipes.", aInvalidRecipesToConvert);
     }
 
     public static synchronized void generateRecipesNotUsingCells(RecipeMap<?> aInputs, RecipeMap<?> aOutputs,
@@ -321,21 +320,20 @@ public class RecipeUtil {
                 continue; // Skip this recipe entirely if we find an item we don't like
             }
 
-            int[] newChances = x.mChances;
-            if (chanceMultiplier > 0 && x.mChances != null) {
-                newChances = new int[x.mChances.length];
-                for (int i = 0; i < x.mChances.length; i++) {
-                    int scaledChance = (int) (chanceMultiplier * x.mChances[i]);
-                    newChances[i] = Math.min(scaledChance, 10000);
-                }
-            }
+            int[] newInputChances = scaleChances(x.mInputChances, chanceMultiplier);
+            int[] newOutputChances = scaleChances(x.mOutputChances, chanceMultiplier);
+            int[] newFluidInputChances = scaleChances(x.mFluidInputChances, chanceMultiplier);
+            int[] newFluidOutputChances = scaleChances(x.mFluidOutputChances, chanceMultiplier);
 
             GTRecipe newRecipe = new GTRecipe(
                 false,
                 newItemsIn,
                 newItemsOut,
                 specialItem ? null : x.mSpecialItems,
-                newChances,
+                newInputChances,
+                newOutputChances,
+                newFluidInputChances,
+                newFluidOutputChances,
                 newFluidsIn,
                 newFluidsOut,
                 x.mDuration,
@@ -404,10 +402,29 @@ public class RecipeUtil {
             aOutputs.add(r);
         }
 
-        Logger.INFO("Generated Recipes for " + aOutputs.unlocalizedName);
-        Logger.INFO("Original Map contains " + aOriginalCount + " recipes.");
-        Logger.INFO("Output Map contains " + aRecipesHandled + " recipes.");
-        Logger.INFO("There were " + aInvalidRecipesToConvert + " invalid recipes.");
+        ScienceNotLeisure.LOG.info("Generated Recipes for {}", aOutputs.unlocalizedName);
+        ScienceNotLeisure.LOG.info("Original Map contains {} recipes.", aOriginalCount);
+        ScienceNotLeisure.LOG.info("Output Map contains {} recipes.", aRecipesHandled);
+        ScienceNotLeisure.LOG.info("There were {} invalid recipes.", aInvalidRecipesToConvert);
+    }
+
+    private static int[] scaleChances(int[] chances, double multiplier) {
+        if (chances == null) {
+            return null;
+        }
+
+        int[] result = new int[chances.length];
+
+        if (multiplier <= 0) {
+            System.arraycopy(chances, 0, result, 0, chances.length);
+            return result;
+        }
+
+        for (int i = 0; i < chances.length; i++) {
+            result[i] = Math.min((int) (chances[i] * multiplier), 10000);
+        }
+
+        return result;
     }
 
     private static boolean isEmptyCell(ItemStack aCell) {

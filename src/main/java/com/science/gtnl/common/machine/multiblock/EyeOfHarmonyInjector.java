@@ -51,6 +51,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.glodblock.github.common.item.ItemFluidPacket;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -86,7 +87,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -125,7 +125,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     public static int STATUS_WINDOW_ID = 10;
     public static FluidStack heliumStack = Materials.Helium.getGas(1);
     public static FluidStack hydrogenStack = Materials.Hydrogen.getGas(1);
-    public static FluidStack rawStarMatterStack = MaterialsUEVplus.RawStarMatter.getFluid(1);
+    public static FluidStack rawStarMatterStack = Materials.RawStarMatter.getFluid(1);
     public static double maxFluidAmount = Long.MAX_VALUE;
 
     public Parameters.Group.ParameterIn maxHeliumAmountSetting;
@@ -713,7 +713,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                         hydrogenMaxAmount,
                         outputFluidStack);
                     case "rawstarmatter" -> workingRawstarmatter = handleFluidInput(
-                        MaterialsUEVplus.RawStarMatter.mFluid,
+                        Materials.RawStarMatter.mFluid,
                         workingRawstarmatter,
                         amount,
                         rawstarmatterMaxAmount,
@@ -730,7 +730,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                 hydrogenMaxAmount);
             workingRawstarmatter = tryConsumeFluidLong(
                 inputFluidStack,
-                MaterialsUEVplus.RawStarMatter.mFluid,
+                Materials.RawStarMatter.mFluid,
                 workingRawstarmatter,
                 rawstarmatterMaxAmount);
 
@@ -816,7 +816,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
+        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -831,7 +831,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                 if (itemStack != null) {
                     if (isMEBus) {
                         // Prevent the same item from different ME buses from being recognized
-                        inputsFromME.put(GTUtility.ItemId.createNoCopy(itemStack), itemStack);
+                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
                     } else {
                         rList.add(itemStack);
                     }

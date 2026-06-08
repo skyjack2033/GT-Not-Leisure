@@ -213,7 +213,7 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
         return new GTNLProcessingLogic() {
 
             @Override
-            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
                 return super.createOverclockCalculator(recipe).setExtraDurationModifier(configSpeedBoost)
                     .setEUtDiscount(0.5 * tierMachine * (1 << (2 * Math.min(4, recipeOcCount))))
                     .setDurationModifier(1.0 / 10.0 / tierMachine / (1 << Math.min(4, recipeOcCount)))

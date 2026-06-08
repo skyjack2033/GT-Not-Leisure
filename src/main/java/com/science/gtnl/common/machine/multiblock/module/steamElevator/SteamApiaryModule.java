@@ -26,6 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.ItemDrawable;
@@ -97,7 +98,7 @@ public class SteamApiaryModule extends SteamElevatorModule {
     public static final int MODE_PRIMARY_OPERATING = 2;
     public int mPrimaryMode = MODE_PRIMARY_INPUT;
 
-    public HashMap<GTUtility.ItemId, Double> dropProgress = new HashMap<>();
+    public HashMap<ItemId, Double> dropProgress = new HashMap<>();
 
     public SteamApiaryModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional, 6);
@@ -294,7 +295,7 @@ public class SteamApiaryModule extends SteamElevatorModule {
         public float beeSpeed;
         public float maxBeeCycles;
         public static IBeekeepingMode mode;
-        public static Map<GTUtility.ItemId, ItemStack> dropstacks = new HashMap<>();
+        public static Map<ItemId, ItemStack> dropstacks = new HashMap<>();
 
         public BeeSimulator(ItemStack queenStack, World world, float t) {
             isValid = false;
@@ -393,14 +394,14 @@ public class SteamApiaryModule extends SteamElevatorModule {
             public double chance;
             public float beeSpeed;
             public float t;
-            public GTUtility.ItemId id;
+            public ItemId id;
 
             public BeeDrop(ItemStack stack, double chance, float beeSpeed, float t) {
                 this.stack = stack;
                 this.chance = chance;
                 this.beeSpeed = beeSpeed;
                 this.t = t;
-                this.id = GTUtility.ItemId.createNoCopy(stack);
+                this.id = ItemId.createNoCopy(stack);
             }
 
             public double getAmount(double speedModifier) {
@@ -412,7 +413,7 @@ public class SteamApiaryModule extends SteamElevatorModule {
                 chance = tag.getDouble("chance");
                 beeSpeed = tag.getFloat("beeSpeed");
                 t = tag.getFloat("t");
-                id = GTUtility.ItemId.createNoCopy(stack);
+                id = ItemId.createNoCopy(stack);
             }
 
             public NBTTagCompound toNBTTagCompound() {
@@ -804,13 +805,12 @@ public class SteamApiaryModule extends SteamElevatorModule {
     public Widget generateCurrentRecipeInfoWidget() {
         DynamicPositionedColumn processingDetails = new DynamicPositionedColumn();
         if (mOutputItems == null || GUIDropProgress == null) return processingDetails;
-        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = getOutputItemCounts(mOutputItems);
+        Object2IntOpenHashMap<ItemId> outputCounts = getOutputItemCounts(mOutputItems);
         List<Map.Entry<ItemStack, Double>> sortedEntries = new ArrayList<>(GUIDropProgress.entrySet());
         sortedEntries.sort(
             Comparator
                 .comparingInt(
-                    (Map.Entry<ItemStack, Double> entry) -> outputCounts
-                        .getInt(GTUtility.ItemId.createNoCopy(entry.getKey())))
+                    (Map.Entry<ItemStack, Double> entry) -> outputCounts.getInt(ItemId.createNoCopy(entry.getKey())))
                 .reversed());
 
         LinkedHashMap<ItemStack, Double> sortedMap = new LinkedHashMap<>(sortedEntries.size());
@@ -819,7 +819,7 @@ public class SteamApiaryModule extends SteamElevatorModule {
         }
 
         for (Map.Entry<ItemStack, Double> drop : sortedMap.entrySet()) {
-            int outputSize = outputCounts.getInt(GTUtility.ItemId.createNoCopy(drop.getKey()));
+            int outputSize = outputCounts.getInt(ItemId.createNoCopy(drop.getKey()));
             if (outputSize != 0) {
                 Long itemCount = (long) outputSize;
                 String itemName = drop.getKey()
@@ -848,11 +848,11 @@ public class SteamApiaryModule extends SteamElevatorModule {
         return processingDetails;
     }
 
-    public Object2IntOpenHashMap<GTUtility.ItemId> getOutputItemCounts(ItemStack[] outputItems) {
-        Object2IntOpenHashMap<GTUtility.ItemId> outputCounts = new Object2IntOpenHashMap<>(outputItems.length);
+    public Object2IntOpenHashMap<ItemId> getOutputItemCounts(ItemStack[] outputItems) {
+        Object2IntOpenHashMap<ItemId> outputCounts = new Object2IntOpenHashMap<>(outputItems.length);
         for (ItemStack outputItem : outputItems) {
             if (outputItem != null && outputItem.stackSize > 0) {
-                outputCounts.addTo(GTUtility.ItemId.createNoCopy(outputItem), outputItem.stackSize);
+                outputCounts.addTo(ItemId.createNoCopy(outputItem), outputItem.stackSize);
             }
         }
         return outputCounts;
@@ -862,7 +862,7 @@ public class SteamApiaryModule extends SteamElevatorModule {
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
         screenElements.widget(new FakeSyncWidget<>(() -> {
             HashMap<ItemStack, Double> ret = new HashMap<>(this.dropProgress.size());
-            for (Map.Entry<GTUtility.ItemId, Double> drop : this.dropProgress.entrySet()) {
+            for (Map.Entry<ItemId, Double> drop : this.dropProgress.entrySet()) {
                 ret.put(BeeSimulator.dropstacks.get(drop.getKey()), drop.getValue());
             }
             return ret;

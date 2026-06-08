@@ -274,7 +274,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
             }
 
             @Override
-            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
                 return super.createOverclockCalculator(recipe).setEUtDiscount(getEUtDiscount())
                     .setDurationModifier(getDurationModifier())
                     .setMaxTierSkips(0);

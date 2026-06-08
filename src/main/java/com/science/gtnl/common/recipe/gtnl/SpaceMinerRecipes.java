@@ -2,6 +2,7 @@ package com.science.gtnl.common.recipe.gtnl;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
@@ -25,8 +26,6 @@ import gtPlusPlus.core.fluids.GTPPFluids;
 import gtPlusPlus.core.material.MaterialMisc;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.core.material.MaterialsOres;
-import gtPlusPlus.core.util.minecraft.FluidUtils;
-import net.minecraftforge.fluids.FluidStack;
 
 public class SpaceMinerRecipes implements IRecipePool {
 

@@ -43,7 +43,6 @@ import baubles.api.BaublesApi;
 import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;

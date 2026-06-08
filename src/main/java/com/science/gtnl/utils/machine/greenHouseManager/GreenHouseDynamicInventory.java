@@ -16,6 +16,7 @@ import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.opengl.GL11;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizons.modularui.api.GlStateManager;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
@@ -36,7 +37,6 @@ import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.gui.AutoScalingStackSizeText;
 
-import gregtech.api.util.GTUtility;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 public class GreenHouseDynamicInventory<T> {
@@ -484,7 +484,7 @@ public class GreenHouseDynamicInventory<T> {
         public StackableItemSlot(int count, ItemStack stack, IntArrayList realSlots) {
             this.count = count;
             this.stack = stack;
-            this.hashcode = GTUtility.ItemId.createNoCopyWithStackSize(stack)
+            this.hashcode = ItemId.createWithoutNBT(stack)
                 .hashCode();
             this.realSlots = realSlots;
         }

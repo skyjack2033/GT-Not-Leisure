@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.github.bsideup.jabel.Desugar;
 import com.google.common.collect.Lists;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -630,7 +631,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
     }
 
     @Desugar
-    public record ItemCopyingEntry(GTUtility.ItemId itemId, long costUUM, long costEU) implements ElementCopyingEntry {
+    public record ItemCopyingEntry(ItemId itemId, long costUUM, long costEU) implements ElementCopyingEntry {
 
         @Override
         public NBTTagCompound serialize() {
@@ -642,10 +643,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         }
 
         public static ItemCopyingEntry deserialize(NBTTagCompound tag) {
-            return new ItemCopyingEntry(
-                GTUtility.ItemId.create(tag.getCompoundTag("id")),
-                tag.getLong("uum"),
-                tag.getLong("eu"));
+            return new ItemCopyingEntry(ItemId.create(tag.getCompoundTag("id")), tag.getLong("uum"), tag.getLong("eu"));
         }
     }
 

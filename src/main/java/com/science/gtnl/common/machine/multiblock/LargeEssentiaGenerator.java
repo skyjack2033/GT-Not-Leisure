@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableList;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -80,19 +81,19 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
     public static final Fluid SPIRIT = FluidRegistry.getFluid("witchery:fluidspirit");
     public static final Fluid HOLLOW_TEARS = FluidRegistry.getFluid("witchery:hollowtears");
 
-    public static final Object2IntMap<GTUtility.ItemId> ESSENTIA_UPGRADE = new Object2IntOpenHashMap<>();
+    public static final Object2IntMap<ItemId> ESSENTIA_UPGRADE = new Object2IntOpenHashMap<>();
 
     static {
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeEmpty.get(1)), 0);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeAir.get(1)), 1);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeThermal.get(1)), 2);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeUnstable.get(1)), 3);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeVictus.get(1)), 4);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeTainted.get(1)), 5);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeMechanics.get(1)), 6);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeSpirit.get(1)), 7);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeRadiation.get(1)), 8);
-        ESSENTIA_UPGRADE.put(GTUtility.ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeElectric.get(1)), 9);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeEmpty.get(1)), 0);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeAir.get(1)), 1);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeThermal.get(1)), 2);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeUnstable.get(1)), 3);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeVictus.get(1)), 4);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeTainted.get(1)), 5);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeMechanics.get(1)), 6);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeSpirit.get(1)), 7);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeRadiation.get(1)), 8);
+        ESSENTIA_UPGRADE.put(ItemId.createWithoutNBT(GTNLItemList.EssentiaUpgradeElectric.get(1)), 9);
     }
 
     public LargeEssentiaGenerator(int id, String name, String nameRegional) {
@@ -190,7 +191,7 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
         if (!getBaseMetaTileEntity().isServerSide()) return super.onRightclick(aBaseMetaTileEntity, aPlayer);
         var itemstack = aPlayer.inventory.getCurrentItem();
         if (itemstack == null) return super.onRightclick(aBaseMetaTileEntity, aPlayer);
-        var tCurrentItem = GTUtility.ItemId.createWithoutNBT(itemstack);
+        var tCurrentItem = ItemId.createWithoutNBT(itemstack);
         int upgrade = ESSENTIA_UPGRADE.getOrDefault(tCurrentItem, -1);
         if (upgrade != -1) {
             if ((mUpgrade & (1 << upgrade)) == 0 && upgrade != 0) {

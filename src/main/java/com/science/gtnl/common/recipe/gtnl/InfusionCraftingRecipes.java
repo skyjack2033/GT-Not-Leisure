@@ -8,6 +8,7 @@ import java.util.Set;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.recipe.thaumcraft.TCRecipeTools;
@@ -20,7 +21,6 @@ import gregtech.api.enums.Mods;
 import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.IRecipeMap;
 import gregtech.api.util.GTModHandler;
-import gregtech.api.util.GTUtility;
 
 public class InfusionCraftingRecipes implements IRecipePool {
 
@@ -29,38 +29,30 @@ public class InfusionCraftingRecipes implements IRecipePool {
     public static final ItemStack BLAST_FURNACE_TEMPLATE = GTModHandler
         .getModItem(Mods.EtFuturumRequiem.ID, "blast_furnace", 1);
 
-    public static final Set<GTUtility.ItemId> UNCONSUMED_ITEMS = new HashSet<>();
+    public static final Set<ItemId> UNCONSUMED_ITEMS = new HashSet<>();
 
     static {
         if (Mods.Avaritia.isModLoaded()) addAvaritia();
 
         if (Mods.BloodMagic.isModLoaded()) {
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "weakBloodOrb", 1)));
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "apprenticeBloodOrb", 1)));
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "magicianBloodOrb", 1)));
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "masterBloodOrb", 1)));
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "archmageBloodOrb", 1)));
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "transcendentBloodOrb", 1)));
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "creativeFiller", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "weakBloodOrb", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "apprenticeBloodOrb", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "magicianBloodOrb", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "masterBloodOrb", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "archmageBloodOrb", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "transcendentBloodOrb", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.BloodMagic.ID, "creativeFiller", 1)));
         }
         if (Mods.ForbiddenMagic.isModLoaded()) {
-            UNCONSUMED_ITEMS
-                .add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.ForbiddenMagic.ID, "EldritchOrb", 1)));
+            UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.ForbiddenMagic.ID, "EldritchOrb", 1)));
         }
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(GTModHandler.getModItem(Mods.Thaumcraft.ID, "FocusWarding", 1)));
+        UNCONSUMED_ITEMS.add(ItemId.create(GTModHandler.getModItem(Mods.Thaumcraft.ID, "FocusWarding", 1)));
     }
 
     @Optional.Method(modid = "Avaritia")
     public static void addAvaritia() {
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(new ItemStack(LudicrousItems.bigPearl)));
-        UNCONSUMED_ITEMS.add(GTUtility.ItemId.create(new ItemStack(LudicrousItems.armok_orb)));
+        UNCONSUMED_ITEMS.add(ItemId.create(new ItemStack(LudicrousItems.bigPearl)));
+        UNCONSUMED_ITEMS.add(ItemId.create(new ItemStack(LudicrousItems.armok_orb)));
     }
 
     public static ItemStack[] checkInputSpecial(ItemStack... itemStacks) {
@@ -82,7 +74,7 @@ public class InfusionCraftingRecipes implements IRecipePool {
                 out = bf;
             }
 
-            if (UNCONSUMED_ITEMS.contains(GTUtility.ItemId.create(out))) {
+            if (UNCONSUMED_ITEMS.contains(ItemId.create(out))) {
                 out.stackSize = 0;
             }
 

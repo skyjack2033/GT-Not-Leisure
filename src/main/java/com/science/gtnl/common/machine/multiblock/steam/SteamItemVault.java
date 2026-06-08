@@ -26,6 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -174,7 +175,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
     @Override
     public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
         ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<GTUtility.ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
+        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
             if (tHatch instanceof MTEHatchCraftingInputME) {
                 continue;
@@ -190,7 +191,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
                 if (itemStack != null) {
                     if (isMEBus) {
                         // Prevent the same item from different ME buses from being recognized
-                        inputsFromME.put(GTUtility.ItemId.createNoCopy(itemStack), itemStack);
+                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
                     } else {
                         rList.add(itemStack);
                     }

@@ -2,6 +2,7 @@ package com.science.gtnl.common.recipe.gtnl;
 
 import net.minecraft.item.ItemStack;
 
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.machine.multiblock.GrandAssemblyLine;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
@@ -67,6 +68,6 @@ public class GrandAssemblyLineSpecialRecipes implements IRecipePool {
             .eut(0)
             .addTo(GALSR);
 
-        GrandAssemblyLine.specialRecipe.put(GTUtility.ItemId.create(output), circuit);
+        GrandAssemblyLine.specialRecipe.put(ItemId.create(output), circuit);
     }
 }

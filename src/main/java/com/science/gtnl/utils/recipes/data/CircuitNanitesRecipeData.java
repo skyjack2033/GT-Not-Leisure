@@ -4,7 +4,8 @@ import java.util.Random;
 
 import net.minecraft.item.ItemStack;
 
-import gregtech.api.util.GTUtility;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -14,9 +15,9 @@ import lombok.Setter;
 @Setter
 public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipeData> {
 
-    public static Object2ObjectMap<GTUtility.ItemId, CircuitNanitesRecipeData> recipeDataMap = new Object2ObjectOpenHashMap<>();
+    public static Object2ObjectMap<ItemId, CircuitNanitesRecipeData> recipeDataMap = new Object2ObjectOpenHashMap<>();
 
-    public GTUtility.ItemId stack;
+    public ItemId stack;
     public double speedBoost = 1.0, euModifier = 1.0, failedChance = 0, outputMultiplier = 1.0;
     public int parallelCount = 1, maxTierSkips = 1;
     public double speedBoostMin = 0, speedBoostMax = 1;
@@ -33,7 +34,7 @@ public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipe
         double euModifierMin, double euModifierMax, int maxTierSkipsMin, int maxTierSkipsMax, double failedChanceMin,
         double failedChanceMax, int parallelCountMin, int parallelCountMax, double outputMultiplierMin,
         double outputMultiplierMax) {
-        this.stack = GTUtility.ItemId.createWithoutNBT(stack);
+        this.stack = ItemId.createWithoutNBT(stack);
         this.worldSeed = worldSeed;
         setRangeParams(
             speedBoostMin,
@@ -57,13 +58,13 @@ public class CircuitNanitesRecipeData implements Comparable<CircuitNanitesRecipe
         double failedChanceMin, double failedChanceMax, int parallelCountMin, int parallelCountMax,
         double outputMultiplierMin, double outputMultiplierMax) {
 
-        CircuitNanitesRecipeData existing = recipeDataMap.get(GTUtility.ItemId.createWithoutNBT(stack));
+        CircuitNanitesRecipeData existing = recipeDataMap.get(ItemId.createWithoutNBT(stack));
         if (existing != null) {
             return existing;
         }
 
         CircuitNanitesRecipeData data = new CircuitNanitesRecipeData();
-        data.stack = GTUtility.ItemId.createWithoutNBT(stack);
+        data.stack = ItemId.createWithoutNBT(stack);
         data.worldSeed = worldSeed;
         data.setRangeParams(
             speedBoostMin,

@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import bartworks.system.material.CircuitGeneration.CircuitPartsItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -11,6 +10,7 @@ import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
+import bartworks.system.material.CircuitGeneration.CircuitPartsItem;
 import bartworks.system.material.WerkstoffLoader;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;

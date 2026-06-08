@@ -41,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.google.common.collect.ImmutableList;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.math.Alignment;
@@ -136,7 +137,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
         public final ItemStack pattern;
         @Getter
         public final ICraftingPatternDetails patternDetails;
-        public final GTUtility.ItemId patternItemId;
+        public final ItemId patternItemId;
 
         public final int slotIndex;
 
@@ -157,7 +158,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
             this.slotIndex = index;
             this.itemInventory = new ArrayList<>();
             this.fluidInventory = new ArrayList<>();
-            this.patternItemId = GTUtility.ItemId.create(pattern);
+            this.patternItemId = ItemId.create(pattern);
 
             if (nbt == null) return;
             NBTTagList inv = nbt.getTagList("inventory", Constants.NBT.TAG_COMPOUND);
@@ -899,10 +900,10 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
                     i,
                     EnumChatFormatting.BLUE + describePattern(slot.patternDetails) + EnumChatFormatting.RESET));
 
-            Object2LongOpenHashMap<GTUtility.ItemId> itemMap = new Object2LongOpenHashMap<>();
+            Object2LongOpenHashMap<ItemId> itemMap = new Object2LongOpenHashMap<>();
             itemMap.putAll(GTUtility.convertItemListToMap(slot.itemInventory));
 
-            for (Map.Entry<GTUtility.ItemId, Long> entry : itemMap.object2LongEntrySet()) {
+            for (Map.Entry<ItemId, Long> entry : itemMap.object2LongEntrySet()) {
                 ItemStack item = entry.getKey()
                     .getItemStack();
                 long amount = entry.getValue();

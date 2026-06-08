@@ -27,7 +27,6 @@ import goodgenerator.util.ItemRefer;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Materials;
 import gregtech.api.enums.MetaTileEntityIDs;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
@@ -78,21 +77,17 @@ public class ScriptAvaritia implements IScriptLoader {
         ItemStack eternityFluidPacket = ItemFluidPacket.newStack(Materials.Eternity.getMolten(114514));
         ItemStack magMatterFluidPacket = ItemFluidPacket.newStack(Materials.MagMatter.getMolten(114514));
         ItemStack universiumFluidPacket = ItemFluidPacket.newStack(Materials.Universium.getMolten(114514));
-        ItemStack quarkGluonPlasmaFluidPacket = ItemFluidPacket
-            .newStack(Materials.QuarkGluonPlasma.getFluid(114514));
+        ItemStack quarkGluonPlasmaFluidPacket = ItemFluidPacket.newStack(Materials.QuarkGluonPlasma.getFluid(114514));
         ItemStack sgCrystalSlurryFluidPacket = ItemFluidPacket
             .newStack(Materials.StargateCrystalSlurry.getFluid(114514));
-        ItemStack mcsmFluidPacket = ItemFluidPacket
-            .newStack(Materials.MHDCSM.getMolten(114514));
+        ItemStack mcsmFluidPacket = ItemFluidPacket.newStack(Materials.MHDCSM.getMolten(114514));
         ItemStack dimensionallyShiftedSuperFluidPacket = ItemFluidPacket
             .newStack(Materials.DimensionallyShiftedSuperfluid.getFluid(114514));
-        ItemStack sixPhasedCopperFluidPacket = ItemFluidPacket
-            .newStack(Materials.SixPhasedCopper.getMolten(114514));
+        ItemStack sixPhasedCopperFluidPacket = ItemFluidPacket.newStack(Materials.SixPhasedCopper.getMolten(114514));
         ItemStack phononMediumFluidPacket = ItemFluidPacket.newStack(Materials.PhononMedium.getFluid(114514));
         ItemStack antimatterFluidPacket = ItemFluidPacket.newStack(Materials.Antimatter.getFluid(114514));
         ItemStack plasmaLeadFluidPacket = ItemFluidPacket.newStack(Materials.Lead.getPlasma(114514));
-        ItemStack dtrFluidPacket = ItemFluidPacket
-            .newStack(Materials.DTR.getFluid(114514));
+        ItemStack dtrFluidPacket = ItemFluidPacket.newStack(Materials.DTR.getFluid(114514));
         ItemStack plasmaPlutonium241FluidPacket = ItemFluidPacket.newStack(Materials.Plutonium241.getPlasma(114514));
         ItemStack plasmaAmericiumPacket = ItemFluidPacket.newStack(Materials.Americium.getPlasma(114514));
         ItemStack plasmaNeonPacket = ItemFluidPacket
@@ -675,8 +670,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'd',
                 Particle.getBaseParticle(Particle.PHOTON),
                 'e',
-                GTOreDictUnificator
-                    .get(OrePrefixes.plateSuperdense, Materials.MHDCSM, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.MHDCSM, 1),
                 'f',
                 GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Mellion, 1),
                 'g',

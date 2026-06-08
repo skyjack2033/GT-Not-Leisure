@@ -25,7 +25,7 @@ public class GTNLWorldgenloader {
         for (GTNLOreMixer oreMix : GTNLOreMixer.values()) {
             oreMix.addGTOreLayer();
 
-            GT5OreLayerHelper.mapOreLayerWrapper
+            GT5OreLayerHelper.getOreVeinsByName()
                 .put(oreMix.oreMixBuilder.oreMixName, new GT5OreLayerHelper.OreLayerWrapper(oreMix.oreMixBuilder));
             if (Mods.VisualProspecting.isModLoaded()) {
                 AccessorVeinTypeCaching.getVeinTypes()
