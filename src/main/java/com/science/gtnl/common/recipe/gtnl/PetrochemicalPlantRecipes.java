@@ -4,7 +4,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.dreammaster.fluids.FluidList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
@@ -14,7 +13,6 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import bartworks.common.loaders.BioItemList;
 import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsKevlar;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.recipe.RecipeMap;
@@ -117,8 +115,8 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
                 Materials.Benzene.getFluid(250),
                 Materials.Toluene.getFluid(50),
                 Materials.Dimethylbenzene.getFluid(150),
-                MaterialsKevlar.IIIDimethylbenzene.getFluid(150),
-                MaterialsKevlar.IVDimethylbenzene.getFluid(150))
+                Materials.IIIDimethylbenzene.getFluid(150),
+                Materials.IVDimethylbenzene.getFluid(150))
             .duration(100)
             .eut(1920)
             .addTo(PPR);
@@ -136,11 +134,11 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
                 Materials.OilHeavy.getFluid(60),
                 Materials.Creosote.getFluid(120),
                 Materials.Water.getFluid(250),
-                Mods.NewHorizonsCoreMod.isModLoaded() ? getFermentedBacterialSludge() : Materials.Lava.getFluid(10),
+                Materials.FermentedBacterialSludge.getFluid(10),
                 Materials.FermentedBiomass.getFluid(100),
                 Materials.RadoxSuperHeavy.getFluid(15),
                 Materials.RadoxHeavy.getFluid(20),
-                Materials.DilutedXenoxene.getFluid(2),
+                Materials.XenoxeneDiluted.getFluid(2),
                 Materials.RadoxLight.getGas(50),
                 Materials.RadoxGas.getGas(20))
             .duration(1600)
@@ -165,7 +163,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
             .fluidInputs(Materials.OilHeavy.getFluid(2000))
             .fluidOutputs(
                 Materials.Naphtha.getFluid(75),
-                MaterialsKevlar.NaphthenicAcid.getFluid(25),
+                Materials.NaphthenicAcid.getFluid(25),
                 Materials.Gas.getGas(300),
                 Materials.HeavyFuel.getFluid(500),
                 Materials.LightFuel.getFluid(300),
@@ -179,7 +177,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
             .fluidInputs(Materials.OilLight.getFluid(2000))
             .fluidOutputs(
                 Materials.Naphtha.getFluid(100),
-                MaterialsKevlar.NaphthenicAcid.getFluid(10),
+                Materials.NaphthenicAcid.getFluid(10),
                 Materials.Gas.getGas(800),
                 Materials.HeavyFuel.getFluid(40),
                 Materials.LightFuel.getFluid(70),
@@ -193,7 +191,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
             .fluidInputs(Materials.Oil.getFluid(1000))
             .fluidOutputs(
                 Materials.Naphtha.getFluid(200),
-                MaterialsKevlar.NaphthenicAcid.getFluid(30),
+                Materials.NaphthenicAcid.getFluid(30),
                 Materials.Gas.getGas(600),
                 Materials.HeavyFuel.getFluid(150),
                 Materials.LightFuel.getFluid(400))
@@ -206,7 +204,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
             .fluidInputs(Materials.OilMedium.getFluid(2000))
             .fluidOutputs(
                 Materials.Naphtha.getFluid(700),
-                MaterialsKevlar.NaphthenicAcid.getFluid(15),
+                Materials.NaphthenicAcid.getFluid(15),
                 Materials.Gas.getGas(300),
                 Materials.HeavyFuel.getFluid(50),
                 Materials.LightFuel.getFluid(300),
@@ -220,7 +218,7 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
             .fluidInputs(Materials.OilExtraHeavy.getFluid(2000))
             .fluidOutputs(
                 Materials.Naphtha.getFluid(220),
-                MaterialsKevlar.NaphthenicAcid.getFluid(60),
+                Materials.NaphthenicAcid.getFluid(60),
                 Materials.Gas.getGas(500),
                 Materials.HeavyFuel.getFluid(750),
                 Materials.LightFuel.getFluid(350),
@@ -228,11 +226,6 @@ public class PetrochemicalPlantRecipes implements IRecipePool {
             .duration(200)
             .eut(1920)
             .addTo(PPR);
-    }
-
-    @Optional.Method(modid = "dreamcraft")
-    public FluidStack getFermentedBacterialSludge() {
-        return FluidList.FermentedBacterialSludge.getFluidStack(10);
     }
 
     @Optional.Method(modid = "dreamcraft")

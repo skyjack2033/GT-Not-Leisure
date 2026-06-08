@@ -14,7 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.dreammaster.gthandler.CustomItemList;
+import com.dreammaster.item.NHItemList;
 import com.google.common.collect.ImmutableList;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -316,6 +316,6 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
 
     @Optional.Method(modid = "dreamcraft")
     public static ItemStack getTwilightCrystal() {
-        return CustomItemList.TwilightCrystal.get(1);
+        return NHItemList.TwilightCrystal.get(1);
     }
 }

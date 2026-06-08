@@ -8,7 +8,7 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import appeng.api.AEApi;
 import bartworks.API.recipe.BartWorksRecipeMaps;
 import gregtech.api.enums.ItemList;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -28,12 +28,12 @@ public class ElectricImplosionCompressorRecipes implements IRecipePool {
             .itemInputs(
                 GTModHandler.getModItem(Mods.EternalSingularity.ID, "eternal_singularity", 1, 0),
                 ItemList.EnergisedTesseract.get(1))
-            .fluidInputs(MaterialsUEVplus.Protomatter.getFluid(1000))
+            .fluidInputs(Materials.Protomatter.getFluid(1000))
             .itemOutputs(
                 aeMaterials.singularity()
                     .maybeStack(1)
                     .orNull())
-            .fluidOutputs(MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(50000))
+            .fluidOutputs(Materials.DTR.getFluid(50000))
             .duration(2 * SECONDS)
             .eut(TierEU.RECIPE_UMV)
             .addTo(EICR);

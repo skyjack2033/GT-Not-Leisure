@@ -39,7 +39,6 @@ import gregtech.GTMod;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.TierEU;
@@ -395,13 +394,13 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
                 return 2;
             }
 
-            if (controllerSlot.isItemEqual(
-                GTOreDictUnificator.get(OrePrefixes.toolHeadDrill, MaterialsUEVplus.TranscendentMetal, 1L))) {
+            if (controllerSlot
+                .isItemEqual(GTOreDictUnificator.get(OrePrefixes.toolHeadDrill, Materials.TranscendentMetal, 1L))) {
                 return 3;
             }
 
             if (controllerSlot
-                .isItemEqual(GTOreDictUnificator.get(OrePrefixes.toolHeadDrill, MaterialsUEVplus.SpaceTime, 1L))) {
+                .isItemEqual(GTOreDictUnificator.get(OrePrefixes.toolHeadDrill, Materials.SpaceTime, 1L))) {
                 return 4;
             }
         }

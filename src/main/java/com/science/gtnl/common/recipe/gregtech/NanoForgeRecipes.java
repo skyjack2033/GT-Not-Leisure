@@ -3,7 +3,7 @@ package com.science.gtnl.common.recipe.gregtech;
 import static gregtech.api.util.GTRecipeBuilder.SECONDS;
 import static gregtech.api.util.GTRecipeConstants.NANO_FORGE_TIER;
 
-import com.dreammaster.gthandler.CustomItemList;
+import com.dreammaster.item.NHItemList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
@@ -12,7 +12,6 @@ import cpw.mods.fml.common.Optional;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.recipe.RecipeMap;
@@ -37,8 +36,8 @@ public class NanoForgeRecipes implements IRecipePool {
             .itemOutputs(GGMaterial.shirabon.get(OrePrefixes.nanite, 1))
             .fluidInputs(
                 Materials.UUMatter.getFluid(500_000),
-                MaterialsUEVplus.TranscendentMetal.getMolten(9216),
-                MaterialsUEVplus.PrimordialMatter.getFluid(32000))
+                Materials.TranscendentMetal.getMolten(9216),
+                Materials.PrimordialMatter.getFluid(32000))
             .metadata(NANO_FORGE_TIER, 3)
             .duration(200 * SECONDS)
             .eut(2_000_000_000)
@@ -77,7 +76,7 @@ public class NanoForgeRecipes implements IRecipePool {
     public void loadNHRecipe() {
         RecipeBuilder.builder()
             .itemInputs(
-                CustomItemList.RadoxPolymerLens.get(0),
+                NHItemList.RadoxPolymerLens.get(0),
                 GGMaterial.metastableOganesson.get(OrePrefixes.block, 8),
                 ItemList.Circuit_Chip_SoC2.get(64),
                 ItemList.Circuit_Chip_SoC2.get(64))
@@ -90,7 +89,7 @@ public class NanoForgeRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                CustomItemList.ChromaticLens.get(0),
+                NHItemList.ChromaticLens.get(0),
                 GGMaterial.extremelyUnstableNaquadah.get(OrePrefixes.block, 16),
                 ItemList.Circuit_Chip_QPIC.get(64),
                 ItemList.Circuit_Chip_QPIC.get(64),

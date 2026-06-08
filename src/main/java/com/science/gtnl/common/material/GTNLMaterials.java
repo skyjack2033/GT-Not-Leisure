@@ -8,7 +8,6 @@ import bartworks.system.material.Werkstoff;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TextureSet;
-import gtPlusPlus.core.client.CustomTextureSet;
 
 public class GTNLMaterials implements Runnable {
 
@@ -1495,7 +1494,7 @@ public class GTNLMaterials implements Runnable {
         new Werkstoff.GenerationFeatures().disable()
             .onlyDust(),
         offsetID + 114,
-        CustomTextureSet.TextureSets.NUCLEAR.get());
+        TextureSet.SET_NUCLEAR);
 
     public static final Werkstoff RadiumChloride = new Werkstoff(
         new short[] { 223, 223, 223 },
@@ -1506,7 +1505,7 @@ public class GTNLMaterials implements Runnable {
         new Werkstoff.GenerationFeatures().disable()
             .onlyDust(),
         offsetID + 115,
-        CustomTextureSet.TextureSets.NUCLEAR.get());
+        TextureSet.SET_NUCLEAR);
 
     public static final Werkstoff GravelSluice = new Werkstoff(
         new short[] { 91, 91, 91 },
@@ -1713,4 +1712,7 @@ public class GTNLMaterials implements Runnable {
 
     @Override
     public void run() {}
+
+    private static class CustomTextureSet {
+    }
 }

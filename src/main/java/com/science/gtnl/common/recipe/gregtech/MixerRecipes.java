@@ -20,7 +20,6 @@ import crazypants.enderio.fluid.Fluids;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsGTNH;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
@@ -34,7 +33,6 @@ import gtPlusPlus.core.fluids.GTPPFluids;
 import gtPlusPlus.core.material.MaterialMisc;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.core.material.MaterialsElements;
-import gtPlusPlus.core.util.minecraft.FluidUtils;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import gtnhlanth.common.register.WerkstoffMaterialPool;
 
@@ -103,7 +101,7 @@ public class MixerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.RareEarth, 1L))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RedMud, 1000), Materials.HydrochloricAcid.getFluid(4000))
+            .fluidInputs(new FluidStack(GTPPFluids.RedMud, 1000), Materials.HydrochloricAcid.getFluid(4000))
             .fluidOutputs(GTNLMaterials.NeutralisedRedMud.getFluidOrGas(2000))
             .duration(100)
             .eut(TierEU.RECIPE_MV)
@@ -115,7 +113,7 @@ public class MixerRecipes implements IRecipePool {
                 GregtechItemList.Industrial_Sifter.get(3),
                 ItemList.Distillation_Tower.get(2),
                 ItemList.LargeFluidExtractor.get(1),
-                ItemList.Machine_Multi_Solidifier.get(2),
+                ItemList.Machine_Mass_Solidifier.get(2),
                 GregtechItemList.Controller_IndustrialFluidHeater.get(1),
                 GregtechItemList.Industrial_Electrolyzer.get(4),
                 GregtechItemList.Industrial_Mixer.get(3),
@@ -203,7 +201,7 @@ public class MixerRecipes implements IRecipePool {
         // 海晶石溶液 工业HF降价为HF
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.shard, MaterialsGTNH.Prismarine, 24),
+                GTOreDictUnificator.get(OrePrefixes.shard, Materials.Prismarine, 24),
                 GTUtility.getIntegratedCircuit(1))
             .fluidInputs(Materials.HydrofluoricAcid.getFluid(4000), new FluidStack(GTPPFluids.HydrogenPeroxide, 4000))
             .itemOutputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.CertusQuartz, 4))
@@ -225,7 +223,7 @@ public class MixerRecipes implements IRecipePool {
         // 海晶石溶液 循环配方
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.shard, MaterialsGTNH.Prismarine, 6),
+                GTOreDictUnificator.get(OrePrefixes.shard, Materials.Prismarine, 6),
                 GTUtility.getIntegratedCircuit(2))
             .fluidInputs(
                 Materials.PrismarineContaminatedHydrogenPeroxide.getFluid(6000),

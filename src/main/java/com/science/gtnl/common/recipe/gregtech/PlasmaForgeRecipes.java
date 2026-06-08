@@ -14,7 +14,6 @@ import goodgenerator.util.ItemRefer;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -75,10 +74,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTSC.getFluid(astral_titanium.getCatalystAmount(4)),
+                    Materials.ExcitedDTSC.getFluid(astral_titanium.getCatalystAmount(4)),
                     Materials.Titanium.getMolten(tier_5_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(astral_titanium.getResidueAmount(4)),
+                    Materials.DTR.getFluid(astral_titanium.getResidueAmount(4)),
                     MaterialsElements.STANDALONE.ASTRAL_TITANIUM.getFluidStack(tier_5_quantity))
                 .duration(astral_titanium.getDuration(4))
                 .eut(astral_titanium.getEUt(4))
@@ -89,10 +88,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTEC.getFluid(astral_titanium.getCatalystAmount(3)),
+                    Materials.ExcitedDTEC.getFluid(astral_titanium.getCatalystAmount(3)),
                     Materials.Titanium.getMolten(tier_4_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(astral_titanium.getResidueAmount(3)),
+                    Materials.DTR.getFluid(astral_titanium.getResidueAmount(3)),
                     MaterialsElements.STANDALONE.ASTRAL_TITANIUM.getFluidStack(tier_4_quantity))
                 .duration(astral_titanium.getDuration(3))
                 .eut(astral_titanium.getEUt(3))
@@ -103,10 +102,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTRC.getFluid(astral_titanium.getCatalystAmount(2)),
+                    Materials.ExcitedDTRC.getFluid(astral_titanium.getCatalystAmount(2)),
                     Materials.Titanium.getMolten(tier_3_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(astral_titanium.getResidueAmount(2)),
+                    Materials.DTR.getFluid(astral_titanium.getResidueAmount(2)),
                     MaterialsElements.STANDALONE.ASTRAL_TITANIUM.getFluidStack(tier_3_quantity))
                 .duration(astral_titanium.getDuration(2))
                 .eut(astral_titanium.getEUt(2))
@@ -117,10 +116,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTPC.getFluid(astral_titanium.getCatalystAmount(1)),
+                    Materials.ExcitedDTPC.getFluid(astral_titanium.getCatalystAmount(1)),
                     Materials.Titanium.getMolten(tier_2_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(astral_titanium.getResidueAmount(1)),
+                    Materials.DTR.getFluid(astral_titanium.getResidueAmount(1)),
                     MaterialsElements.STANDALONE.ASTRAL_TITANIUM.getFluidStack(tier_2_quantity))
                 .duration(astral_titanium.getDuration(1))
                 .eut(astral_titanium.getEUt(1))
@@ -131,10 +130,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTCC.getFluid(astral_titanium.getCatalystAmount(0)),
+                    Materials.ExcitedDTCC.getFluid(astral_titanium.getCatalystAmount(0)),
                     Materials.Titanium.getMolten(tier_1_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(astral_titanium.getResidueAmount(0)),
+                    Materials.DTR.getFluid(astral_titanium.getResidueAmount(0)),
                     MaterialsElements.STANDALONE.ASTRAL_TITANIUM.getFluidStack(tier_1_quantity))
                 .duration(astral_titanium.getDuration(0))
                 .eut(astral_titanium.getEUt(0))
@@ -161,10 +160,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTSC.getFluid(celestial_tungsten.getCatalystAmount(4)),
+                    Materials.ExcitedDTSC.getFluid(celestial_tungsten.getCatalystAmount(4)),
                     Materials.Tungsten.getMolten(tier_5_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(celestial_tungsten.getResidueAmount(4)),
+                    Materials.DTR.getFluid(celestial_tungsten.getResidueAmount(4)),
                     MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getFluidStack(tier_5_quantity))
                 .duration(celestial_tungsten.getDuration(4))
                 .eut(celestial_tungsten.getEUt(4))
@@ -175,10 +174,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTEC.getFluid(celestial_tungsten.getCatalystAmount(3)),
+                    Materials.ExcitedDTEC.getFluid(celestial_tungsten.getCatalystAmount(3)),
                     Materials.Tungsten.getMolten(tier_4_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(celestial_tungsten.getResidueAmount(3)),
+                    Materials.DTR.getFluid(celestial_tungsten.getResidueAmount(3)),
                     MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getFluidStack(tier_4_quantity))
                 .duration(celestial_tungsten.getDuration(3))
                 .eut(celestial_tungsten.getEUt(3))
@@ -189,10 +188,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTRC.getFluid(celestial_tungsten.getCatalystAmount(2)),
+                    Materials.ExcitedDTRC.getFluid(celestial_tungsten.getCatalystAmount(2)),
                     Materials.Tungsten.getMolten(tier_3_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(celestial_tungsten.getResidueAmount(2)),
+                    Materials.DTR.getFluid(celestial_tungsten.getResidueAmount(2)),
                     MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getFluidStack(tier_3_quantity))
                 .duration(celestial_tungsten.getDuration(2))
                 .eut(celestial_tungsten.getEUt(2))
@@ -203,10 +202,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTPC.getFluid(celestial_tungsten.getCatalystAmount(1)),
+                    Materials.ExcitedDTPC.getFluid(celestial_tungsten.getCatalystAmount(1)),
                     Materials.Tungsten.getMolten(tier_2_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(celestial_tungsten.getResidueAmount(1)),
+                    Materials.DTR.getFluid(celestial_tungsten.getResidueAmount(1)),
                     MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getFluidStack(tier_2_quantity))
                 .duration(celestial_tungsten.getDuration(1))
                 .eut(celestial_tungsten.getEUt(1))
@@ -217,10 +216,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTCC.getFluid(celestial_tungsten.getCatalystAmount(0)),
+                    Materials.ExcitedDTCC.getFluid(celestial_tungsten.getCatalystAmount(0)),
                     Materials.Tungsten.getMolten(tier_1_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(celestial_tungsten.getResidueAmount(0)),
+                    Materials.DTR.getFluid(celestial_tungsten.getResidueAmount(0)),
                     MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getFluidStack(tier_1_quantity))
                 .duration(celestial_tungsten.getDuration(0))
                 .eut(celestial_tungsten.getEUt(0))
@@ -247,10 +246,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTSC.getFluid(advanced_nitinol.getCatalystAmount(4)),
+                    Materials.ExcitedDTSC.getFluid(advanced_nitinol.getCatalystAmount(4)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_5_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(advanced_nitinol.getResidueAmount(4)),
+                    Materials.DTR.getFluid(advanced_nitinol.getResidueAmount(4)),
                     MaterialsElements.STANDALONE.ADVANCED_NITINOL.getFluidStack(tier_5_quantity))
                 .duration(advanced_nitinol.getDuration(4))
                 .eut(advanced_nitinol.getEUt(4))
@@ -261,10 +260,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTEC.getFluid(advanced_nitinol.getCatalystAmount(3)),
+                    Materials.ExcitedDTEC.getFluid(advanced_nitinol.getCatalystAmount(3)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_4_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(advanced_nitinol.getResidueAmount(3)),
+                    Materials.DTR.getFluid(advanced_nitinol.getResidueAmount(3)),
                     MaterialsElements.STANDALONE.ADVANCED_NITINOL.getFluidStack(tier_4_quantity))
                 .duration(advanced_nitinol.getDuration(3))
                 .eut(advanced_nitinol.getEUt(3))
@@ -275,10 +274,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTRC.getFluid(advanced_nitinol.getCatalystAmount(2)),
+                    Materials.ExcitedDTRC.getFluid(advanced_nitinol.getCatalystAmount(2)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_3_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(advanced_nitinol.getResidueAmount(2)),
+                    Materials.DTR.getFluid(advanced_nitinol.getResidueAmount(2)),
                     MaterialsElements.STANDALONE.ADVANCED_NITINOL.getFluidStack(tier_3_quantity))
                 .duration(advanced_nitinol.getDuration(2))
                 .eut(advanced_nitinol.getEUt(2))
@@ -289,10 +288,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTPC.getFluid(advanced_nitinol.getCatalystAmount(1)),
+                    Materials.ExcitedDTPC.getFluid(advanced_nitinol.getCatalystAmount(1)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_2_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(advanced_nitinol.getResidueAmount(1)),
+                    Materials.DTR.getFluid(advanced_nitinol.getResidueAmount(1)),
                     MaterialsElements.STANDALONE.ADVANCED_NITINOL.getFluidStack(tier_2_quantity))
                 .duration(advanced_nitinol.getDuration(1))
                 .eut(advanced_nitinol.getEUt(1))
@@ -303,10 +302,10 @@ public class PlasmaForgeRecipes implements IRecipePool {
             GTValues.RA.stdBuilder()
                 .itemInputs(GTUtility.getIntegratedCircuit(4))
                 .fluidInputs(
-                    MaterialsUEVplus.ExcitedDTCC.getFluid(advanced_nitinol.getCatalystAmount(0)),
+                    Materials.ExcitedDTCC.getFluid(advanced_nitinol.getCatalystAmount(0)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_1_quantity))
                 .fluidOutputs(
-                    MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(advanced_nitinol.getResidueAmount(0)),
+                    Materials.DTR.getFluid(advanced_nitinol.getResidueAmount(0)),
                     MaterialsElements.STANDALONE.ADVANCED_NITINOL.getFluidStack(tier_1_quantity))
                 .duration(advanced_nitinol.getDuration(0))
                 .eut(advanced_nitinol.getEUt(0))

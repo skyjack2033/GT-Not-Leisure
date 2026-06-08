@@ -4,7 +4,6 @@ import static gtnhlanth.api.recipe.LanthanidesRecipeMaps.TARGET_CHAMBER_METADATA
 
 import net.minecraft.item.ItemStack;
 
-import com.dreammaster.gthandler.CustomItemList;
 import com.dreammaster.item.NHItemList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
@@ -55,7 +54,7 @@ public class TargetChamberRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(focusItem, ItemList.IC2_EnergyCrystal.getWildcard(1L))
-            .itemOutputs(GTUtility.copyAmountUnsafe(512, CustomItemList.EngravedEnergyChip.get(1)))
+            .itemOutputs(GTUtility.copyAmountUnsafe(512, NHItemList.EngravedEnergyChip.get(1)))
             .metadata(
                 TARGET_CHAMBER_METADATA,
                 TargetChamberMetadata.builder(focusItem)
@@ -70,7 +69,7 @@ public class TargetChamberRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(focusItem, GTOreDictUnificator.get(OrePrefixes.plate, Materials.Diamond, 1))
-            .itemOutputs(GTUtility.copyAmountUnsafe(512, CustomItemList.EngravedDiamondCrystalChip.get(1)))
+            .itemOutputs(GTUtility.copyAmountUnsafe(512, NHItemList.EngravedDiamondCrystalChip.get(1)))
             .metadata(
                 TARGET_CHAMBER_METADATA,
                 TargetChamberMetadata.builder(focusItem)
@@ -85,7 +84,7 @@ public class TargetChamberRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(focusItem, GTOreDictUnificator.get(OrePrefixes.gemExquisite, Materials.GarnetYellow, 1))
-            .itemOutputs(GTUtility.copyAmountUnsafe(512, CustomItemList.EngravedQuantumChip.get(1)))
+            .itemOutputs(GTUtility.copyAmountUnsafe(512, NHItemList.EngravedQuantumChip.get(1)))
             .metadata(
                 TARGET_CHAMBER_METADATA,
                 TargetChamberMetadata.builder(focusItem)
@@ -100,7 +99,7 @@ public class TargetChamberRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(focusItem, GTOreDictUnificator.get(OrePrefixes.plate, Materials.Gold, 1))
-            .itemOutputs(GTUtility.copyAmountUnsafe(1024, NHItemList.EngravedGoldChip.getIS(1)))
+            .itemOutputs(GTUtility.copyAmountUnsafe(1024, NHItemList.EngravedGoldChip.get(1)))
             .metadata(
                 TARGET_CHAMBER_METADATA,
                 TargetChamberMetadata.builder(focusItem)
@@ -114,8 +113,8 @@ public class TargetChamberRecipes implements IRecipePool {
             .addTo(TCR);
 
         RecipeBuilder.builder()
-            .itemInputs(focusItem, CustomItemList.ManyullynCrystal.get(1))
-            .itemOutputs(GTUtility.copyAmountUnsafe(512, NHItemList.EngravedManyullynCrystalChip.getIS(1)))
+            .itemInputs(focusItem, NHItemList.ManyullynCrystal.get(1))
+            .itemOutputs(GTUtility.copyAmountUnsafe(512, NHItemList.EngravedManyullynCrystalChip.get(1)))
             .metadata(
                 TARGET_CHAMBER_METADATA,
                 TargetChamberMetadata.builder(focusItem)

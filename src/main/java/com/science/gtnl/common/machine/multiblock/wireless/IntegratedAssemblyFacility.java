@@ -18,7 +18,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import com.dreammaster.gthandler.CustomItemList;
+import com.dreammaster.item.NHItemList;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -45,7 +45,6 @@ import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
@@ -86,18 +85,18 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
 
     public static final ItemStack[] REQUIRED_ITEMS = new ItemStack[] { ItemRefer.Component_Assembly_Line.get(64),
         GTNLItemList.ComponentAssembler.get(64),
-        GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.TranscendentMetal, 64),
-        ItemList.Robot_Arm_UIV.get(64), ItemList.Field_Generator_UIV.get(32), ItemList.Sensor_UIV.get(32),
-        ItemList.Emitter_UIV.get(32), GTNLItemList.EnhancementCore.get(16),
-        GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.TranscendentMetal, 16),
+        GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.TranscendentMetal, 64), ItemList.Robot_Arm_UIV.get(64),
+        ItemList.Field_Generator_UIV.get(32), ItemList.Sensor_UIV.get(32), ItemList.Emitter_UIV.get(32),
+        GTNLItemList.EnhancementCore.get(16),
+        GTOreDictUnificator.get(OrePrefixes.nanite, Materials.TranscendentMetal, 16),
         Mods.NewHorizonsCoreMod.isModLoaded() ? getPikoCircuit() : null,
         GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUIV, 32),
-        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Mellion, 8),
+        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Mellion, 8),
         GGMaterial.shirabon.get(OrePrefixes.plateSuperdense, 8) };
 
     @Optional.Method(modid = "dreamcraft")
     public static ItemStack getPikoCircuit() {
-        return CustomItemList.PikoCircuit.get(32);
+        return NHItemList.PikoCircuit.get(32);
     }
 
     @Getter

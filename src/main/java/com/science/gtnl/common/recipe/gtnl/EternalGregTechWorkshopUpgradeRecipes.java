@@ -14,7 +14,6 @@ import goodgenerator.items.GGMaterial;
 import goodgenerator.util.ItemRefer;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.recipe.RecipeMap;
@@ -73,7 +72,7 @@ public class EternalGregTechWorkshopUpgradeRecipes implements IRecipePool {
             ItemList.Field_Generator_UEV.get(64L));
 
         EternalGregTechWorkshopUpgrade.CD.addExtraCost(
-            GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.SpaceTime, 64),
+            GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.SpaceTime, 64),
             GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.SuperconductorUMVBase, 64),
             MaterialsElements.STANDALONE.HYPOGEN.getFrameBox(64),
             MaterialsElements.STANDALONE.DRAGON_METAL.getFrameBox(64),
@@ -83,10 +82,10 @@ public class EternalGregTechWorkshopUpgradeRecipes implements IRecipePool {
             ItemList.Field_Generator_UMV.get(32));
 
         EternalGregTechWorkshopUpgrade.EE.addExtraCost(
-            GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.WhiteDwarfMatter, 64),
-            GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.BlackDwarfMatter, 64),
-            GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.Eternity, 16),
-            GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.Universium, 2),
+            GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.WhiteDwarfMatter, 64),
+            GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.BlackDwarfMatter, 64),
+            GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Eternity, 16),
+            GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Universium, 2),
             CustomItemList.EOH_Infinite_Energy_Casing.get(64),
             CustomItemList.StabilisationFieldGeneratorTier5.get(16),
             ItemList.ZPM6.get(6),
@@ -159,7 +158,7 @@ public class EternalGregTechWorkshopUpgradeRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(ArrayUtils.addAll(EternalGregTechWorkshopUpgrade.END.getExtraCost()))
-            .itemOutputs(MaterialsUEVplus.GravitonShard.getGems(1))
+            .itemOutputs(Materials.GravitonShard.getGems(1))
             .duration(1)
             .eut(1)
             .metadata(FOG_UPGRADE_NAME_SHORT, EternalGregTechWorkshopUpgrade.END.getShortNameText())

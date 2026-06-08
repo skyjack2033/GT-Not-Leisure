@@ -30,8 +30,7 @@ import com.science.gtnl.utils.Utils;
 import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.MaterialsKevlar;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -240,7 +239,7 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
             .addElement('D', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 8))
             .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
             .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSE, 1))
-            .addElement('G', GTStructureUtility.ofFrame(MaterialsUEVplus.SixPhasedCopper))
+            .addElement('G', GTStructureUtility.ofFrame(Materials.SixPhasedCopper))
             .addElement('H', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 8))
             .addElement('I', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 11))
             .addElement('J', StructureUtility.ofBlock(sBlockCasings9, 5))
@@ -250,7 +249,7 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
             .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 14))
             .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 14))
             .addElement('P', StructureUtility.ofBlock(sBlockCasings9, 5))
-            .addElement('Q', GTStructureUtility.ofFrame(MaterialsKevlar.Kevlar))
+            .addElement('Q', GTStructureUtility.ofFrame(Materials.Kevlar))
             .build();
     }
 

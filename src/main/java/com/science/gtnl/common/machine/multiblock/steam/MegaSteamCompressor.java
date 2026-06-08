@@ -39,7 +39,7 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gregtech.common.tileentities.render.TileEntityBlackhole;
+import gregtech.common.tileentities.render.RenderingTileEntityBlackhole;
 
 public class MegaSteamCompressor extends SteamMultiMachineBase<MegaSteamCompressor> implements ISurvivalConstructable {
 
@@ -247,7 +247,7 @@ public class MegaSteamCompressor extends SteamMultiMachineBase<MegaSteamCompress
         return false;
     }
 
-    private TileEntityBlackhole rendererTileEntity = null;
+    private RenderingTileEntityBlackhole rendererTileEntity = null;
 
     // Returns true if render was actually created
     private boolean createRenderBlock() {
@@ -262,7 +262,7 @@ public class MegaSteamCompressor extends SteamMultiMachineBase<MegaSteamCompress
             .setBlock(base.getXCoord() + x, base.getYCoord() + y, base.getZCoord() + z, Blocks.air);
         base.getWorld()
             .setBlock(base.getXCoord() + x, base.getYCoord() + y, base.getZCoord() + z, GregTechAPI.sBlackholeRender);
-        rendererTileEntity = (TileEntityBlackhole) base.getWorld()
+        rendererTileEntity = (RenderingTileEntityBlackhole) base.getWorld()
             .getTileEntity(base.getXCoord() + x, base.getYCoord() + y, base.getZCoord() + z);
 
         rendererTileEntity.startScaleChange(true);

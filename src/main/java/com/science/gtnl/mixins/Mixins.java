@@ -87,7 +87,6 @@ public enum Mixins implements IMixins {
             "AppliedEnergistics.MixinInterfaceTerminalEntry",
             "AppliedEnergistics.MixinEntityTinyTNTPrimed",
             "AppliedEnergistics.MixinTileIOPort",
-            "AppliedEnergistics.MixinToolQuartzCuttingKnife",
             "AppliedEnergistics.assembler.AccessorContainerPatternTerm",
             "AppliedEnergistics.assembler.AccessorFCContainerEncodeTerminal",
             "AppliedEnergistics.assembler.AccessorInvTracker",

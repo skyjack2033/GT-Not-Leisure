@@ -46,7 +46,6 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -113,10 +112,10 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
         GTUtility.copyAmountUnsafe(128, GregtechItemList.SpaceTimeContinuumRipper.get(1)),
         GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUMV, 64),
         GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Netherite, 16),
-        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.TranscendentMetal, 16),
-        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.ProtoHalkonite, 16),
-        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SixPhasedCopper, 16),
-        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SpaceTime, 16), ItemList.ZPM6.get(8),
+        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.TranscendentMetal, 16),
+        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.ProtoHalkonite, 16),
+        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SixPhasedCopper, 16),
+        GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SpaceTime, 16), ItemList.ZPM6.get(8),
         ItemList.Robot_Arm_UIV.get(64), ItemList.Conveyor_Module_UIV.get(64), ItemList.Field_Generator_UEV.get(64) };
 
     public static FluidStack DISTILLED_WATER = GTModHandler.getDistilledWater(7500);

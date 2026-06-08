@@ -10,6 +10,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import com.dreammaster.item.NHItemList;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 
@@ -19,7 +20,6 @@ import fox.spiteful.avaritia.items.LudicrousItems;
 import goodgenerator.util.ItemRefer;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TCAspects;
@@ -110,11 +110,10 @@ public class TCResearches {
                             .merge(Aspect.ELDRITCH, Integer.MAX_VALUE)
                             .merge(Aspect.ENERGY, Integer.MAX_VALUE),
                         new ItemStack(ChronarchsClock),
-                        new ItemStack[] {
-                            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Universium, 1),
-                            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SpaceTime, 1),
-                            GTOreDictUnificator.get(OrePrefixes.gem, MaterialsUEVplus.GravitonShard, 1),
-                            GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.MagMatter, 1),
+                        new ItemStack[] { GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Universium, 1),
+                            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SpaceTime, 1),
+                            GTOreDictUnificator.get(OrePrefixes.gem, Materials.GravitonShard, 1),
+                            GTOreDictUnificator.get(OrePrefixes.nanite, Materials.MagMatter, 1),
                             ItemList.Timepiece.get(1), ItemList.Transdimensional_Alignment_Matrix.get(1),
                             ItemList.EnergisedTesseract.get(1), ItemList.Field_Generator_UXV.get(1),
                             ItemList.GigaChad.get(1),
@@ -174,7 +173,7 @@ public class TCResearches {
                                 .add(Aspect.MAGIC, 32)
                                 .add(Aspect.EXCHANGE, 32),
                             ItemList.Hull_HV.get(1),
-                            new ItemStack[] { GTOreDictUnificator.get(OrePrefixes.circuit, Materials.Advanced, 1L),
+                            new ItemStack[] { GTOreDictUnificator.get(OrePrefixes.circuit, Materials.HV, 1L),
                                 new ItemStack(ConfigBlocks.blockJar, 1),
                                 GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.Thaumium, 1L),
                                 GTOreDictUnificator.get(OrePrefixes.gem, Materials.Emerald, 1L),
@@ -240,7 +239,7 @@ public class TCResearches {
                             'M',
                             new ItemStack(ConfigItems.itemResource, 1, 10),
                             'Z',
-                            com.dreammaster.gthandler.CustomItemList.ArcaneSlate.get(1),
+                            NHItemList.ArcaneSlate.get(1),
                             'I',
                             GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.PulsatingIron, 1))))
                 .setParents("gtnl.largeEssentiaGenerator")

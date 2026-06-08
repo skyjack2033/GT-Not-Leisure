@@ -6,7 +6,6 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import bartworks.system.material.WerkstoffLoader;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsKevlar;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -25,7 +24,7 @@ public class PCBFactoryRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.plate, MaterialsKevlar.Kevlar, 1),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Kevlar, 1),
                 WerkstoffLoader.Rhodium.get(OrePrefixes.foil, 32),
                 MaterialsElements.getInstance().RUTHENIUM.getFoil(32))
             .itemOutputs(ItemList.Circuit_Board_Optical.get(1))

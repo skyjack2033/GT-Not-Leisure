@@ -2,7 +2,7 @@ package com.science.gtnl.common.recipe.gregtech;
 
 import net.minecraft.item.ItemStack;
 
-import com.dreammaster.gthandler.CustomItemList;
+import com.dreammaster.item.NHItemList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.utils.recipes.EyeOfHarmonyRecipeFactory;
@@ -10,7 +10,6 @@ import com.science.gtnl.utils.recipes.EyeOfHarmonyRecipeFactory;
 import bartworks.system.material.WerkstoffLoader;
 import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GTModHandler;
@@ -106,11 +105,11 @@ public class EyeOfHarmonyRecipes implements IRecipePool {
                 new FluidStackLong(Materials.Lead.getPlasma(56000000), 56000000L),
                 new FluidStackLong(Materials.Thorium.getPlasma(56000000), 56000000L),
                 new FluidStackLong(Materials.Naquadria.getPlasma(56000000), 56000000L),
-                new FluidStackLong(MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(112000000), 112000000L),
-                new FluidStackLong(MaterialsUEVplus.RawStarMatter.getFluid(700000), 700000L),
-                new FluidStackLong(MaterialsUEVplus.WhiteDwarfMatter.getMolten(4608), 4608L),
-                new FluidStackLong(MaterialsUEVplus.BlackDwarfMatter.getMolten(4608), 4608L),
-                new FluidStackLong(MaterialsUEVplus.Universium.getMolten(1152), 1152L) },
+                new FluidStackLong(Materials.DTR.getFluid(112000000), 112000000L),
+                new FluidStackLong(Materials.RawStarMatter.getFluid(700000), 700000L),
+                new FluidStackLong(Materials.WhiteDwarfMatter.getMolten(4608), 4608L),
+                new FluidStackLong(Materials.BlackDwarfMatter.getMolten(4608), 4608L),
+                new FluidStackLong(Materials.Universium.getMolten(1152), 1152L) },
             7,
             568000000000000000L,
             7090000000000000L,
@@ -122,6 +121,6 @@ public class EyeOfHarmonyRecipes implements IRecipePool {
 
     @Optional.Method(modid = "dreamcraft")
     public ItemStack getChargedCertusQuartzDust() {
-        return CustomItemList.ChargedCertusQuartzDust.get(1);
+        return NHItemList.ChargedCertusQuartzDust.get(1);
     }
 }

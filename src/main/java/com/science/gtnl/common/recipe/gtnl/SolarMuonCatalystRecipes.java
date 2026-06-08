@@ -8,7 +8,6 @@ import com.science.gtnl.utils.recipes.metadata.SolorMuonCatalystMetadata;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GTUtility;
 import gtPlusPlus.core.material.MaterialsElements;
@@ -31,7 +30,7 @@ public class SolarMuonCatalystRecipes implements IRecipePool {
                 Materials.Indium.getPlasma(2304),
                 Materials.Hydrogen.getPlasma(16000),
                 Materials.Fluorine.getPlasma(16000))
-            .fluidOutputs(MaterialsUEVplus.QuarkGluonPlasma.getFluid(6400000))
+            .fluidOutputs(Materials.QuarkGluonPlasma.getFluid(6400000))
             .eut(2013265192)
             .duration(200)
             .addTo(SMCR);
@@ -40,15 +39,15 @@ public class SolarMuonCatalystRecipes implements IRecipePool {
             .metadata(SolorMuonCatalystMetadata.INSTANCE, true)
             .itemInputs(GTUtility.copyAmount(0, Particle.getBaseParticle(Particle.MUON)))
             .fluidInputs(
-                MaterialsUEVplus.Space.getMolten(100),
-                MaterialsUEVplus.Time.getMolten(50),
+                Materials.Space.getMolten(100),
+                Materials.Time.getMolten(50),
                 Materials.Ichorium.getPlasma(1440),
                 new FluidStack(MaterialsElements.STANDALONE.HYPOGEN.getPlasma(), 1440),
                 Materials.Flerovium.getPlasma(1440),
                 new FluidStack(MaterialsElements.STANDALONE.CHRONOMATIC_GLASS.getPlasma(), 1440),
                 Materials.Bedrockium.getPlasma(1440),
                 new FluidStack(MaterialsElements.STANDALONE.DRAGON_METAL.getPlasma(), 1440))
-            .fluidOutputs(MaterialsUEVplus.MagMatter.getMolten(64000))
+            .fluidOutputs(Materials.MagMatter.getMolten(64000))
             .eut(2013265192)
             .duration(200)
             .addTo(SMCR);

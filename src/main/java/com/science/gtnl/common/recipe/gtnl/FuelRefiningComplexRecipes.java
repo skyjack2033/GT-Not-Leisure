@@ -12,7 +12,6 @@ import com.science.gtnl.utils.recipes.metadata.FuelRefiningMetadata;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -21,7 +20,6 @@ import gregtech.api.util.GTUtility;
 import gtPlusPlus.core.fluids.GTPPFluids;
 import gtPlusPlus.core.material.MaterialsElements;
 import gtPlusPlus.core.material.nuclear.MaterialsNuclides;
-import gtPlusPlus.core.util.minecraft.FluidUtils;
 
 public class FuelRefiningComplexRecipes implements IRecipePool {
 
@@ -50,7 +48,7 @@ public class FuelRefiningComplexRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(2),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Carbon, 64L))
             .fluidInputs(new FluidStack(GTPPFluids.CoalGas, 80000), Materials.Oxygen.getGas(10000))
-            .fluidOutputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 4000))
+            .fluidOutputs(new FluidStack(GTPPFluids.RP1RocketFuel, 4000))
             .duration(1200)
             .metadata(COIL_HEAT, 6300)
             .eut(TierEU.RECIPE_IV)
@@ -65,7 +63,7 @@ public class FuelRefiningComplexRecipes implements IRecipePool {
                 Materials.Oxygen.getGas(8000),
                 Materials.Nitrogen.getGas(10000),
                 new FluidStack(GTPPFluids.HydrogenPeroxide, 4000))
-            .fluidOutputs(FluidUtils.getFluidStack(GTPPFluids.DenseHydrazineFuelMixture, 4000))
+            .fluidOutputs(new FluidStack(GTPPFluids.DenseHydrazineFuelMixture, 4000))
             .duration(800)
             .metadata(COIL_HEAT, 7400)
             .eut(TierEU.RECIPE_EV)
@@ -137,7 +135,7 @@ public class FuelRefiningComplexRecipes implements IRecipePool {
                 Materials.Nitrogen.getGas(6000),
                 Materials.NitricAcid.getFluid(3000),
                 new FluidStack(GTPPFluids.HydrogenPeroxide, 2000))
-            .fluidOutputs(FluidUtils.getFluidStack(GTPPFluids.CN3H7O3RocketFuel, 4000))
+            .fluidOutputs(new FluidStack(GTPPFluids.CN3H7O3RocketFuel, 4000))
             .duration(1200)
             .metadata(COIL_HEAT, 8100)
             .eut(TierEU.RECIPE_IV)
@@ -153,7 +151,7 @@ public class FuelRefiningComplexRecipes implements IRecipePool {
                 Materials.NitricAcid.getFluid(3000),
                 Materials.Oxygen.getGas(1000),
                 new FluidStack(GTPPFluids.HydrogenPeroxide, 2000))
-            .fluidOutputs(FluidUtils.getFluidStack(GTPPFluids.H8N4C2O4RocketFuel, 5000))
+            .fluidOutputs(new FluidStack(GTPPFluids.H8N4C2O4RocketFuel, 5000))
             .duration(1200)
             .metadata(COIL_HEAT, 9000)
             .eut(TierEU.RECIPE_IV)
@@ -350,14 +348,14 @@ public class FuelRefiningComplexRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.stick, MaterialsUEVplus.TranscendentMetal, 20),
-                GTOreDictUnificator.get(OrePrefixes.plate, MaterialsUEVplus.HotProtoHalkonite, 16))
+                GTOreDictUnificator.get(OrePrefixes.stick, Materials.TranscendentMetal, 20),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.HotProtoHalkonite, 16))
             .fluidInputs(
                 GGMaterial.lightNaquadahFuel.getFluidOrGas(184000),
                 GGMaterial.heavyNaquadahFuel.getFluidOrGas(88000),
                 GGMaterial.atomicSeparationCatalyst.getMolten(48000),
                 Materials.Infinity.getMolten(2304),
-                MaterialsUEVplus.SpaceTime.getMolten(144))
+                Materials.SpaceTime.getMolten(144))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkV.getFluidOrGas(1000))
             .duration(180)
             .metadata(COIL_HEAT, 13500)
@@ -372,9 +370,9 @@ public class FuelRefiningComplexRecipes implements IRecipePool {
                 GGMaterial.heavyNaquadahFuel.getFluidOrGas(176000),
                 GGMaterial.atomicSeparationCatalyst.getMolten(96000),
                 MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getFluidStack(5760),
-                MaterialsUEVplus.Mellion.getMolten(4608),
+                Materials.Mellion.getMolten(4608),
                 GGMaterial.shirabon.getMolten(288),
-                MaterialsUEVplus.RawStarMatter.getFluid(80))
+                Materials.RawStarMatter.getFluid(80))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkVI.getFluidOrGas(1500))
             .duration(200)
             .metadata(COIL_HEAT, 13500)
@@ -389,10 +387,10 @@ public class FuelRefiningComplexRecipes implements IRecipePool {
                 GGMaterial.heavyNaquadahFuel.getFluidOrGas(176000),
                 GGMaterial.atomicSeparationCatalyst.getMolten(96000),
                 MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getFluidStack(5760),
-                MaterialsUEVplus.Mellion.getMolten(4608),
+                Materials.Mellion.getMolten(4608),
                 GGMaterial.shirabon.getMolten(288),
-                MaterialsUEVplus.RawStarMatter.getFluid(80),
-                MaterialsUEVplus.Universium.getMolten(18))
+                Materials.RawStarMatter.getFluid(80),
+                Materials.Universium.getMolten(18))
             .fluidOutputs(GGMaterial.naquadahBasedFuelMkVI.getFluidOrGas(3750))
             .duration(100)
             .metadata(COIL_HEAT, 13500)

@@ -19,14 +19,12 @@ import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
 import gtPlusPlus.core.fluids.GTPPFluids;
 import gtPlusPlus.core.material.MaterialsElements;
-import gtPlusPlus.core.util.minecraft.FluidUtils;
 
 public class SpaceDrillRecipes implements IRecipePool {
 
@@ -81,7 +79,7 @@ public class SpaceDrillRecipes implements IRecipePool {
                         WerkstoffLoader.Krypton.getFluidOrGas(1000000),
                         WerkstoffLoader.Xenon.getFluidOrGas(1000000),
                         Materials.Radon.getGas(1000000),
-                        Materials.Helium_3.getGas(100000000))),
+                        Materials.Helium3.getGas(100000000))),
                 Collections.unmodifiableList(
                     Arrays.asList(
                         Materials.Deuterium.getGas(10000000),
@@ -118,12 +116,12 @@ public class SpaceDrillRecipes implements IRecipePool {
         List<List<FuelVariant>> tierFuelVariants = Arrays.asList(
             Arrays.asList(
                 new FuelVariant(Materials.GasolinePremium.getFluid(10000), 600),
-                new FuelVariant(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000), 300)),
+                new FuelVariant(new FluidStack(GTPPFluids.RP1RocketFuel, 6000), 300)),
             Arrays.asList(
-                new FuelVariant(FluidUtils.getFluidStack(GTPPFluids.DenseHydrazineFuelMixture, 10000), 300),
-                new FuelVariant(FluidUtils.getFluidStack(GTPPFluids.CN3H7O3RocketFuel, 6000), 150)),
+                new FuelVariant(new FluidStack(GTPPFluids.DenseHydrazineFuelMixture, 10000), 300),
+                new FuelVariant(new FluidStack(GTPPFluids.CN3H7O3RocketFuel, 6000), 150)),
             Arrays.asList(
-                new FuelVariant(FluidUtils.getFluidStack(GTPPFluids.H8N4C2O4RocketFuel, 10000), 150),
+                new FuelVariant(new FluidStack(GTPPFluids.H8N4C2O4RocketFuel, 10000), 150),
                 new FuelVariant(GGMaterial.thoriumBasedLiquidFuel.getFluidOrGas(6000), 75)));
 
         for (int tierIndex = 0; tierIndex < minerTiers.size(); tierIndex++) {
@@ -155,7 +153,7 @@ public class SpaceDrillRecipes implements IRecipePool {
             23,
             minerTiers.get(5).drone,
             GGMaterial.naquadahBasedFuelMkV.getFluidOrGas(10000),
-            MaterialsUEVplus.WhiteDwarfMatter.getMolten(100000),
+            Materials.WhiteDwarfMatter.getMolten(100000),
             6,
             750,
             TierEU.RECIPE_UXV);
@@ -164,7 +162,7 @@ public class SpaceDrillRecipes implements IRecipePool {
             24,
             minerTiers.get(5).drone,
             GGMaterial.naquadahBasedFuelMkV.getFluidOrGas(10000),
-            MaterialsUEVplus.BlackDwarfMatter.getMolten(100000),
+            Materials.BlackDwarfMatter.getMolten(100000),
             6,
             750,
             TierEU.RECIPE_UXV);

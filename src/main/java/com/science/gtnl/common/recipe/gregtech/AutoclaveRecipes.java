@@ -12,7 +12,6 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsGTNH;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
@@ -47,7 +46,7 @@ public class AutoclaveRecipes implements IRecipePool {
                 GregtechItemList.RedAlgaeBiomass.get(32),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.CertusQuartz, 32))
             .fluidInputs(GTModHandler.getDistilledWater(8000))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, MaterialsGTNH.Prismarine, 16))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, Materials.Prismarine, 16))
             .duration(300)
             .eut(TierEU.RECIPE_IV)
             .addTo(AR);
@@ -81,7 +80,7 @@ public class AutoclaveRecipes implements IRecipePool {
                 GregtechItemList.RedAlgaeBiomass.get(32),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.CertusQuartz, 32))
             .fluidInputs(Materials.Grade2PurifiedWater.getFluid(8000))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, MaterialsGTNH.Prismarine, 64))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, Materials.Prismarine, 64))
             .duration(300)
             .eut(TierEU.RECIPE_LuV)
             .addTo(AR);
@@ -110,7 +109,7 @@ public class AutoclaveRecipes implements IRecipePool {
                 GregtechItemList.RedAlgaeBiomass.get(32),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.CertusQuartz, 32))
             .fluidInputs(Materials.Grade1PurifiedWater.getFluid(8000))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, MaterialsGTNH.Prismarine, 32))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, Materials.Prismarine, 32))
             .duration(300)
             .eut(TierEU.RECIPE_LuV)
             .addTo(AR);
@@ -122,7 +121,7 @@ public class AutoclaveRecipes implements IRecipePool {
                     GregtechItemList.RedAlgaeBiomass.get(32),
                     GTBees.combs.getStackForType(CombType.PRISMATIC, 32))
                 .fluidInputs(Materials.Grade1PurifiedWater.getFluid(8000))
-                .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, MaterialsGTNH.Prismarine, 32))
+                .itemOutputs(GTOreDictUnificator.get(OrePrefixes.shard, Materials.Prismarine, 32))
                 .duration(15 * SECONDS)
                 .eut(TierEU.RECIPE_LuV)
                 .addTo(AR);

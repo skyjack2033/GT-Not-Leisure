@@ -23,7 +23,6 @@ import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -69,7 +68,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         {
             put(Materials.Hydrogen.mGas, 0L);
             put(Materials.Helium.mGas, 0L);
-            put(MaterialsUEVplus.RawStarMatter.mFluid, 0L);
+            put(Materials.RawStarMatter.mFluid, 0L);
         }
     };
 
@@ -258,7 +257,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
 
         // Reduce internal storage by input fluid quantity required for recipe.
         if (enableRawStarMatter) {
-            validFluidMap.put(MaterialsUEVplus.RawStarMatter.mFluid, 0L);
+            validFluidMap.put(Materials.RawStarMatter.mFluid, 0L);
         } else {
             validFluidMap.put(Materials.Hydrogen.mGas, 0L);
             validFluidMap.put(Materials.Helium.mGas, 0L);
@@ -330,7 +329,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     }
 
     private long getStellarPlasmaStored() {
-        return validFluidMap.get(MaterialsUEVplus.RawStarMatter.mFluid);
+        return validFluidMap.get(Materials.RawStarMatter.mFluid);
     }
 
     private double pityChance;
@@ -342,7 +341,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         long failedParallelAmount = parallelAmount - successfulParallelAmount;
         if (failedParallelAmount > 0) {
             outputFluidToAENetwork(
-                MaterialsUEVplus.SpaceTime.getMolten(1),
+                Materials.SpaceTime.getMolten(1),
                 (long) ((0.5 * 14_400L * Math.pow(2, currentRecipeRocketTier + 1)) * failedParallelAmount));
             pityChance += 0.1;
         } else {
@@ -867,7 +866,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
                         + " L/s");
 
                 FluidStackLong stellarPlasmaOutput = new FluidStackLong(
-                    MaterialsUEVplus.RawStarMatter.getFluid(0),
+                    Materials.RawStarMatter.getFluid(0),
                     (long) (stellarPlasma.amount * yield * successChance * parallelAmount));
                 str.add(
                     "Average " + stellarPlasmaOutput.fluidStack.getLocalizedName()

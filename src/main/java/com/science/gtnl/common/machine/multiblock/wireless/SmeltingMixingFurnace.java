@@ -43,7 +43,6 @@ import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
@@ -67,9 +66,9 @@ import tectech.thing.casing.BlockGTCasingsTT;
 
 public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<SmeltingMixingFurnace> {
 
-    public static final FluidStack[] valid_fuels = { MaterialsUEVplus.ExcitedDTCC.getFluid(1L),
-        MaterialsUEVplus.ExcitedDTPC.getFluid(1L), MaterialsUEVplus.ExcitedDTRC.getFluid(1L),
-        MaterialsUEVplus.ExcitedDTEC.getFluid(1L), MaterialsUEVplus.ExcitedDTSC.getFluid(1L) };
+    public static final FluidStack[] valid_fuels = { Materials.ExcitedDTCC.getFluid(1L),
+        Materials.ExcitedDTPC.getFluid(1L), Materials.ExcitedDTRC.getFluid(1L), Materials.ExcitedDTEC.getFluid(1L),
+        Materials.ExcitedDTSC.getFluid(1L) };
 
     public static final ItemStack martix = ItemList.Transdimensional_Alignment_Matrix.get(1);
 
