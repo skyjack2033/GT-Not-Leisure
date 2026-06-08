@@ -1,7 +1,6 @@
-package com.science.gtnl.utils.gui.recipe;
+package com.science.gtnl.common.gui.recipe;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -18,7 +17,6 @@ import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.science.gtnl.utils.item.ItemUtils;
-import com.science.gtnl.utils.recipes.format.BloodSoulFormat;
 
 import gregtech.api.enums.SteamVariant;
 import gregtech.api.recipe.BasicUIPropertiesBuilder;
@@ -29,14 +27,13 @@ import gregtech.common.gui.modularui.UIHelper;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FallingTowerFrontend extends RecipeMapFrontend {
+public class ExtremeExtremeEntityCrusherFrontend extends RecipeMapFrontend {
 
-    public FallingTowerFrontend(BasicUIPropertiesBuilder uiPropertiesBuilder,
+    public ExtremeExtremeEntityCrusherFrontend(BasicUIPropertiesBuilder uiPropertiesBuilder,
         NEIRecipePropertiesBuilder neiPropertiesBuilder) {
         super(
             uiPropertiesBuilder.progressBarPos(new Pos2d(26, 7)),
-            neiPropertiesBuilder.recipeBackgroundSize(new Size(170, 170))
-                .neiSpecialInfoFormatter(new BloodSoulFormat()));
+            neiPropertiesBuilder.recipeBackgroundSize(new Size(170, 100)));
     }
 
     @Override
@@ -44,22 +41,31 @@ public class FallingTowerFrontend extends RecipeMapFrontend {
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)
-                .setPos(new Pos2d(150, 7).add(windowOffset)));
+                .setPos(new Pos2d(150, 102).add(windowOffset)));
     }
 
     @Override
     public List<Pos2d> getItemInputPositions(int itemInputCount) {
-        return Collections.singletonList(new Pos2d(6, 7));
+        ArrayList<Pos2d> positions = new ArrayList<>();
+        positions.add(new Pos2d(6, 7));
+        return positions;
     }
 
     @Override
     public List<Pos2d> getItemOutputPositions(int itemOutputCount) {
         ArrayList<Pos2d> positions = new ArrayList<>();
-        for (int j = 0; j < 9; j++) {
+        for (int j = 0; j < 4; j++) {
             for (int i = 0; i < 9; i++) {
                 positions.add(new Pos2d((6 + 18 * i), (25 + 18 * j)));
             }
         }
+        return positions;
+    }
+
+    @Override
+    public List<Pos2d> getFluidOutputPositions(int fluidOutputCount) {
+        ArrayList<Pos2d> positions = new ArrayList<>();
+        positions.add(new Pos2d(60, 7));
         return positions;
     }
 

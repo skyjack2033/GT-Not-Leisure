@@ -34,8 +34,8 @@ import com.gtnewhorizons.modularui.common.widget.ChangeableWidget;
 import com.gtnewhorizons.modularui.common.widget.DynamicPositionedRow;
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.Scrollable;
+import com.science.gtnl.common.gui.AutoScalingStackSizeText;
 import com.science.gtnl.utils.Utils;
-import com.science.gtnl.utils.gui.AutoScalingStackSizeText;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 

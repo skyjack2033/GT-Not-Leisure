@@ -9,9 +9,9 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
+import com.science.gtnl.common.gui.WirelessSteamCoverGui;
+import com.science.gtnl.common.gui.WirelessSteamCoverUIFactory;
 import com.science.gtnl.utils.enums.SteamTypes;
-import com.science.gtnl.utils.gui.WirelessSteamCoverGui;
-import com.science.gtnl.utils.gui.WirelessSteamCoverUIFactory;
 import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
 
 import gregtech.api.covers.CoverContext;

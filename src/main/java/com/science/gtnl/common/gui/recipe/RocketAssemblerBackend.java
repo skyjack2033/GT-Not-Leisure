@@ -1,4 +1,4 @@
-package com.science.gtnl.utils.gui.recipe;
+package com.science.gtnl.common.gui.recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

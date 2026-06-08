@@ -15,7 +15,7 @@ import com.gtnewhorizons.modularui.api.forge.IItemHandlerModifiable;
 import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.science.gtnl.api.IFluidsLockable;
-import com.science.gtnl.utils.gui.VoidCoverUIFactory;
+import com.science.gtnl.common.gui.VoidCoverUIFactory;
 
 import gregtech.api.covers.CoverContext;
 import gregtech.api.gui.modularui.CoverUIBuildContext;

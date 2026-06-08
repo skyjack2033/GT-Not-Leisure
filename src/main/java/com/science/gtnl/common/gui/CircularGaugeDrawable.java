@@ -1,4 +1,4 @@
-package com.science.gtnl.utils.gui;
+package com.science.gtnl.common.gui;
 
 import java.util.function.DoubleSupplier;
 

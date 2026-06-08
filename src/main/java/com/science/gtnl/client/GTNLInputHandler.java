@@ -14,7 +14,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.input.Mouse;
 
-import com.glodblock.github.client.gui.GuiItemMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.gtnewhorizons.modularui.api.KeyboardUtil;
 import com.science.gtnl.ScienceNotLeisure;
@@ -163,11 +162,8 @@ public class GTNLInputHandler implements IContainerInputHandler {
 
             if (!(focused instanceof BookmarkPanel || focused instanceof ItemPanel)) return false;
             final GuiScreen currentGui = MC.currentScreen;
-            ScienceNotLeisure.network.sendToServer(
-                new KeyBindingHandler(
-                    keyBinding.getKey(),
-                    item,
-                    currentGui instanceof GuiMEMonitorable || currentGui instanceof GuiItemMonitor));
+            ScienceNotLeisure.network
+                .sendToServer(new KeyBindingHandler(keyBinding.getKey(), item, currentGui instanceof GuiMEMonitorable));
             if (AE_START_CRAFT_KEY.equals(keyBinding.getKey())) {
                 var player = MC.thePlayer;
                 if (player.openContainer instanceof ContainerCraftAmount

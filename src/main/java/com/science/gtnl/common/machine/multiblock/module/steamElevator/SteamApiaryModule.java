@@ -57,8 +57,8 @@ import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
+import com.science.gtnl.common.gui.CircularGaugeDrawable;
 import com.science.gtnl.utils.enums.GTNLItemList;
-import com.science.gtnl.utils.gui.CircularGaugeDrawable;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

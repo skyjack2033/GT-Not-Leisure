@@ -1,8 +1,8 @@
-package com.science.gtnl.utils.gui.recipe;
+package com.science.gtnl.common.gui.recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.science.gtnl.utils.recipes.format.BloodSoulFormat;
+import com.science.gtnl.utils.recipes.format.SpaceMinerFormat;
 
 import gregtech.api.recipe.BasicUIPropertiesBuilder;
 import gregtech.api.recipe.NEIRecipePropertiesBuilder;
@@ -10,11 +10,10 @@ import gregtech.api.util.MethodsReturnNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class BloodSoulFrontend extends GTNLLogoFrontend {
+public class SpaceMinerFrontend extends GTNLLogoFrontend {
 
-    public BloodSoulFrontend(BasicUIPropertiesBuilder uiPropertiesBuilder,
+    public SpaceMinerFrontend(BasicUIPropertiesBuilder uiPropertiesBuilder,
         NEIRecipePropertiesBuilder neiPropertiesBuilder) {
-        super(uiPropertiesBuilder, neiPropertiesBuilder.neiSpecialInfoFormatter(new BloodSoulFormat()));
+        super(uiPropertiesBuilder, neiPropertiesBuilder.neiSpecialInfoFormatter(new SpaceMinerFormat()));
     }
-
 }

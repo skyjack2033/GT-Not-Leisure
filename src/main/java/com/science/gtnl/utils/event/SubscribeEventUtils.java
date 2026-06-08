@@ -39,6 +39,8 @@ import net.minecraftforge.event.world.WorldEvent;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.TickrateAPI;
 import com.science.gtnl.common.command.CommandTickrate;
+import com.science.gtnl.common.gui.recipe.ElectrocellGeneratorFrontend;
+import com.science.gtnl.common.gui.recipe.RocketAssemblerFrontend;
 import com.science.gtnl.common.item.BaubleItem;
 import com.science.gtnl.common.item.items.TimeStopPocketWatch;
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionHitEffectState;
@@ -57,8 +59,6 @@ import com.science.gtnl.loader.RecipeLoader;
 import com.science.gtnl.mixins.early.Minecraft.AccessorFoodStats;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.ModList;
-import com.science.gtnl.utils.gui.recipe.ElectrocellGeneratorFrontend;
-import com.science.gtnl.utils.gui.recipe.RocketAssemblerFrontend;
 import com.science.gtnl.utils.recipes.data.CircuitNanitesRecipeData;
 
 import bartworks.API.SideReference;

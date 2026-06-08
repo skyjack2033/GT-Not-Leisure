@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import com.science.gtnl.utils.gui.recipe.ExtendQFTFrontend;
+import com.science.gtnl.common.gui.recipe.ExtendQFTFrontend;
 
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBuilder;

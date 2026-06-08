@@ -2,11 +2,11 @@ package com.science.gtnl.common.block.blocks.tile;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import gregtech.common.tileentities.render.TileEntityLaser;
+import gregtech.common.tileentities.render.RenderingTileEntityLaser;
 import lombok.Getter;
 
 @Getter
-public class TileEntityLaserBeacon extends TileEntityLaser {
+public class TileEntityLaserBeacon extends RenderingTileEntityLaser {
 
     private double range;
 

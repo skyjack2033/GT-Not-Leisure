@@ -1,4 +1,4 @@
-package com.science.gtnl.utils.gui.recipe;
+package com.science.gtnl.common.gui.recipe;
 
 import java.util.List;
 
@@ -12,23 +12,22 @@ import com.science.gtnl.utils.item.ItemUtils;
 
 import gregtech.api.recipe.BasicUIPropertiesBuilder;
 import gregtech.api.recipe.NEIRecipePropertiesBuilder;
-import gregtech.api.recipe.RecipeMapFrontend;
 import gregtech.api.util.MethodsReturnNonnullByDefault;
 import gregtech.common.gui.modularui.UIHelper;
+import gtPlusPlus.api.recipe.QuantumForceTransformerFrontend;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class GeneralFrontend extends RecipeMapFrontend {
+public class ExtendQFTFrontend extends QuantumForceTransformerFrontend {
 
     private static final int xDirMaxCount = 4;
     private static final int yOrigin = 8;
     private final int itemRowCount;
 
-    public GeneralFrontend(BasicUIPropertiesBuilder uiPropertiesBuilder,
-        NEIRecipePropertiesBuilder neiPropertiesBuilder) {
-        super(uiPropertiesBuilder, neiPropertiesBuilder);
+    public ExtendQFTFrontend(BasicUIPropertiesBuilder ui, NEIRecipePropertiesBuilder nei) {
+        super(ui, nei);
         this.itemRowCount = getItemRowCount();
-        neiProperties.recipeBackgroundSize = new Size(170, 10 + (itemRowCount + getFluidRowCount()) * 18);
+        this.neiProperties.recipeBackgroundSize = new Size(170, 10 + (itemRowCount + getFluidRowCount()) * 18);
     }
 
     @Override
@@ -39,11 +38,11 @@ public class GeneralFrontend extends RecipeMapFrontend {
                 .setPos(new Pos2d(79, 7).add(windowOffset)));
     }
 
-    private int getItemRowCount() {
+    public int getItemRowCount() {
         return (Math.max(uiProperties.maxItemInputs, uiProperties.maxItemOutputs) - 1) / xDirMaxCount + 1;
     }
 
-    private int getFluidRowCount() {
+    public int getFluidRowCount() {
         return (Math.max(uiProperties.maxFluidInputs, uiProperties.maxFluidOutputs) - 1) / xDirMaxCount + 1;
     }
 
@@ -66,5 +65,4 @@ public class GeneralFrontend extends RecipeMapFrontend {
     public List<Pos2d> getFluidOutputPositions(int fluidOutputCount) {
         return UIHelper.getGridPositions(fluidOutputCount, 98, yOrigin + itemRowCount * 18, xDirMaxCount);
     }
-
 }

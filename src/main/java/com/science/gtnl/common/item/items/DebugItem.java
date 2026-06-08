@@ -18,7 +18,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.dreammaster.gthandler.CustomItemList;
+import com.dreammaster.item.NHItemList;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.utils.SimpleItem;
@@ -34,6 +34,7 @@ import gregtech.api.util.GTUtility;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import it.unimi.dsi.fastutil.objects.Object2CharLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2CharMap;
+import tectech.thing.CustomItemList;
 
 public class DebugItem extends Item {
 
@@ -43,7 +44,7 @@ public class DebugItem extends Item {
         List<Class<?>> list = new ArrayList<>();
         list.add(GTNLItemList.class);
         list.add(ItemList.class);
-        list.add(tectech.thing.CustomItemList.class);
+        list.add(CustomItemList.class);
         list.add(GregtechItemList.class);
         list.add(kubatech.api.enums.ItemList.class);
         if (Mods.NewHorizonsCoreMod.isModLoaded()) addNHItemList(list);
@@ -52,7 +53,7 @@ public class DebugItem extends Item {
 
     @Optional.Method(modid = "dreamcraft")
     public static void addNHItemList(List<Class<?>> list) {
-        list.add(CustomItemList.class);
+        list.add(NHItemList.class);
     }
 
     public static final char[] placeholder = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz"

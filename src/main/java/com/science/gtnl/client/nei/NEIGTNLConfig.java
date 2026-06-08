@@ -4,13 +4,13 @@ import com.science.gtnl.client.gui.GuiDirePatternEncoder;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableAdvancedWorkbench;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableBasicWorkbench;
 import com.science.gtnl.client.gui.portableWorkbench.GuiPortableFurnace;
+import com.science.gtnl.common.gui.recipe.RocketAssemblerHandler;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.ModList;
-import com.science.gtnl.utils.gui.recipe.RocketAssemblerHandler;
 
 import bartworks.system.material.Werkstoff;
 import codechicken.nei.api.API;

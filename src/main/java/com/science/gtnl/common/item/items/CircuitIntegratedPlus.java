@@ -5,6 +5,7 @@ import static ggfab.GGItemList.SingleUseScrewdriver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -23,34 +24,45 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.oredict.OreDictionary;
 
+import com.cleanroommc.modularui.api.IGuiHolder;
+import com.cleanroommc.modularui.factory.GuiFactories;
+import com.cleanroommc.modularui.factory.PlayerInventoryGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.ModularScreen;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gtnewhorizon.gtnhlib.util.ItemUtil;
-import com.gtnewhorizons.modularui.api.UIInfos;
 import com.science.gtnl.client.GTNLCreativeTabs;
+import com.science.gtnl.common.gui.CircuitIntegratedPlusGui;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import bartworks.common.items.ItemCircuitProgrammer;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
+import gregtech.api.enums.ToolboxSlot;
 import gregtech.api.interfaces.INetworkUpdatableItem;
-import gregtech.api.net.GTPacketUpdateItem;
+import gregtech.api.items.MetaGeneratedTool;
+import gregtech.api.modularui2.GTGuiThemes;
+import gregtech.api.modularui2.GTModularScreen;
 import gregtech.api.objects.XSTR;
 import gregtech.api.util.GTModHandler;
-import gregtech.common.gui.modularui.uifactory.SelectItemUIFactory;
+import gregtech.common.items.ItemGTToolbox;
+import gregtech.common.items.toolbox.ToolboxUtil;
+import gregtech.crossmod.backhand.Backhand;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.item.ItemToolbox;
 
-public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem {
+public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem, IGuiHolder<PlayerInventoryGuiData> {
 
     public static final int MAX_CIRCUIT_NUMBER = 24;
     public static final List<ItemStack> NON_ZERO_VARIANTS = new ArrayList<>(MAX_CIRCUIT_NUMBER);
 
-    private static final String aTextEmptyRow = "   ";
-    private static final List<ItemStack> ALL_VARIANTS = new ArrayList<>(MAX_CIRCUIT_NUMBER + 1);
+    public static final String aTextEmptyRow = "   ";
+    public static final List<ItemStack> ALL_VARIANTS = new ArrayList<>(MAX_CIRCUIT_NUMBER + 1);
     public final IIcon[] mIconDamage = new IIcon[25];
 
     public CircuitIntegratedPlus() {
@@ -235,7 +247,13 @@ public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem
         if (meta < 0 || meta > 24) return true;
 
         if (!player.capabilities.isCreativeMode) {
-            findConfiguratorInInv(player, true); // damage the tool
+            try {
+                findConfiguratorInInv(player, true); // damage the tool
+            } catch (IllegalStateException e) {
+                player.addChatComponentMessage(
+                    new ChatComponentText("Error while trying to configure circuit: " + e.getMessage()));
+                return true;
+            }
         }
         stack.setItemDamage(meta);
 
@@ -244,15 +262,9 @@ public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        // nothing on server side or fake player
-        if (player instanceof FakePlayer || !world.isRemote) return stack;
-        // check if any screwdriver
-        ItemStack configuratorStack;
-        if (player.capabilities.isCreativeMode) {
-            configuratorStack = null;
-        } else {
-            configuratorStack = findConfiguratorInInv(player, false);
-            if (configuratorStack == null) {
+        if (!(player instanceof FakePlayer) && !world.isRemote) {
+            // check if any screwdriver
+            if (!player.capabilities.isCreativeMode && findConfiguratorInInv(player, false) == null) {
                 int count;
                 try {
                     count = Integer
@@ -267,29 +279,17 @@ public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem
                 player.addChatComponentMessage(
                     new ChatComponentTranslation(
                         "GT5U.item.programmed_circuit.no_screwdriver." + XSTR.XSTR_INSTANCE.nextInt(count)));
-                return stack;
+                return super.onItemRightClick(stack, world, player);
             }
+
+            // open gui
+            if (stack == Backhand.getOffhandItem(player)) GuiFactories.playerInventory()
+                .openFromPlayerInventory(player, Backhand.getOffhandSlot(player));
+            else GuiFactories.playerInventory()
+                .openFromMainHand(player);
         }
-        openSelectorGui(configuratorStack, stack.getItemDamage(), player);
-        return stack;
-    }
 
-    private void openSelectorGui(ItemStack configurator, int meta, EntityPlayer player) {
-        UIInfos.openClientUI(
-            player,
-            buildContext -> new SelectItemUIFactory(
-                StatCollector.translateToLocal("GT5U.item.programmed_circuit.select.header"),
-                configurator,
-                CircuitIntegratedPlus::onConfigured,
-                ALL_VARIANTS,
-                meta,
-                true).createWindow(buildContext));
-    }
-
-    private static void onConfigured(ItemStack stack) {
-        NBTTagCompound tag = new NBTTagCompound();
-        tag.setByte("meta", (byte) stack.getItemDamage());
-        GTValues.NW.sendToServer(new GTPacketUpdateItem(tag));
+        return super.onItemRightClick(stack, world, player);
     }
 
     private static final int screwdriverOreId = OreDictionary.getOreID("craftingToolScrewdriver");
@@ -310,7 +310,11 @@ public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem
 
             // Circuit Configurator
             if (potentialStack.getItem() instanceof ItemCircuitProgrammer programmer) {
-                if (doDamage) programmer.useItem(potentialStack, player);
+                if (doDamage) {
+                    boolean success = programmer.useItem(potentialStack, player);
+
+                    if(!success) throw new IllegalStateException("Circuit Configurator has no charge");
+                }
                 return potentialStack;
             }
 
@@ -338,6 +342,16 @@ public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem
                             return potentialStack; // return the toolbox for display
                         }
                     }
+                }
+            } else if (potentialStack.getItem() instanceof ItemGTToolbox) {
+                final Optional<ItemStack> potentialScrewdriver = ToolboxUtil.getItemInside(potentialStack, ToolboxSlot.SCREWDRIVER);
+                if (potentialScrewdriver.isPresent() && potentialScrewdriver.get().getItem() instanceof final MetaGeneratedTool mgTool) {
+                    final ItemStack screwdriver = potentialScrewdriver.get();
+                    if (doDamage && mgTool.doDamageToItem(screwdriver, 1)) {
+                        ToolboxUtil.saveItemInside(potentialStack, screwdriver, ToolboxSlot.SCREWDRIVER);
+                    }
+
+                    return potentialStack;
                 }
             }
 
@@ -378,5 +392,19 @@ public class CircuitIntegratedPlus extends Item implements INetworkUpdatableItem
                 toolboxInventory.setInventorySlotContents(i, ItemStack.loadItemStackFromNBT(slotNbt));
             }
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ModularScreen createScreen(PlayerInventoryGuiData data, ModularPanel mainPanel) {
+        return new GTModularScreen(mainPanel, GTGuiThemes.STANDARD);
+    }
+
+    @Override
+    public ModularPanel buildUI(PlayerInventoryGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        EntityPlayer player = data.getPlayer();
+        return new CircuitIntegratedPlusGui(
+            data,
+            player.capabilities.isCreativeMode ? null : findConfiguratorInInv(data.getPlayer(), false)).build();
     }
 }
