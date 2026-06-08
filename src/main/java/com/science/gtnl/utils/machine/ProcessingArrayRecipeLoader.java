@@ -72,10 +72,6 @@ public class ProcessingArrayRecipeLoader {
         // Fermenter
         ProcessingArrayManager.addRecipeMapToPA("basicmachine.fermenter", RecipeMaps.fermentingRecipes);
         ProcessingArrayManager.addSoundResourceToPA("basicmachine.fermenter", SoundResource.NONE);
-        // Fluid Canner
-        ProcessingArrayManager.addRecipeMapToPA("basicmachine.fluidcanner", RecipeMaps.fluidCannerRecipes);
-        ProcessingArrayManager
-            .addSoundResourceToPA("basicmachine.fluidcanner", SoundResource.IC2_MACHINES_EXTRACTOR_OP);
         // Fluid Extractor
         ProcessingArrayManager.addRecipeMapToPA("basicmachine.fluidextractor", RecipeMaps.fluidExtractionRecipes);
         ProcessingArrayManager
@@ -120,10 +116,6 @@ public class ProcessingArrayRecipeLoader {
         // Ore Washer
         ProcessingArrayManager.addRecipeMapToPA("basicmachine.orewasher", RecipeMaps.oreWasherRecipes);
         ProcessingArrayManager.addSoundResourceToPA("basicmachine.orewasher", SoundResource.NONE);
-        // Plasma Arc Furnace
-        ProcessingArrayManager.addRecipeMapToPA("basicmachine.plasmaarcfurnace", RecipeMaps.plasmaArcFurnaceRecipes);
-        ProcessingArrayManager
-            .addSoundResourceToPA("basicmachine.plasmaarcfurnace", SoundResource.IC2_MACHINES_INDUCTION_LOOP);
         // Polarizer
         ProcessingArrayManager.addRecipeMapToPA("basicmachine.polarizer", RecipeMaps.polarizerRecipes);
         ProcessingArrayManager
@@ -140,9 +132,6 @@ public class ProcessingArrayRecipeLoader {
         // Sifter
         ProcessingArrayManager.addRecipeMapToPA("basicmachine.sifter", RecipeMaps.sifterRecipes);
         ProcessingArrayManager.addSoundResourceToPA("basicmachine.sifter", SoundResource.NONE);
-        // Slicer
-        ProcessingArrayManager.addRecipeMapToPA("basicmachine.slicer", RecipeMaps.slicerRecipes);
-        ProcessingArrayManager.addSoundResourceToPA("basicmachine.slicer", SoundResource.NONE);
         // Thermal Centrifuge
         ProcessingArrayManager.addRecipeMapToPA("basicmachine.thermalcentrifuge", RecipeMaps.thermalCentrifugeRecipes);
         ProcessingArrayManager.addSoundResourceToPA("basicmachine.thermalcentrifuge", SoundResource.NONE);

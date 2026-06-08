@@ -2227,12 +2227,10 @@ Tooltip_LargeGasCollector_02=在主世界，末地，下界无需输入物品也
 Tooltip_LargeGasCollector_Casing=任意脱氧钢机械方块
 
 NameLargeCutter=大型切割机
-LargeCutterRecipeType=切割机 / 切片机
+LargeCutterRecipeType=切割机
 Tooltip_LargeCutter_00=比相同电压的机器快225%
 Tooltip_LargeCutter_01=只需要使用配方要求功率的50%
 Tooltip_LargeCutter_Casing=任意切割机框架
-LargeCutter_Mode_0=切割机
-LargeCutter_Mode_1=切片机
 
 NameLargeBrewer=大型酿造厂
 LargeBrewerRecipeType=酿造室 / 发酵槽 / 流体加热器
@@ -2383,9 +2381,7 @@ Tooltip_LargeExtruder_01=只需要使用配方要求功率的80%
 Tooltip_LargeExtruder_Casing=任意强化镍铬机械方块
 
 NameLargeArcSmelter=大型电弧炉
-LargeArcSmelterRecipeType=电弧炉 / 等离子电弧炉
-LargeArcSmelter_Mode_0=电弧炉
-LargeArcSmelter_Mode_1=等离子电弧炉
+LargeArcSmelterRecipeType=电弧炉
 Tooltip_LargeArcSmelter_00=比相同电压的机器快300%
 Tooltip_LargeArcSmelter_01=只需要使用配方要求功率的80%
 Tooltip_LargeArcSmelter_Casing=任意冶炼炉机械方块
@@ -2451,15 +2447,11 @@ Tooltip_LargeSolidifier_00=比相同电压的机器快300%
 Tooltip_LargeSolidifier_Casing=任意洗矿厂机械方块
 
 NameMegaCanner=特大装罐机
-MegaCannerRecipeType=装罐机 / 流体装罐机
-MegaCanner_Mode_0=装罐机
-MegaCanner_Mode_1=流体装罐机
+MegaCannerRecipeType=装罐机
 Tooltip_MegaCanner_Casing=任意洗矿厂机械方块
 
 NameLargeCanning=大型装罐机
-LargeCanningRecipeType=装罐机 / 流体装罐机
-LargeCanning_Mode_0=装罐机
-LargeCanning_Mode_1=流体装罐机
+LargeCanningRecipeType=装罐机
 Tooltip_LargeCanning_00=比相同电压的机器快233%
 Tooltip_LargeCanning_01=只需要使用配方要求功率的50%
 Tooltip_LargeCanning_Casing=任意洗矿厂机械方块
@@ -2971,9 +2963,7 @@ Tooltip_NanoPhagocytosisPlant_01=每级电压等级额外提供25%的加速和�
 Tooltip_NanoPhagocytosisPlant_Casing=任意超能硅岩强化无菌净水厂机械方块
 
 NameMagneticEnergyReactionFurnace=磁能反应炉
-MagneticEnergyReactionFurnaceRecipeType=电弧炉 / 等离子电弧炉
-MagneticEnergyReactionFurnace_Mode_0=电弧炉
-MagneticEnergyReactionFurnace_Mode_1=等离子电弧炉
+MagneticEnergyReactionFurnaceRecipeType=电弧炉
 Tooltip_MagneticEnergyReactionFurnace_00=电容器满负荷运作中
 Tooltip_MagneticEnergyReactionFurnace_01=每级线圈等级额外提供20%的加速和耗电减免(乘算叠加)
 Tooltip_MagneticEnergyReactionFurnace_Casing=任意电弧炉机械方块

@@ -5,15 +5,9 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -29,14 +23,12 @@ import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
@@ -44,8 +36,6 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     public static final String LC_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/large_cutter";
-    private static final int MACHINEMODE_CUTTER = 0;
-    private static final int MACHINEMODE_SLICER = 1;
     private static final int HORIZONTAL_OFF_SET = 1;
     private static final int VERTICAL_OFF_SET = 2;
     private static final int DEPTH_OFF_SET = 0;
@@ -89,13 +79,7 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return (machineMode == MACHINEMODE_CUTTER) ? RecipeMaps.cutterRecipes : RecipeMaps.slicerRecipes;
-    }
-
-    @NotNull
-    @Override
-    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
-        return Arrays.asList(RecipeMaps.cutterRecipes, RecipeMaps.slicerRecipes);
+        return RecipeMaps.cutterRecipes;
     }
 
     @Override
@@ -140,29 +124,6 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
                         StructureUtility
                             .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 13))))
             .build();
-    }
-
-    @Override
-    public void setMachineModeIcons() {
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_CUTTING);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_SLICING);
-    }
-
-    @Override
-    public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
-        ItemStack aTool) {
-        this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("LargeCutter_Mode_" + this.machineMode));
-    }
-
-    @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("LargeCutter_Mode_" + machineMode);
-    }
-
-    @Override
-    public boolean supportsMachineModeSwitch() {
-        return true;
     }
 
     @Override

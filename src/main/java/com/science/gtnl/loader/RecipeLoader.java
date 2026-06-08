@@ -25,6 +25,7 @@ import com.science.gtnl.common.recipe.gregtech.AssemblingLineRecipes;
 import com.science.gtnl.common.recipe.gregtech.AutoclaveRecipes;
 import com.science.gtnl.common.recipe.gregtech.BacterialVatRecipes;
 import com.science.gtnl.common.recipe.gregtech.BlastFurnaceRecipes;
+import com.science.gtnl.common.recipe.gregtech.CannerRecipes;
 import com.science.gtnl.common.recipe.gregtech.CentrifugeRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalBathRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalDehydratorRecipes;
@@ -43,7 +44,6 @@ import com.science.gtnl.common.recipe.gregtech.DistilleryRecipes;
 import com.science.gtnl.common.recipe.gregtech.DragonEvolutionFusionCraftingRecipes;
 import com.science.gtnl.common.recipe.gregtech.ElectricImplosionCompressorRecipes;
 import com.science.gtnl.common.recipe.gregtech.ElectrolyzerRecipes;
-import com.science.gtnl.common.recipe.gregtech.FluidCannerRecipes;
 import com.science.gtnl.common.recipe.gregtech.FluidExtraction;
 import com.science.gtnl.common.recipe.gregtech.FluidExtractorRecipes;
 import com.science.gtnl.common.recipe.gregtech.FluidSolidifierRecipes;
@@ -203,7 +203,7 @@ public class RecipeLoader {
             new SpaceMinerRecipes(), new SpaceDrillRecipes(), new SpaceAssemblerRecipes(), new PCBFactoryRecipes(),
             new PlatinumBasedTreatmentRecipes(), new ShallowChemicalCouplingRecipes(), new TreeDiagramRecipes(),
             new AssemblingLineRecipes(), new GasCollectorRecipes(), new EternalGregTechWorkshopUpgradeRecipes(),
-            new FluidCannerRecipes(), new VacuumFreezerRecipes(), new CheatOreProcessingRecipes(),
+            new CannerRecipes(), new VacuumFreezerRecipes(), new CheatOreProcessingRecipes(),
             new ShapedArcaneCraftingRecipes(), new InfusionCraftingRecipes(), new SteamManufacturerRecipes(),
             new SteamCarpenterRecipe(), new LavaMakerRecipes(), new SteamWoodcutterRecipes(),
             new SteamGateAssemblerRecipes(), new CactusWonderFakeRecipes(), new InfernalCokeRecipes(),

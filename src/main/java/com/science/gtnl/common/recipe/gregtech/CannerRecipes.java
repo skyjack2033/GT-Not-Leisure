@@ -12,9 +12,9 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTModHandler;
 
-public class FluidCannerRecipes implements IRecipePool {
+public class CannerRecipes implements IRecipePool {
 
-    public RecipeMap<?> FCR = RecipeMaps.fluidCannerRecipes;
+    public RecipeMap<?> CR = RecipeMaps.cannerRecipes;
 
     @Override
     public void loadRecipes() {
@@ -24,6 +24,6 @@ public class FluidCannerRecipes implements IRecipePool {
             .fluidInputs(GTNLMaterials.EnderAir.getFluidOrGas(599))
             .duration(1)
             .eut(8)
-            .addTo(FCR);
+            .addTo(CR);
     }
 }

@@ -2227,12 +2227,10 @@ Tooltip_LargeGasCollector_02=Runs without input items in Overworld, End, Nether
 Tooltip_LargeGasCollector_Casing=Any Solid Steel Machine Casing
 
 NameLargeCutter=Large Cutter
-LargeCutterRecipeType=Cutter / Slicer
+LargeCutterRecipeType=Cutter
 Tooltip_LargeCutter_00=225% faster than machines of the same voltage
 Tooltip_LargeCutter_01=Only requires 50% of the recipe's power demand
 Tooltip_LargeCutter_Casing=Any cutter frame
-LargeCutter_Mode_0=Cutter
-LargeCutter_Mode_1=Slicer
 
 NameLargeBrewer=Large Brewery
 LargeBrewerRecipeType=Brewery / Fermenter / Fluid Heater
@@ -2383,9 +2381,7 @@ Tooltip_LargeExtruder_01=Only requires 80% of the recipe's power demand
 Tooltip_LargeExtruder_Casing=Any reinforced nichrome machine block
 
 NameLargeArcSmelter=Large Arc Smelter
-LargeArcSmelterRecipeType=Arc Furnace / Plasma Arc Furnace
-LargeArcSmelter_Mode_0=Arc Furnace
-LargeArcSmelter_Mode_1=Plasma Arc Furnace
+LargeArcSmelterRecipeType=Arc Furnace
 Tooltip_LargeArcSmelter_00=300% faster than machines of the same voltage
 Tooltip_LargeArcSmelter_01=Only requires 80% of the recipe's power demand
 Tooltip_LargeArcSmelter_Casing=Any smelting furnace machine block
@@ -2451,15 +2447,11 @@ Tooltip_LargeSolidifier_00=300% faster than machines of the same voltage
 Tooltip_LargeSolidifier_Casing=Any ore washing plant machine block
 
 NameMegaCanner=Mega Canner
-MegaCannerRecipeType=Canning Machine / Fluid Canning Machine
-MegaCanner_Mode_0=Canning Machine
-MegaCanner_Mode_1=Fluid Canning Machine
+MegaCannerRecipeType=Canning Machine
 Tooltip_MegaCanner_Casing=Any ore washing plant machine block
 
 NameLargeCanning=Large Canning Machine
-LargeCanningRecipeType=Canning Machine / Fluid Canning Machine
-LargeCanning_Mode_0=Canning Machine
-LargeCanning_Mode_1=Fluid Canning Machine
+LargeCanningRecipeType=Canning Machine
 Tooltip_LargeCanning_00=233% faster than machines of the same voltage
 Tooltip_LargeCanning_01=Only requires 50% of the recipe's power demand
 Tooltip_LargeCanning_Casing=Any ore washing plant machine block
@@ -2971,9 +2963,7 @@ Tooltip_NanoPhagocytosisPlant_01=Each voltage tier provides an additional 5% spe
 Tooltip_NanoPhagocytosisPlant_Casing=Any Superconductor Reinforced Sterile Water Purifier Machine Block
 
 NameMagneticEnergyReactionFurnace=Magnetic Energy Reaction Furnace
-MagneticEnergyReactionFurnaceRecipeType=Arc Furnace / Plasma Arc Furnace
-MagneticEnergyReactionFurnace_Mode_0=Arc Furnace
-MagneticEnergyReactionFurnace_Mode_1=Plasma Arc Furnace
+MagneticEnergyReactionFurnaceRecipeType=Arc Furnace
 Tooltip_MagneticEnergyReactionFurnace_00=Capacitor is operating at full capacity.
 Tooltip_MagneticEnergyReactionFurnace_01=Each level of coil grade provides an additional 20% acceleration and power consumption reduction (multiplication and superposition)
 Tooltip_MagneticEnergyReactionFurnace_Casing=Ang Tempered Arc Furnace Casing

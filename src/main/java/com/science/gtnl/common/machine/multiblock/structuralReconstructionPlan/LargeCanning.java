@@ -5,15 +5,9 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import static gregtech.api.GregTechAPI.sBlockCasings2;
 import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -29,7 +23,6 @@ import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -37,7 +30,6 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTStructureUtility;
-import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
 public class LargeCanning extends GTMMultiMachineBase<LargeCanning> implements ISurvivalConstructable {
@@ -48,8 +40,6 @@ public class LargeCanning extends GTMMultiMachineBase<LargeCanning> implements I
     private static final int VERTICAL_OFF_SET = 2;
     private static final int DEPTH_OFF_SET = 0;
     private static final String[][] shape = StructureUtils.readStructureFromFile(LA_STRUCTURE_FILE_PATH);
-    public static final int MACHINEMODE_CANNER = 0;
-    public static final int MACHINEMODE_FLUIDCANNER = 1;
 
     public LargeCanning(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -89,31 +79,7 @@ public class LargeCanning extends GTMMultiMachineBase<LargeCanning> implements I
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return (machineMode == MACHINEMODE_FLUIDCANNER) ? RecipeMaps.fluidCannerRecipes : RecipeMaps.cannerRecipes;
-    }
-
-    @NotNull
-    @Override
-    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
-        return Arrays.asList(RecipeMaps.fluidCannerRecipes, RecipeMaps.cannerRecipes);
-    }
-
-    @Override
-    public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
-        ItemStack aTool) {
-        this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("LargeCanning_Mode_" + this.machineMode));
-    }
-
-    @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("LargeCanning_Mode_" + machineMode);
-    }
-
-    @Override
-    public void setMachineModeIcons() {
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
+        return RecipeMaps.cannerRecipes;
     }
 
     @Override
@@ -129,11 +95,6 @@ public class LargeCanning extends GTMMultiMachineBase<LargeCanning> implements I
     @Override
     public double getDurationModifier() {
         return 1 / 3.33 - (Math.max(0, mParallelTier - 1) / 50.0);
-    }
-
-    @Override
-    public boolean supportsMachineModeSwitch() {
-        return true;
     }
 
     @Override
