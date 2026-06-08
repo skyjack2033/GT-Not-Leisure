@@ -73,7 +73,7 @@ import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -834,9 +834,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
     public final ArrayList<FluidStack> validFuelList = new ArrayList<>() {
 
         {
-            add(MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(1));
-            add(MaterialsUEVplus.RawStarMatter.getFluid(1));
-            add(MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter.getMolten(1));
+            add(Materials.DimensionallyTranscendentResidue.getFluid(1));
+            add(Materials.RawStarMatter.getFluid(1));
+            add(Materials.MHDCSM.getMolten(1));
         }
     };
 
@@ -1378,10 +1378,10 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .widget(
                 new MultiChildWidget().addChild(
                     new FluidNameHolderWidget(
-                        () -> MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(1)
+                        () -> Materials.DimensionallyTranscendentResidue.getFluid(1)
                             .getUnlocalizedName()
                             .substring(6),
-                        (String) -> MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(1)
+                        (String) -> Materials.DimensionallyTranscendentResidue.getFluid(1)
                             .getUnlocalizedName()) {
 
                         @Override
@@ -1412,10 +1412,10 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .widget(
                 new MultiChildWidget().addChild(
                     new FluidNameHolderWidget(
-                        () -> MaterialsUEVplus.RawStarMatter.getFluid(1)
+                        () -> Materials.RawStarMatter.getFluid(1)
                             .getUnlocalizedName()
                             .substring(6),
-                        (String) -> MaterialsUEVplus.RawStarMatter.getFluid(1)
+                        (String) -> Materials.RawStarMatter.getFluid(1)
                             .getUnlocalizedName()) {
 
                         @Override
@@ -1444,10 +1444,10 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .widget(
                 new MultiChildWidget().addChild(
                     new FluidNameHolderWidget(
-                        () -> MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter.getMolten(1)
+                        () -> Materials.MHDCSM.getMolten(1)
                             .getUnlocalizedName()
                             .substring(6),
-                        (String) -> MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter.getMolten(1)
+                        (String) -> Materials.MHDCSM.getMolten(1)
                             .getUnlocalizedName()) {
 
                         @Override

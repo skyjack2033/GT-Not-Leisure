@@ -27,7 +27,7 @@ import goodgenerator.util.ItemRefer;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.MetaTileEntityIDs;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
@@ -75,24 +75,24 @@ public class ScriptAvaritia implements IScriptLoader {
             .definitions()
             .blocks();
 
-        ItemStack eternityFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.Eternity.getMolten(114514));
-        ItemStack magMatterFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.MagMatter.getMolten(114514));
-        ItemStack universiumFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.Universium.getMolten(114514));
+        ItemStack eternityFluidPacket = ItemFluidPacket.newStack(Materials.Eternity.getMolten(114514));
+        ItemStack magMatterFluidPacket = ItemFluidPacket.newStack(Materials.MagMatter.getMolten(114514));
+        ItemStack universiumFluidPacket = ItemFluidPacket.newStack(Materials.Universium.getMolten(114514));
         ItemStack quarkGluonPlasmaFluidPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.QuarkGluonPlasma.getFluid(114514));
+            .newStack(Materials.QuarkGluonPlasma.getFluid(114514));
         ItemStack sgCrystalSlurryFluidPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.StargateCrystalSlurry.getFluid(114514));
+            .newStack(Materials.StargateCrystalSlurry.getFluid(114514));
         ItemStack mcsmFluidPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter.getMolten(114514));
+            .newStack(Materials.MHDCSM.getMolten(114514));
         ItemStack dimensionallyShiftedSuperFluidPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.DimensionallyShiftedSuperfluid.getFluid(114514));
+            .newStack(Materials.DimensionallyShiftedSuperfluid.getFluid(114514));
         ItemStack sixPhasedCopperFluidPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.SixPhasedCopper.getMolten(114514));
-        ItemStack phononMediumFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.PhononMedium.getFluid(114514));
-        ItemStack antimatterFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.Antimatter.getFluid(114514));
+            .newStack(Materials.SixPhasedCopper.getMolten(114514));
+        ItemStack phononMediumFluidPacket = ItemFluidPacket.newStack(Materials.PhononMedium.getFluid(114514));
+        ItemStack antimatterFluidPacket = ItemFluidPacket.newStack(Materials.Antimatter.getFluid(114514));
         ItemStack plasmaLeadFluidPacket = ItemFluidPacket.newStack(Materials.Lead.getPlasma(114514));
         ItemStack dtrFluidPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(114514));
+            .newStack(Materials.DTR.getFluid(114514));
         ItemStack plasmaPlutonium241FluidPacket = ItemFluidPacket.newStack(Materials.Plutonium241.getPlasma(114514));
         ItemStack plasmaAmericiumPacket = ItemFluidPacket.newStack(Materials.Americium.getPlasma(114514));
         ItemStack plasmaNeonPacket = ItemFluidPacket
@@ -151,7 +151,7 @@ public class ScriptAvaritia implements IScriptLoader {
             .newStack(new FluidStack(MaterialsElements.getInstance().PLUTONIUM238.getPlasma(), 114514));
         ItemStack plasmaRunitePacket = ItemFluidPacket
             .newStack(new FluidStack(MaterialsElements.STANDALONE.RUNITE.getPlasma(), 114514));
-        ItemStack rawStarMatterPacket = ItemFluidPacket.newStack(MaterialsUEVplus.RawStarMatter.getFluid(114514));
+        ItemStack rawStarMatterPacket = ItemFluidPacket.newStack(Materials.RawStarMatter.getFluid(114514));
         ItemStack plasmaForcePacket = ItemFluidPacket
             .newStack(new FluidStack(MaterialsElements.STANDALONE.FORCE.getPlasma(), 114514));
         ItemStack plasmaRhugnorPacket = ItemFluidPacket
@@ -168,29 +168,29 @@ public class ScriptAvaritia implements IScriptLoader {
             .newStack(new FluidStack(MaterialsElements.getInstance().CURIUM.getPlasma(), 114514));
         ItemStack plasmaProtactiniumPacket = ItemFluidPacket
             .newStack(new FluidStack(MaterialsElements.getInstance().PROTACTINIUM.getPlasma(), 114514));
-        ItemStack excitedDTRCPacket = ItemFluidPacket.newStack(MaterialsUEVplus.ExcitedDTRC.getFluid(114514));
-        ItemStack excitedDTSCFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.ExcitedDTSC.getFluid(114514));
-        ItemStack excitedDTECFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.ExcitedDTEC.getFluid(114514));
-        ItemStack excitedDTPCFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.ExcitedDTPC.getFluid(114514));
-        ItemStack excitedDTCCFluidPacket = ItemFluidPacket.newStack(MaterialsUEVplus.ExcitedDTCC.getFluid(114514));
+        ItemStack excitedDTRCPacket = ItemFluidPacket.newStack(Materials.ExcitedDTRC.getFluid(114514));
+        ItemStack excitedDTSCFluidPacket = ItemFluidPacket.newStack(Materials.ExcitedDTSC.getFluid(114514));
+        ItemStack excitedDTECFluidPacket = ItemFluidPacket.newStack(Materials.ExcitedDTEC.getFluid(114514));
+        ItemStack excitedDTPCFluidPacket = ItemFluidPacket.newStack(Materials.ExcitedDTPC.getFluid(114514));
+        ItemStack excitedDTCCFluidPacket = ItemFluidPacket.newStack(Materials.ExcitedDTCC.getFluid(114514));
         ItemStack plasmaRhodiumPacket = ItemFluidPacket
             .newStack(new FluidStack(MaterialsElements.getInstance().RHODIUM.getPlasma(), 114514));
         ItemStack plasmaNickelPacket = ItemFluidPacket.newStack(Materials.Nickel.getPlasma(114514));
         ItemStack plasmaPoloniumPacket = ItemFluidPacket
             .newStack(new FluidStack(MaterialsElements.getInstance().POLONIUM.getPlasma(), 114514));
         ItemStack dimensionallyTranscendentCrudeCatalystPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.DimensionallyTranscendentCrudeCatalyst.getFluid(114514));
+            .newStack(Materials.DTCC.getFluid(114514));
         ItemStack dimensionallyTranscendentExoticCatalystPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.DimensionallyTranscendentExoticCatalyst.getFluid(114514));
+            .newStack(Materials.DTEC.getFluid(114514));
         ItemStack plasmaThoriumPacket = ItemFluidPacket.newStack(Materials.Thorium.getPlasma(114514));
         ItemStack stableBaryonicMatterPacket = ItemFluidPacket
             .newStack(Materials.StableBaryonicMatter.getFluid(114514));
         ItemStack dimensionallyTranscendentStellarCatalystPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.DimensionallyTranscendentStellarCatalyst.getFluid(114514));
+            .newStack(Materials.DTSC.getFluid(114514));
         ItemStack dimensionallyTranscendentProsaicCatalystPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.DimensionallyTranscendentProsaicCatalyst.getFluid(114514));
+            .newStack(Materials.DTPC.getFluid(114514));
         ItemStack dimensionallyTranscendentResplendentCatalystPacket = ItemFluidPacket
-            .newStack(MaterialsUEVplus.DimensionallyTranscendentResplendentCatalyst.getFluid(114514));
+            .newStack(Materials.DTRC.getFluid(114514));
         ItemStack plasmaIronPacket = ItemFluidPacket.newStack(Materials.Iron.getPlasma(114514));
         ItemStack[] purifiedWaterPackets = new ItemStack[8];
 
@@ -212,19 +212,19 @@ public class ScriptAvaritia implements IScriptLoader {
                 "A789abcdA",
                 "AAAAeAAAA",
                 'A',
-                NHItemList.StargateShieldingFoil.getIS(1),
+                NHItemList.StargateShieldingFoil.get(1),
                 'B',
-                NHItemList.GatePlateDimensional.getIS(1),
+                NHItemList.GatePlateDimensional.get(1),
                 'C',
                 GTModHandler.getModItem(Mods.SGCraft.ID, "sgCoreCrystal", 1, 0),
                 'D',
                 eternityFluidPacket,
                 'E',
-                tectech.thing.CustomItemList.Machine_Multi_EyeOfHarmony.get(1),
+                CustomItemList.Machine_Multi_EyeOfHarmony.get(1),
                 'F',
-                NHItemList.ChevronDimensional.getIS(1),
+                NHItemList.ChevronDimensional.get(1),
                 'G',
-                tectech.thing.CustomItemList.astralArrayFabricator.get(1),
+                CustomItemList.astralArrayFabricator.get(1),
                 'H',
                 magMatterFluidPacket,
                 'I',
@@ -240,35 +240,35 @@ public class ScriptAvaritia implements IScriptLoader {
                 'N',
                 ItemList.Circuit_TranscendentMainframe.get(1),
                 'O',
-                NHItemList.FramePartPolychrome.getIS(1),
+                NHItemList.FramePartPolychrome.get(1),
                 'P',
                 GTModHandler.getModItem(Mods.SGCraft.ID, "sgChevronUpgrade", 1, 0),
                 'Q',
-                NHItemList.FramePartDimensional.getIS(1),
+                NHItemList.FramePartDimensional.get(1),
                 'R',
                 ItemRefer.AntimatterGenerator.get(1),
                 'S',
-                NHItemList.GatePlateOrigin.getIS(1),
+                NHItemList.GatePlateOrigin.get(1),
                 'T',
-                NHItemList.ChevronOrigin.getIS(1),
+                NHItemList.ChevronOrigin.get(1),
                 'U',
                 GTModHandler.getModItem(Mods.SGCraft.ID, "rfPowerUnit", 1, 0),
                 'V',
-                NHItemList.StargateCrystalAncients.getIS(1),
+                NHItemList.StargateCrystalAncients.get(1),
                 'W',
                 GTModHandler.getModItem(Mods.SGCraft.ID, "stargateController", 1, 0),
                 'X',
-                NHItemList.ChevronHarmonic.getIS(1),
+                NHItemList.ChevronHarmonic.get(1),
                 'Y',
-                NHItemList.GatePlateHarmonic.getIS(1),
+                NHItemList.GatePlateHarmonic.get(1),
                 'Z',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.MagMatter, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.MagMatter, 1),
                 '0',
-                NHItemList.FramePartHarmonic.getIS(1),
+                NHItemList.FramePartHarmonic.get(1),
                 '1',
                 GTModHandler.getModItem(Mods.SGCraft.ID, "sgIrisUpgrade", 1, 0),
                 '2',
-                NHItemList.FramePartOrigin.getIS(1),
+                NHItemList.FramePartOrigin.get(1),
                 '3',
                 ItemRefer.AntimatterForge.get(1),
                 '4',
@@ -288,7 +288,7 @@ public class ScriptAvaritia implements IScriptLoader {
                     .maybeStack(1)
                     .orNull(),
                 'a',
-                NHItemList.ChevronPolychrome.getIS(1),
+                NHItemList.ChevronPolychrome.get(1),
                 'b',
                 GTModHandler.getModItem(Mods.EnderIO.ID, "blockCapBank", 1, 0),
                 'c',
@@ -296,7 +296,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'd',
                 GTModHandler.getModItem(Mods.SGCraft.ID, "sgControllerCrystal", 1, 0),
                 'e',
-                NHItemList.GatePlatePolychrome.getIS(1));
+                NHItemList.GatePlatePolychrome.get(1));
 
         ExtremeCraftingManager.getInstance()
             .addExtremeShapedOreRecipe(
@@ -381,7 +381,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 '8',
                 GTModHandler.getModItem(Mods.ElectroMagicTools.ID, "EMTSolars5", 1, 2),
                 '9',
-                NHItemList.QuantumCircuitPolychrome.getIS(1),
+                NHItemList.QuantumCircuitPolychrome.get(1),
                 'a',
                 purifiedWaterPackets[0],
                 'b',
@@ -393,11 +393,11 @@ public class ScriptAvaritia implements IScriptLoader {
                 'e',
                 purifiedWaterPackets[5],
                 'f',
-                NHItemList.PikoCircuitPolychrome.getIS(1),
+                NHItemList.PikoCircuitPolychrome.get(1),
                 'g',
-                NHItemList.QuantumCircuitDimensional.getIS(1),
+                NHItemList.QuantumCircuitDimensional.get(1),
                 'h',
-                NHItemList.PikoCircuitDimensional.getIS(1),
+                NHItemList.PikoCircuitDimensional.get(1),
                 'i',
                 ItemList.Transdimensional_Alignment_Matrix.get(1),
                 'j',
@@ -411,7 +411,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'n',
                 GTModHandler.getModItem(Mods.Avaritia.ID, "Orb_Armok", 1, 0),
                 'o',
-                NHItemList.NanoCircuitOrigin.getIS(1),
+                NHItemList.NanoCircuitOrigin.get(1),
                 'p',
                 ItemList.Machine_Multi_IndustrialElectromagneticSeparator.get(1),
                 'q',
@@ -615,19 +615,19 @@ public class ScriptAvaritia implements IScriptLoader {
                 'J',
                 new ItemStack(LanthItemList.maskMap.get(MaskList.HPIC), 1),
                 'K',
-                tectech.thing.CustomItemList.Machine_Multi_QuarkGluonPlasmaModule.get(1),
+                CustomItemList.Machine_Multi_QuarkGluonPlasmaModule.get(1),
                 'L',
                 Particle.getBaseParticle(Particle.UP),
                 'M',
                 Particle.getBaseParticle(Particle.DOWN),
                 'N',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SixPhasedCopper, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SixPhasedCopper, 1),
                 'O',
                 Particle.getBaseParticle(Particle.CHARM),
                 'P',
                 Particle.getBaseParticle(Particle.STRANGE),
                 'Q',
-                tectech.thing.CustomItemList.Machine_Multi_PlasmaModule.get(1),
+                CustomItemList.Machine_Multi_PlasmaModule.get(1),
                 'R',
                 new ItemStack(LanthItemList.maskMap.get(MaskList.LPIC), 1),
                 'S',
@@ -647,11 +647,11 @@ public class ScriptAvaritia implements IScriptLoader {
                 'Z',
                 Particle.getBaseParticle(Particle.ELECTRON_NEUTRINO),
                 '0',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.TranscendentMetal, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.TranscendentMetal, 1),
                 '1',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SpaceTime, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SpaceTime, 1),
                 '2',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Creon, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Creon, 1),
                 '3',
                 Particle.getBaseParticle(Particle.GLUON),
                 '4',
@@ -659,15 +659,15 @@ public class ScriptAvaritia implements IScriptLoader {
                 '5',
                 ItemList.Quark_Creation_Catalyst_Top.get(1),
                 '6',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.BlackDwarfMatter, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.BlackDwarfMatter, 1),
                 '7',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Universium, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Universium, 1),
                 '8',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.ProtoHalkonite, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.ProtoHalkonite, 1),
                 '9',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.MagMatter, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.MagMatter, 1),
                 'a',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.WhiteDwarfMatter, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.WhiteDwarfMatter, 1),
                 'b',
                 ItemList.Quark_Creation_Catalyst_Strange.get(1),
                 'c',
@@ -676,11 +676,11 @@ public class ScriptAvaritia implements IScriptLoader {
                 Particle.getBaseParticle(Particle.PHOTON),
                 'e',
                 GTOreDictUnificator
-                    .get(OrePrefixes.plateSuperdense, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 1),
+                    .get(OrePrefixes.plateSuperdense, Materials.MHDCSM, 1),
                 'f',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Mellion, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Mellion, 1),
                 'g',
-                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Eternity, 1),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Eternity, 1),
                 'h',
                 Particle.getBaseParticle(Particle.TAU),
                 'i',
@@ -696,7 +696,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'n',
                 new ItemStack(LanthItemList.maskMap.get(MaskList.NCPU), 1),
                 'o',
-                tectech.thing.CustomItemList.Machine_Multi_SmeltingModule.get(1),
+                CustomItemList.Machine_Multi_SmeltingModule.get(1),
                 'p',
                 Particle.getBaseParticle(Particle.HIGGS_BOSON),
                 'q',
@@ -708,7 +708,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 't',
                 Particle.getBaseParticle(Particle.LAMBDA),
                 'u',
-                tectech.thing.CustomItemList.Machine_Multi_MoltenModule.get(1),
+                CustomItemList.Machine_Multi_MoltenModule.get(1),
                 'v',
                 new ItemStack(LanthItemList.maskMap.get(MaskList.NOR), 1),
                 'w',
@@ -801,15 +801,15 @@ public class ScriptAvaritia implements IScriptLoader {
                 '1',
                 GregtechItemList.AlgagenicGrowthPromoterCatalyst.get(1),
                 '2',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.TranscendentMetal, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.TranscendentMetal, 1),
                 '3',
                 ItemList.NaquadriaSupersolid.get(1),
                 '4',
                 ItemList.GigaChad.get(1),
                 '5',
-                GTOreDictUnificator.get(OrePrefixes.gem, MaterialsUEVplus.GravitonShard, 1),
+                GTOreDictUnificator.get(OrePrefixes.gem, Materials.GravitonShard, 1),
                 '6',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.SixPhasedCopper, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.SixPhasedCopper, 1),
                 '7',
                 GregtechItemList.BiologicalIntelligenceCatalyst.get(1),
                 '8',
@@ -831,19 +831,19 @@ public class ScriptAvaritia implements IScriptLoader {
                 'g',
                 GregtechItemList.RareEarthGroupCatalyst.get(1),
                 'h',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.WhiteDwarfMatter, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.WhiteDwarfMatter, 1),
                 'i',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.Eternity, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Eternity, 1),
                 'j',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.BlackDwarfMatter, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.BlackDwarfMatter, 1),
                 'k',
                 GregtechItemList.TemporalHarmonyCatalyst.get(1),
                 'l',
                 GregtechItemList.RadioactivityCatalyst.get(1),
                 'm',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.Universium, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Universium, 1),
                 'n',
-                GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.MagMatter, 1),
+                GTOreDictUnificator.get(OrePrefixes.nanite, Materials.MagMatter, 1),
                 'o',
                 GregtechItemList.AdhesionPromoterCatalyst.get(1));
 
@@ -1199,7 +1199,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'X',
                 GTNLItemList.CircuitResonaticUIV.get(1),
                 'Y',
-                NHItemList.HighEnergyFlowCircuit.getIS(1),
+                NHItemList.HighEnergyFlowCircuit.get(1),
                 'Z',
                 ItemList.Circuit_CosmicAssembly.get(1),
                 '0',
@@ -1209,11 +1209,11 @@ public class ScriptAvaritia implements IScriptLoader {
                 '2',
                 GTNLItemList.CircuitResonaticLuV.get(1),
                 '3',
-                NHItemList.EngravedQuantumChip.getIS(1),
+                NHItemList.EngravedQuantumChip.get(1),
                 '4',
                 GTModHandler.getModItem(Mods.SGCraft.ID, "stargateBase", 1, 0),
                 '5',
-                NHItemList.NanoCircuit.getIS(1),
+                NHItemList.NanoCircuit.get(1),
                 '6',
                 ItemList.Circuit_CosmicComputer.get(1),
                 '7',
@@ -1227,7 +1227,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'b',
                 ItemList.Circuit_Integrated.getWithDamage(1, 0),
                 'c',
-                NHItemList.PikoCircuit.getIS(1),
+                NHItemList.PikoCircuit.get(1),
                 'd',
                 ItemList.Circuit_CosmicMainframe.get(1),
                 'e',
@@ -1241,7 +1241,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'i',
                 GTNLItemList.CompressedStargateTier6.get(1),
                 'j',
-                NHItemList.QuantumCircuit.getIS(1),
+                NHItemList.QuantumCircuit.get(1),
                 'k',
                 ItemList.Circuit_TranscendentProcessor.get(1),
                 'l',
@@ -1253,13 +1253,13 @@ public class ScriptAvaritia implements IScriptLoader {
                 'o',
                 ItemList.Circuit_Chip_CrystalCPU.get(1),
                 'p',
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(1),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.get(1),
                 'q',
-                NHItemList.EngineeringProcessorEssentiaPulsatingCore.getIS(1),
+                NHItemList.EngineeringProcessorEssentiaPulsatingCore.get(1),
                 'r',
-                NHItemList.EngineeringProcessorFluidEmeraldCore.getIS(1),
+                NHItemList.EngineeringProcessorFluidEmeraldCore.get(1),
                 's',
-                NHItemList.EngineeringProcessorItemAdvEmeraldCore.getIS(1),
+                NHItemList.EngineeringProcessorItemAdvEmeraldCore.get(1),
                 't',
                 ItemList.Circuit_TranscendentAssembly.get(1),
                 'u',
@@ -1813,7 +1813,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'A',
                 GTNLItemList.BlazeCube.get(1),
                 'B',
-                NHItemList.LichBone.getIS(1),
+                NHItemList.LichBone.get(1),
                 'C',
                 GTModHandler.getModItem(Mods.Avaritia.ID, "Resource", 1, 1),
                 'D',
@@ -1838,7 +1838,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'A',
                 GTNLItemList.BlazeCube.get(1),
                 'B',
-                NHItemList.LichBone.getIS(1),
+                NHItemList.LichBone.get(1),
                 'C',
                 GTModHandler.getModItem(Mods.Avaritia.ID, "Resource", 1, 1),
                 'D',
@@ -1861,7 +1861,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'A',
                 GTNLItemList.BlazeCube.get(1),
                 'B',
-                NHItemList.LichBone.getIS(1),
+                NHItemList.LichBone.get(1),
                 'C',
                 GTModHandler.getModItem(Mods.Avaritia.ID, "Resource", 1, 1),
                 'D',
@@ -1886,7 +1886,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'A',
                 GTNLItemList.BlazeCube.get(1),
                 'B',
-                NHItemList.LichBone.getIS(1),
+                NHItemList.LichBone.get(1),
                 'C',
                 GTModHandler.getModItem(Mods.Avaritia.ID, "Resource", 1, 1),
                 'D',
@@ -1909,7 +1909,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'A',
                 GTNLItemList.BlazeCube.get(1),
                 'B',
-                NHItemList.LichBone.getIS(1),
+                NHItemList.LichBone.get(1),
                 'C',
                 GTModHandler.getModItem(Mods.Avaritia.ID, "Resource", 1, 1),
                 'D',

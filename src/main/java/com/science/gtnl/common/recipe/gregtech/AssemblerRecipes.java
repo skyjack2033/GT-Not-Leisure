@@ -3,6 +3,7 @@ package com.science.gtnl.common.recipe.gregtech;
 import static bartworks.common.loaders.ItemRegistry.bw_realglas;
 import static gregtech.api.util.GTRecipeBuilder.SECONDS;
 
+import com.gtnewhorizon.cropsnh.api.CropsNHItemList;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -11,7 +12,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.dreammaster.block.BlockList;
-import com.dreammaster.gthandler.CustomItemList;
 import com.dreammaster.item.NHItemList;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.api.IRecipePool;
@@ -33,8 +33,8 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsBotania;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.MetaTileEntityIDs;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
@@ -48,9 +48,9 @@ import gtPlusPlus.core.item.ModItems;
 import gtPlusPlus.core.item.crafting.ItemDummyResearch;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.core.material.MaterialsElements;
-import gtPlusPlus.core.recipe.common.CI;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import gtnhlanth.common.register.LanthItemList;
+import tectech.thing.CustomItemList;
 
 public class AssemblerRecipes implements IRecipePool {
 
@@ -157,7 +157,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 GTUtility.getIntegratedCircuit(1),
                 ItemList.Hatch_Input_LuV.get(1L),
-                GTOreDictUnificator.get(OrePrefixes.plate, MaterialsBotania.Terrasteel, 8),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Terrasteel, 8),
                 GTModHandler.getModItem(Mods.Botania.ID, "pylon", 4, 1),
                 GTModHandler.getModItem(Mods.Botania.ID, "pool", 1, 3),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 2L))
@@ -559,7 +559,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(17),
                 GregtechItemList.GT4_Multi_Crafter.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.TungstenSteel, 4L),
-                new ItemStack(ModItems.itemCircuitLFTR, 1),
+                GregtechItemList.LFTRControlCircuit.get(1),
                 GregtechItemList.TransmissionComponent_IV.get(4),
                 ItemList.Electric_Motor_IV.get(8L),
                 ItemList.Conveyor_Module_IV.get(8L),
@@ -1017,7 +1017,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GregtechItemList.Hatch_SuperBus_Input_LuV.get(1L),
                 ItemList.Hatch_Input_UIV.get(1L),
                 ItemList.Automation_ChestBuffer_UIV.get(1),
-                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, MaterialsUEVplus.TranscendentMetal, 1L))
+                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, Materials.TranscendentMetal, 1L))
             .itemOutputs(GTNLItemList.DualInputHatchUIV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -1026,11 +1026,11 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.SpaceTime, 1L),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.SpaceTime, 1L),
                 GregtechItemList.Hatch_SuperBus_Input_ZPM.get(1L),
                 ItemList.Hatch_Input_UMV.get(1L),
                 ItemList.Automation_ChestBuffer_UMV.get(1),
-                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, MaterialsUEVplus.SpaceTime, 1L))
+                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, Materials.SpaceTime, 1L))
             .itemOutputs(GTNLItemList.DualInputHatchUMV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -1039,11 +1039,11 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.MagMatter, 1L),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.MagMatter, 1L),
                 GregtechItemList.Hatch_SuperBus_Input_UV.get(1L),
                 ItemList.Hatch_Input_UXV.get(1L),
                 ItemList.Automation_ChestBuffer_UMV.get(2),
-                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, MaterialsUEVplus.SpaceTime, 2L))
+                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, Materials.SpaceTime, 2L))
             .itemOutputs(GTNLItemList.DualInputHatchUXV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -1053,11 +1053,11 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator
-                    .get(OrePrefixes.frameGt, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 1L),
+                    .get(OrePrefixes.frameGt, Materials.MHDCSM, 1L),
                 GregtechItemList.Hatch_SuperBus_Input_UV.get(1L),
                 ItemList.Hatch_Input_MAX.get(1L),
                 ItemList.Automation_ChestBuffer_UMV.get(4),
-                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, MaterialsUEVplus.SpaceTime, 4L))
+                GTOreDictUnificator.get(OrePrefixes.pipeNonuple, Materials.SpaceTime, 4L))
             .itemOutputs(GTNLItemList.DualInputHatchMAX.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .duration(300)
@@ -1351,10 +1351,10 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                tectech.thing.CustomItemList.Machine_Multi_Infuser.get(1),
+                CustomItemList.Machine_Multi_Infuser.get(1),
                 GregtechItemList.TransmissionComponent_UV.get(4),
                 ItemList.Field_Generator_UV.get(2),
-                tectech.thing.CustomItemList.eM_Coil.get(8),
+                CustomItemList.eM_Coil.get(8),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Osmiridium, 16L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUV, 8L))
             .itemOutputs(GTNLItemList.EnergyInfuser.get(1))
@@ -1482,7 +1482,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Field_Generator_LuV.get(2),
                 ItemList.Robot_Arm_LuV.get(4),
                 ItemList.Emitter_LuV.get(4),
-                WerkstoffLoader.LuVTierMaterial.get(OrePrefixes.plateDouble, 16),
+                WerkstoffLoader.RhodiumPlatedPalladium.get(OrePrefixes.plateDouble, 16),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.HSSS, 8L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.SuperconductorLuV, 4L))
             .itemOutputs(GTNLItemList.LargeEngravingLaser.get(1))
@@ -1559,10 +1559,10 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                tectech.thing.CustomItemList.dataOut_Hatch.get(1),
+                CustomItemList.dataOut_Hatch.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 1L),
                 ItemList.Sensor_ZPM.get(1))
-            .itemOutputs(tectech.thing.CustomItemList.dataOut_Wireless_Hatch.get(1))
+            .itemOutputs(CustomItemList.dataOut_Wireless_Hatch.get(1))
             .fluidInputs(Materials.Polybenzimidazole.getMolten(576))
             .duration(200)
             .eut(TierEU.RECIPE_ZPM)
@@ -1570,10 +1570,10 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                tectech.thing.CustomItemList.dataIn_Hatch.get(1),
+                CustomItemList.dataIn_Hatch.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 1L),
                 ItemList.Emitter_ZPM.get(1))
-            .itemOutputs(tectech.thing.CustomItemList.dataIn_Wireless_Hatch.get(1))
+            .itemOutputs(CustomItemList.dataIn_Wireless_Hatch.get(1))
             .fluidInputs(Materials.Polybenzimidazole.getMolten(576))
             .duration(200)
             .eut(TierEU.RECIPE_ZPM)
@@ -1581,10 +1581,10 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                tectech.thing.CustomItemList.dataOutAss_Hatch.get(1),
+                CustomItemList.dataOutAss_Hatch.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 1L),
                 ItemList.Sensor_ZPM.get(1))
-            .itemOutputs(tectech.thing.CustomItemList.dataOutAss_Wireless_Hatch.get(1))
+            .itemOutputs(CustomItemList.dataOutAss_Wireless_Hatch.get(1))
             .fluidInputs(Materials.Polybenzimidazole.getMolten(576))
             .duration(200)
             .eut(TierEU.RECIPE_ZPM)
@@ -1592,10 +1592,10 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                tectech.thing.CustomItemList.dataInAss_Hatch.get(1),
+                CustomItemList.dataInAss_Hatch.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 1L),
                 ItemList.Emitter_ZPM.get(1))
-            .itemOutputs(tectech.thing.CustomItemList.dataInAss_Wireless_Hatch.get(1))
+            .itemOutputs(CustomItemList.dataInAss_Wireless_Hatch.get(1))
             .fluidInputs(Materials.Polybenzimidazole.getMolten(576))
             .duration(200)
             .eut(TierEU.RECIPE_ZPM)
@@ -1642,7 +1642,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(7),
-                tectech.thing.CustomItemList.eM_Hollow.get(2),
+                CustomItemList.eM_Hollow.get(2),
                 GTModHandler.getModItem(Mods.DraconicEvolution.ID, "draconicCore", 1),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.DraconiumAwakened, 4),
                 GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Mytryl, 4),
@@ -1715,7 +1715,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_LV.get(1),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 1),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 1),
-                GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsBotania.Manasteel, 4L),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Manasteel, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt12, Materials.RedstoneAlloy, 2))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaDynamoHatchLV.get(1))
@@ -1731,7 +1731,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_HV.get(1),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 2),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 2),
-                GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsBotania.ElvenElementium, 4L),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.ElvenElementium, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt12, Materials.SuperconductorHV, 4))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaDynamoHatchHV.get(1))
@@ -1747,7 +1747,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_IV.get(1),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 4),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 4),
-                GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsBotania.ElvenElementium, 4L),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.ElvenElementium, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt12, Materials.SuperconductorIV, 8))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaDynamoHatchIV.get(1))
@@ -1763,7 +1763,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_IV.get(2),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 8),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 8),
-                GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsBotania.Terrasteel, 4L),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Terrasteel, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt12, Materials.SuperconductorZPM, 16))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaDynamoHatchZPM.get(1))
@@ -1779,7 +1779,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_LV.get(1),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 1),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 1),
-                GTOreDictUnificator.get(OrePrefixes.plate, MaterialsBotania.Manasteel, 6L),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Manasteel, 6L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.RedstoneAlloy, 2))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaEnergyHatchLV.get(1))
@@ -1795,7 +1795,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_HV.get(1),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 2),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 2),
-                GTOreDictUnificator.get(OrePrefixes.plate, MaterialsBotania.ElvenElementium, 6L),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ElvenElementium, 6L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorHV, 4))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaEnergyHatchHV.get(1))
@@ -1811,7 +1811,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_IV.get(1),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 4),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 4),
-                GTOreDictUnificator.get(OrePrefixes.plate, MaterialsBotania.ElvenElementium, 6L),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ElvenElementium, 6L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorIV, 8))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaEnergyHatchIV.get(1))
@@ -1827,7 +1827,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Super_Tank_IV.get(2),
                 GTModHandler.getModItem(Mods.Botania.ID, "pump", 8),
                 GTModHandler.getModItem(Mods.Botania.ID, "rfGenerator", 8),
-                GTOreDictUnificator.get(OrePrefixes.plate, MaterialsBotania.Terrasteel, 6L),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Terrasteel, 6L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorZPM, 16))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .itemOutputs(GTNLItemList.ManaEnergyHatchZPM.get(1))
@@ -2216,20 +2216,6 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GregtechItemList.GT4_Crop_Harvester_LV.get(2),
-                new ItemStack(Blocks.dirt, 64),
-                GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockCrop", 64),
-                GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 16, 4),
-                GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 16, 2),
-                GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 4, 5))
-            .itemOutputs(GTNLItemList.SteamGreenhouseModule.get(1))
-            .fluidInputs(FluidRegistry.getFluidStack("liquid_sunshine", 16000))
-            .duration(200)
-            .eut(TierEU.RECIPE_LV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(
                 ItemList.Hull_HV.get(1),
                 ItemList.Conveyor_Module_HV.get(4),
                 ItemList.Robot_Arm_HV.get(2),
@@ -2427,7 +2413,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.DualInputHatchUMV.get(1),
                 ItemList.Quantum_Chest_IV.get(4),
                 ItemList.Quantum_Tank_IV.get(4),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.SpaceTime, 4L),
+                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.SpaceTime, 4L),
                 aeMaterials.singularity()
                     .maybeStack(1)
                     .orNull())
@@ -2442,7 +2428,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.DualInputHatchUXV.get(1),
                 ItemList.Quantum_Chest_IV.get(8),
                 ItemList.Quantum_Tank_IV.get(8),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.MagMatter, 4L),
+                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.MagMatter, 4L),
                 aeMaterials.singularity()
                     .maybeStack(1)
                     .orNull())
@@ -2458,7 +2444,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Quantum_Chest_IV.get(16),
                 ItemList.Quantum_Tank_IV.get(16),
                 GTOreDictUnificator
-                    .get(OrePrefixes.plateDense, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 4L),
+                    .get(OrePrefixes.plateDense, Materials.MHDCSM, 4L),
                 aeMaterials.singularity()
                     .maybeStack(1)
                     .orNull())
@@ -2512,7 +2498,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Casing_HV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.EV, 2),
                 ItemList.Electric_Pump_HV.get(1),
-                GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.Titaniumonabariumdecacoppereikosaoxid, 1),
+                GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorHV, 1),
                 GTOreDictUnificator.get(OrePrefixes.cableGt16, Materials.Nichrome, 1))
             .itemOutputs(GTNLItemList.ElectrocellGenerator.get(1))
             .duration(40)
@@ -2629,7 +2615,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.EnergyHatchMAX.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.DraconiumAwakened, 2),
                 GTOreDictUnificator
-                    .get(OrePrefixes.plate, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 2))
+                    .get(OrePrefixes.plate, Materials.MHDCSM, 2))
             .itemOutputs(GTNLItemList.EnergyHatchMAX4A.get(1))
             .fluidInputs(Materials.Silver.getMolten(144))
             .duration(5 * SECONDS)
@@ -2642,7 +2628,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.EnergyHatchMAX4A.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.DraconiumAwakened, 2),
                 GTOreDictUnificator
-                    .get(OrePrefixes.plate, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 4))
+                    .get(OrePrefixes.plate, Materials.MHDCSM, 4))
             .itemOutputs(GTNLItemList.EnergyHatchMAX16A.get(1))
             .fluidInputs(Materials.Electrum.getMolten(144))
             .duration(10 * SECONDS)
@@ -2655,7 +2641,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.EnergyHatchMAX16A.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt12, Materials.DraconiumAwakened, 2),
                 GTOreDictUnificator
-                    .get(OrePrefixes.plate, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 6))
+                    .get(OrePrefixes.plate, Materials.MHDCSM, 6))
             .itemOutputs(GTNLItemList.EnergyHatchMAX64A.get(1))
             .fluidInputs(Materials.Tungsten.getMolten(144))
             .duration(20 * SECONDS)
@@ -2772,7 +2758,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.DynamoHatchMAX.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.DraconiumAwakened, 2),
                 GTOreDictUnificator
-                    .get(OrePrefixes.plate, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 2))
+                    .get(OrePrefixes.plate, Materials.MHDCSM, 2))
             .itemOutputs(GTNLItemList.DynamoHatchMAX4A.get(1))
             .fluidInputs(Materials.Silver.getMolten(144))
             .duration(5 * SECONDS)
@@ -2785,7 +2771,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.DynamoHatchMAX4A.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.DraconiumAwakened, 2),
                 GTOreDictUnificator
-                    .get(OrePrefixes.plate, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 4))
+                    .get(OrePrefixes.plate, Materials.MHDCSM, 4))
             .itemOutputs(GTNLItemList.DynamoHatchMAX16A.get(1))
             .fluidInputs(Materials.Electrum.getMolten(144))
             .duration(10 * SECONDS)
@@ -2798,7 +2784,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.DynamoHatchMAX16A.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt12, Materials.DraconiumAwakened, 2),
                 GTOreDictUnificator
-                    .get(OrePrefixes.plate, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 6))
+                    .get(OrePrefixes.plate, Materials.MHDCSM, 6))
             .itemOutputs(GTNLItemList.DynamoHatchMAX64A.get(1))
             .fluidInputs(Materials.Tungsten.getMolten(144))
             .duration(20 * SECONDS)
@@ -2843,7 +2829,7 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                tectech.thing.CustomItemList.hatch_CreativeMaintenance.get(4),
+                CustomItemList.hatch_CreativeMaintenance.get(4),
                 ItemList.WetTransformer_LuV_IV.get(4),
                 ItemList.Field_Generator_IV.get(4),
                 ItemList.Sensor_IV.get(8),
@@ -2885,7 +2871,7 @@ public class AssemblerRecipes implements IRecipePool {
                 GTModHandler.getModItem(Mods.Botania.ID, "manaBeacon", 1),
                 ItemRefer.Fluid_Storage_Core_T2.get(2))
             .itemOutputs(GTNLItemList.ManaTank.get(1))
-            .fluidInputs(MaterialsBotania.Terrasteel.getMolten(576))
+            .fluidInputs(Materials.Terrasteel.getMolten(576))
             .duration(30 * SECONDS)
             .eut(TierEU.RECIPE_EV)
             .addTo(As);
@@ -3307,6 +3293,7 @@ public class AssemblerRecipes implements IRecipePool {
         loadLaserHatch();
 
         if (Mods.NewHorizonsCoreMod.isModLoaded()) loadNHRecipe();
+        if (Mods.CropsNH.isModLoaded()) loadCropNHRecipe();
 
         if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
@@ -3500,7 +3487,7 @@ public class AssemblerRecipes implements IRecipePool {
                 aeMaterials.cardSuperSpeed()
                     .maybeStack(4)
                     .orNull(),
-                CustomItemList.EngineeringProcessorItemAdvEmeraldCore.get(16),
+                NHItemList.EngineeringProcessorItemAdvEmeraldCore.get(16),
                 ItemList.Field_Generator_LuV.get(2),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 4),
                 aeItems.coloredPaintBall()
@@ -3525,7 +3512,7 @@ public class AssemblerRecipes implements IRecipePool {
                 aeMaterials.logicProcessor()
                     .maybeStack(16)
                     .orNull(),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.get(8),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
             .itemOutputs(GTNLItemList.QuantumComputerCraftingStorage128M.get(1))
             .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
@@ -3540,8 +3527,8 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.QuantumComputerCraftingStorage128M.get(2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Quantium, 8),
                 GTNLItemList.ShatteredSingularity.get(4),
-                CustomItemList.EngravedQuantumChip.get(8),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(16))
+                NHItemList.EngravedQuantumChip.get(8),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.get(16))
             .itemOutputs(GTNLItemList.QuantumComputerCraftingStorage256M.get(1))
             .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
             .duration(400)
@@ -3563,7 +3550,7 @@ public class AssemblerRecipes implements IRecipePool {
                 aeMaterials.calcProcessor()
                     .maybeStack(16)
                     .orNull(),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.get(8),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.ZPM, 2))
             .itemOutputs(GTNLItemList.QuantumComputerAccelerator.get(1))
             .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(4000))
@@ -3581,11 +3568,11 @@ public class AssemblerRecipes implements IRecipePool {
                     .maybeStack(4)
                     .orNull(),
                 GTNLItemList.ShatteredSingularity.get(2),
-                CustomItemList.EngravedQuantumChip.get(16),
+                NHItemList.EngravedQuantumChip.get(16),
                 aeMaterials.engProcessor()
                     .maybeStack(16)
                     .orNull(),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(4))
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.get(4))
             .itemOutputs(GTNLItemList.QuantumComputerCore.get(1))
             .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
             .duration(400)
@@ -3600,8 +3587,8 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.ShatteredSingularity.get(16),
                 GTNLItemList.QuantumComputerAccelerator.get(4),
                 ItemList.QuantumStar.get(4),
-                CustomItemList.EngravedQuantumChip.get(16),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                NHItemList.EngravedQuantumChip.get(16),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.get(8),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 8))
             .itemOutputs(GTNLItemList.QuantumComputerMultiThreader.get(1))
             .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
@@ -3617,8 +3604,8 @@ public class AssemblerRecipes implements IRecipePool {
                 GTNLItemList.ShatteredSingularity.get(16),
                 GTNLItemList.QuantumComputerCraftingStorage256M.get(3),
                 ItemList.QuantumStar.get(4),
-                CustomItemList.EngravedQuantumChip.get(16),
-                NHItemList.EngineeringProcessorSpatialPulsatingCore.getIS(8),
+                NHItemList.EngravedQuantumChip.get(16),
+                NHItemList.EngineeringProcessorSpatialPulsatingCore.get(8),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 8))
             .itemOutputs(GTNLItemList.QuantumComputerDataEntangler.get(1))
             .fluidInputs(GTNLMaterials.QuantumInfusion.getFluidOrGas(16000))
@@ -3629,7 +3616,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.magicBeans", 64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.giantSword", 1),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.giantPick", 1),
@@ -3643,7 +3630,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 1),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.nagaScale", 64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "tile.TFSpiralBricks", 64),
@@ -3657,7 +3644,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 0),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.hydraChop", 64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.fieryBlood", 64),
@@ -3671,7 +3658,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 4),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.tripleBow", 1),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "tile.TFAuroraBrick", 64),
@@ -3685,7 +3672,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 6),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.phantomHelm", 1),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.phantomPlate", 1),
@@ -3699,7 +3686,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 3),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "tile.TFTowerDevice", 64, 0),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "tile.TFTowerDevice", 64, 2),
@@ -3713,7 +3700,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 5),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.meefStroganoff", 1),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.meefSteak", 64),
@@ -3727,7 +3714,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 7),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.alphaFur", 16),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.iceBomb", 16),
@@ -3741,7 +3728,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Items.book, 64),
-                NHItemList.TwilightCrystal.getIS(64),
+                NHItemList.TwilightCrystal.get(64),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.trophy", 1, 2),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.scepterLifeDrain", 1),
                 GTModHandler.getModItem(Mods.TwilightForest.ID, "item.scepterTwilight", 1),
@@ -3757,8 +3744,8 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Hatch_Dynamo_IV.get(1),
                 GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockAlloyGlass", 32, 0),
                 GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "reactorReflectorThick", 1, 1),
-                BlockList.TungstensteelPlatedReinforcedStone.getIS(2),
-                CustomItemList.ReinforcedTungstenSteelIronPlate.get(2),
+                BlockList.TungstensteelPlatedReinforcedStone.get(2),
+                NHItemList.ReinforcedTungstenSteelIronPlate.get(2),
                 GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.Tungsten, 2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.TungstenSteel, 4))
             .itemOutputs(GTNLItemList.ExplosionDynamoHatch.get(1))
@@ -3770,7 +3757,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTNLMaterials.MolybdenumDisilicide.get(OrePrefixes.ring, 32),
-                NHItemList.MicaInsulatorFoil.getIS(16))
+                NHItemList.MicaInsulatorFoil.get(16))
             .fluidInputs(GTNLMaterials.HSLASteel.getMolten(144))
             .itemOutputs(GTNLItemList.MolybdenumDisilicideCoil.get(1))
             .duration(500)
@@ -3780,7 +3767,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Casing_Coil_Superconductor.get(1L),
-                NHItemList.LaserEmitter.getIS(4),
+                NHItemList.LaserEmitter.get(4),
                 GTOreDictUnificator.get(OrePrefixes.lens, Materials.Diamond, 4),
                 GregtechItemList.DehydratorCoilWireLuV.get(8),
                 ItemList.LuV_Coil.get(4L),
@@ -3795,7 +3782,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 ItemList.Hull_HV.get(1),
-                NHItemList.AdsorptionFilter.getIS(1),
+                NHItemList.AdsorptionFilter.get(1),
                 ItemList.Electric_Pump_HV.get(2),
                 ItemList.Electric_Motor_HV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.HV, 2L),
@@ -3803,6 +3790,23 @@ public class AssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.Desulfurizer.get(1))
             .duration(200)
             .eut(480)
+            .addTo(As);
+    }
+
+    @Optional.Method(modid = "cropsnh")
+    public void loadCropNHRecipe() {
+        RecipeBuilder.builder()
+            .itemInputs(
+                CropsNHItemList.CropManager_LV.get(2),
+                new ItemStack(Blocks.dirt, 64),
+                GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockCrop", 64),
+                GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 16, 4),
+                GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 16, 2),
+                GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 4, 5))
+            .itemOutputs(GTNLItemList.SteamGreenhouseModule.get(1))
+            .fluidInputs(FluidRegistry.getFluidStack("liquid_sunshine", 16000))
+            .duration(200)
+            .eut(TierEU.RECIPE_LV)
             .addTo(As);
     }
 

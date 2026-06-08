@@ -9,7 +9,7 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import goodgenerator.util.ItemRefer;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
@@ -75,14 +75,14 @@ public class SpaceAssemblerRecipes implements IRecipePool {
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UIV, 16),
                 MaterialsElements.STANDALONE.HYPOGEN.getScrew(32),
                 MaterialsElements.STANDALONE.HYPOGEN.getFrameBox(16),
-                GTOreDictUnificator.get(OrePrefixes.gearGt, MaterialsUEVplus.TranscendentMetal, 16),
-                GTOreDictUnificator.get(OrePrefixes.gearGtSmall, MaterialsUEVplus.ProtoHalkonite, 24),
+                GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.TranscendentMetal, 16),
+                GTOreDictUnificator.get(OrePrefixes.gearGtSmall, Materials.ProtoHalkonite, 24),
                 ItemRefer.HiC_T5.get(48))
             .fluidInputs(
                 Materials.Infinity.getMolten(14400),
-                MaterialsUEVplus.DimensionallyShiftedSuperfluid.getFluid(30000),
+                Materials.DimensionallyShiftedSuperfluid.getFluid(30000),
                 Materials.UUMatter.getFluid(32000),
-                MaterialsUEVplus.SpaceTime.getMolten(1296))
+                Materials.SpaceTime.getMolten(1296))
             .itemOutputs(GTNLItemList.SpaceAssembler.get(1))
             .metadata(IGRecipeMaps.MODULE_TIER, 3)
             .duration(2400)
@@ -95,23 +95,23 @@ public class SpaceAssemblerRecipes implements IRecipePool {
                 GTModHandler.getModItem(Mods.DraconicEvolution.ID, "reactorCore", 16),
                 GTModHandler.getModItem(Mods.DraconicEvolution.ID, "reactorCore", 16),
                 ItemList.Emitter_UXV.get(1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.Eternity, 8),
+                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Eternity, 8),
                 ItemList.Black_Hole_Opener.get(1),
                 ItemList.Black_Hole_Opener.get(1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.Eternity, 8),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.Eternity, 8),
+                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Eternity, 8),
+                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Eternity, 8),
                 ItemList.Black_Hole_Opener.get(1),
                 ItemList.Black_Hole_Opener.get(1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.Eternity, 8),
+                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Eternity, 8),
                 ItemList.Emitter_UXV.get(1),
                 GTModHandler.getModItem(Mods.DraconicEvolution.ID, "reactorCore", 16),
                 GTModHandler.getModItem(Mods.DraconicEvolution.ID, "reactorCore", 16),
                 ItemList.Emitter_UXV.get(1))
             .fluidInputs(
-                MaterialsUEVplus.Universium.getMolten(9216),
-                MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter.getMolten(9216),
-                MaterialsUEVplus.MagMatter.getMolten(9216),
-                MaterialsUEVplus.BlackDwarfMatter.getMolten(9216))
+                Materials.Universium.getMolten(9216),
+                Materials.MHDCSM.getMolten(9216),
+                Materials.MagMatter.getMolten(9216),
+                Materials.BlackDwarfMatter.getMolten(9216))
             .itemOutputs(ItemList.Black_Hole_Stabilizer.get(1))
             .metadata(IGRecipeMaps.MODULE_TIER, 3)
             .duration(2400)

@@ -57,7 +57,7 @@ public class MolecularTransformerRecipes implements IRecipePool {
             .addTo(MTR);
 
         RecipeBuilder.builder()
-            .itemInputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.WroughtIron, 1L))
+            .itemInputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.CastIron, 1L))
             .itemOutputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.Steel, 1L))
             .duration(80)
             .eut(480)
@@ -104,7 +104,7 @@ public class MolecularTransformerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.Iron, 1L))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.WroughtIron, 1L))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.CastIron, 1L))
             .duration(20)
             .eut(120)
             .addTo(MTR);

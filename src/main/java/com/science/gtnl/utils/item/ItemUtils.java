@@ -43,7 +43,7 @@ import baubles.api.BaublesApi;
 import cpw.mods.fml.common.Optional;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
@@ -78,9 +78,9 @@ public class ItemUtils {
         Materials.Neutronium, // UHV
         Materials.Bedrockium, // UEV
         Materials.BlackPlutonium, // UIV
-        MaterialsUEVplus.SpaceTime, // UMV
-        MaterialsUEVplus.MagMatter, // UXV
-        MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter // MAX
+        Materials.SpaceTime, // UMV
+        Materials.MagMatter, // UXV
+        Materials.MHDCSM // MAX
     };
 
     public static final ItemList[] ELECTRIC_MOTOR = { ItemList.Electric_Motor_LV, ItemList.Electric_Motor_MV,
@@ -181,12 +181,12 @@ public class ItemUtils {
 
     @Optional.Method(modid = "dreamcraft")
     public static void initNHItems() {
-        if (MOLD_HELMET == null) MOLD_HELMET = NHItemList.MoldHelmet.getIS(1);
-        if (MOLD_CHESTPLATE == null) MOLD_CHESTPLATE = NHItemList.MoldChestplate.getIS(1);
-        if (MOLD_LEGGINGS == null) MOLD_LEGGINGS = NHItemList.MoldLeggings.getIS(1);
-        if (MOLD_BOOTS == null) MOLD_BOOTS = NHItemList.MoldBoots.getIS(1);
-        if (MOLD_MARSHMALLOW == null) MOLD_MARSHMALLOW = NHItemList.MarshmallowFormMold.getIS(1);
-        if (EXTRUDER_SHAPE_BOAT == null) EXTRUDER_SHAPE_BOAT = NHItemList.ExtruderShapeBoat.getIS(1);
+        if (MOLD_HELMET == null) MOLD_HELMET = NHItemList.MoldHelmet.get(1);
+        if (MOLD_CHESTPLATE == null) MOLD_CHESTPLATE = NHItemList.MoldChestplate.get(1);
+        if (MOLD_LEGGINGS == null) MOLD_LEGGINGS = NHItemList.MoldLeggings.get(1);
+        if (MOLD_BOOTS == null) MOLD_BOOTS = NHItemList.MoldBoots.get(1);
+        if (MOLD_MARSHMALLOW == null) MOLD_MARSHMALLOW = NHItemList.MarshmallowFormMold.get(1);
+        if (EXTRUDER_SHAPE_BOAT == null) EXTRUDER_SHAPE_BOAT = NHItemList.ExtruderShapeBoat.get(1);
     }
 
     public static boolean isExtraItem(ItemStack stack) {

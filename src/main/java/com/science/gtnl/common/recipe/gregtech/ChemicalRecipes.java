@@ -14,7 +14,6 @@ import appeng.api.AEApi;
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsKevlar;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
@@ -63,7 +62,7 @@ public class ChemicalRecipes implements IRecipePool {
             .addTo(MCRR);
 
         RecipeBuilder.builder()
-            .fluidInputs(MaterialsKevlar.EthyleneOxide.getGas(1000), Materials.Ammonia.getGas(1000))
+            .fluidInputs(Materials.EthyleneOxide.getGas(1000), Materials.Ammonia.getGas(1000))
             .fluidOutputs(GTNLMaterials.Ethanolamine.getFluidOrGas(1000))
             .duration(60)
             .eut(7680)
@@ -264,7 +263,7 @@ public class ChemicalRecipes implements IRecipePool {
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Charcoal, 2),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Cobalt, 1),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Polybenzimidazole, 1))
-            .fluidInputs(Materials.Steam.getGas(1000), MaterialsKevlar.Acetylene.getGas(1000))
+            .fluidInputs(Materials.Steam.getGas(1000), Materials.Acetylene.getGas(1000))
             .itemOutputs(GTNLMaterials.CoAcAbCatalyst.get(OrePrefixes.dust, 1))
             .fluidOutputs(Materials.Hydrogen.getGas(4000), Materials.CarbonMonoxide.getGas(1000))
             .duration(20)
@@ -273,7 +272,7 @@ public class ChemicalRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(WerkstoffLoader.PotassiumCarbonate.get(OrePrefixes.dust, 6))
-            .fluidInputs(MaterialsKevlar.SulfurDichloride.getFluid(2000), Materials.Water.getFluid(1000))
+            .fluidInputs(Materials.SulfurDichloride.getFluid(2000), Materials.Water.getFluid(1000))
             .itemOutputs(GTNLMaterials.PotassiumBisulfite.get(OrePrefixes.dust, 12))
             .fluidOutputs(Materials.CarbonDioxide.getGas(1000))
             .duration(160)
@@ -342,7 +341,7 @@ public class ChemicalRecipes implements IRecipePool {
             .addTo(UC);
 
         RecipeBuilder.builder()
-            .itemInputs(WerkstoffLoader.LuVTierMaterial.get(OrePrefixes.dust, 0))
+            .itemInputs(WerkstoffLoader.RhodiumPlatedPalladium.get(OrePrefixes.dust, 0))
             .fluidInputs(
                 Materials.Water.getFluid(1000),
                 Materials.Hydrogen.getGas(1000),
@@ -516,7 +515,7 @@ public class ChemicalRecipes implements IRecipePool {
             .addTo(MCRR);
 
         RecipeBuilder.builder()
-            .itemInputs(GTOreDictUnificator.get(OrePrefixes.plate, Materials.Plastic, 4))
+            .itemInputs(GTOreDictUnificator.get(OrePrefixes.plate, Materials.Polyethylene, 4))
             .itemOutputs(GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockITNT", 32))
             .fluidInputs(GTNLMaterials.SmallBaka.getFluidOrGas(2000))
             .duration(100)

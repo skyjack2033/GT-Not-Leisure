@@ -36,7 +36,7 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
@@ -88,31 +88,31 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
             GTUtility.copyAmountUnsafe(128, GregtechItemList.InfinityInfusedShieldingCore.get(1)),
             GTModHandler.getModItem(Mods.GalacticraftAmunRa.ID, "tile.baseBlockRock", 48, 14),
             GTUtility.copyAmountUnsafe(128, ItemRefer.GravityStabilizationCasing.get(1)),
-            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SpaceTime, 32),
-            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Creon, 64),
-            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.Mellion, 64),
+            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SpaceTime, 32),
+            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Creon, 64),
+            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Mellion, 64),
             GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UMV, 64),
             GTUtility.copyAmountUnsafe(64, ItemList.Field_Generator_UIV.get(1)),
             GTModHandler.getModItem(Mods.DraconicEvolution.ID, "chaoticCore", 32),
             GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUIV, 64),
-            GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.SixPhasedCopper, 64),
+            GTOreDictUnificator.get(OrePrefixes.nanite, Materials.SixPhasedCopper, 64),
             GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Gold, 64) },
         { GTUtility.copyAmountUnsafe(1024, ItemList.FieldEnergyAbsorberCasing.get(1)),
             GTUtility.copyAmountUnsafe(1024, ItemList.LoadbearingDistributionCasing.get(1)),
             GTUtility.copyAmountUnsafe(1024, ItemList.MagneticAnchorCasing.get(1)),
             GTUtility.copyAmountUnsafe(1024, ItemList.PrecisionFieldSyncCasing.get(1)),
             GTUtility.copyAmountUnsafe(128, ItemList.NaniteFramework.get(1)),
-            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.MagMatter, 8),
+            GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.MagMatter, 8),
             GTOreDictUnificator
-                .get(OrePrefixes.plateSuperdense, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 64),
+                .get(OrePrefixes.plateSuperdense, Materials.MHDCSM, 64),
             GTUtility.copyAmountUnsafe(128, ItemList.Field_Generator_UXV.get(1)),
             GTUtility.copyAmountUnsafe(32, GTNLItemList.TransdimensionalMnemonicMatrix.get(1)),
             GTUtility.copyAmountUnsafe(16, ItemList.Transdimensional_Alignment_Matrix.get(1)),
             GTUtility.copyAmountUnsafe(8, CustomItemList.astralArrayFabricator.get(1)),
             GTUtility.copyAmountUnsafe(8, ItemList.Black_Hole_Stabilizer.get(1)),
-            GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.MagMatter, 8),
-            GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.Eternity, 64),
-            GTOreDictUnificator.get(OrePrefixes.nanite, MaterialsUEVplus.Universium, 64) } };
+            GTOreDictUnificator.get(OrePrefixes.nanite, Materials.MagMatter, 8),
+            GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Eternity, 64),
+            GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Universium, 64) } };
 
     @Getter
     public ItemStack[] storedUpgradeWindowItems = new ItemStack[16];

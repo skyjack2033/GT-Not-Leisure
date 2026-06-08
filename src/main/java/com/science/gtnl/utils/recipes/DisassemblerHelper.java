@@ -193,7 +193,7 @@ public class DisassemblerHelper {
                         Materials cheaper = replaceCheaperOrNull(thisMaterial, dataAgainst.mMaterial.mMaterial);
                         if (cheaper != null) {
                             retOutputs[idx] = GTOreDictUnificator.get(
-                                OrePrefixes.valueOf(itemDataInSlotIdx.mPrefix.name()),
+                                OrePrefixes.getPrefix(itemDataInSlotIdx.mPrefix.getName()),
                                 cheaper,
                                 itemInSlotIdx.stackSize);
                             continue;
@@ -203,7 +203,7 @@ public class DisassemblerHelper {
                         Materials nonAny = replaceAnyOrNull(thisMaterial);
                         if (nonAny != null) {
                             retOutputs[idx] = GTOreDictUnificator.get(
-                                OrePrefixes.valueOf(itemDataInSlotIdx.mPrefix.name()),
+                                OrePrefixes.getPrefix(itemDataInSlotIdx.mPrefix.getName()),
                                 nonAny,
                                 itemInSlotIdx.stackSize);
                         }
@@ -215,7 +215,7 @@ public class DisassemblerHelper {
             Materials unprocessed = getUnprocessedMaterials(thisMaterial);
             if (unprocessed != null) {
                 retOutputs[idx] = GTOreDictUnificator
-                    .get(OrePrefixes.valueOf(itemDataInSlotIdx.mPrefix.name()), unprocessed, itemInSlotIdx.stackSize);
+                    .get(OrePrefixes.getPrefix(itemDataInSlotIdx.mPrefix.getName()), unprocessed, itemInSlotIdx.stackSize);
             }
 
             // 4. replace circuit
@@ -265,19 +265,19 @@ public class DisassemblerHelper {
 
         if (first == Materials.Aluminium && second == Materials.Iron) return second;
         if (first == Materials.Steel && second == Materials.Iron) return second;
-        if (first == Materials.WroughtIron && second == Materials.Iron) return second;
-        if (first == Materials.Aluminium && second == Materials.WroughtIron) return Materials.Iron;
+        if (first == Materials.CastIron && second == Materials.Iron) return second;
+        if (first == Materials.Aluminium && second == Materials.CastIron) return Materials.Iron;
         if (first == Materials.Aluminium && second == Materials.Steel) return second;
 
-        if (first == Materials.Polytetrafluoroethylene && second == Materials.Plastic) return second;
-        if (first == Materials.Polybenzimidazole && second == Materials.Plastic) return second;
-        if (first == Materials.Polystyrene && second == Materials.Plastic) return second;
-        if (first == Materials.Silicone && second == Materials.Plastic) return second;
+        if (first == Materials.Polytetrafluoroethylene && second == Materials.Polyethylene) return second;
+        if (first == Materials.Polybenzimidazole && second == Materials.Polyethylene) return second;
+        if (first == Materials.Polystyrene && second == Materials.Polyethylene) return second;
+        if (first == Materials.RubberSilicone && second == Materials.Polyethylene) return second;
 
         if ((first == Materials.NetherQuartz || first == Materials.CertusQuartz) && second == Materials.Quartzite)
             return second;
 
-        if (first == Materials.Plastic && second == Materials.Wood) return second;
+        if (first == Materials.Polyethylene && second == Materials.Wood) return second;
         if (first == Materials.Diamond && second == Materials.Glass) return second;
 
         return null;
@@ -310,21 +310,21 @@ public class DisassemblerHelper {
 
     @Method(modid = "dreamcraft")
     public static ItemStack getCheapestCircuitOrNull(Materials material) {
-        if (material == Materials.ULV) return NHItemList.CircuitULV.getIS(1);
-        if (material == Materials.LV) return NHItemList.CircuitLV.getIS(1);
-        if (material == Materials.MV) return NHItemList.CircuitMV.getIS(1);
-        if (material == Materials.HV) return NHItemList.CircuitHV.getIS(1);
-        if (material == Materials.EV) return NHItemList.CircuitEV.getIS(1);
-        if (material == Materials.IV) return NHItemList.CircuitIV.getIS(1);
-        if (material == Materials.LuV) return NHItemList.CircuitLuV.getIS(1);
-        if (material == Materials.ZPM) return NHItemList.CircuitZPM.getIS(1);
-        if (material == Materials.UV) return NHItemList.CircuitUV.getIS(1);
-        if (material == Materials.UHV) return NHItemList.CircuitUHV.getIS(1);
-        if (material == Materials.UEV) return NHItemList.CircuitUEV.getIS(1);
-        if (material == Materials.UIV) return NHItemList.CircuitUIV.getIS(1);
-        if (material == Materials.UMV) return NHItemList.CircuitUMV.getIS(1);
-        if (material == Materials.UXV) return NHItemList.CircuitUXV.getIS(1);
-        if (material == Materials.MAX) return NHItemList.CircuitMAX.getIS(1);
+        if (material == Materials.ULV) return NHItemList.CircuitULV.get(1);
+        if (material == Materials.LV) return NHItemList.CircuitLV.get(1);
+        if (material == Materials.MV) return NHItemList.CircuitMV.get(1);
+        if (material == Materials.HV) return NHItemList.CircuitHV.get(1);
+        if (material == Materials.EV) return NHItemList.CircuitEV.get(1);
+        if (material == Materials.IV) return NHItemList.CircuitIV.get(1);
+        if (material == Materials.LuV) return NHItemList.CircuitLuV.get(1);
+        if (material == Materials.ZPM) return NHItemList.CircuitZPM.get(1);
+        if (material == Materials.UV) return NHItemList.CircuitUV.get(1);
+        if (material == Materials.UHV) return NHItemList.CircuitUHV.get(1);
+        if (material == Materials.UEV) return NHItemList.CircuitUEV.get(1);
+        if (material == Materials.UIV) return NHItemList.CircuitUIV.get(1);
+        if (material == Materials.UMV) return NHItemList.CircuitUMV.get(1);
+        if (material == Materials.UXV) return NHItemList.CircuitUXV.get(1);
+        if (material == Materials.MAX) return NHItemList.CircuitMAX.get(1);
         return null;
     }
 

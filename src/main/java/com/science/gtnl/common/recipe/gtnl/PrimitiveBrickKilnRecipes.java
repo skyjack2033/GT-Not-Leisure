@@ -49,7 +49,7 @@ public class PrimitiveBrickKilnRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.WroughtIron, 3),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 3),
                 new ItemStack(Blocks.brick_block, 2))
             .itemOutputs(ItemList.Hull_HP_Bricks.get(1))
             .duration(200)
@@ -59,7 +59,7 @@ public class PrimitiveBrickKilnRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Bronze, 2),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 2),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 2),
                 new ItemStack(Blocks.brick_block, 2))
             .itemOutputs(GTNLItemList.BronzeBrickCasing.get(2))
             .duration(200)
@@ -69,7 +69,7 @@ public class PrimitiveBrickKilnRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Steel, 2),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 2),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 2),
                 new ItemStack(Blocks.brick_block, 2))
             .itemOutputs(GTNLItemList.SteelBrickCasing.get(2))
             .duration(200)
@@ -120,7 +120,7 @@ public class PrimitiveBrickKilnRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(GTOreDictUnificator.get(OrePrefixes.ingot, Materials.Iron, 1))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.ingot, Materials.WroughtIron, 1))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.ingot, Materials.CastIron, 1))
             .duration(200)
             .eut(16)
             .addTo(PBKR);
@@ -130,7 +130,7 @@ public class PrimitiveBrickKilnRecipes implements IRecipePool {
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Clay, 8),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Stone, 8),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Flint, 8))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.ingot, Materials.CrudeSteel, 16))
+            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.ingot, Materials.ClayCompound, 16))
             .duration(200)
             .eut(16)
             .addTo(PBKR);

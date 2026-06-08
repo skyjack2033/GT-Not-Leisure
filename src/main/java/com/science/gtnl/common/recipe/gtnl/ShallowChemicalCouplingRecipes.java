@@ -10,7 +10,7 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsKevlar;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
@@ -57,7 +57,7 @@ public class ShallowChemicalCouplingRecipes implements IRecipePool {
                 Materials.Silicon.getDust(1))
             .fluidInputs(Materials.Hydrogen.getGas(8000), Materials.Chlorine.getGas(4000))
             .fluidOutputs(
-                Materials.Silicone.getMolten(1296),
+                Materials.RubberSilicone.getMolten(1296),
                 Materials.HydrochloricAcid.getFluid(11520),
                 Materials.Water.getFluid(2000))
             .metadata(COIL_HEAT, 8000)
@@ -102,7 +102,7 @@ public class ShallowChemicalCouplingRecipes implements IRecipePool {
                 GTUtility.getIntegratedCircuit(5),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Carbon, 43))
             .fluidInputs(Materials.Hydrogen.getGas(77000), Materials.Oxygen.getGas(49000))
-            .fluidOutputs(Materials.AdvancedGlue.getFluid(15000), Materials.Water.getFluid(4000))
+            .fluidOutputs(Materials.GlueAdvanced.getFluid(15000), Materials.Water.getFluid(4000))
             .metadata(COIL_HEAT, 8000)
             .duration(30 * GTRecipeBuilder.SECONDS + 10 * GTRecipeBuilder.TICKS)
             .eut(TierEU.RECIPE_LuV)
@@ -151,7 +151,7 @@ public class ShallowChemicalCouplingRecipes implements IRecipePool {
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Carbon, 6),
                 Materials.Sulfur.getDust(1))
             .fluidInputs(Materials.Hydrogen.getGas(18000), Materials.Oxygen.getGas(27000))
-            .fluidOutputs(Materials.Plastic.getMolten(4608))
+            .fluidOutputs(Materials.Polyethylene.getMolten(4608))
             .metadata(COIL_HEAT, 7200)
             .duration(30 * GTRecipeBuilder.SECONDS + 10 * GTRecipeBuilder.TICKS)
             .eut(TierEU.RECIPE_IV)
@@ -161,7 +161,7 @@ public class ShallowChemicalCouplingRecipes implements IRecipePool {
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Carbon, 0),
                 GTOreDictUnificator.get(OrePrefixes.foil, Materials.Copper, 40),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Plastic, 4),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.Polyethylene, 4),
                 Materials.Sulfur.getDust(2),
                 Materials.Iron.getDust(1))
             .fluidInputs(Materials.Oxygen.getGas(6000), Materials.Water.getFluid(2000), Materials.Chlorine.getGas(3000))
@@ -301,9 +301,9 @@ public class ShallowChemicalCouplingRecipes implements IRecipePool {
                 Materials.Nitrogen.getGas(8000),
                 Materials.Oxygen.getGas(14000))
             .fluidOutputs(
-                MaterialsKevlar.LiquidCrystalKevlar.getFluid(1000),
-                MaterialsKevlar.PolyurethaneResin.getFluid(1000),
-                MaterialsKevlar.Kevlar.getMolten(144))
+                Materials.LiquidCrystalKevlar.getFluid(1000),
+                Materials.PolyurethaneResin.getFluid(1000),
+                Materials.Kevlar.getMolten(144))
             .metadata(COIL_HEAT, 11700)
             .duration(200)
             .eut(TierEU.RECIPE_UEV)
@@ -822,8 +822,8 @@ public class ShallowChemicalCouplingRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(GTBees.combs.getStackForType(CombType.ENDIUM, 4))
             .itemOutputs(
-                GTOreDictUnificator.get(OrePrefixes.dust, Materials.HeeEndium, 12L),
-                GTOreDictUnificator.get(OrePrefixes.dust, Materials.HeeEndium, 4L))
+                GTOreDictUnificator.get(OrePrefixes.dust, Materials.Endium, 12L),
+                GTOreDictUnificator.get(OrePrefixes.dust, Materials.Endium, 4L))
             .outputChances(10000, 7500)
             .metadata(COIL_HEAT, 3900)
             .duration(6 * GTRecipeBuilder.SECONDS + 10 * GTRecipeBuilder.TICKS)

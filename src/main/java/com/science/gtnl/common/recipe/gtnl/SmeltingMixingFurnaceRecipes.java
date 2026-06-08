@@ -12,7 +12,7 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
@@ -858,11 +858,11 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.BlackPlutonium.getMolten(144 * 80),
                 Materials.Bedrockium.getMolten(144 * 320),
                 Materials.Titanium.getMolten(144 * 162),
-                MaterialsUEVplus.TranscendentMetal.getMolten(144 * 2160),
+                Materials.TranscendentMetal.getMolten(144 * 2160),
                 Materials.Tartarite.getMolten(144 * 2160),
                 Materials.Infinity.getMolten(144 * 1080),
-                MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(1080000))
-            .fluidOutputs(MaterialsUEVplus.MoltenProtoHalkoniteBase.getFluid(1152 * 1080))
+                Materials.DimensionallyTranscendentResidue.getFluid(1080000))
+            .fluidOutputs(Materials.MoltenProtoHalkoniteBase.getFluid(1152 * 1080))
             .duration(1200 * 1080)
             .eut(TierEU.RECIPE_UEV)
             .addTo(SMFR);
@@ -877,14 +877,14 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Tellurium.getMolten(144 * 4800),
                 new FluidStack(MaterialsElements.getInstance().ZIRCONIUM.getFluid(), 144 * 1125),
                 Materials.RadoxPolymer.getMolten(144 * 3456),
-                MaterialsUEVplus.TranscendentMetal.getMolten(144 * 8640),
+                Materials.TranscendentMetal.getMolten(144 * 8640),
                 new FluidStack(MaterialsElements.STANDALONE.RHUGNOR.getFluid(), 144 * 5184),
                 new FluidStack(MaterialsElements.STANDALONE.CHRONOMATIC_GLASS.getFluid(), 144 * 4320),
                 Materials.Bismuth.getPlasma(144 * 864),
                 GGMaterial.metastableOganesson.getMolten(144 * 3600),
                 Materials.Praseodymium.getMolten(144 * 2160),
-                MaterialsUEVplus.PhononCrystalSolution.getFluid(14400000))
-            .fluidOutputs(MaterialsUEVplus.PhononMedium.getFluid(3600000))
+                Materials.PhononCrystalSolution.getFluid(14400000))
+            .fluidOutputs(Materials.PhononMedium.getFluid(3600000))
             .duration(2400 * 3600)
             .eut(TierEU.RECIPE_UIV)
             .addTo(SMFR);
@@ -1480,7 +1480,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Oxygen.getGas(59000),
                 Materials.Silicon.getMolten(144 * 22),
                 Materials.Hydrogen.getGas(12000))
-            .fluidOutputs(Materials.CrudeSteel.getMolten(144 * 144))
+            .fluidOutputs(Materials.ClayCompound.getMolten(144 * 144))
             .duration(240)
             .eut(TierEU.RECIPE_ULV)
             .addTo(SMFR);
@@ -1507,7 +1507,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(GTUtility.getIntegratedCircuit(2))
             .fluidInputs(Materials.Palladium.getMolten(144 * 3), WerkstoffLoader.Rhodium.getMolten(144))
-            .fluidOutputs(WerkstoffLoader.LuVTierMaterial.getMolten(144 * 4))
+            .fluidOutputs(WerkstoffLoader.RhodiumPlatedPalladium.getMolten(144 * 4))
             .duration(2700)
             .eut(TierEU.RECIPE_HV)
             .addTo(SMFR);
@@ -1628,8 +1628,8 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Ardite.getMolten(144 * 16),
                 Materials.Plutonium.getMolten(144 * 63),
                 GGMaterial.atomicSeparationCatalyst.getMolten(144 * 13),
-                MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(5000))
-            .fluidOutputs(MaterialsUEVplus.Mellion.getMolten(144 * 63))
+                Materials.DimensionallyTranscendentResidue.getFluid(5000))
+            .fluidOutputs(Materials.Mellion.getMolten(144 * 63))
             .duration(1142)
             .eut(TierEU.RECIPE_UXV)
             .addTo(SMFR);
@@ -1746,8 +1746,8 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Thorium.getPlasma(1000),
                 new FluidStack(MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getPlasma(), 1000),
                 Materials.Calcium.getPlasma(1000),
-                MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(1000))
-            .fluidOutputs(MaterialsUEVplus.Creon.getPlasma(5000))
+                Materials.DimensionallyTranscendentResidue.getFluid(1000))
+            .fluidOutputs(Materials.Creon.getPlasma(5000))
             .duration(400)
             .eut(TierEU.RECIPE_UXV)
             .addTo(SMFR);
@@ -1759,8 +1759,8 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Thorium.getPlasma(1000),
                 new FluidStack(MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getPlasma(), 1000),
                 Materials.Calcium.getPlasma(1000),
-                MaterialsUEVplus.DimensionallyTranscendentResidue.getFluid(1000))
-            .fluidOutputs(MaterialsUEVplus.Creon.getMolten(5000))
+                Materials.DimensionallyTranscendentResidue.getFluid(1000))
+            .fluidOutputs(Materials.Creon.getMolten(5000))
             .duration(400)
             .eut(TierEU.RECIPE_UXV)
             .addTo(SMFR);

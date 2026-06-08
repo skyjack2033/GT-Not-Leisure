@@ -26,6 +26,7 @@ import gtPlusPlus.core.material.MaterialMisc;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.core.material.MaterialsOres;
 import gtPlusPlus.core.util.minecraft.FluidUtils;
+import net.minecraftforge.fluids.FluidStack;
 
 public class SpaceMinerRecipes implements IRecipePool {
 
@@ -71,7 +72,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility
                     .copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.DraconiumAwakened, 1)),
                 GTOreDictUnificator.get(OrePrefixes.ore, Materials.ElectrumFlux, 50))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -109,7 +110,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Bismuth, 1)),
                 GTUtility.copyAmountUnsafe(90, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Antimony, 1)),
                 GTUtility.copyAmountUnsafe(70, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Gallium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -147,7 +148,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Rutile, 1)),
                 GTUtility.copyAmountUnsafe(300, new ItemStack(Blocks.clay, 1)),
                 GTUtility.copyAmountUnsafe(60, MaterialsOres.CROCROITE.getOre(1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -185,7 +186,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Ardite, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Manyullyn, 1)),
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Opal, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -223,7 +224,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.BlueTopaz, 1)),
                 GTUtility.copyAmountUnsafe(20, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Osmium, 1)),
                 GTUtility.copyAmountUnsafe(20, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Iridium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -263,7 +264,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Shadow, 1)),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.NetherStar, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Quantium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -303,7 +304,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(150, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Lignite, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Cadmium, 1)),
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Zinc, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -341,7 +342,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(50, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Niobium, 1)),
                 GTUtility.copyAmountUnsafe(50, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Ytterbium, 1)),
                 GTUtility.copyAmountUnsafe(50, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Yttrium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -379,7 +380,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Silicon, 1)),
                 GTUtility.copyAmountUnsafe(50, GTOreDictUnificator.get(OrePrefixes.ore, Materials.SiliconSG, 1)),
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Saltpeter, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -421,7 +422,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Phosphate, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.dust, Materials.Void, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.dust, Materials.Thaumium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -461,7 +462,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility
                     .copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.MysteriousCrystal, 1)),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Oriharukon, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -499,7 +500,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(40, GGMaterial.orundum.get(OrePrefixes.ore, 1)),
                 GTUtility.copyAmountUnsafe(90, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Uranium, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Uranium235, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -537,7 +538,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Plutonium241, 1)),
                 GTUtility.copyAmountUnsafe(60, WerkstoffLoader.Tiberium.get(OrePrefixes.ore, 1)),
                 GTUtility.copyAmountUnsafe(40, WerkstoffLoader.Thorianit.get(OrePrefixes.ore, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -575,7 +576,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Manganese, 1)),
                 GTUtility.copyAmountUnsafe(50, WerkstoffLoader.Fluorspar.get(OrePrefixes.ore, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Vanadium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -613,7 +614,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Europium, 1)),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Samarium, 1)),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Strontium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -630,7 +631,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility
                     .copyAmountUnsafe(160, GTOreDictUnificator.get(OrePrefixes.ore, Materials.VanadiumMagnetite, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Gold, 1)),
-                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.HeeEndium, 1)),
+                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Endium, 1)),
                 GTUtility
                     .copyAmountUnsafe(60, GTModHandler.getModItem(Mods.HardcoreEnderExpansion.ID, "end_powder_ore", 1)),
                 GTUtility.copyAmountUnsafe(240, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Cheese, 1)))
@@ -651,11 +652,11 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility
                     .copyAmountUnsafe(160, GTOreDictUnificator.get(OrePrefixes.ore, Materials.VanadiumMagnetite, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Gold, 1)),
-                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.HeeEndium, 1)),
+                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Endium, 1)),
                 GTUtility
                     .copyAmountUnsafe(60, GTModHandler.getModItem(Mods.HardcoreEnderExpansion.ID, "end_powder_ore", 1)),
                 GTUtility.copyAmountUnsafe(240, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Cheese, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -693,7 +694,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(90, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Arsenic, 1)),
                 GTUtility.copyAmountUnsafe(90, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Barium, 1)),
                 GTUtility.copyAmountUnsafe(50, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Lepidolite, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -731,7 +732,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Ledox, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.CallistoIce, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Borax, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -777,7 +778,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Americium, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Dilithium, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.MeteoricIron, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -815,7 +816,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Thulium, 1)),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Tantalum, 1)),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Lutetium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -853,7 +854,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Adamantium, 1)),
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Vinteum, 1)),
                 GTUtility.copyAmountUnsafe(60, MaterialsAlloy.KOBOLDITE.getOre(1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -891,7 +892,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(30, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Holmium, 1)),
                 GTUtility.copyAmountUnsafe(30, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Ichorium, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.ShadowIron, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -929,7 +930,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.InfusedAir, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.InfusedEarth, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.InfusedFire, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -967,7 +968,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.InfusedWater, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.InfusedEntropy, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.InfusedOrder, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -1005,7 +1006,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Jasper, 1)),
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Tanzanite, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Vulcanite, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -1020,7 +1021,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Tritanium, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.DarkIron, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Firestone, 1)),
-                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.FoolsRuby, 1)),
+                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Spinel, 1)),
                 GTUtility.copyAmountUnsafe(100, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Duralumin, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Forcicium, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Forcillium, 1)))
@@ -1039,11 +1040,11 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(40, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Tritanium, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.DarkIron, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Firestone, 1)),
-                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.FoolsRuby, 1)),
+                GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Spinel, 1)),
                 GTUtility.copyAmountUnsafe(100, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Duralumin, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Forcicium, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Forcillium, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -1081,7 +1082,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(120, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Mirabilite, 1)),
                 GTUtility.copyAmountUnsafe(60, GTOreDictUnificator.get(OrePrefixes.ore, Materials.DeepIron, 1)),
                 GTUtility.copyAmountUnsafe(80, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Electrum, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -1119,7 +1120,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(50, MaterialMisc.RARE_EARTH_LOW.getOre(1)),
                 GTUtility.copyAmountUnsafe(50, MaterialMisc.RARE_EARTH_MID.getOre(1)),
                 GTUtility.copyAmountUnsafe(50, MaterialMisc.RARE_EARTH_HIGH.getOre(1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -1157,7 +1158,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(60, WerkstoffLoader.FuchsitCR.get(OrePrefixes.ore, 1)),
                 GTUtility.copyAmountUnsafe(60, WerkstoffLoader.FuchsitAL.get(OrePrefixes.ore, 1)),
                 GTUtility.copyAmountUnsafe(60, WerkstoffLoader.Djurleit.get(OrePrefixes.ore, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -1195,7 +1196,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(60, WerkstoffLoader.Hedenbergit.get(OrePrefixes.ore, 1)),
                 GTUtility.copyAmountUnsafe(60, WerkstoffLoader.Prasiolite.get(OrePrefixes.ore, 1)),
                 GTUtility.copyAmountUnsafe(40, WerkstoffLoader.BArTiMaEuSNeK.get(OrePrefixes.ore, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)
@@ -1233,7 +1234,7 @@ public class SpaceMinerRecipes implements IRecipePool {
                 GTUtility.copyAmountUnsafe(20, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Ichorium, 1)),
                 GTUtility.copyAmountUnsafe(20, GTOreDictUnificator.get(OrePrefixes.ore, Materials.Flerovium, 1)),
                 GTUtility.copyAmountUnsafe(20, GTOreDictUnificator.get(OrePrefixes.ore, Materials.TengamRaw, 1)))
-            .fluidInputs(FluidUtils.getFluidStack(GTPPFluids.RP1RocketFuel, 6000))
+            .fluidInputs(new FluidStack(GTPPFluids.RP1RocketFuel, 6000))
             .specialValue(1)
             .metadata(MINER_TIER, 1)
             .duration(400)

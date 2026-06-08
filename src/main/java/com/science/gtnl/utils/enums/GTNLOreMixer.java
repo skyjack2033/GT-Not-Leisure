@@ -3,7 +3,7 @@ package com.science.gtnl.utils.enums;
 import galacticgreg.WorldgenOreLayerSpace;
 import galacticgreg.api.enums.DimensionDef;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MaterialsUEVplus;
+import gregtech.api.enums.Materials;
 import gregtech.common.OreMixBuilder;
 import gregtech.common.WorldgenGTOreLayer;
 
@@ -50,11 +50,11 @@ public enum GTNLOreMixer {
         .weight(160)
         .density(16)
         .size(32)
-        .enableInDim(OreMixBuilder.OW)
-        .primary(MaterialsUEVplus.SpaceTime)
-        .secondary(MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter)
-        .inBetween(MaterialsUEVplus.Universium)
-        .sporadic(MaterialsUEVplus.MagMatter)),
+        .enableInDim(DimensionDef.Overworld)
+        .primary(Materials.SpaceTime)
+        .secondary(Materials.MHDCSM)
+        .inBetween(Materials.Universium)
+        .sporadic(Materials.MagMatter)),
 
     ;
 
@@ -66,9 +66,5 @@ public enum GTNLOreMixer {
 
     public WorldgenGTOreLayer addGTOreLayer() {
         return new WorldgenGTOreLayer(this.oreMixBuilder);
-    }
-
-    public WorldgenOreLayerSpace addGaGregOreLayer() {
-        return new WorldgenOreLayerSpace(this.oreMixBuilder);
     }
 }

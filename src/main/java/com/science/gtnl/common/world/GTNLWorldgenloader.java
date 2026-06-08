@@ -24,7 +24,6 @@ public class GTNLWorldgenloader {
         // GT Veins registration
         for (GTNLOreMixer oreMix : GTNLOreMixer.values()) {
             oreMix.addGTOreLayer();
-            oreMix.addGaGregOreLayer();
 
             GT5OreLayerHelper.mapOreLayerWrapper
                 .put(oreMix.oreMixBuilder.oreMixName, new GT5OreLayerHelper.OreLayerWrapper(oreMix.oreMixBuilder));

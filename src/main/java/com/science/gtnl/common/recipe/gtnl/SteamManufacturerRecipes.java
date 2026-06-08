@@ -52,7 +52,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.WroughtIron, 5),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 5),
                 new ItemStack(Blocks.brick_block, 3))
             .itemOutputs(ItemList.Hull_HP_Bricks.get(1))
             .duration(1 * SECONDS)
@@ -60,7 +60,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
             .addTo(SMFR);
 
         Materials[] Tier1Materials = { Materials.Bronze, Materials.Iron, Materials.Copper, Materials.Tin,
-            Materials.Brass, Materials.Steel, Materials.WroughtIron, Materials.CrudeSteel };
+            Materials.Brass, Materials.Steel, Materials.CastIron, Materials.ClayCompound };
 
         for (Materials aMat : Tier1Materials) {
             RecipeBuilder.builder()
@@ -71,7 +71,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
                 .addTo(SMFR);
         }
 
-        Materials[] pipeMaterials = { Materials.Bronze, Materials.WroughtIron, Materials.Copper, Materials.Steel };
+        Materials[] pipeMaterials = { Materials.Bronze, Materials.CastIron, Materials.Copper, Materials.Steel };
 
         for (Materials aMat : pipeMaterials) {
             RecipeBuilder.builder()
@@ -115,7 +115,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
                 GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.Bronze, 1),
                 GTOreDictUnificator.get(OrePrefixes.pipeTiny, Materials.Bronze, 1),
                 GTNLItemList.IronTurbine.get(1),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 1),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 1),
                 GTNLItemList.HydraulicMotor.get(1))
             .itemOutputs(GTNLItemList.HydraulicPiston.get(1))
             .duration(1 * SECONDS)
@@ -126,7 +126,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.ring, Materials.Rubber, 2),
-                GTOreDictUnificator.get(OrePrefixes.bolt, Materials.CrudeSteel, 1),
+                GTOreDictUnificator.get(OrePrefixes.bolt, Materials.ClayCompound, 1),
                 GTOreDictUnificator.get(OrePrefixes.pipeLarge, Materials.Bronze, 1),
                 GTNLItemList.BronzeTurbine.get(1),
                 GTNLItemList.HydraulicMotor.get(2))
@@ -139,8 +139,8 @@ public class SteamManufacturerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.stick, Materials.Iron, 2),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 3),
-                GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.CrudeSteel, 1),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 3),
+                GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.ClayCompound, 1),
                 GTNLItemList.HydraulicPiston.get(1),
                 GTNLItemList.HydraulicMotor.get(2))
             .itemOutputs(GTNLItemList.HydraulicArm.get(1))
@@ -152,7 +152,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Rubber, 6),
-                GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.CrudeSteel, 1),
+                GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.ClayCompound, 1),
                 GTNLItemList.HydraulicMotor.get(2))
             .itemOutputs(GTNLItemList.HydraulicConveyor.get(1))
             .duration(1 * SECONDS)
@@ -544,7 +544,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
             .itemInputs(
                 GTNLMaterials.Breel.get(OrePrefixes.plateDouble, 2),
                 ItemList.Casing_SolidSteel.get(1),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 6))
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 6))
             .itemOutputs(GTNLItemList.VibrationSafeCasing.get(1))
             .duration(2 * SECONDS)
             .eut(16)
@@ -554,7 +554,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Blocks.brick_block, 3),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 2),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Bronze, 3))
             .itemOutputs(GTNLItemList.BronzeBrickCasing.get(2))
             .duration(2 * SECONDS)
@@ -565,7 +565,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 new ItemStack(Blocks.brick_block, 3),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 2),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Steel, 3))
             .itemOutputs(GTNLItemList.SteelBrickCasing.get(2))
             .duration(2 * SECONDS)
@@ -577,7 +577,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTNLMaterials.Breel.get(OrePrefixes.plateDouble, 1),
-                GTOreDictUnificator.get(OrePrefixes.stick, Materials.CrudeSteel, 6))
+                GTOreDictUnificator.get(OrePrefixes.stick, Materials.ClayCompound, 6))
             .itemOutputs(GTNLItemList.ConcentratingSieveMesh.get(1))
             .duration(2 * SECONDS)
             .eut(16)
@@ -587,7 +587,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
         // Stronze Wrapped Casingg
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.CrudeSteel, 5),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.ClayCompound, 5),
                 GTNLMaterials.Stronze.get(OrePrefixes.plate, 4))
             .itemOutputs(GTNLItemList.StronzeWrappedCasing.get(4))
             .duration(2 * SECONDS)
@@ -598,9 +598,9 @@ public class SteamManufacturerRecipes implements IRecipePool {
         // Breel Pipe Casingg
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.CrudeSteel, 1),
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.ClayCompound, 1),
                 GTNLMaterials.Breel.get(OrePrefixes.pipeMedium, 1),
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CrudeSteel, 4))
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.ClayCompound, 4))
             .itemOutputs(GTNLItemList.BreelPipeCasing.get(2))
             .duration(2 * SECONDS)
             .eut(16)
@@ -648,7 +648,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
             .itemInputs(
                 GTNLMaterials.Breel.get(OrePrefixes.plate, 2),
                 GTNLMaterials.Breel.get(OrePrefixes.pipeTiny, 6),
-                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.CrudeSteel, 1))
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.ClayCompound, 1))
             .itemOutputs(GTNLItemList.BreelPlatedCasing.get(1))
             .duration(2 * SECONDS)
             .eut(16)
@@ -822,7 +822,7 @@ public class SteamManufacturerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.plate, Materials.WroughtIron, 6),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.CastIron, 6),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Steel, 1),
                 GTUtility.getIntegratedCircuit(1))
             .itemOutputs(GTNLItemList.AdvancedIndustrialSteamCasing.get(1))
