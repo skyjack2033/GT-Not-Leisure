@@ -5439,10 +5439,6 @@ public class MachineLoader {
     }
 
     public static void loadItemTooltip() {
-        if (MainConfig.machine.enableIntegratedOreFactoryChange) {
-            AnimatedTooltipHandler
-                .addItemTooltip(ItemList.Ore_Processor.get(1), AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);
-        }
 
         if (MainConfig.machine.enableVoidMinerTweak) {
             AnimatedTooltipHandler.addItemTooltip(ItemRegistry.voidminer[0], AnimatedText.SCIENCE_NOT_LEISURE_CHANGE);

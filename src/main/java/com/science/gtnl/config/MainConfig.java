@@ -135,11 +135,6 @@ public class MainConfig {
         @DefaultBoolean(true)
         public boolean enableHatchInterfaceTerminalEnhance = true;
 
-        @Comment("Enable Integrated Ore Factory Change, change parallel to 65536 and can use Laser Energy Hatch")
-        @DefaultBoolean(true)
-        @RequiresMcRestart
-        public boolean enableIntegratedOreFactoryChange = true;
-
         @Comment("Set Machine Can Use Laser Hatch")
         @Name("enableLaserHatch")
         @DefaultBoolean(false)

@@ -261,11 +261,6 @@ public enum Mixins implements IMixins {
         .setPhase(Phase.LATE)
         .setApplyIf(() -> MainConfig.machine.enablePurificationPlantBuff)),
 
-    OP_CHANGE(
-        new MixinBuilder("Integrated Ore Factory Changes").addCommonMixins("Gregtech.MixinMTEIntegratedOreFactory")
-            .setPhase(Phase.LATE)
-            .setApplyIf(() -> MainConfig.machine.enableIntegratedOreFactoryChange)),
-
     STICK_LATE(new MixinBuilder("Stick Late Mixins")
         .addCommonMixins("Stick.MixinTooltipHandlerWaila", "Stick.MixinOreDictTooltipHandler")
         .setPhase(Phase.LATE)
