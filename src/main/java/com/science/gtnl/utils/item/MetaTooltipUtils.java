@@ -15,7 +15,7 @@ public class MetaTooltipUtils {
     }
 
     public static void appendTooltips(String[] values, List<String> tooltips) {
-        if (values == null || values.length == 0) {
+        if (values == null) {
             return;
         }
         for (String value : values) {

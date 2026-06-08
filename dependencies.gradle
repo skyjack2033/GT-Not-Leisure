@@ -24,7 +24,6 @@ dependencies {
     compileOnlyApi("com.github.GTNewHorizons:Avaritiaddons:1.9.4-GTNH:dev")
     compileOnlyApi("com.github.GTNewHorizons:BloodArsenal:1.5.10:dev")
     compileOnlyApi("com.github.GTNewHorizons:BloodMagic:1.9.4:dev")
-    compileOnlyApi("com.github.GTNewHorizons:LootGames:2.2.12:dev")
     compileOnlyApi("com.github.GTNewHorizons:ThaumicBases:1.9.18:dev")
     compileOnlyApi("com.github.GTNewHorizons:ThaumicEnergistics:1.7.53-GTNH:dev")
     compileOnlyApi(rfg.deobf("curse.maven:thaumcraft-nei-plugin-225095:2241913")) { transitive = false } // Deprecated, use Aspect Recipe Index
