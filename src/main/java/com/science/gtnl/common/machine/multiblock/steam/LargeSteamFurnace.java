@@ -41,12 +41,13 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gregtech.common.tileentities.machines.MTEHatchOutputBusME;
+import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 
 public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> implements ISurvivalConstructable {
 
@@ -66,16 +67,16 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
                 GTStructureChannels.TIER_MACHINE_CASING.use(
                     StructureUtility.ofChain(
                         buildSteamWirelessInput(LargeSteamFurnace.class).casingIndex(getCasingTextureID())
-                            .dot(1)
+                            .hint(1)
                             .build(),
                         buildSteamBigInput(LargeSteamFurnace.class).casingIndex(getCasingTextureID())
-                            .dot(1)
+                            .hint(1)
                             .build(),
                         buildSteamInput(LargeSteamFurnace.class).casingIndex(getCasingTextureID())
-                            .dot(1)
+                            .hint(1)
                             .build(),
                         buildHatchAdder(LargeSteamFurnace.class).casingIndex(getCasingTextureID())
-                            .dot(1)
+                            .hint(1)
                             .atLeast(
                                 SteamHatchElement.InputBus_Steam,
                                 SteamHatchElement.OutputBus_Steam,
@@ -224,9 +225,9 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatches())
-            return false;
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
+            return;
         if (tierPipeCasing == 1 && tierMachineCasing == 1
             && tierFrameCasing == 1
             && tierPlatedCasing == 1
@@ -237,7 +238,7 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
             tierMachine = 1;
             getCasingTextureID();
             updateHatchTexture();
-            return true;
+            return;
         }
         if (tierPipeCasing == 2 && tierMachineCasing == 2
             && tierFrameCasing == 2
@@ -249,9 +250,9 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
             tierMachine = 2;
             getCasingTextureID();
             updateHatchTexture();
-            return true;
+            return;
         }
-        return false;
+        checkStructureCondition(errors, false);
     }
 
     @Override
@@ -370,7 +371,8 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
         boolean hasMEOutputBus = false;
         for (final MTEHatch bus : GTUtility.validMTEList(mOutputBusses)) {
             if (bus instanceof MTEHatchOutputBusME meBus) {
-                if (!meBus.isLocked() && meBus.canAcceptItem()) {
+                if (!meBus.isLocked() && meBus.createTransaction()
+                    .hasAvailableSpace()) {
                     hasMEOutputBus = true;
                     break;
                 }

@@ -8,6 +8,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.math.Pos2d;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
@@ -25,7 +26,6 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchMultiInput;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GTUtility;
 
 public class NinefoldInputHatch extends MTEHatchMultiInput implements IAddUIWidgets, IAddGregtechLogo {
 
@@ -61,12 +61,13 @@ public class NinefoldInputHatch extends MTEHatchMultiInput implements IAddUIWidg
 
         desc.add(StatCollector.translateToLocal("Tooltip_NinefoldInputHatch_00"));
         desc.add(
-            StatCollector.translateToLocal("Tooltip_NinefoldInputHatch_01") + GTUtility.formatNumbers(mCapacityPer)
+            StatCollector.translateToLocal("Tooltip_NinefoldInputHatch_01")
+                + NumberFormatUtil.formatNumber(mCapacityPer)
                 + "L");
         desc.add(
             StatCollector.translateToLocalFormatted(
                 "Tooltip_NinefoldInputHatch_02",
-                GTUtility.formatNumbers(mInventory.length)));
+                NumberFormatUtil.formatNumber(mInventory.length)));
 
         return desc.toArray(new String[] {});
     }

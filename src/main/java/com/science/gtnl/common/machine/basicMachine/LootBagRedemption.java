@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
-import com.dreammaster.gthandler.CustomItemList;
+import com.dreammaster.item.NHItemList;
 import com.google.common.collect.Sets;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
@@ -321,6 +321,6 @@ public class LootBagRedemption extends MTEBasicMachine {
 
     @Optional.Method(modid = "dreamcraft")
     private static ItemStack getCoinTechnician() {
-        return CustomItemList.CoinTechnician.get(1);
+        return NHItemList.CoinTechnician.get(1);
     }
 }

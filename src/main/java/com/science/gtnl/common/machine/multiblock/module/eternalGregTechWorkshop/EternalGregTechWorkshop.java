@@ -28,6 +28,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.common.math.LongMath;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -59,12 +60,16 @@ import com.science.gtnl.common.block.blocks.BlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EGTWUpgradeStorage;
+import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopTextures;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopUI;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopUpgrade;
+import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.MilestoneFormatter;
+import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.MilestoneIcon;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.UpgradeColor;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.utils.FluidStackLookup;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
@@ -86,6 +91,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
@@ -97,10 +103,10 @@ import lombok.Setter;
 import tectech.TecTech;
 import tectech.thing.casing.TTCasingsContainer;
 import tectech.thing.gui.TecTechUITextures;
-import tectech.thing.metaTileEntity.multi.godforge.util.MilestoneFormatter;
-import tectech.thing.metaTileEntity.multi.godforge.util.MilestoneIcon;
 
 public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWorkshop> implements INEIPreviewModifier {
+
+    private static final String DIMENSIONALLY_TRANSCENDENT_RESIDUE = "dimensionallytranscendentresidue";
 
     // 75 x 19 x 75
     private static final String STRUCTURE_PIECE_MAIN_TOP = "main_top";
@@ -418,7 +424,6 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         HatchElement.InputHatch,
                         HatchElement.OutputHatch)
                     .casingIndex(getCasingTextureID() + 1)
-                    .dot(1)
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
@@ -438,7 +443,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                 HatchElementBuilder.<EternalGregTechWorkshop>builder()
                     .atLeast(EternalGregTechWorkshop.moduleElement.Module)
                     .casingIndex(getCasingTextureID())
-                    .dot(1)
+                    .hint(1)
+                    .hint(1)
                     .buildAndChain(TTCasingsContainer.GodforgeCasings, 0))
             .addElement(
                 'Z',
@@ -450,16 +456,16 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         mCountCasing = 0;
         moduleHatches.clear();
         int checkTier = 0;
 
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET)) {
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
             if (isRenderActive) destroyRenderer();
             mMachineTier = 0;
             mExtraModule = false;
-            return false;
+            checkStructureCondition(errors, false);
         }
 
         while (checkTier < Integer.MAX_VALUE - 1) {
@@ -488,7 +494,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             if (isRenderActive) destroyRenderer();
             mMachineTier = 0;
             mExtraModule = false;
-            return false;
+            checkStructureCondition(errors, false);
         }
 
         if (!checkPiece(
@@ -499,7 +505,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             if (isRenderActive) destroyRenderer();
             mMachineTier = 0;
             mExtraModule = false;
-            return false;
+            checkStructureCondition(errors, false);
         }
 
         if (enableExtraModule && checkTier > 0) {
@@ -551,7 +557,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             destroyRenderer();
             mExtraModule = false;
         }
-        return mCountCasing > 1;
+        checkStructureCondition(errors, mCountCasing > 1);
     }
 
     @Override
@@ -833,7 +839,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
     public final ArrayList<FluidStack> validFuelList = new ArrayList<>() {
 
         {
-            add(Materials.DimensionallyTranscendentResidue.getFluid(1));
+            add(FluidStackLookup.getFluidStack(DIMENSIONALLY_TRANSCENDENT_RESIDUE, 1));
             add(Materials.RawStarMatter.getFluid(1));
             add(Materials.MHDCSM.getMolten(1));
         }
@@ -1167,7 +1173,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             })
                 .setSize(16, 16)
                 .setBackground(
-                    () -> new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
+                    () -> new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
                         TecTechUITextures.OVERLAY_BUTTON_HEAT_ON })
                 .addTooltip(StatCollector.translateToLocal("fog.button.fuelconfig.tooltip"))
                 .setPos(174, 110)
@@ -1184,10 +1190,10 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         : SoundResource.GUI_BUTTON_DOWN.resourceLocation)
                 .setBackground(() -> {
                     if (isAllowedToWork()) {
-                        return new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
+                        return new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
                             TecTechUITextures.OVERLAY_BUTTON_POWER_SWITCH_ON };
                     } else {
-                        return new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
+                        return new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
                             TecTechUITextures.OVERLAY_BUTTON_POWER_SWITCH_OFF };
                     }
                 })
@@ -1207,8 +1213,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             })
                 .setSize(16, 16)
                 .setBackground(
-                    () -> new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
-                        TecTechUITextures.OVERLAY_BUTTON_FLAG })
+                    () -> new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
+                        EternalGregTechWorkshopTextures.OVERLAY_BUTTON_FLAG })
                 .addTooltip(StatCollector.translateToLocal("fog.button.milestones.tooltip"))
                 .setTooltipShowUpDelay(TOOLTIP_DELAY)
                 .setPos(174, 91))
@@ -1220,8 +1226,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                     })
                     .setSize(16, 16)
                     .setBackground(
-                        () -> new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
-                            TecTechUITextures.OVERLAY_BUTTON_ARROW_BLUE_UP })
+                        () -> new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
+                            EternalGregTechWorkshopTextures.OVERLAY_BUTTON_ARROW_BLUE_UP })
                     .addTooltip(StatCollector.translateToLocal("fog.button.upgradetree.tooltip"))
                     .setPos(174, 129)
                     .setTooltipShowUpDelay(TOOLTIP_DELAY))
@@ -1233,8 +1239,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             })
                 .setPlayClickSound(true)
                 .setBackground(
-                    () -> new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
-                        TecTechUITextures.OVERLAY_BUTTON_ARROW_BLUE_UP })
+                    () -> new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
+                        EternalGregTechWorkshopTextures.OVERLAY_BUTTON_ARROW_BLUE_UP })
                 .attachSyncer(
                     new FakeSyncWidget.BooleanSyncer(this::getEnableExtraModule, this::setEnableExtraModule),
                     builder)
@@ -1249,15 +1255,15 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             })
                 .setSize(16, 16)
                 .setBackground(
-                    () -> new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
-                        TecTechUITextures.OVERLAY_CYCLIC_BLUE })
+                    () -> new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
+                        EternalGregTechWorkshopTextures.OVERLAY_CYCLIC_BLUE })
                 .addTooltip(StatCollector.translateToLocal("EGTW_UpdateStructureCheck"))
                 .setPos(8, 91)
                 .setTooltipShowUpDelay(TOOLTIP_DELAY));
     }
 
     public Text machineTier() {
-        return new Text(GTUtility.formatNumbers(mMachineTier));
+        return new Text(NumberFormatUtil.formatNumber(mMachineTier));
     }
 
     public Text machineTierHeaderText() {
@@ -1377,10 +1383,10 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .widget(
                 new MultiChildWidget().addChild(
                     new FluidNameHolderWidget(
-                        () -> Materials.DimensionallyTranscendentResidue.getFluid(1)
+                        () -> FluidStackLookup.getFluidStack(DIMENSIONALLY_TRANSCENDENT_RESIDUE, 1)
                             .getUnlocalizedName()
                             .substring(6),
-                        (String) -> Materials.DimensionallyTranscendentResidue.getFluid(1)
+                        (String) -> FluidStackLookup.getFluidStack(DIMENSIONALLY_TRANSCENDENT_RESIDUE, 1)
                             .getUnlocalizedName()) {
 
                         @Override
@@ -1398,7 +1404,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                     })
                         .setBackground(() -> {
                             if (selectedFuelType == 0) {
-                                return new IDrawable[] { TecTechUITextures.SLOT_OUTLINE_GREEN };
+                                return new IDrawable[] { EternalGregTechWorkshopTextures.SLOT_OUTLINE_GREEN };
                             } else {
                                 return new IDrawable[] {};
                             }
@@ -1432,7 +1438,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                     })
                         .setBackground(() -> {
                             if (selectedFuelType == 1) {
-                                return new IDrawable[] { TecTechUITextures.SLOT_OUTLINE_GREEN };
+                                return new IDrawable[] { EternalGregTechWorkshopTextures.SLOT_OUTLINE_GREEN };
                             } else {
                                 return new IDrawable[] {};
                             }
@@ -1464,7 +1470,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                     })
                         .setBackground(() -> {
                             if (selectedFuelType == 2) {
-                                return new IDrawable[] { TecTechUITextures.SLOT_OUTLINE_GREEN };
+                                return new IDrawable[] { EternalGregTechWorkshopTextures.SLOT_OUTLINE_GREEN };
                             } else {
                                 return new IDrawable[] {};
                             }
@@ -1583,7 +1589,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         final Size iconSize = icon.getSize();
 
         ModularWindow.Builder builder = ModularWindow.builder(w, h);
-        builder.setBackground(TecTechUITextures.BACKGROUND_GLOW_WHITE);
+        builder.setBackground(EternalGregTechWorkshopTextures.BACKGROUND_GLOW_WHITE);
         builder.setDraggable(true);
 
         builder.widget(
@@ -1639,7 +1645,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             })
                 .setSize(10, 10)
                 .addTooltip(StatCollector.translateToLocal("fog.button.formatting.tooltip"))
-                .setBackground(TecTechUITextures.OVERLAY_CYCLIC_BLUE)
+                .setBackground(EternalGregTechWorkshopTextures.OVERLAY_CYCLIC_BLUE)
                 .setPos(5, 135)
                 .setTooltipShowUpDelay(TOOLTIP_DELAY)
                 .attachSyncer(
@@ -1747,10 +1753,10 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         })
             .setSize(width, height)
             .setBackground(() -> switch (milestoneID) {
-            case 1 -> new IDrawable[] { TecTechUITextures.PICTURE_GODFORGE_MILESTONE_CONVERSION_GLOW };
-            case 2 -> new IDrawable[] { TecTechUITextures.PICTURE_GODFORGE_MILESTONE_CATALYST_GLOW };
-            case 3 -> new IDrawable[] { TecTechUITextures.PICTURE_GODFORGE_MILESTONE_COMPOSITION_GLOW };
-            default -> new IDrawable[] { TecTechUITextures.PICTURE_GODFORGE_MILESTONE_CHARGE_GLOW };
+            case 1 -> new IDrawable[] { EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CONVERSION_GLOW };
+            case 2 -> new IDrawable[] { EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CATALYST_GLOW };
+            case 3 -> new IDrawable[] { EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_COMPOSITION_GLOW };
+            default -> new IDrawable[] { EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CHARGE_GLOW };
             })
             .addTooltip(StatCollector.translateToLocal("gt.blockmachines.multimachine.FOG.milestoneinfo"))
             .setPos(pos)
@@ -1761,7 +1767,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         final int WIDTH = 400;
         final int HEIGHT = 300;
         ModularWindow.Builder builder = ModularWindow.builder(WIDTH, HEIGHT);
-        builder.setBackground(TecTechUITextures.BACKGROUND_SPACE);
+        builder.setBackground(EternalGregTechWorkshopTextures.BACKGROUND_SPACE);
         builder.setGuiTint(getGUIColorization());
         builder.setDraggable(true);
         builder.widget(createMilestoneButton(0, 80, 100, new Pos2d(62, 24)));
@@ -1789,46 +1795,49 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                 .setPos(268, 190)
                 .setSize(60, 30));
         builder.widget(
-            new DrawableWidget().setDrawable(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
+            new DrawableWidget().setDrawable(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
                 .setPos(37, 70)
                 .setSize(130, 7))
             .widget(
-                new DrawableWidget().setDrawable(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
+                new DrawableWidget()
+                    .setDrawable(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
                     .setPos(233, 70)
                     .setSize(130, 7))
             .widget(
-                new DrawableWidget().setDrawable(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
+                new DrawableWidget()
+                    .setDrawable(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
                     .setPos(37, 215)
                     .setSize(130, 7))
             .widget(
-                new DrawableWidget().setDrawable(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
+                new DrawableWidget()
+                    .setDrawable(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_BACKGROUND)
                     .setPos(233, 215)
                     .setSize(130, 7));
         builder.widget(
             new ProgressBar().setProgress(() -> powerMilestonePercentage)
                 .setDirection(ProgressBar.Direction.RIGHT)
-                .setTexture(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_RED, 130)
+                .setTexture(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_RED, 130)
                 .setSynced(true, false)
                 .setSize(130, 7)
                 .setPos(37, 70))
             .widget(
                 new ProgressBar().setProgress(() -> recipeMilestonePercentage)
                     .setDirection(ProgressBar.Direction.RIGHT)
-                    .setTexture(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_PURPLE, 130)
+                    .setTexture(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_PURPLE, 130)
                     .setSynced(true, false)
                     .setSize(130, 7)
                     .setPos(233, 70))
             .widget(
                 new ProgressBar().setProgress(() -> fuelMilestonePercentage)
                     .setDirection(ProgressBar.Direction.RIGHT)
-                    .setTexture(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_BLUE, 130)
+                    .setTexture(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_BLUE, 130)
                     .setSynced(true, false)
                     .setSize(130, 7)
                     .setPos(37, 215))
             .widget(
                 new ProgressBar().setProgress(() -> structureMilestonePercentage)
                     .setDirection(ProgressBar.Direction.RIGHT)
-                    .setTexture(TecTechUITextures.PROGRESSBAR_GODFORGE_MILESTONE_RAINBOW, 130)
+                    .setTexture(EternalGregTechWorkshopTextures.PROGRESSBAR_GODFORGE_MILESTONE_RAINBOW, 130)
                     .setSynced(true, false)
                     .setSize(130, 7)
                     .setPos(233, 215))
@@ -1903,9 +1912,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .setSize(40, 15)
             .setBackground(() -> {
                 if (isUpgradeActive(upgrade)) {
-                    return new IDrawable[] { TecTechUITextures.BUTTON_SPACE_PRESSED_32x16 };
+                    return new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_SPACE_PRESSED_32x16 };
                 } else {
-                    return new IDrawable[] { TecTechUITextures.BUTTON_SPACE_32x16 };
+                    return new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_SPACE_32x16 };
                 }
             })
             .addTooltip(upgrade.getNameText())
@@ -2006,7 +2015,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                     .setSize(40, 15)
                     .setBackground(() -> {
                         if (secretUpgrade) {
-                            return new IDrawable[] { TecTechUITextures.BUTTON_SPACE_PRESSED_32x16 };
+                            return new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_SPACE_PRESSED_32x16 };
                         }
                         return new IDrawable[0];
                     })
@@ -2020,7 +2029,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         .setPos(3, 4)
                         .setEnabled((widget -> secretUpgrade)))
                 .addChild(
-                    new DrawableWidget().setDrawable(TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_BLUE_OPAQUE)
+                    new DrawableWidget()
+                        .setDrawable(EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_BLUE_OPAQUE)
                         .setEnabled(widget -> secretUpgrade)
                         .setPos(40, 4)
                         .setSize(20, 6))
@@ -2028,7 +2038,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .widget(new TextWidget("").setPos(0, 945));
 
         builder.widget(
-            new DrawableWidget().setDrawable(TecTechUITextures.BACKGROUND_STAR)
+            new DrawableWidget().setDrawable(EternalGregTechWorkshopTextures.BACKGROUND_STAR)
                 .setPos(0, 0)
                 .setSize(300, 300))
             .widget(

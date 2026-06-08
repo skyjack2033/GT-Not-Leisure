@@ -10,6 +10,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
@@ -41,7 +42,7 @@ public class CustomFluidHatch extends MTEHatch implements IAddGregtechLogo {
             aTier,
             3,
             new String[] { StatCollector.translateToLocal("HatchCustomFluid_00"),
-                StatCollector.translateToLocal("HatchCustomFluid_01") + GTUtility.formatNumbers(aAmount) + "L" });
+                StatCollector.translateToLocal("HatchCustomFluid_01") + NumberFormatUtil.formatNumber(aAmount) + "L" });
         this.mLockedFluids = aFluid;
         this.mFluidCapacity = aAmount;
     }
@@ -55,7 +56,7 @@ public class CustomFluidHatch extends MTEHatch implements IAddGregtechLogo {
             aTier,
             3,
             new String[] { StatCollector.translateToLocal("HatchCustomFluid_00"),
-                StatCollector.translateToLocal("HatchCustomFluid_01") + GTUtility.formatNumbers(aAmount) + "L" });
+                StatCollector.translateToLocal("HatchCustomFluid_01") + NumberFormatUtil.formatNumber(aAmount) + "L" });
         this.mLockedFluids = aFluid;
         this.mFluidCapacity = aAmount;
         this.uiTexture = aUITexture;

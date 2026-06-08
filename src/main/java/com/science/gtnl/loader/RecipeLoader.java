@@ -8,9 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.Nxer.TwistSpaceTechnology.common.recipeMap.GTCMRecipe;
 import com.Nxer.TwistSpaceTechnology.recipe.machineRecipe.expanded.AssemblyLineWithoutResearchRecipePool;
-import com.Nxer.TwistSpaceTechnology.recipe.machineRecipe.expanded.CircuitAssemblyLineWithoutImprintRecipePool;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.item.items.Stick;
@@ -31,8 +29,6 @@ import com.science.gtnl.common.recipe.gregtech.ChemicalBathRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalDehydratorRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalPlantRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalRecipes;
-import com.science.gtnl.common.recipe.gregtech.CircuitAssemblerConvertRecipes;
-import com.science.gtnl.common.recipe.gregtech.CircuitAssemblyLineRecipes;
 import com.science.gtnl.common.recipe.gregtech.CompressorRecipes;
 import com.science.gtnl.common.recipe.gregtech.CrackingRecipes;
 import com.science.gtnl.common.recipe.gregtech.CuttingRecipes;
@@ -124,6 +120,7 @@ import com.science.gtnl.common.recipe.gtnl.TheTwilightForestRecipes;
 import com.science.gtnl.common.recipe.gtnl.TreeDiagramRecipes;
 import com.science.gtnl.common.recipe.thaumcraft.TCResearches;
 import com.science.gtnl.config.MainConfig;
+import com.science.gtnl.loader.compat.BartWorksCircuitRecipeLoader;
 import com.science.gtnl.utils.enums.ModList;
 import com.science.gtnl.utils.machine.ProcessingArrayRecipeLoader;
 import com.science.gtnl.utils.machine.oreProcessing.CheatOreProcessingRecipes;
@@ -156,19 +153,14 @@ public class RecipeLoader {
             RemoveRecipes.removeCircuitAssemblerRecipes();
         }
 
-        IRecipePool[] recipePools = new IRecipePool[] { new CircuitAssemblerConvertRecipes(),
-            new GrandAssemblyLineSpecialRecipes() };
+        IRecipePool[] recipePools = new IRecipePool[] { new GrandAssemblyLineSpecialRecipes() };
 
         for (IRecipePool recipePool : recipePools) {
             recipePool.loadRecipes();
         }
-
-        RecipeUtil.copyAllRecipes(GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes, RecipeMaps.circuitAssemblerRecipes);
     }
 
     public static void loadServerStart() {
-        RecipeUtil
-            .removeMatchingRecipes(GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes, RecipeMaps.circuitAssemblerRecipes);
         if (recipesAdded) return;
         if (MainConfig.recipe.enableDeleteRecipe) {
             RemoveRecipes.removeRecipes();
@@ -285,13 +277,7 @@ public class RecipeLoader {
     }
 
     public static void loadCircuitRelatedRecipes() {
-        RecipeUtil.copyAllRecipes(GTNLRecipeMaps.ConvertToCircuitAssemblerRecipes, RecipeMaps.circuitAssemblerRecipes);
-
-        new CircuitAssemblyLineRecipes().loadRecipes();
-
-        if (ModList.TwistSpaceTechnology.isModLoaded()) {
-            loadTSTAdvCircuitAssemblyLineRecipes();
-        }
+        new BartWorksCircuitRecipeLoader().loadRecipes();
     }
 
     public static void loadBuffTargetChamberRecipe() {
@@ -338,14 +324,6 @@ public class RecipeLoader {
     public static void loadTSTMegaAssemblyLineRecipes() {
         AssemblyLineWithoutResearchRecipePool.loadRecipes();
         System.out.println("[GTNL] Register TwistSpaceTechnology MegaAssemblyLine recipes");
-    }
-
-    @Optional.Method(modid = "TwistSpaceTechnology")
-    public static void loadTSTAdvCircuitAssemblyLineRecipes() {
-        GTCMRecipe.advCircuitAssemblyLineRecipes.getBackend()
-            .clearRecipes();
-        CircuitAssemblyLineWithoutImprintRecipePool.loadRecipes();
-        System.out.println("[GTNL] Register TwistSpaceTechnology AdvCircuitAssemblyLine recipes");
     }
 
     public static void loadVillageTrade() {

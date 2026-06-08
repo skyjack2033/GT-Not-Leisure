@@ -24,6 +24,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import com.dreammaster.block.BlockList;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -59,6 +60,7 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.recipe.check.SingleRecipeCheck;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -185,12 +187,11 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch()) {
-            return false;
-        }
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
+            return;
         setupParameters();
-        return true;
+        return;
     }
 
     @Override
@@ -232,8 +233,8 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(BloodSoulSacrificialArray.class)
+                    .hint(1)
                     .atLeast(HatchElement.Maintenance, HatchElement.InputBus, HatchElement.OutputBus, ParallelCon)
-                    .dot(1)
                     .casingIndex(getCasingTextureID())
                     .buildAndChain(GregTechAPI.sBlockCasings8, 10))
             .addElement('C', StructureUtility.ofBlock(gtPlusPlus.core.block.ModBlocks.blockSpecialMultiCasings, 13))
@@ -262,8 +263,8 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
             .addElement(
                 'Z',
                 GTStructureUtility.buildHatchAdder(BloodSoulSacrificialArray.class)
+                    .hint(1)
                     .atLeast(HatchElement.Maintenance, HatchElement.InputBus, HatchElement.OutputBus, ParallelCon)
-                    .dot(1)
                     .casingIndex(getCasingTextureID())
                     .buildAndChain(GregTechAPI.sBlockCasings8, 3))
             .addElement('0', StructureUtility.ofBlockAnyMeta(ModBlocks.blockAltar))
@@ -545,7 +546,7 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     public String[] getInfoData() {
         String[] info = super.getInfoData();
         info[4] = StatCollector.translateToLocal("BloodSoulSacrificialArray.LPNetwork") + EnumChatFormatting.RED
-            + GTUtility.formatNumbers(Math.abs(currentEssence))
+            + NumberFormatUtil.formatNumber(Math.abs(currentEssence))
             + EnumChatFormatting.RESET
             + " LP";
         return info;

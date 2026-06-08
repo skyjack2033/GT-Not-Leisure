@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.google.common.collect.ImmutableSet;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.science.gtnl.ScienceNotLeisure;
@@ -240,7 +241,8 @@ public class WirelessSteamEnergyHatch extends CustomFluidHatch {
             tag.setString(
                 "SteamNetworkDisplay",
                 steamDisplay.toString()
-                    .length() > 10 ? GTUtility.scientificFormat(steamDisplay) : GTUtility.formatNumbers(steamDisplay));
+                    .length() > 10 ? GTUtility.scientificFormat(steamDisplay)
+                        : NumberFormatUtil.formatNumber(steamDisplay));
             if (!ownerUUID.equals(teamUUID)) {
                 tag.setString("SteamNetworkTeam", SpaceProjectManager.getPlayerNameFromUUID(teamUUID));
             }

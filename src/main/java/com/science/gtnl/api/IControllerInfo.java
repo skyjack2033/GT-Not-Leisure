@@ -18,10 +18,10 @@ import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopTextures;
 
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.metatileentity.BaseTileEntity;
-import tectech.thing.gui.TecTechUITextures;
 
 public interface IControllerInfo {
 
@@ -56,7 +56,7 @@ public interface IControllerInfo {
                     .setSize(280, 50));
 
         builder.widget(
-            new DrawableWidget().setDrawable(TecTechUITextures.BACKGROUND_GLOW_WHITE)
+            new DrawableWidget().setDrawable(EternalGregTechWorkshopTextures.BACKGROUND_GLOW_WHITE)
                 .setPos(0, 0)
                 .setSize(300, 300))
             .widget(

@@ -8,6 +8,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -173,9 +175,18 @@ public class VoidCover extends CoverLegacyData implements IFluidsLockable {
         return slots;
     }
 
-    @Override
     public String getLockedFluidName() {
         return lockedFluidNames[0];
+    }
+
+    @Override
+    public void setLockedFluid(Fluid lockedFluid) {
+        setLockedFluidName(lockedFluid == null ? null : lockedFluid.getName());
+    }
+
+    @Override
+    public Fluid getLockedFluid() {
+        return FluidRegistry.getFluid(getLockedFluidName());
     }
 
     @Override
@@ -188,7 +199,6 @@ public class VoidCover extends CoverLegacyData implements IFluidsLockable {
         return lockedFluidNames[index];
     }
 
-    @Override
     public void setLockedFluidName(String lockedFluidName) {
         this.lockedFluidNames[0] = lockedFluidName;
     }
@@ -237,8 +247,12 @@ public class VoidCover extends CoverLegacyData implements IFluidsLockable {
         return false;
     }
 
-    @Override
     public boolean acceptsFluidLock(String name) {
+        return true;
+    }
+
+    @Override
+    public boolean acceptsFluidLock(Fluid fluid) {
         return true;
     }
 

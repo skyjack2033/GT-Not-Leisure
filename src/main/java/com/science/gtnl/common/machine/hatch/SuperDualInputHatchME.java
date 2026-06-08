@@ -41,6 +41,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.google.common.collect.ImmutableSet;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.GlStateManager;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
@@ -1414,7 +1415,6 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         return new ItemStack[0];
     }
 
-    @Override
     public void setProcessingLogic(ProcessingLogic pl) {}
 
     public AENetworkProxy gridProxy;
@@ -1899,11 +1899,13 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             StatCollector.translateToLocal("GT5U.waila.stocking_bus.auto_pull." + (autopull ? "enabled" : "disabled")));
         if (autopull) {
             currenttip.add(
-                StatCollector
-                    .translateToLocalFormatted("Info_SuperDualInputHatchME_03", GTUtility.formatNumbers(itemMinSize)));
+                StatCollector.translateToLocalFormatted(
+                    "Info_SuperDualInputHatchME_03",
+                    NumberFormatUtil.formatNumber(itemMinSize)));
             currenttip.add(
-                StatCollector
-                    .translateToLocalFormatted("Info_SuperDualInputHatchME_04", GTUtility.formatNumbers(fluidMinSize)));
+                StatCollector.translateToLocalFormatted(
+                    "Info_SuperDualInputHatchME_04",
+                    NumberFormatUtil.formatNumber(fluidMinSize)));
         }
         super.getWailaBody(itemStack, currenttip, accessor, config);
     }

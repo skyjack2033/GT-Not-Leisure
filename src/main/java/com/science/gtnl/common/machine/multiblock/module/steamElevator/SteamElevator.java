@@ -26,6 +26,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -60,7 +61,6 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
-import gregtech.api.enums.StructureError;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IHatchElement;
@@ -70,6 +70,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.objects.GTChunkManager;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
@@ -144,13 +145,13 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
                 StructureUtility.ofChain(
                     buildSteamWirelessInput(SteamElevator.class)
                         .casingIndex(GTUtility.getTextureId((byte) 116, (byte) 25))
-                        .dot(1)
+                        .hint(1)
                         .build(),
                     buildSteamBigInput(SteamElevator.class).casingIndex(GTUtility.getTextureId((byte) 116, (byte) 25))
-                        .dot(1)
+                        .hint(1)
                         .build(),
                     buildSteamInput(SteamElevator.class).casingIndex(GTUtility.getTextureId((byte) 116, (byte) 25))
-                        .dot(1)
+                        .hint(1)
                         .buildAndChain(BlockLoader.metaCasing, 25)))
             .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 31))
             .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10))
@@ -162,7 +163,7 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
                 'H',
                 GTStructureUtility.buildHatchAdder(SteamElevator.class)
                     .casingIndex(getCasingTextureID())
-                    .dot(1)
+                    .hint(1)
                     .atLeast(
                         SteamHatchElement.InputBus_Steam,
                         SteamHatchElement.OutputBus_Steam,
@@ -176,7 +177,7 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
                 HatchElementBuilder.<SteamElevator>builder()
                     .atLeast(SteamModuleElement.SteamModule)
                     .casingIndex(getCasingTextureID())
-                    .dot(1)
+                    .hint(1)
                     .buildAndChain(GregTechAPI.sBlockCasings2, 0))
             .addElement('J', StructureUtility.ofBlock(Blocks.stonebrick, 0))
             .build();
@@ -209,19 +210,19 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         wirelessMode = false;
         mModuleHatches.clear();
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET)) return false;
+        if (!checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
+            return;
         if (mSteamInputFluids.isEmpty() && mSteamBigInputFluids.isEmpty() && mSteamWirelessInputFluids.isEmpty()) {
             wirelessMode = true;
         }
         getCasingTextureID();
         updateHatchTexture();
-        return true;
+        return;
     }
 
-    @Override
     public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     public boolean addModuleToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
@@ -301,7 +302,7 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
                             }
 
                         }
-                        costingEUText = GTUtility.formatNumbers(usedSteam);
+                        costingEUText = NumberFormatUtil.formatNumber(usedSteam);
                     }
                 }
             } else {

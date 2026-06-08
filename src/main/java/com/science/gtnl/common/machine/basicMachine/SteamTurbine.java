@@ -4,6 +4,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.science.gtnl.utils.item.ItemUtils;
@@ -18,7 +19,6 @@ import gregtech.api.metatileentity.implementations.MTEBasicGenerator;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTModHandler;
-import gregtech.api.util.GTUtility;
 
 public class SteamTurbine extends MTEBasicGenerator implements IAddGregtechLogo {
 
@@ -33,7 +33,7 @@ public class SteamTurbine extends MTEBasicGenerator implements IAddGregtechLogo 
         mDescriptionArray[2] = StatCollector
             .translateToLocalFormatted("Tooltip_SteamTurbine_02", 800 / getEfficiency());
         mDescriptionArray[3] = StatCollector
-            .translateToLocalFormatted("Tooltip_SteamTurbine_03", GTUtility.formatNumbers(getCapacity()));
+            .translateToLocalFormatted("Tooltip_SteamTurbine_03", NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     public SteamTurbine(String aName, int aTier, String[] aDescription, ITexture[][][] aTextures) {
@@ -41,7 +41,7 @@ public class SteamTurbine extends MTEBasicGenerator implements IAddGregtechLogo 
         mDescriptionArray[2] = StatCollector
             .translateToLocalFormatted("Tooltip_SteamTurbine_02", 800 / getEfficiency());
         mDescriptionArray[3] = StatCollector
-            .translateToLocalFormatted("Tooltip_SteamTurbine_03", GTUtility.formatNumbers(getCapacity()));
+            .translateToLocalFormatted("Tooltip_SteamTurbine_03", NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     @Override

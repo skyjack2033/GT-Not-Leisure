@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.science.gtnl.config.MainConfig;
 
 import bwcrossmod.galacticgreg.MTEVoidMinerBase;
@@ -94,7 +95,7 @@ public abstract class MixinMTEVoidMiners extends MTEVoidMinerBase<MixinMTEVoidMi
             .addInfo(
                 StatCollector.translateToLocalFormatted(
                     "Tooltip_VoidMiner_01",
-                    GTUtility.formatNumbers(GTValues.V[this.getMinTier()])))
+                    NumberFormatUtil.formatNumber(GTValues.V[this.getMinTier()])))
             .addInfo(StatCollector.translateToLocal("Tooltip_VoidMiner_02"))
             .addInfo(StatCollector.translateToLocal("Tooltip_VoidMiner_03"))
             .addInfo(StatCollector.translateToLocal("Tooltip_VoidMiner_04"))

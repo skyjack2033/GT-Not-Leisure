@@ -16,6 +16,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 
 import com.google.common.collect.ImmutableList;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
@@ -41,9 +42,9 @@ public class HumongousDualInputHatch extends DualInputHatch implements ISkipStac
         this.fluidTanks = new FluidStackTank[aTier];
         this.mCapacityPer = Integer.MAX_VALUE;
         mDescriptionArray[2] = StatCollector.translateToLocal("Tooltip_DualInputHatch_02_00")
-            + GTUtility.formatNumbers(aTier)
+            + NumberFormatUtil.formatNumber(aTier)
             + StatCollector.translateToLocal("Tooltip_DualInputHatch_02_01")
-            + GTUtility.formatNumbers(mCapacityPer)
+            + NumberFormatUtil.formatNumber(mCapacityPer)
             + "L";
 
         for (int i = 0; i < aTier; i++) {
@@ -63,9 +64,9 @@ public class HumongousDualInputHatch extends DualInputHatch implements ISkipStac
         this.fluidTanks = new FluidStackTank[aTier];
         this.mCapacityPer = Integer.MAX_VALUE;
         mDescriptionArray[2] = StatCollector.translateToLocal("Tooltip_DualInputHatch_02_00")
-            + GTUtility.formatNumbers(aTier)
+            + NumberFormatUtil.formatNumber(aTier)
             + StatCollector.translateToLocal("Tooltip_DualInputHatch_02_01")
-            + GTUtility.formatNumbers(mCapacityPer)
+            + NumberFormatUtil.formatNumber(mCapacityPer)
             + "L";
 
         for (int i = 0; i < aTier; i++) {

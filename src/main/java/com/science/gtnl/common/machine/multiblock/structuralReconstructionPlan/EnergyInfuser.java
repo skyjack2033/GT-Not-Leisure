@@ -65,6 +65,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.WirelessNetworkManager;
@@ -128,7 +129,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
                 buildHatchAdder(EnergyInfuser.class)
                     .atLeast(InputHatch, InputBus, OutputBus, Maintenance, Energy.or(ExoticEnergy))
                     .casingIndex(1028)
-                    .dot(1)
+                    .hint(1)
                     .buildAndChain(
                         onElementPass(x -> ++x.mCountCasing, ofBlock(TTCasingsContainer.sBlockCasingsTT, 4))))
             .addElement('D', ofBlock(TTCasingsContainer.sBlockCasingsTT, 7))
@@ -158,11 +159,12 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
     }
 
     @Override
-    public boolean checkMachine_EM(IGregTechTileEntity iGregTechTileEntity, ItemStack itemStack) {
+    public void checkMachine(IGregTechTileEntity iGregTechTileEntity, ItemStack itemStack,
+        List<StructureError> structureErrors) {
         wirelessMode = false;
-        if (!structureCheck_EM(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET)) return false;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, structureErrors))
+            return;
         wirelessMode = mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty() && eEnergyMulti.isEmpty();
-        return true;
     }
 
     @Override
@@ -255,7 +257,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
 
                 if ((isItemStackFullyCharged(individualStack) && isItemStackFullyRepaired(individualStack))
                     || outputAllItems) {
-                    if (addOutput(individualStack)) {
+                    if (addItemOutputs(new ItemStack[] { individualStack })) {
                         continue;
                     }
                 }

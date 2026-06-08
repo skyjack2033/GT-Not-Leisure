@@ -38,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.google.common.collect.Lists;
 import com.gtnewhorizon.gtnhlib.util.data.ItemId;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.math.Alignment;
@@ -209,7 +210,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
                 return;
             }
             gtnl$costingEU = gtnl$costingEU.add(costEU);
-            gtnl$costingEUText = GTUtility.formatNumbers(gtnl$costingEU);
+            gtnl$costingEUText = NumberFormatUtil.formatNumber(gtnl$costingEU);
         }
 
         cir.setReturnValue(result);
@@ -257,7 +258,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
 
         ItemStack[] recipeOutputs = this.currentRecipe.mOutputs;
         ItemStack[] itemOutputs = new ItemStack[recipeOutputs.length];
-        int[] mChances = this.currentRecipe.mChances;
+        int[] mChances = this.currentRecipe.mOutputChances;
 
         // If this recipe has random item outputs, roll on it and add to outputs
         if (mChances != null) {

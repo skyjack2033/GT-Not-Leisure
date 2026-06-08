@@ -1,5 +1,7 @@
 package com.science.gtnl.common.recipe.script;
 
+import static kubatech.api.enums.ItemList.HighTemperatureGasCooledReactor;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -769,7 +771,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'O',
                 GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Silver, 1),
                 'P',
-                GregtechItemList.ParticleAccelerationCatalyst.get(1),
+                GregtechItemList.HellishForceCatalyst.get(1),
                 'Q',
                 GregtechItemList.AdhesionPromoterCatalyst.get(1),
                 'R',
@@ -815,7 +817,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'b',
                 ItemList.StableAdhesive.get(1),
                 'c',
-                GregtechItemList.SynchrotronCapableCatalyst.get(1),
+                GregtechItemList.CrystalColorizationCatalyst.get(1),
                 'd',
                 GregtechItemList.RawIntelligenceCatalyst.get(1),
                 'e',
@@ -1471,7 +1473,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 "vwxyz/<>;",
                 ":[]^_=?~!",
                 'A',
-                ItemRegistry.HTGR.copy(),
+                HighTemperatureGasCooledReactor.get(1),
                 'B',
                 GregtechItemList.Industrial_MacerationStack.get(1),
                 'C',

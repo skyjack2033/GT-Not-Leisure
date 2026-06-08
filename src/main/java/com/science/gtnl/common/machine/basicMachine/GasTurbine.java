@@ -3,6 +3,7 @@ package com.science.gtnl.common.machine.basicMachine;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.science.gtnl.utils.item.ItemUtils;
@@ -17,7 +18,6 @@ import gregtech.api.metatileentity.implementations.MTEBasicGenerator;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GTUtility;
 
 public class GasTurbine extends MTEBasicGenerator implements IAddGregtechLogo {
 
@@ -30,14 +30,14 @@ public class GasTurbine extends MTEBasicGenerator implements IAddGregtechLogo {
             new String[] { StatCollector.translateToLocal("Tooltip_GasTurbine_00"), "", "" });
         mDescriptionArray[1] = StatCollector.translateToLocalFormatted("Tooltip_GasTurbine_01", getEfficiency());
         mDescriptionArray[2] = StatCollector
-            .translateToLocalFormatted("Tooltip_GasTurbine_02", GTUtility.formatNumbers(getCapacity()));
+            .translateToLocalFormatted("Tooltip_GasTurbine_02", NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     public GasTurbine(String aName, int aTier, String[] aDescription, ITexture[][][] aTextures) {
         super(aName, aTier, aDescription, aTextures);
         mDescriptionArray[1] = StatCollector.translateToLocalFormatted("Tooltip_GasTurbine_01", getEfficiency());
         mDescriptionArray[2] = StatCollector
-            .translateToLocalFormatted("Tooltip_GasTurbine_02", GTUtility.formatNumbers(getCapacity()));
+            .translateToLocalFormatted("Tooltip_GasTurbine_02", NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     @Override

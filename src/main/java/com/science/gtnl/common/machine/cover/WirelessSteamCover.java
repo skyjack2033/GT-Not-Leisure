@@ -22,7 +22,7 @@ import gregtech.api.metatileentity.BaseMetaTileEntity;
 import gregtech.api.metatileentity.CommonMetaTileEntity;
 import gregtech.api.util.GTUtility;
 import gregtech.common.covers.CoverLegacyData;
-import gregtech.common.covers.gui.CoverGui;
+import gregtech.common.gui.modularui.cover.base.CoverBaseGui;
 
 public class WirelessSteamCover extends CoverLegacyData {
 
@@ -124,7 +124,7 @@ public class WirelessSteamCover extends CoverLegacyData {
     }
 
     @Override
-    public @NotNull CoverGui<?> getCoverGui() {
+    protected @NotNull CoverBaseGui<?> getCoverGui() {
         return new WirelessSteamCoverGui(this);
     }
 

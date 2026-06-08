@@ -141,7 +141,6 @@ public class SuperVoidBus extends MTEHatchVoidBus implements IAddGregtechLogo {
         addGregTechLogo(builder);
     }
 
-    @Override
     public ItemStack[] getLockedItems() {
         return lockedItems;
     }

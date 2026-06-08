@@ -35,6 +35,7 @@ import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.metadata.ResourceCollectionModuleMetadata;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
@@ -49,6 +50,8 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
+import gregtech.api.structure.error.ErrorType;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
@@ -163,15 +166,15 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
     @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
-        structureBuild_EM(STRUCTURE_PIECE_MAIN, 0, 1, 0, stackSize, hintsOnly);
+        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, 0, 1, 0);
     }
 
     @Override
-    public boolean checkMachine_EM(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         fixAllIssues();
         mParallelTier = 0;
 
-        if (!structureCheck_EM(STRUCTURE_PIECE_MAIN, 0, 1, 0)) return false;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, 0, 1, 0, errors)) return;
 
         mParallelTier = MultiMachineBase.getParallelTier(aStack);
 
@@ -180,12 +183,16 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
             break;
         }
 
-        return mParallelControllerHatches.size() <= 1;
+        if (mParallelControllerHatches.size() > 1) {
+            errors.add(
+                GTNLStructureErrors
+                    .parallelControllerHatchCount(ErrorType.TOO_MANY, mParallelControllerHatches.size(), 1));
+        }
     }
 
     @Override
-    public void clearHatches_EM() {
-        super.clearHatches_EM();
+    public void clearHatches() {
+        super.clearHatches();
         this.mParallelControllerHatches.clear();
     }
 

@@ -27,6 +27,7 @@ import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.internal.wrapper.BaseSlot;
 import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
+import com.gtnewhorizons.modularui.common.widget.CycleButtonWidget;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.Scrollable;
@@ -404,7 +405,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     @Override
     public void updateAllInformationSlots() {
         for (int index = 0; index < SIDE_SLOT_COUNT; index++) {
-            updateInformationSlot(index, mInventory[index]);
+            updateInformationSlot(index);
         }
     }
 
@@ -452,6 +453,10 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
      * Update the right side of the GUI, which shows the amounts of items set on the left side
      */
     @Override
+    public void updateInformationSlot(int index) {
+        updateInformationSlot(index, mInventory[index]);
+    }
+
     public ItemStack updateInformationSlot(int aIndex, ItemStack aStack) {
         if (aIndex >= 0 && aIndex < SIDE_SLOT_COUNT) {
             if (aStack == null) {
@@ -496,7 +501,6 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     /**
      * Used to avoid slot update.
      */
-    @Override
     public ItemStack getShadowItemStack(int index) {
         if (index < 0 || index >= shadowInventory.length) {
             return null;
@@ -504,7 +508,6 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         return shadowInventory[index];
     }
 
-    @Override
     public int getShadowInventorySize() {
         return shadowInventory.length;
     }
@@ -789,6 +792,64 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
                             () -> storedStackSizes[slotID],
                             i -> storedStackSizes[slotID] = i),
                         builder));
+        return builder.build();
+    }
+
+    public ModularWindow createStackSizeConfigurationWindow(EntityPlayer player) {
+        final int WIDTH = 78;
+        final int HEIGHT = 115;
+        final int PARENT_WIDTH = getGUIWidth();
+        final int PARENT_HEIGHT = getGUIHeight();
+        ModularWindow.Builder builder = ModularWindow.builder(WIDTH, HEIGHT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        builder.setDraggable(true);
+        builder.setPos(
+            (size, window) -> Alignment.Center.getAlignedPos(size, new Size(PARENT_WIDTH, PARENT_HEIGHT))
+                .add(
+                    Alignment.TopRight.getAlignedPos(new Size(PARENT_WIDTH, PARENT_HEIGHT), new Size(WIDTH, HEIGHT))
+                        .add(WIDTH - 3, 0)));
+        builder.widget(
+            TextWidget.localised("GT5U.machines.stocking_bus.min_stack_size")
+                .setPos(3, 2)
+                .setSize(74, 14))
+            .widget(
+                new NumericWidget().setSetter(val -> minAutoPullStackSize = (int) val)
+                    .setGetter(() -> minAutoPullStackSize)
+                    .setBounds(1, Integer.MAX_VALUE)
+                    .setScrollValues(1, 4, 64)
+                    .setTextAlignment(Alignment.Center)
+                    .setTextColor(Color.WHITE.normal)
+                    .setSize(70, 18)
+                    .setPos(3, 18)
+                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
+        builder.widget(
+            TextWidget.localised("GT5U.machines.stocking_bus.refresh_time")
+                .setPos(3, 42)
+                .setSize(74, 14))
+            .widget(
+                new NumericWidget().setSetter(val -> autoPullRefreshTime = (int) val)
+                    .setGetter(() -> autoPullRefreshTime)
+                    .setBounds(1, Integer.MAX_VALUE)
+                    .setScrollValues(1, 4, 64)
+                    .setTextAlignment(Alignment.Center)
+                    .setTextColor(Color.WHITE.normal)
+                    .setSize(70, 18)
+                    .setPos(3, 58)
+                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
+        builder.widget(
+            TextWidget.localised("GT5U.machines.stocking_bus.force_check")
+                .setPos(3, 88)
+                .setSize(50, 14))
+            .widget(
+                new CycleButtonWidget().setToggle(() -> expediteRecipeCheck, this::setRecipeCheck)
+                    .setTextureGetter(
+                        state -> expediteRecipeCheck ? GTUITextures.OVERLAY_BUTTON_CHECKMARK
+                            : GTUITextures.OVERLAY_BUTTON_CROSS)
+                    .setBackground(GTUITextures.BUTTON_STANDARD)
+                    .setPos(53, 87)
+                    .setSize(16, 16)
+                    .addTooltip(StatCollector.translateToLocal("GT5U.machines.stocking_bus.hatch_warning")));
         return builder.build();
     }
 

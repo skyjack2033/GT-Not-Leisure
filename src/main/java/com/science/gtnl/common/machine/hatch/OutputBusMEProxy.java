@@ -15,16 +15,12 @@ import net.minecraftforge.common.DimensionManager;
 import com.science.gtnl.api.mixinHelper.IOutputME;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
-import appeng.api.networking.GridFlags;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.api.storage.data.IItemList;
-import appeng.me.helpers.AENetworkProxy;
-import appeng.me.helpers.IGridProxyable;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTUtil;
-import gregtech.common.tileentities.machines.MTEHatchOutputBusME;
+import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -67,44 +63,25 @@ public class OutputBusMEProxy extends MTEHatchOutputBusME {
     }
 
     @Override
-    public void flushCachedStack() {
-        if (getMaster() == null) {
-            super.flushCachedStack();
-        } else if (getMaster().canAcceptItem()) {
-            IOutputME master = (IOutputME) getMaster();
-            IOutputME output = (IOutputME) this;
-            IItemList<IAEItemStack> masterCache = master.getItemCache();
-            IItemList<IAEItemStack> itemCache = output.getItemCache();
-
-            for (IAEItemStack stack : itemCache) {
-                if (stack != null && stack.getStackSize() > 0) {
-                    masterCache.addStorage(stack);
-                }
-            }
-
-            itemCache.resetStatus();
-
-            output.setLastOutputTick(output.getTickCounter());
-        }
+    public ItemStack getVisual() {
+        return GTNLItemList.OutputBusMEProxy.get(1);
     }
 
-    @Override
-    public AENetworkProxy getProxy() {
-        if (gridProxy == null) {
-            if (getBaseMetaTileEntity() instanceof IGridProxyable) {
-                gridProxy = new AENetworkProxy(
-                    (IGridProxyable) getBaseMetaTileEntity(),
-                    "proxy",
-                    GTNLItemList.OutputBusMEProxy.get(1),
-                    true);
-                gridProxy.setFlags(GridFlags.REQUIRE_CHANNEL);
-                updateValidGridProxySides();
-                if (getBaseMetaTileEntity().getWorld() != null) gridProxy.setOwner(
-                    getBaseMetaTileEntity().getWorld()
-                        .getPlayerEntityByName(getBaseMetaTileEntity().getOwnerName()));
+    public void flushCachedStack() {
+        if (getMaster() == null) {
+            getProvider().onPostTick(getBaseMetaTileEntity(), getProvider().getTickCounter() + 41);
+            return;
+        }
+        if (getMaster().canAcceptAnyItem()) {
+            for (IAEItemStack stack : getProvider().getCacheList()) {
+                if (stack != null && stack.getStackSize() > 0) {
+                    getMaster().getProvider()
+                        .storeToCache(stack.copy());
+                    getProvider().getCacheList()
+                        .forEach(cachedStack -> cachedStack.setStackSize(0));
+                }
             }
         }
-        return this.gridProxy;
     }
 
     @Override

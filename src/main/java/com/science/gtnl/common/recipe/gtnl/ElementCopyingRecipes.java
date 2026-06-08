@@ -3,13 +3,13 @@ package com.science.gtnl.common.recipe.gtnl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.machine.multiblock.ElementCopying;
 
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.GTUtility.ItemId;
 
 public class ElementCopyingRecipes implements IRecipePool {
 

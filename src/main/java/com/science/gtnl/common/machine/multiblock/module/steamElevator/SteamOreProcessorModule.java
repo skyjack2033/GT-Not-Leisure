@@ -575,7 +575,6 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
         return machineMode = (machineMode + 1) % 6;
     }
 
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ) {
         if (aPlayer.isSneaking()) {
             mVoidStone = !mVoidStone;

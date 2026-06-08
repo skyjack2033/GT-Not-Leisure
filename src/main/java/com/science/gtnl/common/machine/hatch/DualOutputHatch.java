@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import com.cleanroommc.modularui.utils.fluid.FluidStackTank;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.math.Pos2d;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
@@ -37,14 +38,14 @@ public class DualOutputHatch extends MTEHatchOutput implements IAddUIWidgets {
             aNameRegional,
             aTier,
             new String[] { StatCollector.translateToLocal("Tooltip_DualOutputHatch_00"), "",
-                StatCollector.translateToLocal("Tooltip_DualOutputHatch_02_00") + GTUtility.formatNumbers(aSlot)
+                StatCollector.translateToLocal("Tooltip_DualOutputHatch_02_00") + NumberFormatUtil.formatNumber(aSlot)
                     + StatCollector.translateToLocal("Tooltip_DualOutputHatch_02_01") },
             4);
         this.mStoredFluid = new FluidStack[aSlot];
         fluidTanks = new FluidStackTank[aSlot];
         mCapacityPer = getCapacityPerTank(aTier, aSlot);
         mDescriptionArray[1] = StatCollector.translateToLocal("Tooltip_DualOutputHatch_01")
-            + GTUtility.formatNumbers(mCapacityPer)
+            + NumberFormatUtil.formatNumber(mCapacityPer)
             + "L";
     }
 
@@ -61,7 +62,7 @@ public class DualOutputHatch extends MTEHatchOutput implements IAddUIWidgets {
                 mCapacityPer);
         }
         mDescriptionArray[1] = StatCollector.translateToLocal("Tooltip_DualOutputHatch_01")
-            + GTUtility.formatNumbers(mCapacityPer)
+            + NumberFormatUtil.formatNumber(mCapacityPer)
             + "L";
     }
 

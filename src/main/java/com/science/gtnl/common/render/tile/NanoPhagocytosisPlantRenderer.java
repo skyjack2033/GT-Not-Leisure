@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 import com.gtnewhorizon.gtnhlib.client.renderer.shader.ShaderProgram;
-import com.gtnewhorizon.gtnhlib.client.renderer.vbo.VertexBuffer;
+import com.gtnewhorizon.gtnhlib.client.renderer.vao.IVertexArrayObject;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.block.blocks.tile.TileEntityNanoPhagocytosisPlant;
 import com.science.gtnl.common.machine.multiblock.wireless.NanoPhagocytosisPlant;
@@ -44,7 +44,7 @@ public class NanoPhagocytosisPlantRenderer extends TileEntitySpecialRenderer {
     private static int u_Color = -1, u_ModelMatrix = -1, u_Gamma = -1;
     private final Matrix4fStack starModelMatrix = new Matrix4fStack(3);
 
-    private VertexBuffer ringOne, ringTwo, ringThree;
+    private IVertexArrayObject ringOne, ringTwo, ringThree;
 
     private static ShaderProgram fadeBypassProgram;
     private static TextureUpdateRequester textureUpdater;

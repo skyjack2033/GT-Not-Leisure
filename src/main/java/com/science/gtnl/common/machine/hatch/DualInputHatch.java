@@ -14,6 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
@@ -30,7 +31,6 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GTUtility;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 
@@ -101,11 +101,11 @@ public class DualInputHatch extends MTEHatchInputBus implements IAddUIWidgets, I
         this.mCapacityPer = getCapacityPerTank(aTier);
         this.itemSlotAmount = aTier * aTier + 1;
         mDescriptionArray[1] = StatCollector.translateToLocal("Tooltip_DualInputHatch_01")
-            + GTUtility.formatNumbers(itemSlotAmount - 1);
+            + NumberFormatUtil.formatNumber(itemSlotAmount - 1);
         mDescriptionArray[2] = StatCollector.translateToLocal("Tooltip_DualInputHatch_02_00")
-            + GTUtility.formatNumbers(aTier)
+            + NumberFormatUtil.formatNumber(aTier)
             + StatCollector.translateToLocal("Tooltip_DualInputHatch_02_01")
-            + GTUtility.formatNumbers(mCapacityPer)
+            + NumberFormatUtil.formatNumber(mCapacityPer)
             + "L";
 
         for (int i = 0; i < aTier; i++) {
@@ -130,11 +130,11 @@ public class DualInputHatch extends MTEHatchInputBus implements IAddUIWidgets, I
         this.mCapacityPer = getCapacityPerTank(aTier);
         this.itemSlotAmount = aTier * aTier + 1;
         mDescriptionArray[1] = StatCollector.translateToLocal("Tooltip_DualInputHatch_01")
-            + GTUtility.formatNumbers(itemSlotAmount - 1);
+            + NumberFormatUtil.formatNumber(itemSlotAmount - 1);
         mDescriptionArray[2] = StatCollector.translateToLocal("Tooltip_DualInputHatch_02_00")
-            + GTUtility.formatNumbers(aTier)
+            + NumberFormatUtil.formatNumber(aTier)
             + StatCollector.translateToLocal("Tooltip_DualInputHatch_02_01")
-            + GTUtility.formatNumbers(mCapacityPer)
+            + NumberFormatUtil.formatNumber(mCapacityPer)
             + "L";
 
         for (int i = 0; i < aTier; i++) {

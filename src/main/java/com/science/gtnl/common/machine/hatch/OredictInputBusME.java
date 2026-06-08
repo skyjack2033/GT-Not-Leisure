@@ -211,16 +211,33 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
             return;
         }
         for (int index = 0; index < SIDE_SLOT_COUNT; index++) {
-            updateInformationSlot(index, mInventory[index]);
+            try {
+                updateInformationSlot(index);
+            } catch (GridAccessException ignored) {}
         }
     }
 
-    /**
-     * Update the right side of the GUI, which shows the amounts of items set on the left side
-     */
     @Override
+    public void updateInformationSlot(int index) throws GridAccessException {
+        if (!isSuper) {
+            super.updateInformationSlot(index);
+            return;
+        }
+        updateInformationSlot(index, mInventory[index]);
+    }
+
+    /**
+     * Update the right side of the GUI, which shows the amounts of items set on the left side.
+     */
     public ItemStack updateInformationSlot(int aIndex, ItemStack aStack) {
-        if (!isSuper) return super.updateInformationSlot(aIndex, aStack);
+        if (!isSuper) {
+            try {
+                super.updateInformationSlot(aIndex);
+                return aIndex >= 0 && aIndex < SLOT_COUNT && slots[aIndex] != null ? slots[aIndex].extracted : null;
+            } catch (GridAccessException ignored) {
+                return null;
+            }
+        }
         if (aIndex >= 0 && aIndex < SIDE_SLOT_COUNT) {
             if (aStack == null) {
                 super.setInventorySlotContents(aIndex + SIDE_SLOT_COUNT, null);
@@ -264,18 +281,16 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     /**
      * Used to avoid slot update.
      */
-    @Override
     public ItemStack getShadowItemStack(int index) {
-        if (!isSuper) return super.getShadowItemStack(index);
+        if (!isSuper) return index >= 0 && index < SLOT_COUNT && slots[index] != null ? slots[index].extracted : null;
         if (index < 0 || index >= shadowInventory.length) {
             return null;
         }
         return shadowInventory[index];
     }
 
-    @Override
     public int getShadowInventorySize() {
-        if (!isSuper) return super.getShadowInventorySize();
+        if (!isSuper) return SLOT_COUNT;
         return shadowInventory.length;
     }
 
@@ -715,7 +730,6 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
         return builder.build();
     }
 
-    @Override
     public ModularWindow createStackSizeConfigurationWindow(EntityPlayer player) {
         final int WIDTH = 78;
         final int HEIGHT = 169;

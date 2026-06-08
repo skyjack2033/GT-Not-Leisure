@@ -56,6 +56,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
@@ -393,7 +394,6 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
                             HatchElement.OutputHatch,
                             HatchElement.Energy.or(HatchElement.ExoticEnergy),
                             HatchElement.Maintenance)
-                        .dot(1)
                         .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10))
                         .build(),
                     StructureUtility
@@ -403,7 +403,8 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
                         .hatchId(21501)
                         .shouldReject(x -> !x.mFluidManaInputHatch.isEmpty())
                         .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10))
-                        .dot(1)
+                        .hint(1)
+                        .hint(1)
                         .build()))
             .addElement('F', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))
             .addElement('G', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 0))
@@ -465,11 +466,11 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch())
-            return false;
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
+            return;
         setupParameters();
-        return mCountCasing >= 350;
+        checkStructureCondition(errors, mCountCasing >= 350);
     }
 
     @Override

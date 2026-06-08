@@ -66,7 +66,7 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && checkEnergyHatch();
+        return super.checkHatch();
     }
 
     @Override

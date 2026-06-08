@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -29,7 +30,7 @@ import com.science.gtnl.api.mixinHelper.IWirelessMode;
 import com.science.gtnl.utils.Utils;
 
 import gregtech.api.metatileentity.implementations.MTEExtendedPowerMultiBlockBase;
-import gregtech.api.util.GTUtility;
+import gregtech.api.structure.error.StructureError;
 import gregtech.common.tileentities.machines.multi.purification.LinkedPurificationUnit;
 import gregtech.common.tileentities.machines.multi.purification.MTEPurificationPlant;
 import gregtech.common.tileentities.machines.multi.purification.MTEPurificationUnitBaryonicPerfection;
@@ -63,7 +64,7 @@ public abstract class MixinMTEPurificationPlant extends MTEExtendedPowerMultiBlo
     }
 
     @Override
-    public boolean checkExoticAndNormalEnergyHatches() {
+    public void checkExoticAndNormalEnergyHatches(List<StructureError> errors) {
         boolean t8water = false;
 
         for (LinkedPurificationUnit unit : mLinkedUnits) {
@@ -80,8 +81,9 @@ public abstract class MixinMTEPurificationPlant extends MTEExtendedPowerMultiBlo
             ((IWirelessMode) unit.metaTileEntity()).setGtnl$wirelessMode(gtnl$wirelessMode);
         }
 
-        if (t8water) return true;
-        return super.checkExoticAndNormalEnergyHatches();
+        if (!t8water) {
+            super.checkExoticAndNormalEnergyHatches(errors);
+        }
     }
 
     @Override
@@ -108,7 +110,7 @@ public abstract class MixinMTEPurificationPlant extends MTEExtendedPowerMultiBlo
 
     @Inject(method = "startCycle", at = @At("TAIL"))
     private void gtnl$setCostingEU(CallbackInfo ci) {
-        gtnl$costingEUText = GTUtility.formatNumbers(gtnl$costingEU);
+        gtnl$costingEUText = NumberFormatUtil.formatNumber(gtnl$costingEU);
     }
 
     @Inject(method = "registerLinkedUnit", at = @At("HEAD"))

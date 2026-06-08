@@ -19,6 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -37,6 +38,7 @@ import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopTextures;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopUI;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
@@ -55,9 +57,9 @@ import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
-import gregtech.api.util.GTUtility;
 import lombok.Getter;
 import lombok.Setter;
 import tectech.thing.casing.TTCasingsContainer;
@@ -187,30 +189,31 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
         str.add(
             StatCollector.translateToLocalFormatted(
                 "GT5U.infodata.progress",
-                EnumChatFormatting.GREEN + GTUtility.formatNumbers(mProgresstime / 20) + EnumChatFormatting.RESET,
-                EnumChatFormatting.YELLOW + GTUtility.formatNumbers(mMaxProgresstime / 20) + EnumChatFormatting.RESET));
+                EnumChatFormatting.GREEN + NumberFormatUtil.formatNumber(mProgresstime / 20) + EnumChatFormatting.RESET,
+                EnumChatFormatting.YELLOW + NumberFormatUtil.formatNumber(mMaxProgresstime / 20)
+                    + EnumChatFormatting.RESET));
         str.add(
             StatCollector.translateToLocalFormatted(
                 "tt.infodata.multi.currently_using",
-                EnumChatFormatting.RED + (getBaseMetaTileEntity().isActive() ? GTUtility.formatNumbers(EUt) : "0")
+                EnumChatFormatting.RED + (getBaseMetaTileEntity().isActive() ? NumberFormatUtil.formatNumber(EUt) : "0")
                     + EnumChatFormatting.RESET));
         str.add(
             EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
                 "tt.infodata.multi.max_parallel",
-                EnumChatFormatting.RESET + GTUtility.formatNumbers(Integer.MAX_VALUE)));
+                EnumChatFormatting.RESET + NumberFormatUtil.formatNumber(Integer.MAX_VALUE)));
         str.add(
             EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
                 "GT5U.infodata.parallel.current",
                 EnumChatFormatting.RESET
-                    + (getBaseMetaTileEntity().isActive() ? GTUtility.formatNumbers(currentParallel) : "0")));
+                    + (getBaseMetaTileEntity().isActive() ? NumberFormatUtil.formatNumber(currentParallel) : "0")));
         str.add(
             EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
                 "tt.infodata.multi.capacity.heat",
-                EnumChatFormatting.RESET + GTUtility.formatNumbers(getHeat())));
+                EnumChatFormatting.RESET + NumberFormatUtil.formatNumber(getHeat())));
         str.add(
             EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
                 "tt.infodata.multi.multiplier.recipe_time",
-                EnumChatFormatting.RESET + GTUtility.formatNumbers(mSpeedBoost)));
+                EnumChatFormatting.RESET + NumberFormatUtil.formatNumber(mSpeedBoost)));
         return str.toArray(new String[0]);
     }
 
@@ -299,7 +302,7 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
                             HatchElement.InputHatch,
                             HatchElement.OutputHatch)
                         .casingIndex(getCasingTextureID())
-                        .dot(1)
+                        .hint(1)
                         .buildAndChain(
                             StructureUtility.onElementPass(
                                 x -> ++x.mCountCasing,
@@ -308,8 +311,8 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        return checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) && checkHatch();
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
 
     @Override
@@ -408,10 +411,10 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
                         : SoundResource.GUI_BUTTON_DOWN.resourceLocation)
                 .setBackground(() -> {
                     if (isAllowedToWork()) {
-                        return new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
+                        return new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
                             TecTechUITextures.OVERLAY_BUTTON_POWER_SWITCH_ON };
                     } else {
-                        return new IDrawable[] { TecTechUITextures.BUTTON_CELESTIAL_32x32,
+                        return new IDrawable[] { EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32,
                             TecTechUITextures.OVERLAY_BUTTON_POWER_SWITCH_OFF };
                     }
                 })
@@ -431,11 +434,11 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> ret = new ArrayList<>();
-                    ret.add(TecTechUITextures.BUTTON_CELESTIAL_32x32);
+                    ret.add(EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32);
                     if (getStructureUpdateTime() > -20) {
-                        ret.add(TecTechUITextures.OVERLAY_BUTTON_STRUCTURE_CHECK);
+                        ret.add(EternalGregTechWorkshopTextures.OVERLAY_BUTTON_STRUCTURE_CHECK);
                     } else {
-                        ret.add(TecTechUITextures.OVERLAY_BUTTON_STRUCTURE_CHECK_OFF);
+                        ret.add(EternalGregTechWorkshopTextures.OVERLAY_BUTTON_STRUCTURE_CHECK_OFF);
                     }
                     return ret.toArray(new IDrawable[0]);
                 })

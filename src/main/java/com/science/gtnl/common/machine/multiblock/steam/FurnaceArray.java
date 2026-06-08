@@ -34,7 +34,6 @@ import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.event.SubscribeEventUtils;
 
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.StructureError;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -45,10 +44,11 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.tileentities.machines.MTEHatchOutputBusME;
+import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 
 public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements ISurvivalConstructable {
 
@@ -146,7 +146,7 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
             .addElement(
                 'A',
                 buildHatchAdder(FurnaceArray.class).casingIndex(getCasingTextureID())
-                    .dot(1)
+                    .hint(1)
                     .atLeast(
                         SteamHatchElement.InputBus_Steam,
                         SteamHatchElement.OutputBus_Steam,
@@ -160,11 +160,10 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        return checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) && checkHatch();
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
 
-    @Override
     public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     @Override
@@ -255,7 +254,8 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
         boolean hasMEOutputBus = false;
         for (final MTEHatch bus : GTUtility.validMTEList(mOutputBusses)) {
             if (bus instanceof MTEHatchOutputBusME meBus) {
-                if (!meBus.isLocked() && meBus.canAcceptItem()) {
+                if (!meBus.isLocked() && meBus.createTransaction()
+                    .hasAvailableSpace()) {
                     hasMEOutputBus = true;
                     break;
                 }

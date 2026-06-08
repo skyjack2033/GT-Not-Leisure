@@ -6,6 +6,7 @@ import static gregtech.api.GregTechAPI.sBlockCasings1;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -35,18 +36,18 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
-import gregtech.api.enums.StructureError;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
+import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.util.minecraft.FluidUtils;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 
 public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> implements ISurvivalConstructable {
@@ -111,7 +112,7 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
                     GTStructureUtility.buildHatchAdder(SteamCactusWonder.class)
                         .atLeast(SteamHatchElement.InputBus_Steam, HatchElement.InputBus, HatchElement.OutputHatch)
                         .casingIndex(10)
-                        .dot(1)
+                        .hint(1)
                         .buildAndChain(),
                     StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13)))
             .addElement('D', GTStructureUtility.ofFrame(Materials.Steel))
@@ -165,11 +166,10 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        return checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
 
-    @Override
     public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     @Override
@@ -211,7 +211,7 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
                 addOutput(Materials.Steam.getGas((int) Math.min(32000000, fueledAmount)));
                 fueledAmount -= (int) Math.min(32000000, fueledAmount);
             } else if (currentSteam == 2) {
-                addOutput(FluidUtils.getSuperHeatedSteam((int) Math.min(64000000, fueledAmount)));
+                addOutput(GTModHandler.getSuperHeatedSteam((int) Math.min(64000000, fueledAmount)));
                 fueledAmount -= (int) Math.min(64000000, fueledAmount);
             } else if (currentSteam == 3) {
                 addOutput(Materials.DenseSupercriticalSteam.getGas((int) Math.min(256000000, fueledAmount)));

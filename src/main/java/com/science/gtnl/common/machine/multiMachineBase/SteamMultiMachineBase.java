@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.gtnewhorizon.gtnhlib.util.data.ItemId;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.ItemDrawable;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
@@ -64,11 +65,13 @@ import com.science.gtnl.utils.enums.SteamTypes;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
 
 import gregtech.api.GregTechAPI;
-import gregtech.api.enums.StructureError;
+import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
+import gregtech.api.interfaces.IIconContainer;
 import gregtech.api.interfaces.metatileentity.IItemLockable;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -79,31 +82,32 @@ import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
 import gregtech.api.metatileentity.implementations.MTEHatchMultiInput;
 import gregtech.api.metatileentity.implementations.MTEHatchOutput;
 import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
+import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.misc.spaceprojects.SpaceProjectManager;
-import gregtech.common.render.GTRenderedTexture;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.IDualInputInventoryWithPattern;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchInputBusME;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
-import gregtech.common.tileentities.machines.MTEHatchOutputBusME;
+import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusInput;
-import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusOutput;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.MTEHatchCustomFluidBase;
-import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.MTESteamMultiBase;
+import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.MTESteamMultiBlockBase;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
-public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> extends MTESteamMultiBase<T>
+public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> extends MTESteamMultiBlockBase<T>
     implements IControllerInfo {
 
     public static final int OC_WINDOW_ID = 12;
@@ -252,16 +256,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     }
 
     @Override
-    public GTRenderedTexture getFrontOverlay() {
-        return null;
-    }
-
-    @Override
-    public GTRenderedTexture getFrontOverlayActive() {
-        return null;
-    }
-
-    @Override
     public boolean supportsInputSeparation() {
         return true;
     }
@@ -274,6 +268,21 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     @Override
     public boolean getDefaultInputSeparationMode() {
         return false;
+    }
+
+    @Override
+    protected boolean isHighPressure() {
+        return tierMachine == 2;
+    }
+
+    @Override
+    protected IIconContainer getInactiveOverlay() {
+        return Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE_MULTI;
+    }
+
+    @Override
+    protected IIconContainer getActiveOverlay() {
+        return Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE_MULTI_ACTIVE;
     }
 
     public void updateHatchTexture() {
@@ -309,6 +318,68 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
     public boolean checkHatches() {
         return !mSteamInputFluids.isEmpty() || !mSteamBigInputFluids.isEmpty() || !mSteamWirelessInputFluids.isEmpty();
+    }
+
+    public boolean checkHatch() {
+        return !mSteamInputFluids.isEmpty() || !mSteamBigInputFluids.isEmpty()
+            || !mSteamWirelessInputFluids.isEmpty()
+            || !mSteamInputs.isEmpty()
+            || !mSteamOutputs.isEmpty()
+            || !mInputBusses.isEmpty()
+            || !mOutputBusses.isEmpty()
+            || !mInputHatches.isEmpty()
+            || !mOutputHatches.isEmpty();
+    }
+
+    @Override
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        failStructureCheck(errors);
+    }
+
+    public void validateStructureErrors(List<StructureError> errors) {
+        int existingErrors = errors.size();
+        checkHatch(errors);
+        if (errors.size() == existingErrors) {
+            failStructureCheck(errors);
+        }
+    }
+
+    protected void checkHatch(List<StructureError> errors) {
+        int existingErrors = errors.size();
+        checkHasAnySteamInput(errors);
+        if (!checkHatch() && errors.size() == existingErrors) {
+            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+        }
+    }
+
+    protected boolean checkPieceAndHatch(String piece, int horizontalOffset, int verticalOffset, int depthOffset,
+        List<StructureError> errors) {
+        int existingErrors = errors.size();
+        if (!checkPiece(piece, horizontalOffset, verticalOffset, depthOffset, errors)) {
+            return false;
+        }
+        checkHatch(errors);
+        return errors.size() == existingErrors;
+    }
+
+    protected boolean checkPieceAndSteamInput(String piece, int horizontalOffset, int verticalOffset, int depthOffset,
+        List<StructureError> errors) {
+        int existingErrors = errors.size();
+        if (!checkPiece(piece, horizontalOffset, verticalOffset, depthOffset, errors)) {
+            return false;
+        }
+        checkHasAnySteamInput(errors);
+        return errors.size() == existingErrors;
+    }
+
+    protected void checkStructureCondition(List<StructureError> errors, boolean condition) {
+        if (!condition) {
+            failStructureCheck(errors);
+        }
+    }
+
+    protected void failStructureCheck(List<StructureError> errors) {
+        errors.add(GTNLStructureErrors.unknownLegacyCheckFailure());
     }
 
     @Override
@@ -382,7 +453,8 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
             tag.setString(
                 "SteamNetworkDisplay",
                 steamDisplay.toString()
-                    .length() > 10 ? GTUtility.scientificFormat(steamDisplay) : GTUtility.formatNumbers(steamDisplay));
+                    .length() > 10 ? GTUtility.scientificFormat(steamDisplay)
+                        : NumberFormatUtil.formatNumber(steamDisplay));
             if (!ownerUUID.equals(teamUUID)) {
                 tag.setString("SteamNetworkTeam", SpaceProjectManager.getPlayerNameFromUUID(teamUUID));
             }
@@ -496,21 +568,27 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         boolean aDidAdd = super.addToMachineList(aTileEntity, aBaseCasingIndex);
 
         if (aTileEntity == null) {
-            log("Invalid IGregTechTileEntity");
+            ScienceNotLeisure.LOG.warn("Invalid IGregTechTileEntity");
             return false;
         }
         final IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
         if (aMetaTileEntity == null) {
-            log("Invalid IMetaTileEntity");
+            ScienceNotLeisure.LOG.warn("Invalid IMetaTileEntity");
             return false;
         }
 
         if (aMetaTileEntity instanceof WirelessSteamEnergyHatch) {
-            log("Adding Steam Wireless Input Hatch");
-            aDidAdd = addToMachineListInternal(mSteamWirelessInputFluids, aMetaTileEntity, aBaseCasingIndex);
+            ScienceNotLeisure.LOG.warn("Adding Steam Wireless Input Hatch");
+            aDidAdd = addToMachineListInternal(
+                mSteamWirelessInputFluids,
+                (WirelessSteamEnergyHatch) aMetaTileEntity,
+                aBaseCasingIndex);
         } else if (aMetaTileEntity instanceof CustomFluidHatch) {
-            log("Adding Steam Big Input Hatch");
-            aDidAdd = addToMachineListInternal(mSteamBigInputFluids, aMetaTileEntity, aBaseCasingIndex);
+            ScienceNotLeisure.LOG.warn("Adding Steam Big Input Hatch");
+            aDidAdd = addToMachineListInternal(
+                mSteamBigInputFluids,
+                (CustomFluidHatch) aMetaTileEntity,
+                aBaseCasingIndex);
         }
 
         return aDidAdd;
@@ -759,7 +837,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return rList;
     }
 
-    @Override
     public ArrayList<ItemStack> getStoredOutputs() {
         ArrayList<ItemStack> rList = new ArrayList<>();
 
@@ -786,7 +863,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return rList;
     }
 
-    @Override
     public List<ItemStack> getItemOutputSlots(ItemStack[] toOutput) {
         List<ItemStack> ret = new ArrayList<>();
 
@@ -918,7 +994,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return total;
     }
 
-    @Override
     public boolean addOutput(ItemStack aStack) {
         if (GTUtility.isStackInvalid(aStack)) return false;
         aStack = GTUtility.copy(aStack);
@@ -926,7 +1001,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         List<MTEHatchOutputBus> filteredBuses = GTUtility.filterValidMTEs(mOutputBusses);
         if (dumpItemBoolean(filteredBuses, aStack, true)) return true;
         if (dumpItemBoolean(filteredBuses, aStack, false)) return true;
-        List<MTEHatchSteamBusOutput> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
+        List<MTEHatchOutputBus> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
         if (dumpItemBoolean(filteredSteamBusses, aStack, true)) return true;
         if (dumpItemBoolean(filteredSteamBusses, aStack, false)) return true;
 
@@ -987,7 +1062,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         if (aStack == null || aStack.stackSize <= 0) return new ItemStack(Items.feather, 0);
         if (aStack.stackSize != itemStack.stackSize) return aStack;
 
-        List<MTEHatchSteamBusOutput> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
+        List<MTEHatchOutputBus> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
         aStack = tryDumpItem(filteredSteamBusses, aStack, true, false);
         if (aStack == null || aStack.stackSize <= 0) return new ItemStack(Items.feather, 0);
         if (aStack.stackSize != itemStack.stackSize) return aStack;
@@ -1137,14 +1212,9 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         mCountCasing = 0;
     }
 
-    @Override
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {
-        super.validateStructure(errors, context);
-
+    protected void checkHasAnySteamInput(List<StructureError> errors) {
         if (mSteamInputFluids.isEmpty() && mSteamBigInputFluids.isEmpty() && mSteamWirelessInputFluids.isEmpty()) {
-            errors.add(StructureError.MISSING_STEAM_HATCH);
-        } else {
-            errors.remove(StructureError.MISSING_STEAM_HATCH);
+            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.missing_steam_input"));
         }
     }
 
@@ -1414,7 +1484,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                 .widget(createBatchModeButton(builder))
                 .widget(createLockToSingleRecipeButton(builder))
                 .widget(createStructureUpdateButton(builder))
-                .widget(createMuffleButton(builder));
+                .widget(createMuffleButton(builder, true));
             if (supportsPowerPanel()) {
                 builder.widget(createPowerPanelButton(builder));
                 buildContext.addSyncedWindow(POWER_PANEL_WINDOW_ID, this::createPowerPanel);
@@ -1485,6 +1555,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
                 .setEnabled(w -> uiSteamStored == 0));
     }
 
+    public void addNoPlayerInventoryUI(ModularWindow.Builder builder, UIBuildContext buildContext) {
+
+    }
+
     @Override
     public void onMachineModeSwitchClick() {
         super.onMachineModeSwitchClick();
@@ -1512,9 +1586,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     }
 
     @Override
-    public ButtonWidget createMuffleButton(IWidgetBuilder<?> builder) {
+    public ButtonWidget createMuffleButton(IWidgetBuilder<?> builder, boolean canBeMuffled) {
         return (ButtonWidget) new ButtonWidget().setOnClick((clickData, widget) -> setMuffled(!isMuffled()))
             .setPlayClickSound(true)
+            .setEnabled(canBeMuffled)
             .setBackground(() -> {
                 List<UITexture> ret = new ArrayList<>();
                 if (isMuffled()) {
@@ -1530,6 +1605,29 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
             .addTooltip(StatCollector.translateToLocal("GT5U.machines.muffled"))
             .setPos(200, 0)
             .setSize(12, 12);
+    }
+
+    public boolean clearRecipeMapForAllInputHatches() {
+        return resetRecipeMapForAllInputHatches(null);
+    }
+
+    public boolean resetRecipeMapForAllInputHatches() {
+        return resetRecipeMapForAllInputHatches(getRecipeMap());
+    }
+
+    public boolean resetRecipeMapForAllInputHatches(RecipeMap<?> aMap) {
+        int cleared = 0;
+        for (MTEHatchInput hatch : mInputHatches) {
+            if (resetRecipeMapForHatch(hatch, aMap)) {
+                cleared++;
+            }
+        }
+        for (MTEHatchInputBus hatch : mInputBusses) {
+            if (resetRecipeMapForHatch(hatch, aMap)) {
+                cleared++;
+            }
+        }
+        return cleared > 0;
     }
 
     public ModularWindow createRecipeOcCountWindow(EntityPlayer player) {

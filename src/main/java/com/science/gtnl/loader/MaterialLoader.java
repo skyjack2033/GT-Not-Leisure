@@ -104,6 +104,8 @@ public class MaterialLoader {
             RecipeLoader.loadVillageTrade();
         }
 
+        RecipeLoader.loadCircuitRelatedRecipes();
+
         WirelessNetworkManager.number_of_energy_additions = 4L;
     }
 

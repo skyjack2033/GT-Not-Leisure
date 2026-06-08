@@ -15,6 +15,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.math.Pos2d;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
@@ -99,7 +100,6 @@ public class SuperVoidHatch extends MTEHatchVoid implements IFluidsLockable, IAd
         }
     }
 
-    @Override
     public String getLockedFluidName() {
         return lockedFluidNames[0];
     }
@@ -114,7 +114,6 @@ public class SuperVoidHatch extends MTEHatchVoid implements IFluidsLockable, IAd
         return lockedFluidNames[index];
     }
 
-    @Override
     public void setLockedFluidName(String lockedFluidName) {
         this.lockedFluidNames[0] = lockedFluidName;
         markDirty();
@@ -230,12 +229,12 @@ public class SuperVoidHatch extends MTEHatchVoid implements IFluidsLockable, IAd
                     + EnumChatFormatting.RESET));
 
         info.add(
-            EnumChatFormatting.GREEN + GTUtility.formatNumbers(mFluid == null ? 0 : mFluid.amount)
+            EnumChatFormatting.GREEN + NumberFormatUtil.formatNumber(mFluid == null ? 0 : mFluid.amount)
                 + " L"
                 + EnumChatFormatting.RESET
                 + " "
                 + EnumChatFormatting.YELLOW
-                + GTUtility.formatNumbers(getCapacity())
+                + NumberFormatUtil.formatNumber(getCapacity())
                 + " L"
                 + EnumChatFormatting.RESET);
 

@@ -66,6 +66,7 @@ import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.core.block.ModBlocks;
 import gtnhlanth.common.register.LanthItemList;
@@ -152,8 +153,8 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
                             HatchElement.InputHatch,
                             HatchElement.Maintenance,
                             HatchElement.Energy.or(HatchElement.ExoticEnergy))
-                        .dot(1)
                         .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 4))
+                        .hint(1)
                         .build(),
                     StructureUtility.onElementPass(
                         x -> ++x.mCountCasing,
@@ -174,12 +175,12 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack itemStack) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch()) {
-            return false;
-        }
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack itemStack,
+        List<StructureError> errors) {
+        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
+            return;
         setupParameters();
-        return mCountCasing >= 1000;
+        checkStructureCondition(errors, mCountCasing >= 1000);
     }
 
     @Override
@@ -274,7 +275,7 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
                     buckets.add(bucket);
                 } else {
                     holder.seed.stackSize = holder.count;
-                    addOutput(holder.seed);
+                    addItemOutputs(new ItemStack[] { holder.seed });
                 }
             }
         }

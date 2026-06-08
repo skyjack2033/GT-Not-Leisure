@@ -348,7 +348,7 @@ public abstract class MixinMTEVoidMinerBase extends MTEEnhancedMultiBlockBase<Mi
                 .noneMatch(is -> GTUtility.areStacksEqual(is, output)))
                 || (!this.mBlacklist && inputOres.stream()
                     .anyMatch(is -> GTUtility.areStacksEqual(is, output)))) {
-                this.addOutput(stackPart);
+                this.addItemOutputs(new ItemStack[] { stackPart });
             }
 
             totalCount -= stackSize;

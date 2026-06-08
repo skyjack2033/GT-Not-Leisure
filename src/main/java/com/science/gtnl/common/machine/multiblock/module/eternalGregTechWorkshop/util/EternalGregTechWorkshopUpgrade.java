@@ -18,8 +18,6 @@ import com.gtnewhorizons.modularui.api.math.Size;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import lombok.Getter;
-import tectech.thing.metaTileEntity.multi.godforge.util.MilestoneIcon;
-import tectech.thing.metaTileEntity.multi.godforge.util.UpgradeColor;
 
 public enum EternalGregTechWorkshopUpgrade {
 

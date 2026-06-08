@@ -22,6 +22,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.common.collect.ImmutableSet;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
@@ -41,9 +42,9 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchOutput;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
 import gregtech.common.misc.spaceprojects.SpaceProjectManager;
-import gtPlusPlus.core.util.minecraft.FluidUtils;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -59,7 +60,7 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
         super(aID, aName, aNameRegional, aTier);
         this.mLockedFluids = ImmutableSet.of(
             Materials.Steam.mGas,
-            FluidUtils.getSuperHeatedSteam(1)
+            GTModHandler.getSuperHeatedSteam(1)
                 .getFluid(),
             Materials.DenseSupercriticalSteam.mGas,
             GTNLMaterials.CompressedSteam.getMolten(1)
@@ -70,7 +71,7 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
         super(aName, aTier, 3, new String[] { "" }, aTextures);
         this.mLockedFluids = ImmutableSet.of(
             Materials.Steam.mGas,
-            FluidUtils.getSuperHeatedSteam(1)
+            GTModHandler.getSuperHeatedSteam(1)
                 .getFluid(),
             Materials.DenseSupercriticalSteam.mGas,
             GTNLMaterials.CompressedSteam.getMolten(1)
@@ -100,12 +101,10 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
         return true;
     }
 
-    @Override
     public boolean acceptsFluidLock(String name) {
         return false;
     }
 
-    @Override
     public void setLockedFluidName(String lockedFluidName) {}
 
     @Override
@@ -345,7 +344,8 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
             tag.setString(
                 "SteamNetworkDisplay",
                 steamDisplay.toString()
-                    .length() > 10 ? GTUtility.scientificFormat(steamDisplay) : GTUtility.formatNumbers(steamDisplay));
+                    .length() > 10 ? GTUtility.scientificFormat(steamDisplay)
+                        : NumberFormatUtil.formatNumber(steamDisplay));
             if (!ownerUUID.equals(teamUUID)) {
                 tag.setString("SteamNetworkTeam", SpaceProjectManager.getPlayerNameFromUUID(teamUUID));
             }

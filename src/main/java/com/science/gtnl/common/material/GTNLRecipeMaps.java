@@ -700,10 +700,4 @@ public class GTNLRecipeMaps {
         .disableRegisterNEI()
         .build();
 
-    public static final RecipeMap<RecipeMapBackend> ConvertToCircuitAssemblerRecipes = RecipeMapBuilder
-        .of("gtnl.recipe.ConvertToCircuitAssemblerRecipes")
-        .frontend(GTNLLogoFrontend::new)
-        .maxIO(6, 1, 1, 0)
-        .disableRegisterNEI()
-        .build();
 }

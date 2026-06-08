@@ -6,6 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
@@ -13,10 +15,14 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
+import tectech.Reference;
 import tectech.rendering.EOH.EOHTileEntitySR;
 
 @SideOnly(Side.CLIENT)
 public class ItemMeteorMinerMachineRender implements IItemRenderer {
+
+    private static final IModelCustom STAR_MODEL = AdvancedModelLoader
+        .loadModel(new ResourceLocation(Reference.MODID, "models/Star.obj"));
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -95,7 +101,7 @@ public class ItemMeteorMinerMachineRender implements IItemRenderer {
         // Set colour and alpha (transparency) of the star layer.
         GL11.glColor4f(1, 1, 1, alpha);
 
-        EOHTileEntitySR.starModel.renderAll();
+        STAR_MODEL.renderAll();
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDepthMask(true);
         GL11.glEnable(GL11.GL_LIGHTING);

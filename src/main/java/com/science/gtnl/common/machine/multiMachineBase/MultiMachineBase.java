@@ -44,8 +44,10 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import gregtech.api.enums.GTValues;
+import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IHatchElement;
@@ -61,6 +63,8 @@ import gregtech.api.metatileentity.implementations.MTEHatchOutput;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.structure.error.ErrorType;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
@@ -72,7 +76,6 @@ import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.IDualInputInventoryWithPattern;
 import gregtech.common.tileentities.machines.ISmartInputHatch;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
-import gtPlusPlus.GTplusplus;
 import gtPlusPlus.api.objects.minecraft.BlockPos;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusInput;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -364,11 +367,7 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
 
     public void flushRecipeOutputs() {
         if (mOutputItems != null) {
-            for (ItemStack outputItem : mOutputItems) {
-                if (outputItem != null) {
-                    addOutput(outputItem);
-                }
-            }
+            addItemOutputs(mOutputItems);
             mOutputItems = null;
         }
         if (mOutputFluids != null) {
@@ -589,7 +588,7 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             .widget(createBatchModeButton(builder))
             .widget(createLockToSingleRecipeButton(builder))
             .widget(createStructureUpdateButton(builder))
-            .widget(createMuffleButton(builder));
+            .widget(createMuffleButton(builder, true));
 
         DynamicPositionedRow configurationElements = new DynamicPositionedRow();
         addConfigurationWidgets(configurationElements, buildContext);
@@ -632,9 +631,10 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     }
 
     @Override
-    public ButtonWidget createMuffleButton(IWidgetBuilder<?> builder) {
+    public ButtonWidget createMuffleButton(IWidgetBuilder<?> builder, boolean canBeMuffled) {
         return (ButtonWidget) new ButtonWidget().setOnClick((clickData, widget) -> setMuffled(!isMuffled()))
             .setPlayClickSound(true)
+            .setEnabled(canBeMuffled)
             .setBackground(() -> {
                 List<UITexture> ret = new ArrayList<>();
                 if (isMuffled()) {
@@ -1033,6 +1033,89 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             && mParallelControllerHatches.size() <= 1;
     }
 
+    @Override
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        failStructureCheck(errors);
+    }
+
+    protected void validateStructureErrors(List<StructureError> errors) {
+        int existingErrors = errors.size();
+        checkHatch(errors);
+        if (errors.size() == existingErrors) {
+            failStructureCheck(errors);
+        }
+    }
+
+    protected void checkHatch(List<StructureError> errors) {
+        int existingErrors = errors.size();
+        checkHatchMax(errors, HatchElement.Maintenance, 1);
+        if (getPollutionPerSecond(null) > 0) {
+            checkHasMufflerHatch(errors);
+        }
+        checkParallelControllerHatchMax(errors, 1);
+        checkEnergyHatch(errors);
+        if (!checkHatch() && errors.size() == existingErrors) {
+            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+        }
+    }
+
+    protected void checkEnergyHatch(List<StructureError> errors) {
+        if (checkEnergyHatch()) {
+            return;
+        }
+        if (MainConfig.machine.enableLaserHatch) {
+            boolean hasEnergyTunnel = false;
+            for (MTEHatch hatch : getExoticEnergyHatches()) {
+                if (hatch instanceof MTEHatchEnergyTunnel) {
+                    hasEnergyTunnel = true;
+                    break;
+                }
+            }
+            if (hasEnergyTunnel) {
+                errors.add(GTNLStructureErrors.laserEnergyTunnelDisabled());
+            }
+            if (getRealMaxInputAmps() > 64) {
+                errors.add(GTNLStructureErrors.energyInputAmperageTooHigh());
+            }
+            return;
+        }
+        errors.add(GTNLStructureErrors.invalidEnergyHatchConfiguration());
+    }
+
+    protected boolean checkPieceAndHatch(String piece, int horizontalOffset, int verticalOffset, int depthOffset,
+        List<StructureError> errors) {
+        int existingErrors = errors.size();
+        if (!checkPiece(piece, horizontalOffset, verticalOffset, depthOffset, errors)) {
+            return false;
+        }
+        checkHatch(errors);
+        return errors.size() == existingErrors;
+    }
+
+    protected void checkStructureCondition(List<StructureError> errors, boolean condition) {
+        if (!condition) {
+            failStructureCheck(errors);
+        }
+    }
+
+    protected void failStructureCheck(List<StructureError> errors) {
+        errors.add(GTNLStructureErrors.unknownLegacyCheckFailure());
+    }
+
+    protected void checkParallelControllerHatchMax(List<StructureError> errors, int max) {
+        int count = mParallelControllerHatches.size();
+        if (count > max) {
+            errors.add(GTNLStructureErrors.parallelControllerHatchCount(ErrorType.TOO_MANY, count, max));
+        }
+    }
+
+    protected void checkOneParallelControllerHatch(List<StructureError> errors) {
+        int count = mParallelControllerHatches.size();
+        if (count != 1) {
+            errors.add(GTNLStructureErrors.parallelControllerHatchCount(ErrorType.NOT_MATCH, count, 1));
+        }
+    }
+
     public boolean checkEnergyHatch() {
         if (MainConfig.machine.enableLaserHatch) {
             for (MTEHatch hatch : getExoticEnergyHatches()) {
@@ -1131,24 +1214,8 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     }
 
     @Override
-    public boolean checkStructure(boolean aForceReset) {
-        return checkStructure(aForceReset, getBaseMetaTileEntity());
-    }
-
-    @Override
-    public boolean checkStructure(boolean aForceReset, IGregTechTileEntity aBaseMetaTileEntity) {
-        if (!aBaseMetaTileEntity.isServerSide()) return mMachine;
-        // 仅在强制校验或结构变更时重建结构状态 / Rebuild structure state only when forced or when the structure changed
-        if ((mStructureChanged || aForceReset)) {
-            clearHatches();
-
-            mMachine = checkMachine(aBaseMetaTileEntity, mInventory[1]);
-            updateHatchTexture();
-
-            doStructureValidation();
-        }
-        mStructureChanged = false;
-        return mMachine;
+    protected void onStructureCheckFinished(IGregTechTileEntity aBaseMetaTileEntity) {
+        updateHatchTexture();
     }
 
     public <E> boolean addToMachineListInternal(ArrayList<E> aList, final IGregTechTileEntity aTileEntity,
@@ -1175,12 +1242,10 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
 
         if (aList.isEmpty()) {
             if (aTileEntity instanceof MTEHatch) {
-                if (GTplusplus.CURRENT_LOAD_PHASE == GTplusplus.INIT_PHASE.STARTED) {
-                    ScienceNotLeisure.LOG.warn(
-                        "Adding {} at {}",
-                        aTileEntity.getInventoryName(),
-                        new BlockPos(aTileEntity.getBaseMetaTileEntity()).getLocationString());
-                }
+                ScienceNotLeisure.LOG.warn(
+                    "Adding {} at {}",
+                    aTileEntity.getInventoryName(),
+                    new BlockPos(aTileEntity.getBaseMetaTileEntity()).getLocationString());
                 updateTexture(aTileEntity, aBaseCasingIndex);
                 return aList.add((E) aTileEntity);
             }
@@ -1199,18 +1264,14 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
                 if (b != null) {
                     BlockPos aPos = new BlockPos(b);
                     if (aCurPos.equals(aPos)) {
-                        if (GTplusplus.CURRENT_LOAD_PHASE == GTplusplus.INIT_PHASE.STARTED) {
-                            ScienceNotLeisure.LOG
-                                .warn("Found Duplicate {} at {}", b.getInventoryName(), aPos.getLocationString());
-                        }
+                        ScienceNotLeisure.LOG
+                            .warn("Found Duplicate {} at {}", b.getInventoryName(), aPos.getLocationString());
                         return false;
                     }
                 }
             }
             if (aTileEntity instanceof MTEHatch) {
-                if (GTplusplus.CURRENT_LOAD_PHASE == GTplusplus.INIT_PHASE.STARTED) {
-                    ScienceNotLeisure.LOG.warn("Adding {} at {}", aCur.getInventoryName(), aCurPos.getLocationString());
-                }
+                ScienceNotLeisure.LOG.warn("Adding {} at {}", aCur.getInventoryName(), aCurPos.getLocationString());
                 updateTexture(aTileEntity, aBaseCasingIndex);
                 return aList.add((E) aTileEntity);
             }

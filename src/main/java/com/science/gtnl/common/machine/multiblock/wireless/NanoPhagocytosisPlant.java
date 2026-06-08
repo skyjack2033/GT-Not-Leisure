@@ -8,6 +8,7 @@ import static tectech.util.TTUtility.replaceLetters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -44,6 +45,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
@@ -202,7 +204,7 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 12))
-                    .dot(1)
+                    .hint(1)
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
@@ -451,9 +453,9 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (isRenderActive) {
-            if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET)
+            if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)
                 || !checkPiece(
                     STRUCTURE_PIECE_MAIN_RING_ONE_AIR,
                     HORIZONTAL_OFF_SET_RING_ONE,
@@ -470,9 +472,9 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
                     VERTICAL_OFF_SET_RING_THREE,
                     DEPTH_OFF_SET_RING_THREE)) {
                 destroyRenderer();
-                return false;
+                checkStructureCondition(errors, false);
             }
-        } else if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET)
+        } else if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)
             || !checkPiece(
                 STRUCTURE_PIECE_MAIN_RING_ONE,
                 HORIZONTAL_OFF_SET_RING_ONE,
@@ -488,7 +490,7 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
                 HORIZONTAL_OFF_SET_RING_THREE,
                 VERTICAL_OFF_SET_RING_THREE,
                 DEPTH_OFF_SET_RING_THREE)) {
-                    return false;
+                    checkStructureCondition(errors, false);
                 }
 
         if (!isRenderActive && enableRender && mTotalRunTime > 0) {
@@ -496,7 +498,8 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
         }
 
         setupParameters();
-        return mCountCasing > 1 && checkHatch();
+        checkHatch(errors);
+        checkStructureCondition(errors, mCountCasing > 1);
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorksho
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 
 import lombok.Getter;
-import tectech.thing.gui.TecTechUITextures;
 
 @Getter
 public enum UpgradeColor {
@@ -11,34 +10,34 @@ public enum UpgradeColor {
     // spotless:off
 
     BLUE(
-        TecTechUITextures.BACKGROUND_GLOW_BLUE,
-        TecTechUITextures.PICTURE_OVERLAY_BLUE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_BLUE_OPAQUE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_BLUE),
+        EternalGregTechWorkshopTextures.BACKGROUND_GLOW_BLUE,
+        EternalGregTechWorkshopTextures.PICTURE_OVERLAY_BLUE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_BLUE_OPAQUE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_BLUE),
 
     PURPLE(
-        TecTechUITextures.BACKGROUND_GLOW_PURPLE,
-        TecTechUITextures.PICTURE_OVERLAY_PURPLE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_PURPLE_OPAQUE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_PURPLE),
+        EternalGregTechWorkshopTextures.BACKGROUND_GLOW_PURPLE,
+        EternalGregTechWorkshopTextures.PICTURE_OVERLAY_PURPLE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_PURPLE_OPAQUE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_PURPLE),
 
     ORANGE(
-        TecTechUITextures.BACKGROUND_GLOW_ORANGE,
-        TecTechUITextures.PICTURE_OVERLAY_ORANGE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_ORANGE_OPAQUE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_ORANGE),
+        EternalGregTechWorkshopTextures.BACKGROUND_GLOW_ORANGE,
+        EternalGregTechWorkshopTextures.PICTURE_OVERLAY_ORANGE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_ORANGE_OPAQUE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_ORANGE),
 
     GREEN(
-        TecTechUITextures.BACKGROUND_GLOW_GREEN,
-        TecTechUITextures.PICTURE_OVERLAY_GREEN,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_GREEN_OPAQUE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_GREEN),
+        EternalGregTechWorkshopTextures.BACKGROUND_GLOW_GREEN,
+        EternalGregTechWorkshopTextures.PICTURE_OVERLAY_GREEN,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_GREEN_OPAQUE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_GREEN),
 
     RED(
-        TecTechUITextures.BACKGROUND_GLOW_RED,
-        TecTechUITextures.PICTURE_OVERLAY_RED,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_RED_OPAQUE,
-        TecTechUITextures.PICTURE_UPGRADE_CONNECTOR_RED),
+        EternalGregTechWorkshopTextures.BACKGROUND_GLOW_RED,
+        EternalGregTechWorkshopTextures.PICTURE_OVERLAY_RED,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_RED_OPAQUE,
+        EternalGregTechWorkshopTextures.PICTURE_UPGRADE_CONNECTOR_RED),
 
     ;
 

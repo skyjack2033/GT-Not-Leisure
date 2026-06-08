@@ -35,12 +35,12 @@ import com.science.gtnl.utils.item.MetaItemStackUtils;
 import com.science.gtnl.utils.item.MetaTooltipUtils;
 import com.sinthoras.visualprospecting.VisualProspecting_API;
 
+import bartworks.system.material.BWMetaGeneratedOres;
 import bartworks.system.material.Werkstoff;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import detrav.utils.BartWorksHelper;
 import detrav.utils.GTppHelper;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
@@ -50,7 +50,7 @@ import gregtech.api.objects.ItemData;
 import gregtech.api.util.GTLanguageManager;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.common.UndergroundOil;
-import gregtech.common.blocks.BlockOresAbstract;
+import gregtech.common.blocks.BlockOresAbstractLegacy;
 import gregtech.common.blocks.TileEntityOres;
 import gregtech.common.pollution.Pollution;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -200,11 +200,11 @@ public class ElectricProspectorTool extends Item {
                             case 0, 1 -> {
                                 Block tBlock = c.getBlock(x, y, z);
                                 short tMetaID = (short) c.getBlockMetadata(x, y, z);
-                                if (tBlock instanceof BlockOresAbstract) {
+                                if (tBlock instanceof BlockOresAbstractLegacy) {
                                     TileEntity tTileEntity = c.getTileEntityUnsafe(x, y, z);
                                     if ((tTileEntity instanceof TileEntityOres)
                                         && ((TileEntityOres) tTileEntity).mNatural) {
-                                        tMetaID = ((TileEntityOres) tTileEntity).getMetaData();
+                                        tMetaID = ((TileEntityOres) tTileEntity).mMetaData;
                                         try {
                                             String name = GTLanguageManager
                                                 .getTranslation(tBlock.getUnlocalizedName() + "." + tMetaID + ".name");
@@ -222,13 +222,9 @@ public class ElectricProspectorTool extends Item {
                                         y,
                                         c.zPosition * 16 + z,
                                         GTppHelper.getMetaFromBlock(tBlock));
-                                } else if (BartWorksHelper.isOre(tBlock)) {
-                                    if (data != 1 && BartWorksHelper.isSmallOre(tBlock)) continue;
-                                    packet.addBlock(
-                                        c.xPosition * 16 + x,
-                                        y,
-                                        c.zPosition * 16 + z,
-                                        BartWorksHelper.getMetaFromBlock(c, x, y, z, tBlock));
+                                } else if (tBlock instanceof BWMetaGeneratedOres bwOre) {
+                                    if (data != 1 && bwOre.isSmall) continue;
+                                    packet.addBlock(c.xPosition * 16 + x, y, c.zPosition * 16 + z, (short) tMetaID);
                                 } else if (data == 1) {
                                     ItemData tAssotiation = GTOreDictUnificator
                                         .getAssociation(new ItemStack(tBlock, 1, tMetaID));
@@ -528,7 +524,7 @@ public class ElectricProspectorTool extends Item {
         ItemData tAssotiation, SplittableRandom aRandom, int chance) {
         if (aTileEntity != null) {
             if (aTileEntity instanceof TileEntityOres gt_entity) {
-                short meta = gt_entity.getMetaData();
+                short meta = gt_entity.mMetaData;
                 String format = LanguageRegistry.instance()
                     .getStringLocalization("gt.blockores." + meta + ".name");
                 String name = Materials.getLocalizedNameForItem(format, meta % 1000);
@@ -556,10 +552,10 @@ public class ElectricProspectorTool extends Item {
 
                     Block tBlock = aChunk.getBlock(x, y, z);
                     short tMetaID = (short) aChunk.getBlockMetadata(x, y, z);
-                    if (tBlock instanceof BlockOresAbstract) {
+                    if (tBlock instanceof BlockOresAbstractLegacy) {
                         TileEntity tTileEntity = aChunk.getTileEntityUnsafe(x, y, z);
                         if ((tTileEntity instanceof TileEntityOres) && ((TileEntityOres) tTileEntity).mNatural) {
-                            tMetaID = ((TileEntityOres) tTileEntity).getMetaData();
+                            tMetaID = ((TileEntityOres) tTileEntity).mMetaData;
                             try {
                                 String format = LanguageRegistry.instance()
                                     .getStringLocalization(tBlock.getUnlocalizedName() + "." + tMetaID + ".name");
@@ -575,12 +571,11 @@ public class ElectricProspectorTool extends Item {
                     } else if (GTppHelper.isGTppBlock(tBlock)) {
                         String name = GTppHelper.getGTppVeinName(tBlock);
                         if (!name.isEmpty()) addOreToHashMap(name, aPlayer);
-                    } else if (BartWorksHelper.isOre(tBlock)) {
-                        if (data != 1 && BartWorksHelper.isSmallOre(tBlock)) continue;
-                        Werkstoff werkstoff = Werkstoff.werkstoffHashMap.getOrDefault(
-                            (short) ((BartWorksHelper.getMetaFromBlock(aChunk, x, y, z, tBlock)) * -1),
-                            null);
-                        String type = BartWorksHelper.isSmallOre(tBlock) ? "oreSmall" : "ore";
+                    } else if (tBlock instanceof BWMetaGeneratedOres bwOre) {
+                        if (data != 1 && bwOre.isSmall) continue;
+                        Werkstoff werkstoff = Werkstoff.werkstoffHashMap.getOrDefault((short) tMetaID, null);
+                        if (werkstoff == null) continue;
+                        String type = bwOre.isSmall ? "oreSmall" : "ore";
                         String translated = GTLanguageManager.getTranslation("bw.blocktype." + type);
                         addOreToHashMap(translated.replace("%material", werkstoff.getLocalizedName()), aPlayer);
                     } else if (data == 1) {

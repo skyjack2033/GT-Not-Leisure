@@ -91,6 +91,7 @@ public class SuperInputHatchME extends MTEHatchInputME {
     public boolean expediteRecipeCheck = false;
 
     public static final FluidStack[] EMPTY_FLUID_STACK = new FluidStack[0];
+    public static final int CONFIG_WINDOW_ID = 10;
 
     public SuperInputHatchME(int aID, boolean autoPullAvailable, String aName, String aNameRegional) {
         super(aID, autoPullAvailable, aName, aNameRegional);
@@ -180,7 +181,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
         } catch (final GridAccessException ignored) {}
     }
 
-    @Override
     public void setSavedFluid(int i, FluidStack stack) {
         shadowStoredFluids[i] = stack;
         savedStackSizes[i] = stack == null ? 0 : stack.amount;
@@ -425,7 +425,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
         return requestSource;
     }
 
-    @Override
     public FluidStack getMatchingFluidStack(FluidStack fluidStack) {
         if (fluidStack == null) return null;
 
@@ -456,7 +455,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
     /**
      * Used to avoid slot update.
      */
-    @Override
     public FluidStack getShadowFluidStack(int index) {
         if (index < 0 || index >= storedFluids.length) {
             return null;
@@ -470,7 +468,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
      *
      * @return The first shadow fluid stack, or null if this doesn't exist.
      */
-    @Override
     public FluidStack getFirstShadowFluidStack() {
         return getFirstShadowFluidStack(false);
     }
@@ -481,7 +478,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
      * @param hasToMatchGhost Whether the first fluid stack returned has to match the first non-null ghost stack
      * @return The first shadow fluid stack, or null if this doesn't exist.
      */
-    @Override
     public FluidStack getFirstShadowFluidStack(boolean hasToMatchGhost) {
         FluidStack fluidStack;
         FluidStack lockedSlot = null;
@@ -502,12 +498,10 @@ public class SuperInputHatchME extends MTEHatchInputME {
         return fluidStack;
     }
 
-    @Override
     public int getShadowStoredFluidsSize() {
         return shadowStoredFluids.length;
     }
 
-    @Override
     public int getFluidSlot(FluidStack fluidStack) {
         if (fluidStack == null) return -1;
 
@@ -688,7 +682,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
         return aNBT;
     }
 
-    @Override
     public boolean containsSuchStack(FluidStack tStack) {
         for (int i = 0; i < 100; ++i) {
             if (GTUtility.areFluidsEqual(storedFluids[i], tStack, false)) {
@@ -887,7 +880,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
         }, capacity);
     }
 
-    @Override
     public ModularWindow createStackSizeConfigurationWindow(final EntityPlayer player) {
         final int WIDTH = 78;
         final int HEIGHT = 115;
@@ -986,7 +978,6 @@ public class SuperInputHatchME extends MTEHatchInputME {
         return builder.build();
     }
 
-    @Override
     public void addGregTechLogo(ModularWindow.Builder builder) {
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)

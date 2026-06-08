@@ -176,7 +176,9 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
     public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
         getDualityFluid().addDrops(drops);
         if (getInterfaceDuality().getWaitingToSend() != null) {
-            for (ItemStack is : getInterfaceDuality().getWaitingToSend()) {
+            for (var waitingStack : getInterfaceDuality().getWaitingToSend()) {
+                if (!(waitingStack instanceof IAEItemStack itemWaitingStack)) continue;
+                ItemStack is = itemWaitingStack.getItemStack();
                 if (is != null && is.getItem() instanceof ItemFluidDrop) {
                     drops.add(ItemFluidPacket.newStack(ItemFluidDrop.getFluidStack(is)));
                     is.stackSize = 0;

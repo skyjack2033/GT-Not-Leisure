@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
 import com.gtnewhorizons.modularui.api.math.Alignment;
@@ -33,6 +34,7 @@ import com.science.gtnl.utils.ECPUCluster;
 import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
@@ -48,6 +50,7 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IItemList;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
 import appeng.api.util.WorldCoord;
@@ -67,6 +70,7 @@ import gregtech.api.interfaces.modularui.IAddGregtechLogo;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTETooltipMultiBlockBase;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
@@ -204,7 +208,11 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
         final var s = new MachineSource(this);
         for (var cpu : cpus) {
             if (itemInventory != null) {
-                for (var stack : ((MECraftingInventory) cpu.getInventory()).getItemList()) {
+                IItemList<IAEItemStack> itemList = AEApi.instance()
+                    .storage()
+                    .createItemList();
+                ((MECraftingInventory) cpu.getInventory()).getAvailableItems(itemList);
+                for (var stack : itemList) {
                     itemInventory.injectItems(stack, Actionable.MODULATE, s);
                 }
             }
@@ -223,7 +231,7 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     @Override
     public void onFirstTick(IGregTechTileEntity baseMetaTileEntity) {
         super.onFirstTick(baseMetaTileEntity);
-        if (checkStructure(true)) {
+        if (checkStructure(true, getBaseMetaTileEntity())) {
             this.mStartUpCheck = -1;
             this.mUpdate = 200;
         }
@@ -781,9 +789,9 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        boolean b = checkMachine(aBaseMetaTileEntity);
-        if (b) {
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        boolean valid = checkMachine(aBaseMetaTileEntity);
+        if (valid) {
             getProxy().setValidSides(upDirection);
             if (this.virtualCPU == null) {
                 createVirtualCPU();
@@ -794,8 +802,8 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
                 this.virtualCPU.destroy();
                 this.virtualCPU = null;
             }
+            errors.add(GTNLStructureErrors.unknownLegacyCheckFailure());
         }
-        return b;
     }
 
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity) {
@@ -1006,8 +1014,8 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
                     .setStringSupplier(
                         () -> StatCollector.translateToLocalFormatted(
                             "Info_QuantumComputer_01",
-                            GTUtility.formatNumbers(maximumParallel),
-                            GTUtility.formatNumbers(usedParallel),
+                            NumberFormatUtil.formatNumber(maximumParallel),
+                            NumberFormatUtil.formatNumber(usedParallel),
                             String.format(
                                 "%.1f%%",
                                 maximumParallel > 0 ? (double) usedParallel / maximumParallel * 100.0 : 0.0)))

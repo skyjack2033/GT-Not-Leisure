@@ -41,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.google.common.collect.ImmutableList;
-import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.math.Alignment;
@@ -113,6 +112,7 @@ import gregtech.api.objects.GTDualInputPattern;
 import gregtech.api.objects.XSTR;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.GTUtility.ItemId;
 import gregtech.api.util.extensions.ArrayExt;
 import gregtech.common.config.Gregtech;
 import gregtech.common.tileentities.machines.IDualInputHatch;
@@ -1162,7 +1162,6 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
         return ArrayExt.withoutNulls(sharedItems, ItemStack[]::new);
     }
 
-    @Override
     public void setProcessingLogic(ProcessingLogic pl) {
         if (!processingLogics.contains(pl)) {
             processingLogics.add(Objects.requireNonNull(pl));

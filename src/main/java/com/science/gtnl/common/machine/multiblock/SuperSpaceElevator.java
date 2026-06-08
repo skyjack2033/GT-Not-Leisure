@@ -6,6 +6,8 @@ import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
+import static com.science.gtnl.loader.BlockLoader.metaBlockGlow;
+import static com.science.gtnl.loader.BlockLoader.metaCasing;
 import static gregtech.api.GregTechAPI.sBlockCasings1;
 import static gregtech.api.GregTechAPI.sBlockCasingsDyson;
 import static gregtech.api.GregTechAPI.sBlockCasingsSE;
@@ -45,6 +47,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -79,7 +82,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.objects.GTChunkManager;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
-import gregtech.api.util.GTUtility;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
@@ -257,7 +260,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
         return StructureDefinition.<SuperSpaceElevator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shapeBase))
             .addShape(STRUCTURE_PIECE_EXTENDED, transpose(shapeExtended))
-            .addElement('A', ofBlock(com.science.gtnl.loader.BlockLoader.metaCasing, 18))
+            .addElement('A', ofBlock(metaCasing, 18))
             .addElement('B', ofBlock(sBlockCasingsSE, 2))
             .addElement('C', ofBlock(sBlockCasingsTT, 0))
             .addElement(
@@ -274,7 +277,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
                 'F',
                 buildHatchAdder(SuperSpaceElevator.class).atLeast(Energy.or(ExoticEnergy), Dynamo)
                     .casingIndex(TileEntitySpaceElevator.CASING_INDEX_BASE)
-                    .dot(1)
+                    .hint(1)
                     .buildAndChain(onElementPass(x -> ++x.mCountCasing, ofBlock(sBlockCasingsSE, 0))))
             .addElement('G', ofBlock(sBlockCasingsDyson, 9))
             .addElement('H', ofBlock(sBlockCasingsSE, 1))
@@ -296,7 +299,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
                         HatchElement.InputData,
                         HatchElement.OutputData)
                     .casingIndex(TileEntitySpaceElevator.CASING_INDEX_BASE)
-                    .dot(1)
+                    .hint(1)
                     .buildAndChain(sBlockCasingsSE, 0))
             .addElement(
                 'M',
@@ -304,7 +307,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
                     HatchElementBuilder.<SuperSpaceElevator>builder()
                         .atLeast(ProjectModuleElement.ProjectModule)
                         .casingIndex(TileEntitySpaceElevator.CASING_INDEX_BASE)
-                        .dot(1)
+                        .hint(1)
                         .buildAndChain(sBlockCasingsSE, 0),
                     buildHatchAdder(SuperSpaceElevator.class)
                         .atLeast(
@@ -319,12 +322,12 @@ public class SuperSpaceElevator extends TTMultiblockBase
                             HatchElement.InputData,
                             HatchElement.OutputData)
                         .casingIndex(TileEntitySpaceElevator.CASING_INDEX_BASE)
-                        .dot(1)
+                        .hint(1)
                         .buildAndChain(sBlockCasingsSE, 0)))
             .addElement(
                 'N',
                 ElevatorUtil.ofBlockAdder(SuperSpaceElevator::addCable, GregTechAPI.sSpaceElevatorCable, 0))
-            .addElement('O', ofBlock(com.science.gtnl.loader.BlockLoader.metaBlockGlow, 31))
+            .addElement('O', ofBlock(metaBlockGlow, 31))
             .build();
     }
 
@@ -390,32 +393,34 @@ public class SuperSpaceElevator extends TTMultiblockBase
     }
 
     @Override
-    public boolean checkMachine_EM(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         motorTier = 0;
         wirelessMode = false;
         mTier = 0;
         mCountCasing = 0;
 
-        if (!structureCheck_EM(
+        if (!checkPiece(
             STRUCTURE_PIECE_MAIN,
             STRUCTURE_PIECE_MAIN_HOR_OFFSET,
             STRUCTURE_PIECE_MAIN_VERT_OFFSET,
-            STRUCTURE_PIECE_MAIN_DEPTH_OFFSET)) {
+            STRUCTURE_PIECE_MAIN_DEPTH_OFFSET,
+            errors)) {
             if (elevatorCable != null) {
                 elevatorCable.setShouldRender(false);
             }
-            return false;
+            return;
         }
 
         if (motorTier > 1) {
             int actualExtensionLayers = 0;
 
             while (actualExtensionLayers < motorTier) {
-                if (!structureCheck_EM(
+                if (!checkPiece(
                     STRUCTURE_PIECE_EXTENDED,
                     STRUCTURE_PIECE_EXTENDED_HOR_OFFSET,
                     STRUCTURE_PIECE_EXTENDED_VERT_OFFSET - actualExtensionLayers * 6,
-                    STRUCTURE_PIECE_EXTENDED_DEPTH_OFFSET)) {
+                    STRUCTURE_PIECE_EXTENDED_DEPTH_OFFSET,
+                    errors)) {
                     break;
                 }
 
@@ -430,12 +435,12 @@ public class SuperSpaceElevator extends TTMultiblockBase
 
         if (motorTier > 2 && mExoticEnergyHatches.isEmpty() && mEnergyHatches.isEmpty()) wirelessMode = true;
 
-        return mCountCasing > 100;
+        checkCasingMin(errors, mCountCasing, 101);
     }
 
     @Override
-    public void clearHatches_EM() {
-        super.clearHatches_EM();
+    public void clearHatches() {
+        super.clearHatches();
         mProjectModuleHatches.clear();
         elevatorCable = null;
         mParallelControllerHatches.clear();
@@ -521,7 +526,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
                                 }
                             }
                         }
-                        costingEUText = GTUtility.formatNumbers(totalUsedEU);
+                        costingEUText = NumberFormatUtil.formatNumber(totalUsedEU);
                     }
                 }
             } else {

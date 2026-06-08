@@ -13,6 +13,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.drawable.Text;
 import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
@@ -22,6 +23,7 @@ import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.gui.modularui.widget.FluidLockWidget;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.utils.item.ItemUtils;
 
@@ -32,7 +34,6 @@ import gregtech.api.metatileentity.BaseTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTLanguageManager;
 import gregtech.api.util.GTUtility;
-import gregtech.common.gui.modularui.widget.FluidLockWidget;
 import gregtech.common.tileentities.storage.MTEDigitalTankBase;
 import vazkii.botania.api.subtile.ManaHelper;
 import vazkii.botania.api.subtile.SubTileEntity;
@@ -45,6 +46,7 @@ public class ManaTank extends MTEDigitalTankBase {
     public boolean isLiquidizerMode = true;
     public static final int MANA_POOL_RADIUS = 5;
     public static final int MANA_FLOWER_RADIUS = 6;
+    public static final String MANA_FLUID_NAME = "fluidmana";
     public static FluidStack fluidMana;
 
     public ManaTank(int aID, String aName, String aNameRegional) {
@@ -60,7 +62,6 @@ public class ManaTank extends MTEDigitalTankBase {
         return new ManaTank(mName, mDescriptionArray, mTextures);
     }
 
-    @Override
     public void addGregTechLogo(ModularWindow.Builder builder) {
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
@@ -78,18 +79,18 @@ public class ManaTank extends MTEDigitalTankBase {
                     + EnumChatFormatting.RESET
                     + " "
                     + EnumChatFormatting.YELLOW
-                    + GTUtility.formatNumbers(getCapacity())
+                    + NumberFormatUtil.formatNumber(getCapacity())
                     + " L"
                     + EnumChatFormatting.RESET };
         }
         return new String[] { EnumChatFormatting.BLUE + "Mana Tank" + EnumChatFormatting.RESET, "Stored Fluid:",
             EnumChatFormatting.GOLD + mFluid.getLocalizedName() + EnumChatFormatting.RESET,
-            EnumChatFormatting.GREEN + GTUtility.formatNumbers(mFluid.amount)
+            EnumChatFormatting.GREEN + NumberFormatUtil.formatNumber(mFluid.amount)
                 + " L"
                 + EnumChatFormatting.RESET
                 + " "
                 + EnumChatFormatting.YELLOW
-                + GTUtility.formatNumbers(getCapacity())
+                + NumberFormatUtil.formatNumber(getCapacity())
                 + " L"
                 + EnumChatFormatting.RESET };
     }
@@ -105,15 +106,15 @@ public class ManaTank extends MTEDigitalTankBase {
             final FluidStack tContents = FluidStack
                 .loadFluidStackFromNBT(stack.stackTagCompound.getCompoundTag("mFluid"));
             if (tContents != null && tContents.amount > 0) {
+                GTLanguageManager.addStringLocalization("TileEntity_TANK_INFO", "Contains Fluid: ");
+                GTLanguageManager.addStringLocalization("TileEntity_TANK_AMOUNT", "Fluid Amount: ");
                 tooltip.add(
-                    GTLanguageManager.addStringLocalization("TileEntity_TANK_INFO", "Contains Fluid: ")
-                        + EnumChatFormatting.YELLOW
+                    StatCollector.translateToLocal("TileEntity_TANK_INFO") + EnumChatFormatting.YELLOW
                         + tContents.getLocalizedName()
                         + EnumChatFormatting.GRAY);
                 tooltip.add(
-                    GTLanguageManager.addStringLocalization("TileEntity_TANK_AMOUNT", "Fluid Amount: ")
-                        + EnumChatFormatting.GREEN
-                        + GTUtility.formatNumbers(tContents.amount)
+                    StatCollector.translateToLocal("TileEntity_TANK_AMOUNT") + EnumChatFormatting.GREEN
+                        + NumberFormatUtil.formatNumber(tContents.amount)
                         + " L"
                         + EnumChatFormatting.GRAY);
             } else if (stack.stackTagCompound.hasKey("lockedFluidName")) {
@@ -137,7 +138,7 @@ public class ManaTank extends MTEDigitalTankBase {
         if (mVoidFluidPart) aNBT.setBoolean("mVoidOverflow", true);
         if (mVoidFluidFull) aNBT.setBoolean("mVoidFluidFull", true);
         aNBT.setBoolean("mLockFluid", true);
-        aNBT.setString("lockedFluidName", lockedFluidName);
+        aNBT.setString("lockedFluidName", MANA_FLUID_NAME);
         if (this.mAllowInputFromOutputSide) aNBT.setBoolean("mAllowInputFromOutputSide", true);
 
         super.setItemNBT(aNBT);
@@ -150,7 +151,7 @@ public class ManaTank extends MTEDigitalTankBase {
         aNBT.setBoolean("mVoidOverflow", this.mVoidFluidPart);
         aNBT.setBoolean("mVoidFluidFull", this.mVoidFluidFull);
         aNBT.setBoolean("mLockFluid", mLockFluid);
-        aNBT.setString("lockedFluidName", lockedFluidName);
+        aNBT.setString("lockedFluidName", MANA_FLUID_NAME);
         aNBT.setBoolean("isLiquidizerMode", isLiquidizerMode);
         aNBT.setBoolean("mAllowInputFromOutputSide", this.mAllowInputFromOutputSide);
     }
@@ -163,19 +164,26 @@ public class ManaTank extends MTEDigitalTankBase {
         mVoidFluidFull = aNBT.getBoolean("mVoidFluidFull");
         mLockFluid = aNBT.getBoolean("mLockFluid");
         isLiquidizerMode = aNBT.getBoolean("isLiquidizerMode");
-        setLockedFluidName(aNBT.getString("lockedFluidName"));
+        setLockedFluid(FluidRegistry.getFluid(MANA_FLUID_NAME));
         mAllowInputFromOutputSide = aNBT.getBoolean("mAllowInputFromOutputSide");
     }
 
     @Override
-    public String getLockedFluidName() {
-        return this.lockedFluidName = "fluidmana";
+    public void setLockedFluid(Fluid lockedFluid) {
+        Fluid manaFluid = FluidRegistry.getFluid(MANA_FLUID_NAME);
+        if (manaFluid == null) return;
+
+        this.lockedFluid = manaFluid;
+        if (getFluidAmount() == 0) {
+            setFillableStack(new FluidStack(manaFluid, 0));
+        }
+        mLockFluid = true;
     }
 
     @Override
     public void lockFluid(boolean lock) {
         this.mLockFluid = true;
-        this.lockedFluidName = "fluidmana";
+        setLockedFluid(FluidRegistry.getFluid(MANA_FLUID_NAME));
     }
 
     @Override
@@ -414,14 +422,8 @@ public class ManaTank extends MTEDigitalTankBase {
     }
 
     @Override
-    public void setLockedFluidName(String lockedFluidName) {
-        lockedFluidName = "fluidmana";
-        this.lockedFluidName = lockedFluidName;
-        Fluid fluid = FluidRegistry.getFluid(lockedFluidName);
-        if (fluid != null) {
-            setFillableStack(new FluidStack(fluid, getFluidAmount()));
-            mLockFluid = true;
-        }
+    public boolean acceptsFluidLock(Fluid fluid) {
+        return fluid != null && MANA_FLUID_NAME.equals(fluid.getName());
     }
 
     @Override
@@ -469,7 +471,7 @@ public class ManaTank extends MTEDigitalTankBase {
                     .setDefaultColor(COLOR_TEXT_WHITE.get())
                     .setPos(101, 20))
             .widget(TextWidget.dynamicText(() -> {
-                FluidStack fluidStack = FluidRegistry.getFluidStack(lockedFluidName, 1);
+                FluidStack fluidStack = FluidRegistry.getFluidStack(MANA_FLUID_NAME, 1);
                 return new Text(
                     fluidStack != null ? fluidStack.getLocalizedName()
                         : StatCollector.translateToLocal("GT5U.machines.digitaltank.lockfluid.empty"));
@@ -503,13 +505,11 @@ public class ManaTank extends MTEDigitalTankBase {
                 String inBrackets;
                 if (mLockFluid) {
                     if (mFluid == null) {
-                        setLockedFluidName(null);
+                        setLockedFluid(FluidRegistry.getFluid(MANA_FLUID_NAME));
                         inBrackets = GTUtility
                             .trans("264", "currently none, will be locked to the next that is put in");
                     } else {
-                        setLockedFluidName(
-                            getDrainableStack().getFluid()
-                                .getName());
+                        setLockedFluid(getDrainableStack().getFluid());
                         inBrackets = getDrainableStack().getLocalizedName();
                     }
                     GTUtility.sendChatToPlayer(

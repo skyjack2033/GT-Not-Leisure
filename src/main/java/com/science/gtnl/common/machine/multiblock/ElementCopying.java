@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.github.bsideup.jabel.Desugar;
 import com.google.common.collect.Lists;
-import com.gtnewhorizon.gtnhlib.util.data.ItemId;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -69,7 +69,9 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.GTUtility.ItemId;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
@@ -431,7 +433,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
             .addElement(
                 'C',
                 buildHatchAdder(ElementCopying.class).casingIndex(getCasingTextureID())
-                    .dot(1)
+                    .hint(1)
                     .atLeast(
                         HatchElement.InputHatch,
                         HatchElement.InputBus,
@@ -470,12 +472,11 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch()) {
-            return false;
-        }
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
+            return;
         setupParameters();
-        return mCountCasing >= 5;
+        checkStructureCondition(errors, mCountCasing >= 5);
     }
 
     public long getTotal(ToLongFunction<ElementCopyingEntry> costGetter) {
@@ -580,8 +581,8 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
                     StatCollector.translateToLocalFormatted(
                         "Info_ElementCopying_00",
                         itemEntry.size() + fluidEntry.size(),
-                        GTUtility.formatNumbers(getNeedUUM()),
-                        GTUtility.formatNumbers(getNeedEU()))).color(Color.WHITE.normal))
+                        NumberFormatUtil.formatNumber(getNeedUUM()),
+                        NumberFormatUtil.formatNumber(getNeedEU()))).color(Color.WHITE.normal))
                             .setTextAlignment(Alignment.Center)
                             .setSize(180, 12)
                             .setPos(9, HEIGHT - 28));

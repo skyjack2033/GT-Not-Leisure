@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.science.gtnl.utils.item.ItemUtils;
@@ -39,14 +40,14 @@ public class DieselGenerator extends MTEBasicGenerator implements IAddGregtechLo
             new String[] { StatCollector.translateToLocal("Tooltip_DieselGenerator_00"), "", "" });
         mDescriptionArray[1] = StatCollector.translateToLocalFormatted("Tooltip_DieselGenerator_01", getEfficiency());
         mDescriptionArray[2] = StatCollector
-            .translateToLocalFormatted("Tooltip_DieselGenerator_02", GTUtility.formatNumbers(getCapacity()));
+            .translateToLocalFormatted("Tooltip_DieselGenerator_02", NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     public DieselGenerator(String aName, int aTier, String[] aDescription, ITexture[][][] aTextures) {
         super(aName, aTier, aDescription, aTextures);
         mDescriptionArray[1] = StatCollector.translateToLocalFormatted("Tooltip_DieselGenerator_01", getEfficiency());
         mDescriptionArray[2] = StatCollector
-            .translateToLocalFormatted("Tooltip_DieselGenerator_02", GTUtility.formatNumbers(getCapacity()));
+            .translateToLocalFormatted("Tooltip_DieselGenerator_02", NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     @Override

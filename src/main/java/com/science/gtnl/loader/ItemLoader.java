@@ -13,6 +13,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.item.ItemInfinityCell;
 import com.science.gtnl.common.item.ItemInfinityItem;
@@ -63,7 +64,6 @@ import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
-import gregtech.api.util.GTUtility;
 import gregtech.common.render.items.InfinityMetaItemRenderer;
 
 public class ItemLoader {
@@ -615,7 +615,7 @@ public class ItemLoader {
                         StatCollector.translateToLocal("Tooltip_WirelessEnergyCover4A_03"),
                         StatCollector.translateToLocalFormatted(
                             "Tooltip_WirelessEnergyCover4A_04",
-                            GTUtility.formatNumbers(GTValues.V[i + 1]),
+                            NumberFormatUtil.formatNumber(GTValues.V[i + 1]),
                             GTValues.VN[i + 1]) }));
         }
 

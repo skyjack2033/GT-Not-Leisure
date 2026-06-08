@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.gtnewhorizon.gtnhlib.util.ItemUtil;
+import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -90,6 +91,7 @@ import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
@@ -119,12 +121,13 @@ import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReason;
 import gregtech.common.misc.WirelessNetworkManager;
-import gregtech.common.tileentities.machines.MTEHatchOutputBusME;
+import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 import it.unimi.dsi.fastutil.objects.Reference2LongMap;
@@ -324,7 +327,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
         super.onFirstTick(aBaseMetaTileEntity);
         this.ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
-        if (checkStructure(true)) {
+        if (checkStructure(true, getBaseMetaTileEntity())) {
             this.mStartUpCheck = -1;
             this.mUpdate = 200;
         }
@@ -348,7 +351,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         builder.widget(createPowerSwitchButton(builder))
             .widget(createStructureUpdateButton(builder))
             .widget(createModeSwitchButton(builder))
-            .widget(createMuffleButton(builder));
+            .widget(createMuffleButton(builder, true));
 
         if (supportsPowerPanel()) {
             builder.widget(createPowerPanelButton(builder));
@@ -880,16 +883,16 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     @Override
-    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET) || !checkHatch()) {
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
             getProxy().setValidSides(emptyDirection);
-            return false;
+            checkStructureCondition(errors, false);
         }
         final var old = mMaxSlots;
         setupParameters();
         if (mMaxSlots != old) upPatterns();
         getProxy().setValidSides(allDirection);
-        return true;
+        return;
     }
 
     public void upPatterns() {
@@ -1004,7 +1007,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
                 'A',
                 GTStructureUtility.buildHatchAdder(AssemblerMatrix.class)
                     .casingIndex(getCasingTextureID())
-                    .dot(1)
+                    .hint(1)
                     .atLeast(
                         HatchElement.Maintenance,
                         HatchElement.InputBus,
@@ -1183,7 +1186,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
                     this.lEUt = -2 * Math.max(1, usedParallel);
                     if (wirelessMode) {
                         WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, -2 * usedParallel);
-                        costingEUText = GTUtility.formatNumbers(-lEUt);
+                        costingEUText = NumberFormatUtil.formatNumber(-lEUt);
                         this.lEUt = 0;
                     }
 
@@ -1280,7 +1283,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         info.add(
             StatCollector.translateToLocal("GT5U.multiblock.recipesDone") + ": "
                 + EnumChatFormatting.GREEN
-                + GTUtility.formatNumbers(recipesDone)
+                + NumberFormatUtil.formatNumber(recipesDone)
                 + EnumChatFormatting.RESET);
         if (wirelessMode) {
             info.add(EnumChatFormatting.LIGHT_PURPLE + StatCollector.translateToLocal("Waila_WirelessMode"));
@@ -1459,7 +1462,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     @Override
-    public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
+    public IAEStack<?> injectCraftedItems(ICraftingLink link, IAEStack<?> items, Actionable mode) {
         return this.getInterfaceDuality()
             .injectCraftedItems(link, items, mode);
     }
@@ -1566,7 +1569,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
 
             if (!ignoreEmptiness && emptySlots < 1) break;
 
-            addOutput(stack);
+            addItemOutputs(new ItemStack[] { stack });
 
             emptySlots--;
 
