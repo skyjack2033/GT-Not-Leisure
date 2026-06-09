@@ -135,7 +135,7 @@ public class TCResearches {
                                 ? GTModHandler.getModItem(Mods.TaintedMagic.ID, "ItemFocusTime", 1)
                                 : GTModHandler.getModItem(Mods.Thaumcraft.ID, "FocusPrimal", 1),
                             GregtechItemList.CrystalColorizationCatalyst.get(1),
-                            GTNLItemList.UMVParallelControllerCore.get(1),
+                            GTNLItemList.ParallelControllerHatchUMV.get(1),
                             GTModHandler.getModItem(Mods.AE2FluidCraft.ID, "fluid_storage.Universe", 1),
                             AEApi.instance()
                                 .definitions()

@@ -445,7 +445,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             (int) TierEU.RECIPE_UV);
 
         RecipeBuilder.builder()
-            .metadata(GTRecipeConstants.RESEARCH_ITEM, GTNLItemList.IVParallelControllerCore.get(1))
+            .metadata(GTRecipeConstants.RESEARCH_ITEM, GTNLItemList.ParallelControllerHatchIV.get(1))
             .metadata(GTRecipeConstants.SCANNING, new Scanning(30 * GTRecipeBuilder.MINUTES, TierEU.RECIPE_IV))
             .itemInputs(
                 ItemList.Hull_LuV.get(16),
@@ -460,13 +460,13 @@ public class AssemblingLineRecipes implements IRecipePool {
             .fluidInputs(
                 Materials.Polytetrafluoroethylene.getMolten(576),
                 MaterialsAlloy.INDALLOY_140.getFluidStack(1296))
-            .itemOutputs(GTNLItemList.LuVParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchLuV.get(1))
             .eut(TierEU.RECIPE_LuV)
             .duration(20 * GTRecipeBuilder.SECONDS)
             .addTo(AL);
 
         RecipeBuilder.builder()
-            .metadata(GTRecipeConstants.RESEARCH_ITEM, GTNLItemList.LuVParallelControllerCore.get(1))
+            .metadata(GTRecipeConstants.RESEARCH_ITEM, GTNLItemList.ParallelControllerHatchLuV.get(1))
             .metadata(GTRecipeConstants.SCANNING, new Scanning(30 * GTRecipeBuilder.MINUTES, TierEU.RECIPE_IV))
             .itemInputs(
                 ItemList.Hull_ZPM.get(16),
@@ -487,13 +487,13 @@ public class AssemblingLineRecipes implements IRecipePool {
                 Materials.Europium.getMolten(2592),
                 Materials.Trinium.getMolten(1296),
                 Materials.Polybenzimidazole.getMolten(4608))
-            .itemOutputs(GTNLItemList.ZPMParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchZPM.get(1))
             .eut(TierEU.RECIPE_ZPM)
             .duration(20 * GTRecipeBuilder.SECONDS)
             .addTo(AL);
 
         RecipeBuilder.builder()
-            .metadata(GTRecipeConstants.RESEARCH_ITEM, GTNLItemList.ZPMParallelControllerCore.get(1))
+            .metadata(GTRecipeConstants.RESEARCH_ITEM, GTNLItemList.ParallelControllerHatchZPM.get(1))
             .metadata(GTRecipeConstants.SCANNING, new Scanning(30 * GTRecipeBuilder.MINUTES, TierEU.RECIPE_ZPM))
             .itemInputs(
                 ItemList.Hull_UV.get(32),
@@ -514,13 +514,13 @@ public class AssemblingLineRecipes implements IRecipePool {
                 Materials.Polybenzimidazole.getMolten(9216),
                 Materials.Naquadria.getMolten(2592),
                 Materials.Americium.getMolten(1296))
-            .itemOutputs(GTNLItemList.UVParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchUV.get(1))
             .eut(TierEU.RECIPE_UV)
             .duration(20 * GTRecipeBuilder.SECONDS)
             .addTo(AL);
 
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTNLItemList.UVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUV.get(1),
             51200000,
             51200,
             (int) TierEU.RECIPE_UEV,
@@ -538,12 +538,12 @@ public class AssemblingLineRecipes implements IRecipePool {
                 ItemList.Energy_Cluster.get(4), MaterialsElements.STANDALONE.ASTRAL_TITANIUM.getFrameBox(32) },
             new FluidStack[] { Materials.RadoxPolymer.getMolten(16000),
                 MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(16000), Materials.Naquadria.getMolten(9216) },
-            GTNLItemList.UHVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUHV.get(1),
             20 * GTRecipeBuilder.SECONDS,
             (int) TierEU.RECIPE_UHV);
 
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTNLItemList.UHVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUHV.get(1),
             204800000,
             204800,
             (int) TierEU.RECIPE_UIV,
@@ -561,12 +561,12 @@ public class AssemblingLineRecipes implements IRecipePool {
             new FluidStack[] { Materials.Grade7PurifiedWater.getFluid(64000), Materials.RadoxPolymer.getMolten(32000),
                 MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(32000),
                 WerkstoffLoader.Oganesson.getFluidOrGas(16000) },
-            GTNLItemList.UEVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUEV.get(1),
             20 * GTRecipeBuilder.SECONDS,
             (int) TierEU.RECIPE_UEV);
 
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTNLItemList.UEVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUEV.get(1),
             819200000,
             819200,
             (int) TierEU.RECIPE_UMV,
@@ -585,12 +585,12 @@ public class AssemblingLineRecipes implements IRecipePool {
             new FluidStack[] { Materials.DimensionallyShiftedSuperfluid.getFluid(32000),
                 GGMaterial.metastableOganesson.getMolten(36864),
                 MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(128000), Materials.SpaceTime.getMolten(2304) },
-            GTNLItemList.UIVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUIV.get(1),
             20 * GTRecipeBuilder.SECONDS,
             (int) TierEU.RECIPE_UIV);
 
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTNLItemList.UIVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUIV.get(1),
             819200000,
             1638400,
             (int) TierEU.RECIPE_UXV,
@@ -607,7 +607,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             new FluidStack[] { Materials.DimensionallyShiftedSuperfluid.getFluid(256000),
                 GTNLMaterials.SuperMutatedLivingSolder.getFluidOrGas(64000), Materials.ExcitedDTEC.getFluid(64000),
                 Materials.SpaceTime.getMolten(9216) },
-            GTNLItemList.UMVParallelControllerCore.get(1),
+            GTNLItemList.ParallelControllerHatchUMV.get(1),
             20 * GTRecipeBuilder.SECONDS,
             (int) TierEU.RECIPE_UMV);
 
@@ -1560,7 +1560,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             150000,
             (int) TierEU.RECIPE_UEV,
             1,
-            new Object[] { GTNLItemList.UIVParallelControllerCore.get(1),
+            new Object[] { GTNLItemList.ParallelControllerHatchUIV.get(1),
                 CustomItemList.Machine_Multi_Transformer.get(64), ItemRefer.Compact_Fusion_Coil_T4.get(64),
                 GTNLItemList.WirelessEnergyHatchUMV4194304A.get(4),
                 new Object[] { OrePrefixes.circuit.get(Materials.UXV), 24 },
@@ -1981,7 +1981,7 @@ public class AssemblingLineRecipes implements IRecipePool {
                 CustomItemList.EOH_Infinite_Energy_Casing.get(64), ItemList.Robot_Arm_UXV.get(64),
                 ItemList.Electric_Motor_UXV.get(64), ItemList.Electric_Piston_UXV.get(64), ItemList.Emitter_UXV.get(64),
                 ItemList.Sensor_UXV.get(64), GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UXV, 64),
-                GTNLItemList.UMVParallelControllerCore.get(48),
+                GTNLItemList.ParallelControllerHatchUMV.get(48),
                 GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Eternity, 64),
                 GTNLItemList.WirelessUpgradeChip.get(1), GTNLItemList.TransdimensionalMnemonicMatrix.get(64),
                 ItemList.Black_Hole_Stabilizer.get(16) },

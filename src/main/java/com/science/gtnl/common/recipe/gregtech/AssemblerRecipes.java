@@ -1117,7 +1117,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Sensor_LV.get(3L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.MV, 8L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt02, Materials.Tin, 32L))
-            .itemOutputs(GTNLItemList.LVParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchLV.get(1))
             .fluidInputs(Materials.Cupronickel.getMolten(1296))
             .duration(400)
             .eut(30)
@@ -1133,7 +1133,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Sensor_MV.get(2L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.HV, 12L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt02, Materials.AnnealedCopper, 32L))
-            .itemOutputs(GTNLItemList.MVParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchMV.get(1))
             .fluidInputs(Materials.SolderingAlloy.getMolten(1296))
             .duration(400)
             .eut(120)
@@ -1150,7 +1150,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Sensor_HV.get(4L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.EV, 12L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt02, Materials.BlueAlloy, 32L))
-            .itemOutputs(GTNLItemList.HVParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchHV.get(1))
             .fluidInputs(Materials.EnergeticAlloy.getMolten(1296))
             .duration(400)
             .eut(480)
@@ -1167,7 +1167,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Sensor_EV.get(4L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 12L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt02, Materials.Aluminium, 32L))
-            .itemOutputs(GTNLItemList.EVParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchEV.get(1))
             .fluidInputs(Materials.TPV.getMolten(1296))
             .duration(400)
             .eut(1920)
@@ -1184,7 +1184,7 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemList.Sensor_IV.get(8L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 12L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt02, Materials.Tungsten, 32L))
-            .itemOutputs(GTNLItemList.IVParallelControllerCore.get(1))
+            .itemOutputs(GTNLItemList.ParallelControllerHatchIV.get(1))
             .fluidInputs(Materials.HSSG.getMolten(1296))
             .duration(400)
             .eut(7680)
@@ -1846,104 +1846,6 @@ public class AssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.LargeGasCollector.get(1))
             .duration(400)
             .eut(TierEU.RECIPE_EV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.LVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchLV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_LV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.MVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchMV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_MV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.HVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchHV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_HV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.EVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchEV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_EV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.IVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchIV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_IV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.LuVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchLuV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_LuV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.ZPMParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchZPM.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_ZPM)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.UVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchUV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_UV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.UHVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchUHV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_UHV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.UEVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchUEV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_UEV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.UIVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchUIV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_UIV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.UMVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchUMV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_UMV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.UXVParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchUXV.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_UXV)
-            .addTo(As);
-
-        RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(24), GTNLItemList.MAXParallelControllerCore.get(1))
-            .itemOutputs(GTNLItemList.ParallelControllerHatchMAX.get(1))
-            .duration(20)
-            .eut(TierEU.RECIPE_MAX)
             .addTo(As);
 
         RecipeBuilder.builder()

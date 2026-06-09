@@ -29,7 +29,6 @@ import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.DynamicTextWidget;
 import com.science.gtnl.common.gui.modularui.ResourceCollectionModuleGui;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
-import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.item.ItemUtils;
@@ -192,8 +191,6 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
         if (!checkPiece(STRUCTURE_PIECE_MAIN, 0, 1, 0, errors)) return;
 
-        mParallelTier = MultiMachineBase.getParallelTier(aStack);
-
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
             mParallelTier = module.mTier;
             break;
@@ -247,8 +244,6 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     }
 
     public int getMaxParallelRecipes() {
-        mParallelTier = MultiMachineBase.getParallelTier(getControllerSlot());
-
         if (mParallelControllerHatches != null) {
             for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
                 mParallelTier = module.mTier;

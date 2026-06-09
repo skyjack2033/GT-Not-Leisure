@@ -116,7 +116,6 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
     @Override
     public void resetParallelTier() {
         super.resetParallelTier();
-        mParallelTier = getParallelTier(getControllerSlot());
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
             mParallelTier = module.mTier;
             break;
@@ -325,8 +324,6 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
         if (wirelessMode && maxParallelStored >= 0) {
             return maxParallelStored;
         }
-        mParallelTier = getParallelTier(getControllerSlot());
-
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
             mParallelTier = module.mTier;
             return module.getParallel() << 4;

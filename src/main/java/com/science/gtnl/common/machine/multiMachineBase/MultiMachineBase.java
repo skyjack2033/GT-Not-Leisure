@@ -41,7 +41,6 @@ import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.hatch.SuperCraftingInputHatchME;
 import com.science.gtnl.config.MainConfig;
-import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
@@ -80,8 +79,6 @@ import gregtech.common.tileentities.machines.ISmartInputHatch;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gtPlusPlus.api.objects.minecraft.BlockPos;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusInput;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import tectech.thing.metaTileEntity.hatch.MTEHatchDynamoMulti;
@@ -119,26 +116,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     @Setter
     public HeatingCoilLevel mCoilLevel = HeatingCoilLevel.None;
     public int mHeatingCapacity = 0;
-
-    public static Object2IntMap<ItemStack> PARALLEL_TIERS = new Object2IntOpenHashMap<>() {
-
-        {
-            put(GTNLItemList.LVParallelControllerCore.get(1), 1);
-            put(GTNLItemList.MVParallelControllerCore.get(1), 2);
-            put(GTNLItemList.HVParallelControllerCore.get(1), 3);
-            put(GTNLItemList.EVParallelControllerCore.get(1), 4);
-            put(GTNLItemList.IVParallelControllerCore.get(1), 5);
-            put(GTNLItemList.LuVParallelControllerCore.get(1), 6);
-            put(GTNLItemList.ZPMParallelControllerCore.get(1), 7);
-            put(GTNLItemList.UVParallelControllerCore.get(1), 8);
-            put(GTNLItemList.UHVParallelControllerCore.get(1), 9);
-            put(GTNLItemList.UEVParallelControllerCore.get(1), 10);
-            put(GTNLItemList.UIVParallelControllerCore.get(1), 11);
-            put(GTNLItemList.UMVParallelControllerCore.get(1), 12);
-            put(GTNLItemList.UXVParallelControllerCore.get(1), 13);
-            put(GTNLItemList.MAXParallelControllerCore.get(1), 14);
-        }
-    };
 
     @SuppressWarnings("unchecked")
     public static Optional<Byte>[] createHatchColorOptions() {
@@ -514,16 +491,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             tier = Math.max(tHatch.mTier, tier);
         }
         return tier;
-    }
-
-    public static int getParallelTier(ItemStack inventory) {
-        if (inventory == null) return 0;
-        for (Object2IntMap.Entry<ItemStack> entry : PARALLEL_TIERS.object2IntEntrySet()) {
-            if (GTUtility.areStacksEqual(inventory, entry.getKey(), true)) {
-                return entry.getIntValue();
-            }
-        }
-        return 0;
     }
 
     public List<SlotWidget> slotWidgets = new ArrayList<>(1);
