@@ -37,7 +37,11 @@ public abstract class MixinMTEAdvAssLineAcceleration implements IAccelerationSta
 
     @Inject(
         method = "onRunningTick",
-        at = @At(value = "FIELD", target = "Lggfab/mte/MTEAdvAssLine;baseEUt:J", ordinal = 0, opcode = Opcodes.GETFIELD),
+        at = @At(
+            value = "FIELD",
+            target = "Lggfab/mte/MTEAdvAssLine;baseEUt:J",
+            ordinal = 0,
+            opcode = Opcodes.GETFIELD),
         cancellable = true)
     private void gtnl$modifyDrainEnergy(ItemStack aStack, CallbackInfoReturnable<Boolean> cir) {
         if (gtnl$isAccelerationState) cir.setReturnValue(true);

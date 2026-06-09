@@ -51,9 +51,9 @@ import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseStoredCrop;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseViewMode;
 
 import gregtech.api.gui.modularui.GTUITextures;
+import gregtech.api.interfaces.IOutputBus;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
-import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.util.GTUtility;
@@ -92,7 +92,7 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
         GTGuiTextures.OVERLAY_BUTTON_CYCLIC, GTGuiTextures.OVERLAY_BUTTON_ALLOW_OUTPUT };
 
     @Override
-    public ArrayList<MTEHatchOutputBus> getOutputBus() {
+    public ArrayList<? extends IOutputBus> getOutputBus() {
         return mOutputBusses;
     }
 

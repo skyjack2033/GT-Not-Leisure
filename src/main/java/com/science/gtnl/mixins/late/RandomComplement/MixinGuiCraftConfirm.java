@@ -22,22 +22,22 @@ public abstract class MixinGuiCraftConfirm {
     private GuiAeButton start;
 
     @Shadow
-    private GuiButton startWithFollow;
+    private GuiAeButton startWithFollow;
 
     // TODO: Restore this redirect if AE2 reintroduces switchToOriginalGUI.
-//    @Redirect(
-//        method = "actionPerformed",
-//        at = @At(
-//            value = "INVOKE",
-//            target = "Lappeng/client/gui/implementations/GuiCraftConfirm;switchToOriginalGUI()V"))
-//    public void onActionPerformed0(GuiCraftConfirm instance) {
-//        GuiScreen oldGui;
-//        if ((oldGui = GTNLInputHandler.LAST_GUI_SCREEN) != null) {
-//            ScienceNotLeisure.network.sendToServer(new ContainerRollBACK());
-//            return;
-//        }
-//        this.switchToOriginalGUI();
-//    }
+    // @Redirect(
+    // method = "actionPerformed",
+    // at = @At(
+    // value = "INVOKE",
+    // target = "Lappeng/client/gui/implementations/GuiCraftConfirm;switchToOriginalGUI()V"))
+    // public void onActionPerformed0(GuiCraftConfirm instance) {
+    // GuiScreen oldGui;
+    // if ((oldGui = GTNLInputHandler.LAST_GUI_SCREEN) != null) {
+    // ScienceNotLeisure.network.sendToServer(new ContainerRollBACK());
+    // return;
+    // }
+    // this.switchToOriginalGUI();
+    // }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
     public void onActionPerformed1(GuiButton btn, CallbackInfo ci) {

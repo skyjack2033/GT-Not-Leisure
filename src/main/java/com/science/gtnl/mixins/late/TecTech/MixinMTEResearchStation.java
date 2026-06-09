@@ -18,7 +18,6 @@ import com.gtnewhorizons.modularui.common.widget.SlotGroup;
 import com.llamalad7.mixinextras.sugar.Local;
 
 import gregtech.api.gui.widgets.PhantomItemButton;
-import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import tectech.recipe.TecTechRecipeMaps;
 import tectech.thing.metaTileEntity.multi.MTEResearchStation;

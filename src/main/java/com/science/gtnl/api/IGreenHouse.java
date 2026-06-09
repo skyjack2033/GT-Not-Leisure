@@ -48,9 +48,9 @@ import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseStoredCrop;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseViewMode;
 
 import gregtech.api.gui.modularui.GTUITextures;
+import gregtech.api.interfaces.IOutputBus;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.interfaces.tileentity.IVoidable;
-import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
@@ -114,7 +114,7 @@ public interface IGreenHouse extends IVoidable {
     @Deprecated
     void setMode(GreenHouseMode mode);
 
-    ArrayList<MTEHatchOutputBus> getOutputBus();
+    ArrayList<? extends IOutputBus> getOutputBus();
 
     ArrayList<FluidStack> getStoredFluids();
 

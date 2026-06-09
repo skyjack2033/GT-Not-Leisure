@@ -59,6 +59,7 @@ import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.science.gtnl.common.gui.CircularGaugeDrawable;
 import com.science.gtnl.common.gui.modularui.SteamApiaryModuleGui;
+import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import cpw.mods.fml.relauncher.Side;
@@ -82,7 +83,6 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import kubatech.api.DynamicInventory;
@@ -93,6 +93,7 @@ public class SteamApiaryModule extends SteamElevatorModule {
 
     public int mMaxSlots = 8;
     public ArrayList<BeeSimulator> mStorage = new ArrayList<>();
+
     public static final int CONFIGURATION_WINDOW_ID = 10;
 
     public static final int MODE_PRIMARY_INPUT = 0;
@@ -950,13 +951,13 @@ public class SteamApiaryModule extends SteamElevatorModule {
         if (list == null || list.isEmpty() || mappingFunction == null) return;
         int emptySlots = 0;
         boolean ignoreEmptiness = false;
-        for (MTEHatchOutputBus i : mOutputBusses) {
-            if (i instanceof MTEHatchOutputBusME) {
+        for (MTEHatchOutputBus outputBus : mOutputBusses) {
+            if (Utils.isMEOutputBus(outputBus)) {
                 ignoreEmptiness = true;
                 break;
             }
-            for (int j = 0; j < i.getSizeInventory(); j++)
-                if (i.isValidSlot(j)) if (i.getStackInSlot(j) == null) emptySlots++;
+            for (int j = 0; j < outputBus.getSizeInventory(); j++)
+                if (outputBus.isValidSlot(j)) if (outputBus.getStackInSlot(j) == null) emptySlots++;
         }
         if (emptySlots == 0 && !ignoreEmptiness) return;
         // Use iterator removal to avoid repeated head-shift costs on ArrayList.

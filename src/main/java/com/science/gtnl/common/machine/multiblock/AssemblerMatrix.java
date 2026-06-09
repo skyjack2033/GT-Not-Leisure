@@ -111,7 +111,6 @@ import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import gregtech.api.enums.Dyes;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.OutputBusType;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -1593,13 +1592,14 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         int emptySlots = 0;
         boolean ignoreEmptiness = false;
 
-        for (MTEHatchOutputBus i : mOutputBusses) {
-            if (i instanceof MTEHatchOutputBusME) {
+        for (IOutputBus i : mOutputBusses) {
+            if (Utils.isMEOutputBus(i)) {
                 ignoreEmptiness = true;
                 break;
             }
-            for (int j = 0; j < i.getSizeInventory(); j++) {
-                if (i.isValidSlot(j) && i.getStackInSlot(j) == null) {
+            MTEHatchOutputBus outputBus = (MTEHatchOutputBus) i;
+            for (int j = 0; j < outputBus.getSizeInventory(); j++) {
+                if (outputBus.isValidSlot(j) && outputBus.getStackInSlot(j) == null) {
                     emptySlots++;
                 }
             }

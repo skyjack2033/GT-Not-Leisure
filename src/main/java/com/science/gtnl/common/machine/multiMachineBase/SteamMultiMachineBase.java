@@ -59,6 +59,7 @@ import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.hatch.WirelessSteamEnergyHatch;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GTNLMachineID;
 import com.science.gtnl.utils.enums.ModList;
@@ -70,7 +71,6 @@ import com.science.gtnl.utils.structure.GTNLStructureErrors;
 import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
 
 import gregtech.api.GregTechAPI;
-import gregtech.api.enums.OutputBusType;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IIconContainer;
@@ -124,19 +124,11 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     public int tierMaterialBlock = -1;
     public int tierGearCasing = -1;
     public int tierFrameCasing = -1;
-
-    protected static boolean isMEOutputBus(IOutputBus outputBus) {
-        OutputBusType type = outputBus.getBusType();
-        return type == OutputBusType.MECacheFiltered || type == OutputBusType.MEFiltered
-            || type == OutputBusType.MECacheUnfiltered
-            || type == OutputBusType.MEUnfiltered;
-    }
     public int tierIndustrialCasing = -1;
     public int tierMachineFrame = -1;
     public int tierMachineCasing = -1;
     public int tierMachine = 0;
     public int mCountCasing = 0;
-    public boolean isBroken = true;
     public ArrayList<CustomFluidHatch> mSteamBigInputFluids = new ArrayList<>();
     public ArrayList<CustomFluidHatch> mSteamWirelessInputFluids = new ArrayList<>();
     public long uiSteamStored = 0;
@@ -878,7 +870,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
         if (mOutputBusses != null && !mOutputBusses.isEmpty()) {
             for (final IOutputBus tBus : GTUtility.validMTEList(mOutputBusses)) {
-                if (!isMEOutputBus(tBus)) {
+                if (!Utils.isMEOutputBus(tBus)) {
                     MTEHatch outputBus = (MTEHatch) tBus;
                     final IInventory tBusInv = outputBus.getBaseMetaTileEntity();
                     for (int i = 0; i < tBusInv.getSizeInventory(); i++) {
@@ -900,7 +892,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
 
         if (mSteamOutputs != null && !mSteamOutputs.isEmpty()) {
             for (final IOutputBus tBus : GTUtility.validMTEList(mSteamOutputs)) {
-                if (!isMEOutputBus(tBus)) {
+                if (!Utils.isMEOutputBus(tBus)) {
                     MTEHatch outputBus = (MTEHatch) tBus;
                     final IInventory tBusInv = outputBus.getBaseMetaTileEntity();
                     for (int i = 0; i < tBusInv.getSizeInventory(); i++) {
@@ -1010,10 +1002,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         if (GTUtility.isStackInvalid(aStack)) return false;
         aStack = GTUtility.copy(aStack);
         boolean outputSuccess = true;
-        List<IOutputBus> filteredBuses = GTUtility.filterValidMTEs(mOutputBusses);
+        List<? extends IOutputBus> filteredBuses = GTUtility.filterValidMTEs(mOutputBusses);
         if (dumpItemBoolean(filteredBuses, aStack, true)) return true;
         if (dumpItemBoolean(filteredBuses, aStack, false)) return true;
-        List<IOutputBus> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
+        List<? extends IOutputBus> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
         if (dumpItemBoolean(filteredSteamBusses, aStack, true)) return true;
         if (dumpItemBoolean(filteredSteamBusses, aStack, false)) return true;
 
@@ -1065,7 +1057,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         aStack = GTUtility.copyOrNull(aStack);
         ItemStack itemStack = aStack.copy();
 
-        List<IOutputBus> filteredBusses = GTUtility.filterValidMTEs(mOutputBusses);
+        List<? extends IOutputBus> filteredBusses = GTUtility.filterValidMTEs(mOutputBusses);
         aStack = tryDumpItem(filteredBusses, aStack, true, false);
         if (aStack == null || aStack.stackSize <= 0) return new ItemStack(Items.feather, 0);
         if (aStack.stackSize != itemStack.stackSize) return aStack;
@@ -1074,7 +1066,7 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         if (aStack == null || aStack.stackSize <= 0) return new ItemStack(Items.feather, 0);
         if (aStack.stackSize != itemStack.stackSize) return aStack;
 
-        List<IOutputBus> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
+        List<? extends IOutputBus> filteredSteamBusses = GTUtility.filterValidMTEs(mSteamOutputs);
         aStack = tryDumpItem(filteredSteamBusses, aStack, true, false);
         if (aStack == null || aStack.stackSize <= 0) return new ItemStack(Items.feather, 0);
         if (aStack.stackSize != itemStack.stackSize) return aStack;

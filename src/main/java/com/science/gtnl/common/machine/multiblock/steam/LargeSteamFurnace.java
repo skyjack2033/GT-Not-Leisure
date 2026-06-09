@@ -31,11 +31,11 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
+import gregtech.api.interfaces.IOutputBus;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
-import gregtech.api.metatileentity.implementations.MTEHatch;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.recipe.check.CheckRecipeResult;
@@ -47,7 +47,6 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 
 public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> implements ISurvivalConstructable {
 
@@ -369,13 +368,11 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
         }
 
         boolean hasMEOutputBus = false;
-        for (final MTEHatch bus : GTUtility.validMTEList(mOutputBusses)) {
-            if (bus instanceof MTEHatchOutputBusME meBus) {
-                if (!meBus.isLocked() && meBus.createTransaction()
-                    .hasAvailableSpace()) {
-                    hasMEOutputBus = true;
-                    break;
-                }
+        for (final IOutputBus bus : GTUtility.validMTEList(mOutputBusses)) {
+            if (!bus.isFiltered() && bus.createTransaction()
+                .hasAvailableSpace()) {
+                hasMEOutputBus = true;
+                break;
             }
         }
         // Consume items and generate outputs

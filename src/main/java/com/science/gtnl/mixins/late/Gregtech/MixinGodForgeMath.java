@@ -26,8 +26,8 @@ public abstract class MixinGodForgeMath {
             cir.setReturnValue(true);
             return;
         }
-        if ((module instanceof FOGAlloyBlastSmelterModule || module instanceof FOGExtractorModule) && data
-            .isUpgradeActive(ForgeOfGodsUpgrade.FDIM)) {
+        if ((module instanceof FOGAlloyBlastSmelterModule || module instanceof FOGExtractorModule)
+            && data.isUpgradeActive(ForgeOfGodsUpgrade.FDIM)) {
             cir.setReturnValue(true);
             return;
         }

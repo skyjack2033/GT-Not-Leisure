@@ -41,7 +41,6 @@ import appeng.api.storage.data.IItemList;
 import appeng.crafting.MECraftingInventory;
 import appeng.me.cache.CraftingGridCache;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
-import appeng.util.inv.MEInventoryCrafting;
 
 @Mixin(value = CraftingCPUCluster.class, remap = false)
 public abstract class MixinCraftingCPUCluster {
@@ -284,10 +283,7 @@ public abstract class MixinCraftingCPUCluster {
      */
     @WrapOperation(
         method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/api/storage/data/IAEStack;getStackSize()J",
-            ordinal = 0),
+        at = @At(value = "INVOKE", target = "Lappeng/api/storage/data/IAEStack;getStackSize()J", ordinal = 0),
         slice = @Slice(
             from = @At(
                 value = "INVOKE",
