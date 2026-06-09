@@ -7,8 +7,10 @@ import com.gtnewhorizons.modularui.common.widget.FluidNameHolderWidget;
 
 import gregtech.api.interfaces.metatileentity.IFluidLockableMui2;
 
+@Deprecated
 public class FluidLockWidget extends FluidNameHolderWidget {
 
+    // TODO: Replace this mui1 fluid name holder with a native mui2 fluid lock slot.
     public FluidLockWidget(IFluidLockableMui2 fluidLockable) {
         super(
             () -> fluidLockable.getLockedFluid() == null ? null

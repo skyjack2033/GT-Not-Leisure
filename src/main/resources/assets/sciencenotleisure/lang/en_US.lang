@@ -897,25 +897,6 @@ Tooltip_DualInputHatch_01=Item slot count:
 Tooltip_DualInputHatch_02_00=Fluid capacity: Total
 Tooltip_DualInputHatch_02_01=fluid slots, each
 
-HumongousOutputBusLV=Mega Output Bus (LV)
-HumongousOutputBusMV=Mega Output Bus (MV)
-HumongousOutputBusHV=Mega Output Bus (HV)
-HumongousOutputBusEV=Mega Output Bus (EV)
-HumongousOutputBusIV=Mega Output Bus (IV)
-HumongousOutputBusLuV=Mega Output Bus (LuV)
-HumongousOutputBusZPM=Mega Output Bus (ZPM)
-HumongousOutputBusUV=Mega Output Bus (UV)
-HumongousOutputBusUHV=Mega Output Bus (UHV)
-HumongousOutputBusUEV=Mega Output Bus (UEV)
-HumongousOutputBusUIV=Mega Output Bus (UIV)
-HumongousOutputBusUMV=Mega Output Bus (UMV)
-HumongousOutputBusUXV=Mega Output Bus (UXV)
-HumongousOutputBusMAX=Mega Output Bus (MAX)
-Tooltip_HumongousOutputBus_00=Item Output for Multiblocks
-Tooltip_HumongousOutputBus_01=Item slot count: 
-Tooltip_HumongousOutputBus_02=Left click with data stick to save filter config
-Tooltip_HumongousOutputBus_03=Right click with data stick to load filter config
-
 HumongousDualInputHatchLV=Mega Dual Input Hatch (LV)
 HumongousDualInputHatchMV=Mega Dual Input Hatch (MV)
 HumongousDualInputHatchHV=Mega Dual Input Hatch (HV)
@@ -2529,6 +2510,8 @@ Info_EyeOfHarmonyInjector_01=Target coordinates:
 Info_EyeOfHarmonyInjector_02=Click to highlight Eye Of Harmony coordinates
 Info_EyeOfHarmonyInjector_03=Open the Eye of Harmony independent configuration panel
 Info_EyeOfHarmonyInjector_04=§aAuto max amount
+Info_EyeOfHarmonyInjector_05=No linked Eye of Harmony units
+Info_EyeOfHarmonyInjector_FallbackName=Eye of Harmony
 Info_EyeOfHarmonyInjector_Title=§9Eye Of Harmony Status
 
 NameReactionFurnace=Reaction Furnace

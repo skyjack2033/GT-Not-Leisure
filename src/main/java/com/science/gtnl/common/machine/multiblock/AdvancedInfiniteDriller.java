@@ -28,6 +28,7 @@ import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.gui.modularui.AdvancedInfiniteDrillerGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
@@ -61,6 +62,7 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.tileentities.machines.multi.compressor.MTEHeatSensor;
 import gtPlusPlus.core.fluids.GTPPFluids;
 import gtneioreplugin.plugin.item.ItemDimensionDisplay;
@@ -93,6 +95,19 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
 
     public AdvancedInfiniteDriller(String aName) {
         super(aName);
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new AdvancedInfiniteDrillerGui(this);
+    }
+
+    public double getExcessFuelForGui() {
+        return excessFuel;
+    }
+
+    public void setExcessFuelFromGui(double excessFuel) {
+        this.excessFuel = excessFuel;
     }
 
     @Override
@@ -434,7 +449,9 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
     }
 
     @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the Advanced Infinite Driller terminal text is fully ported to mui2.
         super.drawTexts(screenElements, inventorySlot);
         screenElements
             .widget(

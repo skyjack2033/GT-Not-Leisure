@@ -159,12 +159,16 @@ public class FOGExtractorModule extends MTEBaseModule {
     }
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after every FOG module GUI action is covered by mui2.
         super.addUIWidgets(builder, buildContext);
         builder.widget(createFluidModeButton(builder));
     }
 
+    @Deprecated
     public ButtonWidget createFluidModeButton(IWidgetBuilder<?> builder) {
+        // TODO: Remove this mui1 fallback after every FOG module GUI action is covered by mui2.
         Widget button = new ButtonWidget().setOnClick((clickData, widget) -> {
             TecTech.proxy.playSound(getBaseMetaTileEntity(), "fx_click");
             fluidMode = !fluidMode;
@@ -192,11 +196,11 @@ public class FOGExtractorModule extends MTEBaseModule {
         return (ButtonWidget) button;
     }
 
-    private boolean isFluidModeOn() {
+    public boolean isFluidModeOn() {
         return fluidMode;
     }
 
-    private void setFluidMode(boolean enabled) {
+    public void setFluidMode(boolean enabled) {
         fluidMode = enabled;
     }
 

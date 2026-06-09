@@ -24,6 +24,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.api.IControllerUpgrade;
+import com.science.gtnl.common.gui.modularui.SwarmCoreGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
@@ -57,6 +58,7 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.core.material.MaterialsElements;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import gtnhlanth.common.register.LanthItemList;
@@ -137,6 +139,19 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new SwarmCoreGui(this);
+    }
+
+    public int getMachineTierForGui() {
+        return machineTier;
+    }
+
+    public void setMachineTierFromGui(int machineTier) {
+        this.machineTier = machineTier;
+    }
+
+    @Override
     public int[] getUpgradePaidCosts() {
         return upgradePaidCosts[Math.min(machineTier - 1, 2)];
     }
@@ -184,13 +199,17 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     }
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the Swarm Core upgrade GUI is fully ported to mui2.
         super.addUIWidgets(builder, buildContext);
         createUpgradeButton(builder, buildContext);
     }
 
     @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the Swarm Core terminal text is fully ported to mui2.
         super.drawTexts(screenElements, inventorySlot);
         screenElements
             .widget(

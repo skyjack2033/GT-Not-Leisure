@@ -37,6 +37,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.api.IControllerUpgrade;
+import com.science.gtnl.common.gui.modularui.PCBFactoryGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
@@ -74,6 +75,7 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.tileentities.machines.IRecipeProcessingAwareHatch;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtPlusPlus.core.material.MaterialsAlloy;
@@ -149,6 +151,19 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
     public PCBFactory(String aName) {
         super(aName);
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new PCBFactoryGui(this);
+    }
+
+    public int getMachineTierForGui() {
+        return machineTier;
+    }
+
+    public void setMachineTierFromGui(int machineTier) {
+        this.machineTier = machineTier;
     }
 
     @Override
@@ -586,7 +601,9 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     }
 
     @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the PCB Factory terminal text is fully ported to mui2.
         super.drawTexts(screenElements, inventorySlot);
         screenElements.widget(
             TextWidget.dynamicText(() -> new Text(StatCollector.translateToLocal("Info_PCBFactory_00") + machineTier))
@@ -596,13 +613,22 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     }
 
     @Override
+    public boolean isUpgradeButtonEnabled() {
+        return machineTier >= 3;
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the PCB Factory upgrade GUI is fully ported to mui2.
         super.addUIWidgets(builder, buildContext);
         createUpgradeButton(builder, buildContext);
     }
 
     @Override
+    @Deprecated
     public void createUpgradeButton(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the PCB Factory upgrade button is fully ported to mui2.
         buildContext.addSyncedWindow(getUpgradeWindowId(), this::createConsumeWindow);
         builder.widget(new FakeSyncWidget.BooleanSyncer(this::isUpgradeConsumed, this::setUpgradeConsumed));
 

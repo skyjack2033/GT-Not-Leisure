@@ -65,6 +65,7 @@ import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.gui.modularui.AssemblerMatrixGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.BlockLoader;
@@ -126,6 +127,7 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReason;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -188,6 +190,30 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
 
     public int getPatternMultiply() {
         return patternState.getPatternMultiply();
+    }
+
+    public List<IAEItemStack> getCachedPatternOutputsForGui() {
+        IAEItemStack[] cachedOutputItems = patternState.getCachedOutputItems();
+        if (cachedOutputItems == null || cachedOutputItems.length == 0) {
+            return Collections.emptyList();
+        }
+        return ObjectArrayList.wrap(cachedOutputItems);
+    }
+
+    public void setCachedPatternOutputsFromGui(List<IAEItemStack> cachedOutputItems) {
+        patternState.setCachedOutputItems(cachedOutputItems.toArray(new IAEItemStack[0]));
+    }
+
+    public boolean isShowPattern() {
+        return showPattern;
+    }
+
+    public void setShowPattern(boolean showPattern) {
+        this.showPattern = showPattern;
+    }
+
+    public String getGuiCustomName() {
+        return hasCustomName() ? customName : getMachineCraftingIcon().getDisplayName();
     }
 
     public CombinationPatternsIInventory getInventory() {
@@ -335,7 +361,14 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new AssemblerMatrixGui(this);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the Assembler Matrix custom GUI is fully ported to mui2.
         addSharedScreen(builder);
         slotWidgets.clear();
         createInventorySlots();
@@ -516,6 +549,14 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         }
     }
 
+    public static IAEItemStack loadAEItemStackForGui(PacketBuffer buffer) {
+        return loadAEItemStack(buffer);
+    }
+
+    public static void writeAEItemStackForGui(PacketBuffer buffer, @NotNull IAEItemStack stack) {
+        writeAEItemStack(buffer, stack);
+    }
+
     @Override
     public Widget generateCurrentRecipeInfoWidget() {
         final DynamicPositionedColumn processingDetails = new DynamicPositionedColumn();
@@ -683,7 +724,9 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     @Override
+    @Deprecated
     public void setMachineModeIcons() {
+        // TODO: Remove this mui1 fallback after the Assembler Matrix custom GUI is fully ported to mui2.
         machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
         machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_UNPACKAGER);
         machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_DEFAULT);

@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.github.bsideup.jabel.Desugar;
 import com.google.common.collect.Lists;
+import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -48,6 +49,7 @@ import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
 import com.gtnewhorizons.modularui.common.widget.DynamicTextWidget;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.gui.modularui.ElementCopyingGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.common.recipe.gtnl.ElementCopyingRecipes;
 import com.science.gtnl.loader.BlockLoader;
@@ -71,8 +73,8 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
-import gregtech.api.util.GTUtility.ItemId;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
@@ -217,7 +219,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         mOutputItems = itemEntry.stream()
             .map(
                 entry -> entry.itemId()
-                    .getItemStack(maxParallelStored))
+                    .toStack(maxParallelStored))
             .toArray(ItemStack[]::new);
 
         List<FluidStack> outputFluidList = new ArrayList<>();
@@ -499,7 +501,36 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new ElementCopyingGui(this);
+    }
+
+    public List<ItemCopyingEntry> getSelectedItemEntriesForGui() {
+        return new ArrayList<>(itemEntry);
+    }
+
+    public void setSelectedItemEntriesFromGui(List<ItemCopyingEntry> entries) {
+        itemEntry.clear();
+        if (entries != null) {
+            itemEntry.addAll(entries);
+        }
+    }
+
+    public List<FluidCopyingEntry> getSelectedFluidEntriesForGui() {
+        return new ArrayList<>(fluidEntry);
+    }
+
+    public void setSelectedFluidEntriesFromGui(List<FluidCopyingEntry> entries) {
+        fluidEntry.clear();
+        if (entries != null) {
+            fluidEntry.addAll(entries);
+        }
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after ElementCopying mui2 rollout is complete.
         super.addUIWidgets(builder, buildContext);
         buildContext.addSyncedWindow(11, this::createCopyingWindow);
         addSyncers(builder);
@@ -516,7 +547,9 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
             .setSize(16, 16));
     }
 
+    @Deprecated
     public ModularWindow createCopyingWindow(EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after ElementCopying mui2 rollout is complete.
         final int WIDTH = 198;
         final int HEIGHT = 42 + (ElementCopyingRecipes.ENTRIES.size() + 8) / 10 * 18;
         final int PARENT_WIDTH = getGUIWidth();
@@ -542,7 +575,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
 
             if (entry instanceof ItemCopyingEntry item) {
                 ItemStack stack = item.itemId()
-                    .getItemStack();
+                    .toStack(1);
                 builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                     if (itemEntry.contains(item)) {
                         itemEntry.remove(item);
@@ -590,7 +623,9 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         return builder.build();
     }
 
+    @Deprecated
     public void addSyncers(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after ElementCopying mui2 rollout is complete.
         builder.widget(new Utils.SetSyncer<>(itemEntry, (buffer, entry) -> {
             try {
                 buffer.writeNBTTagCompoundToBuffer(entry.serialize());
@@ -637,7 +672,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         @Override
         public NBTTagCompound serialize() {
             NBTTagCompound tag = new NBTTagCompound();
-            tag.setTag("id", itemId.writeToNBT());
+            tag.setTag("id", itemId.write(new NBTTagCompound()));
             tag.setLong("uum", costUUM);
             tag.setLong("eu", costEU);
             return tag;

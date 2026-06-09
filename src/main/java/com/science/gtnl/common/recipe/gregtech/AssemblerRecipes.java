@@ -3392,13 +3392,6 @@ public class AssemblerRecipes implements IRecipePool {
                 .eut(GTValues.VP[i + 1])
                 .addTo(As);
 
-            RecipeBuilder.builder()
-                .itemInputs(OUTPUT_BUS[i], SUPER_CHEST[i])
-                .itemOutputs(GTNLItemList.HUMONGOUS_OUTPUT_BUS[i].get(1))
-                .fluidInputs(Materials.SolderingAlloy.getMolten(144))
-                .duration(100)
-                .eut(GTValues.VP[i])
-                .addTo(As);
         }
     }
 

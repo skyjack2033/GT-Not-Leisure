@@ -37,6 +37,10 @@ public interface IControllerInfo {
         return new Pos2d(172, 67);
     }
 
+    /**
+     * TODO: Remove this MUI1 window after every controller info consumer has moved to MUI2.
+     */
+    @Deprecated
     default ModularWindow createMachineInfo(final EntityPlayer player) {
         final Scrollable scrollable = new Scrollable().setVerticalScroll();
         final int WIDTH = 300;
@@ -68,6 +72,10 @@ public interface IControllerInfo {
         return builder.build();
     }
 
+    /**
+     * TODO: Remove this MUI1 button after every controller info consumer has moved to MUI2.
+     */
+    @Deprecated
     default ButtonWidget createMachineInfoButton(IWidgetBuilder<?> builder) {
         Widget button = new ButtonWidget().setOnClick((clickData, widget) -> {
             if (supportsMachineInfo()) {

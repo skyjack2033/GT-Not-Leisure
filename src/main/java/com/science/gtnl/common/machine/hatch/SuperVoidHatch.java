@@ -15,6 +15,10 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.math.Pos2d;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
@@ -23,6 +27,7 @@ import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotGroup;
 import com.science.gtnl.api.IFluidsLockable;
+import com.science.gtnl.common.gui.modularui.SuperVoidHatchGui;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.machine.FluidsLockWidget;
 
@@ -173,7 +178,19 @@ public class SuperVoidHatch extends MTEHatchVoid implements IFluidsLockable, IAd
     }
 
     @Override
+    protected boolean useMui2() {
+        return true;
+    }
+
+    @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        return new SuperVoidHatchGui(this).build(data, syncManager, uiSettings);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after SuperVoidHatch mui2 rollout is complete.
         Scrollable scrollable = new Scrollable().setVerticalScroll();
         SlotGroup slotGroup = new SlotGroup();
 
@@ -205,7 +222,9 @@ public class SuperVoidHatch extends MTEHatchVoid implements IFluidsLockable, IAd
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after SuperVoidHatch mui2 rollout is complete.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)

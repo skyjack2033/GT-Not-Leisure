@@ -13,10 +13,11 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.gtnewhorizons.modularui.api.forge.IItemHandlerModifiable;
-import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
+import com.cleanroommc.modularui.utils.item.IItemHandlerModifiable;
+import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.science.gtnl.api.IFluidsLockable;
+import com.science.gtnl.common.gui.VoidCoverGui;
 import com.science.gtnl.common.gui.VoidCoverUIFactory;
 
 import gregtech.api.covers.CoverContext;
@@ -29,6 +30,7 @@ import gregtech.api.metatileentity.implementations.MTEHatch;
 import gregtech.api.metatileentity.implementations.MTEHatchMultiInput;
 import gregtech.api.util.GTUtility;
 import gregtech.common.covers.CoverLegacyData;
+import gregtech.common.gui.modularui.cover.base.CoverBaseGui;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -287,7 +289,14 @@ public class VoidCover extends CoverLegacyData implements IFluidsLockable {
     }
 
     @Override
+    protected @NotNull CoverBaseGui<?> getCoverGui() {
+        return new VoidCoverGui(this);
+    }
+
+    @Override
+    @Deprecated
     public ModularWindow createWindow(CoverUIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the mui2 VoidCoverGui is validated in all cover opening paths.
         return new VoidCoverUIFactory(buildContext).createWindow();
     }
 

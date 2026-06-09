@@ -45,6 +45,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.science.gtnl.api.IGreenHouse;
+import com.science.gtnl.common.gui.modularui.EdenGardenGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
@@ -68,6 +69,7 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.core.block.ModBlocks;
 import gtnhlanth.common.register.LanthItemList;
 import ic2.core.init.BlocksItems;
@@ -384,23 +386,29 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
+    /**
+     * TODO: Remove this mui1 fallback after Eden Garden no longer supports mui1 startup paths.
+     */
+    @Deprecated
     public static final UIInfo<?, ?> GreenhouseUI = GreenHouseMode
         .createGreenhouseUI(GreenHouseMode.MUIContainer_Greenhouse::new);
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new EdenGardenGui(this);
+    }
+
+    @Override
     public boolean onRightclick(IGregTechTileEntity aBaseMetaTileEntity, EntityPlayer aPlayer) {
         if (aBaseMetaTileEntity.isClientSide()) return true;
-        GreenhouseUI.open(
-            aPlayer,
-            aBaseMetaTileEntity.getWorld(),
-            aBaseMetaTileEntity.getXCoord(),
-            aBaseMetaTileEntity.getYCoord(),
-            aBaseMetaTileEntity.getZCoord());
+        openGui(aPlayer);
         return true;
     }
 
     @Override
+    @Deprecated
     public void addConfigurationWidgets(DynamicPositionedRow configurationElements, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after Eden Garden no longer supports mui1 startup paths.
         buildContext.addSyncedWindow(GreenHouseMode.CONFIGURATION_WINDOW_ID, this::createConfigurationWindow);
         configurationElements.setSynced(false);
         configurationElements.widget(
@@ -420,7 +428,9 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     public boolean isInInventory = true;
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the Eden Garden main GUI is fully ported to mui2.
         isInInventory = !getBaseMetaTileEntity().isActive();
         builder.widget(
             new DrawableWidget().setDrawable(GTUITextures.PICTURE_SCREEN_BLACK)

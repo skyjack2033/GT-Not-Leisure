@@ -36,6 +36,7 @@ import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.IControllerInfo;
+import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.hatch.SuperCraftingInputHatchME;
@@ -71,6 +72,7 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.data.GTCoilTracker;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.IDualInputInventoryWithPattern;
@@ -532,7 +534,9 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         slotWidgets.add(inventorySlot);
     }
 
+    @Deprecated
     public void addSharedScreen(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after every GTNL multiblock is covered by mui2.
         builder.widget(
             new DrawableWidget().setDrawable(GTUITextures.PICTURE_SCREEN_BLACK)
                 .setPos(4, 4)
@@ -547,7 +551,9 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         return slotColumn;
     }
 
+    @Deprecated
     public void addBaseTextScroll(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after every GTNL multiblock is covered by mui2.
         final DynamicPositionedColumn screenElements = new DynamicPositionedColumn();
         drawTexts(screenElements, !slotWidgets.isEmpty() ? slotWidgets.get(0) : null);
         builder.widget(
@@ -568,7 +574,14 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new GTNLMultiBlockBaseGui<>(this);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after every GTNL multiblock is covered by mui2.
         addSharedScreen(builder);
         slotWidgets.clear();
         createInventorySlots();
@@ -610,7 +623,9 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after every GTNL multiblock is covered by mui2.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)

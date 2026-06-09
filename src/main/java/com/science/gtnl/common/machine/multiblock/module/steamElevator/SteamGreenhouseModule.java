@@ -40,6 +40,7 @@ import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.science.gtnl.api.IGreenHouse;
 import com.science.gtnl.common.gui.CircularGaugeDrawable;
+import com.science.gtnl.common.gui.modularui.SteamGreenhouseModuleGui;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseBucket;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseDropTable;
@@ -55,6 +56,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -321,18 +323,26 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
     @Override
     public boolean onRightclick(IGregTechTileEntity aBaseMetaTileEntity, EntityPlayer aPlayer) {
         if (aBaseMetaTileEntity.isClientSide()) return true;
-        GreenhouseUI.open(
-            aPlayer,
-            aBaseMetaTileEntity.getWorld(),
-            aBaseMetaTileEntity.getXCoord(),
-            aBaseMetaTileEntity.getYCoord(),
-            aBaseMetaTileEntity.getZCoord());
+        openGui(aPlayer);
         return true;
     }
 
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new SteamGreenhouseModuleGui(this);
+    }
+
+    /**
+     * TODO: Remove this MUI1 startup path after Steam Greenhouse Module only uses MUI2.
+     */
+    @Deprecated
     public static final UIInfo<?, ?> GreenhouseUI = GreenHouseMode
         .createGreenhouseUI(GreenHouseMode.MUIContainer_Greenhouse::new);
 
+    /**
+     * TODO: Remove this MUI1 configuration button after Steam Greenhouse Module only uses MUI2.
+     */
+    @Deprecated
     public void addConfigurationWidgets(DynamicPositionedRow configurationElements, UIBuildContext buildContext) {
         buildContext.addSyncedWindow(GreenHouseMode.CONFIGURATION_WINDOW_ID, this::createConfigurationWindow);
         configurationElements.setSynced(false);
@@ -350,7 +360,9 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
     public boolean isInInventory = true;
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this MUI1 fallback after Steam Greenhouse Module only uses MUI2.
         isInInventory = !getBaseMetaTileEntity().isActive();
 
         builder.widget(new FakeSyncWidget.LongSyncer(this::getTotalSteamCapacityLong, val -> uiSteamCapacity = val));

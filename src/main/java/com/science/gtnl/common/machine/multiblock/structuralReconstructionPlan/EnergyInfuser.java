@@ -50,6 +50,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.MultiChildWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.gui.modularui.EnergyInfuserGui;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.Utils;
@@ -68,6 +69,7 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.WirelessNetworkManager;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
@@ -456,7 +458,46 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new EnergyInfuserGui(this);
+    }
+
+    public List<ItemStack> getStoredItemsForGui() {
+        return mStoredItems != null ? mStoredItems : Collections.emptyList();
+    }
+
+    public void setStoredItemsFromGui(List<ItemStack> storedItems) {
+        mStoredItems = storedItems != null ? new ArrayList<>(storedItems) : new ArrayList<>();
+    }
+
+    public int getProgressTimeForGui() {
+        return mProgresstime;
+    }
+
+    public void setProgressTimeFromGui(int progressTime) {
+        mProgresstime = progressTime;
+    }
+
+    public int getMaxProgressTimeForGui() {
+        return mMaxProgresstime;
+    }
+
+    public void setMaxProgressTimeFromGui(int maxProgressTime) {
+        mMaxProgresstime = maxProgressTime;
+    }
+
+    public String generateCurrentProgressForGui() {
+        return generateCurrentProgress();
+    }
+
+    public String appendRateForGui(boolean isFluid, Long amount, boolean parentheses) {
+        return appendRate(isFluid, amount, parentheses);
+    }
+
+    @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this MUI1 terminal text after Energy Infuser only uses the MUI2 GUI.
         super.drawTexts(screenElements, inventorySlot);
         screenElements.widget(
             TextWidget.dynamicString(this::generateCurrentProgress)

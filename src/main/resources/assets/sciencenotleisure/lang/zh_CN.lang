@@ -897,25 +897,6 @@ Tooltip_DualInputHatch_01=物品槽位数量：
 Tooltip_DualInputHatch_02_00=流体容量：共
 Tooltip_DualInputHatch_02_01=个流体槽，每个
 
-HumongousOutputBusLV=巨型输出总线 (LV)
-HumongousOutputBusMV=巨型输出总线 (MV)
-HumongousOutputBusHV=巨型输出总线 (HV)
-HumongousOutputBusEV=巨型输出总线 (EV)
-HumongousOutputBusIV=巨型输出总线 (IV)
-HumongousOutputBusLuV=巨型输出总线 (LuV)
-HumongousOutputBusZPM=巨型输出总线 (ZPM)
-HumongousOutputBusUV=巨型输出总线 (UV)
-HumongousOutputBusUHV=巨型输出总线 (UHV)
-HumongousOutputBusUEV=巨型输出总线 (UEV)
-HumongousOutputBusUIV=巨型输出总线 (UIV)
-HumongousOutputBusUMV=巨型输出总线 (UMV)
-HumongousOutputBusUXV=巨型输出总线 (UXV)
-HumongousOutputBusMAX=巨型输出总线 (MAX)
-Tooltip_HumongousOutputBus_00=从多方块机器输出物品
-Tooltip_HumongousOutputBus_01=物品槽位数量：
-Tooltip_HumongousOutputBus_02=手持闪存左键以保存过滤配置
-Tooltip_HumongousOutputBus_03=手持闪存右键以加载过滤配置
-
 HumongousDualInputHatchLV=巨型输入总成 (LV)
 HumongousDualInputHatchMV=巨型输入总成 (MV)
 HumongousDualInputHatchHV=巨型输入总成 (HV)
@@ -2529,6 +2510,8 @@ Info_EyeOfHarmonyInjector_01=目标坐标：
 Info_EyeOfHarmonyInjector_02=点击高亮鸿蒙之眼坐标
 Info_EyeOfHarmonyInjector_03=打开鸿蒙之眼独立配置面板
 Info_EyeOfHarmonyInjector_04=§a自动调配
+Info_EyeOfHarmonyInjector_05=没有已连接的鸿蒙之眼
+Info_EyeOfHarmonyInjector_FallbackName=鸿蒙之眼
 Info_EyeOfHarmonyInjector_Title=§9鸿蒙之眼状态
 
 NameReactionFurnace=反应炉

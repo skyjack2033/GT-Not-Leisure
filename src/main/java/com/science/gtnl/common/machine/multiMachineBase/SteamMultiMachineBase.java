@@ -54,6 +54,7 @@ import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.IControllerInfo;
 import com.science.gtnl.common.gui.CircularGaugeDrawable;
+import com.science.gtnl.common.gui.modularui.GTNLSteamMultiBlockBaseGui;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.hatch.WirelessSteamEnergyHatch;
 import com.science.gtnl.loader.BlockLoader;
@@ -91,6 +92,7 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.spaceprojects.SpaceProjectManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
@@ -1242,6 +1244,15 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new GTNLSteamMultiBlockBaseGui(this);
+    }
+
+    /**
+     * TODO: Remove this MUI1 logo hook after steam multiblocks only use MUI2.
+     */
+    @Deprecated
+    @Override
     public void addGregTechLogo(ModularWindow.Builder builder) {
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
@@ -1453,6 +1464,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return (hatchColors & (1 << color)) == 0;
     }
 
+    /**
+     * TODO: Remove this MUI1 window assembly after the GTNL steam MUI2 wrapper is complete.
+     */
+    @Deprecated
     @Override
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
         if (doesBindPlayerInventory()) {
@@ -1585,6 +1600,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return false;
     }
 
+    /**
+     * TODO: Remove this MUI1 muffler button after the GTNL steam MUI2 wrapper is complete.
+     */
+    @Deprecated
     @Override
     public ButtonWidget createMuffleButton(IWidgetBuilder<?> builder, boolean canBeMuffled) {
         return (ButtonWidget) new ButtonWidget().setOnClick((clickData, widget) -> setMuffled(!isMuffled()))
@@ -1630,6 +1649,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return cleared > 0;
     }
 
+    /**
+     * TODO: Remove this MUI1 recipe OC window after the GTNL steam MUI2 wrapper is complete.
+     */
+    @Deprecated
     public ModularWindow createRecipeOcCountWindow(EntityPlayer player) {
         final int WIDTH = 158;
         final int HEIGHT = 52;

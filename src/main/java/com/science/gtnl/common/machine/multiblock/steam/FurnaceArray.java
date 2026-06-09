@@ -29,6 +29,7 @@ import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.gui.modularui.FurnaceArrayGui;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.event.SubscribeEventUtils;
@@ -48,6 +49,7 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 
 public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements ISurvivalConstructable {
@@ -74,6 +76,27 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
 
     public FurnaceArray(String aName) {
         super(aName);
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new FurnaceArrayGui(this);
+    }
+
+    public long getFurnaceCountForGui() {
+        return furnaceCount;
+    }
+
+    public void setFurnaceCountFromGui(long furnaceCount) {
+        this.furnaceCount = furnaceCount;
+    }
+
+    public long getCoalCountForGui() {
+        return coalCount;
+    }
+
+    public void setCoalCountFromGui(long coalCount) {
+        this.coalCount = coalCount;
     }
 
     @Override
@@ -350,7 +373,9 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     }
 
     @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the Furnace Array terminal text is fully ported to mui2.
         super.drawTexts(screenElements, inventorySlot);
         screenElements
             .widget(

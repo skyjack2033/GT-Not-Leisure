@@ -134,7 +134,9 @@ public class WirelessSteamCover extends CoverLegacyData {
     }
 
     @Override
+    @Deprecated
     public ModularWindow createWindow(CoverUIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the mui2 WirelessSteamCoverGui is validated in all cover opening paths.
         return new WirelessSteamCoverUIFactory(buildContext).createWindow();
     }
 }

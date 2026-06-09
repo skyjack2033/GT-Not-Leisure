@@ -7,13 +7,18 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.utils.fluid.FluidStackTank;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.math.Pos2d;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
+import com.science.gtnl.common.gui.modularui.DualOutputHatchGui;
 
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -73,6 +78,10 @@ public class DualOutputHatch extends MTEHatchOutput implements IAddUIWidgets {
 
     public int getMaxType() {
         return mStoredFluid.length;
+    }
+
+    public FluidStackTank[] getFluidTanksForGui() {
+        return fluidTanks;
     }
 
     @Override
@@ -249,7 +258,19 @@ public class DualOutputHatch extends MTEHatchOutput implements IAddUIWidgets {
     }
 
     @Override
+    protected boolean useMui2() {
+        return true;
+    }
+
+    @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        return new DualOutputHatchGui(this).build(data, syncManager, uiSettings);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after DualOutputHatch mui2 rollout is complete.
         int SLOT_NUMBER = this.fluidTanks.length;
         final Pos2d[] positionsFour = new Pos2d[] { new Pos2d(70, 25), new Pos2d(88, 25), new Pos2d(70, 43),
             new Pos2d(88, 43), };

@@ -12,6 +12,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
@@ -28,6 +30,7 @@ import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.gui.modularui.QuantumComputerGui;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.ECPUCluster;
@@ -73,6 +76,7 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
@@ -136,6 +140,66 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     public long getMaximumStorage() {
         if (singularityCraftingStorageCount > 0) return Long.MAX_VALUE;
         return maximumStorage;
+    }
+
+    public int getWidthForGui() {
+        return width;
+    }
+
+    public void setWidthFromGui(int width) {
+        this.width = width;
+    }
+
+    public int getHeightForGui() {
+        return height;
+    }
+
+    public void setHeightFromGui(int height) {
+        this.height = height;
+    }
+
+    public int getDepthForGui() {
+        return depth;
+    }
+
+    public void setDepthFromGui(int depth) {
+        this.depth = depth;
+    }
+
+    public int getMaximumParallelForGui() {
+        return maximumParallel;
+    }
+
+    public void setMaximumParallelFromGui(int maximumParallel) {
+        this.maximumParallel = maximumParallel;
+    }
+
+    public int getUsedParallelForGui() {
+        return getUsedParallel();
+    }
+
+    public void setUsedParallelFromGui(int usedParallel) {
+        this.usedParallel = usedParallel;
+    }
+
+    public long getMaximumStorageForGui() {
+        return getMaximumStorage();
+    }
+
+    public void setMaximumStorageFromGui(long maximumStorage) {
+        this.maximumStorage = maximumStorage;
+    }
+
+    public long getUsedStorageForGui() {
+        return getUsedBytes();
+    }
+
+    public void setUsedStorageFromGui(long usedStorage) {
+        this.usedStorage = usedStorage;
+    }
+
+    public String getDisplayNameForGui() {
+        return hasCustomName() ? customName : getMachineCraftingIcon().getDisplayName();
     }
 
     public QuantumComputer(int aID, String aName, String aNameRegional) {
@@ -948,7 +1012,14 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new QuantumComputerGui(this);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this MUI1 fallback after Quantum Computer only uses the MUI2 GUI.
         builder.widget(
             new DrawableWidget().setDrawable(GTUITextures.PICTURE_SCREEN_BLACK)
                 .setPos(4, 4)
@@ -988,7 +1059,9 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this MUI1 logo hook after Quantum Computer only uses the MUI2 GUI.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_CIRCULATION)
                 .setSize(18, 18)
@@ -1000,7 +1073,9 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     }
 
     @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this MUI1 terminal text after Quantum Computer only uses the MUI2 GUI.
         super.drawTexts(screenElements, inventorySlot);
         screenElements
             .widget(
@@ -1256,31 +1331,31 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     }
 
     public enum QuantumComputerBlockType {
-        CASING, // 量子计算机外壳
-        UNIT, // 量子合成单元
-        MULTI_THREADER, // 量子计算机多线程处理器
-        DATA_ENTANGLER, // 量子数据纠缠器
-        ACCELERATOR, // 量子计算机加速器
-        CORE, // 量子计算机核心
-        SINGULARITY_CORE, // 量子计算机奇点核心
-        CRAFTING_STORAGE_1K, // 1k合成存储器
-        CRAFTING_STORAGE_4K, // 4k合成存储器
-        CRAFTING_STORAGE_16K, // 16k合成存储器
-        CRAFTING_STORAGE_64K, // 64k合成存储器
-        CRAFTING_STORAGE_256K, // 256k合成存储器
-        CRAFTING_STORAGE_1024K, // 1024k合成存储器
-        CRAFTING_STORAGE_4096K, // 4096k合成存储器
-        CRAFTING_STORAGE_16384K, // 16384k合成存储器
-        CRAFTING_STORAGE_128M, // 128M量子计算机合成存储器
-        CRAFTING_STORAGE_256M, // 256M量子计算机合成存储器
-        CRAFTING_STORAGE_SINGULARITY, // 奇点合成存储器
-        CRAFTING_PROCESSING_UNIT_1, // 并行处理单元
-        CRAFTING_PROCESSING_UNIT_4, // 4核并行处理单元
-        CRAFTING_PROCESSING_UNIT_16, // 16核并行处理单元
-        CRAFTING_PROCESSING_UNIT_64, // 64核并行处理单元
-        CRAFTING_PROCESSING_UNIT_256, // 256核并行处理单元
-        CRAFTING_PROCESSING_UNIT_1024, // 1024核并行处理单元
-        CRAFTING_PROCESSING_UNIT_4096, // 4096核并行处理单元
-        INVALID // 无效方块
+        CASING,
+        UNIT,
+        MULTI_THREADER,
+        DATA_ENTANGLER,
+        ACCELERATOR,
+        CORE,
+        SINGULARITY_CORE,
+        CRAFTING_STORAGE_1K,
+        CRAFTING_STORAGE_4K,
+        CRAFTING_STORAGE_16K,
+        CRAFTING_STORAGE_64K,
+        CRAFTING_STORAGE_256K,
+        CRAFTING_STORAGE_1024K,
+        CRAFTING_STORAGE_4096K,
+        CRAFTING_STORAGE_16384K,
+        CRAFTING_STORAGE_128M,
+        CRAFTING_STORAGE_256M,
+        CRAFTING_STORAGE_SINGULARITY,
+        CRAFTING_PROCESSING_UNIT_1,
+        CRAFTING_PROCESSING_UNIT_4,
+        CRAFTING_PROCESSING_UNIT_16,
+        CRAFTING_PROCESSING_UNIT_64,
+        CRAFTING_PROCESSING_UNIT_256,
+        CRAFTING_PROCESSING_UNIT_1024,
+        CRAFTING_PROCESSING_UNIT_4096,
+        INVALID
     }
 }

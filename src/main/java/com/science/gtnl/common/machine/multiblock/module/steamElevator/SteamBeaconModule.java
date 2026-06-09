@@ -34,6 +34,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotGroup;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.kentington.thaumichorizons.common.lib.potion.PotionVisRegen;
+import com.science.gtnl.common.gui.modularui.SteamBeaconModuleGui;
 import com.science.gtnl.utils.enums.ModList;
 
 import gregtech.api.enums.GTValues;
@@ -47,6 +48,7 @@ import gregtech.api.metatileentity.BaseTileEntity;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import thaumcraft.common.config.Config;
@@ -99,6 +101,11 @@ public class SteamBeaconModule extends SteamElevatorModule {
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new SteamBeaconModule(this.mName, this.mTier);
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new SteamBeaconModuleGui(this);
     }
 
     @Override
@@ -268,6 +275,37 @@ public class SteamBeaconModule extends SteamElevatorModule {
 
     private boolean canActivateNewEffectWork() {
         return activeEffectsCount < mTier + 2;
+    }
+
+    public int getBeaconTierForGui() {
+        return mTier;
+    }
+
+    public ItemStackHandler getBeaconInputSlotHandlerForGui() {
+        return inputSlotHandler;
+    }
+
+    public boolean isValidBeaconPaymentItemForGui(ItemStack itemStack) {
+        return isValidItem(itemStack);
+    }
+
+    public void prepareBeaconConfigForGui() {
+        inputSlotHandler.insertItem(0, storedWindowItems, false);
+        storedWindowItems = null;
+        updateGuiMachineEffect();
+    }
+
+    public boolean applyBeaconConfigFromGui() {
+        if (!canActivateNewEffectWork()) {
+            setMachineCanWork(false);
+            return false;
+        }
+        if (!payCost(inputSlotHandler)) {
+            return false;
+        }
+        setMachineEffect();
+        setMachineCanWork(true);
+        return true;
     }
 
     private void updateActiveEffectsCount() {
@@ -762,7 +800,9 @@ public class SteamBeaconModule extends SteamElevatorModule {
     }
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after SteamBeaconModule mui2 rollout is complete.
         super.addUIWidgets(builder, buildContext);
         buildContext.addSyncedWindow(CONFIG_WINDOW_ID, this::createBeaconConfigWindow);
         builder.widget(new FakeSyncWidget.BooleanSyncer(this::hasSpeedEffect, val -> hasSpeedEffect = val));
@@ -823,7 +863,9 @@ public class SteamBeaconModule extends SteamElevatorModule {
             .setSize(16, 16));
     }
 
+    @Deprecated
     public ModularWindow createBeaconConfigWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after SteamBeaconModule mui2 rollout is complete.
         final int WIDTH = 100;
         final int HEIGHT = 116;
         final int PARENT_WIDTH = getGUIWidth();
