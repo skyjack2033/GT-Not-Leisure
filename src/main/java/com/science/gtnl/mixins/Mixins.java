@@ -152,7 +152,6 @@ public enum Mixins implements IMixins {
             "ThaumicTinkerer.MixinItemBloodSword",
             "VisualProspecting.AccessorVeinTypeCaching")
         .addClientMixins(
-            "AppliedEnergistics.assembler.MixinGuiFluidPatternTerminal",
             "AppliedEnergistics.assembler.MixinGuiMEMonitorable",
             "AppliedEnergistics.assembler.MixinGuiPatternTerm")
         .setPhase(Phase.LATE)),

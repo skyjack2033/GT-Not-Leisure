@@ -8,7 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.Nxer.TwistSpaceTechnology.common.recipeMap.GTCMRecipe;
 import com.Nxer.TwistSpaceTechnology.recipe.machineRecipe.expanded.AssemblyLineWithoutResearchRecipePool;
+import com.Nxer.TwistSpaceTechnology.recipe.machineRecipe.expanded.CircuitAssemblyLineWithoutImprintRecipePool;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.item.items.Stick;
@@ -29,6 +31,8 @@ import com.science.gtnl.common.recipe.gregtech.ChemicalBathRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalDehydratorRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalPlantRecipes;
 import com.science.gtnl.common.recipe.gregtech.ChemicalRecipes;
+import com.science.gtnl.common.recipe.gregtech.CircuitAssemblerRecipes;
+import com.science.gtnl.common.recipe.gregtech.CircuitAssemblyLineRecipes;
 import com.science.gtnl.common.recipe.gregtech.CompressorRecipes;
 import com.science.gtnl.common.recipe.gregtech.CrackingRecipes;
 import com.science.gtnl.common.recipe.gregtech.CuttingRecipes;
@@ -120,7 +124,6 @@ import com.science.gtnl.common.recipe.gtnl.TheTwilightForestRecipes;
 import com.science.gtnl.common.recipe.gtnl.TreeDiagramRecipes;
 import com.science.gtnl.common.recipe.thaumcraft.TCResearches;
 import com.science.gtnl.config.MainConfig;
-import com.science.gtnl.loader.compat.BartWorksCircuitRecipeLoader;
 import com.science.gtnl.utils.enums.ModList;
 import com.science.gtnl.utils.machine.ProcessingArrayRecipeLoader;
 import com.science.gtnl.utils.machine.oreProcessing.CheatOreProcessingRecipes;
@@ -146,22 +149,7 @@ import tectech.thing.CustomItemList;
 
 public class RecipeLoader {
 
-    public static boolean recipesAdded;
-
-    public static void loadPostInit() {
-        if (MainConfig.recipe.enableDeleteRecipe) {
-            RemoveRecipes.removeCircuitAssemblerRecipes();
-        }
-
-        IRecipePool[] recipePools = new IRecipePool[] { new GrandAssemblyLineSpecialRecipes() };
-
-        for (IRecipePool recipePool : recipePools) {
-            recipePool.loadRecipes();
-        }
-    }
-
-    public static void loadServerStart() {
-        if (recipesAdded) return;
+    public static void loadCompleteInit() {
         if (MainConfig.recipe.enableDeleteRecipe) {
             RemoveRecipes.removeRecipes();
         }
@@ -176,12 +164,12 @@ public class RecipeLoader {
             loadBuffTargetChamberRecipe();
         }
 
-        IRecipePool[] recipePools = new IRecipePool[] { new BotaniaManaInfusionRecipes(), new ChemicalRecipes(),
-            new ElectrolyzerRecipes(), new MixerRecipes(), new AssemblerRecipes(), new AutoclaveRecipes(),
-            new AlloyBlastSmelterRecipes(), new CompressorRecipes(), new ReFusionReactorRecipes(),
-            new RealArtificialStarRecipes(), new PortalToAlfheimRecipes(), new NatureSpiritArrayRecipes(),
-            new ManaInfusionRecipes(), new TranscendentPlasmaMixerRecipes(), new CraftingTableRecipes(),
-            new ChemicalBathRecipes(), new SteamCrackerRecipes(), new DesulfurizerRecipes(),
+        IRecipePool[] recipePools = new IRecipePool[] { new GrandAssemblyLineSpecialRecipes(),
+            new BotaniaManaInfusionRecipes(), new ChemicalRecipes(), new ElectrolyzerRecipes(), new MixerRecipes(),
+            new AssemblerRecipes(), new AutoclaveRecipes(), new AlloyBlastSmelterRecipes(), new CompressorRecipes(),
+            new ReFusionReactorRecipes(), new RealArtificialStarRecipes(), new PortalToAlfheimRecipes(),
+            new NatureSpiritArrayRecipes(), new ManaInfusionRecipes(), new TranscendentPlasmaMixerRecipes(),
+            new CraftingTableRecipes(), new ChemicalBathRecipes(), new SteamCrackerRecipes(), new DesulfurizerRecipes(),
             new PetrochemicalPlantRecipes(), new FusionReactorRecipes(), new SmeltingMixingFurnaceRecipes(),
             new FluidExtraction(), new DigesterRecipes(), new DissolutionTankRecipes(), new CentrifugeRecipes(),
             new ChemicalDehydratorRecipes(), new ChemicalPlantRecipes(), new RareEarthCentrifugalRecipes(),
@@ -206,7 +194,8 @@ public class RecipeLoader {
             new NanitesIntegratedProcessingRecipes(), new NanoForgeRecipes(), new SteamWeatherModuleRecipes(),
             new ElectricNeutronActivatorRecipes(), new ReactorProcessingUnitRecipes(),
             new NuclearSaltProcessingPlantRecipes(), new MaceratorRecipes(), new QuantumForceTransformerRecipes(),
-            new MicroorganismMasterRecipes(), new SolarMuonCatalystRecipes() };
+            new MicroorganismMasterRecipes(), new SolarMuonCatalystRecipes(), new CircuitAssemblerRecipes(),
+            new CircuitAssemblyLineRecipes() };
 
         for (IRecipePool recipePool : recipePools) {
             recipePool.loadRecipes();
@@ -237,9 +226,16 @@ public class RecipeLoader {
 
         if (ModList.TwistSpaceTechnology.isModLoaded()) {
             loadTSTMegaAssemblyLineRecipes();
+            loadTSTAdvCircuitAssemblyLineRecipes();
         }
+    }
 
-        recipesAdded = true;
+    @Optional.Method(modid = "TwistSpaceTechnology")
+    public static void loadTSTAdvCircuitAssemblyLineRecipes() {
+        GTCMRecipe.advCircuitAssemblyLineRecipes.getBackend()
+            .clearRecipes();
+        CircuitAssemblyLineWithoutImprintRecipePool.loadRecipes();
+        System.out.println("[GTNL] Register TwistSpaceTechnology AdvCircuitAssemblyLine recipes");
     }
 
     public static void loadPlasmaCentrifugeRecipes() {
@@ -274,10 +270,6 @@ public class RecipeLoader {
 
     public static void loadCircuitNanitesData(long worldSeed) {
         new CircuitNanitesDataRecipes(worldSeed).loadRecipes();
-    }
-
-    public static void loadCircuitRelatedRecipes() {
-        new BartWorksCircuitRecipeLoader().loadRecipes();
     }
 
     public static void loadBuffTargetChamberRecipe() {

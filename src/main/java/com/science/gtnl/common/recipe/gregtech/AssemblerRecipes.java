@@ -25,6 +25,7 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import appeng.api.AEApi;
 import appeng.api.util.AEColor;
+import bartworks.common.loaders.ItemRegistry;
 import bartworks.system.material.WerkstoffLoader;
 import cpw.mods.fml.common.Optional;
 import goodgenerator.items.GGMaterial;
@@ -33,7 +34,6 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.MetaTileEntityIDs;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
@@ -1455,7 +1455,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                new ItemStack(GregTechAPI.sBlockMachines, 2, MetaTileEntityIDs.BioVat.ID),
+                GTUtility.copyAmount(2, ItemRegistry.vat),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 4L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.EV, 8L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.HV, 16L),

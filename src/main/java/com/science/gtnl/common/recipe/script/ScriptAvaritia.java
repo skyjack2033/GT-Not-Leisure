@@ -34,6 +34,7 @@ import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
+import gregtech.api.util.GTUtility;
 import gregtech.common.items.CombType;
 import gregtech.loaders.misc.GTBees;
 import gtPlusPlus.core.material.MaterialsElements;
@@ -1376,7 +1377,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 '6',
                 GregtechItemList.Machine_Adv_DistillationTower.get(1),
                 '7',
-                new ItemStack(GregTechAPI.sBlockMachines, 1, MetaTileEntityIDs.BioVat.ID),
+                GTUtility.copyAmount(1, ItemRegistry.vat),
                 '8',
                 GregtechItemList.Industrial_Solar_Tower.get(1),
                 '9',

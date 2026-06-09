@@ -1,6 +1,5 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.science.gtnl.api.IRecipePool;
@@ -11,12 +10,12 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.system.material.CircuitGeneration.CircuitPartsItem;
 import bartworks.system.material.WerkstoffLoader;
-import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
+import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
@@ -26,8 +25,11 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.recipe.Scanning;
 import gtPlusPlus.core.material.MaterialMisc;
 import tectech.recipe.TTRecipeAdder;
+import tectech.thing.CustomItemList;
 
 public class CircuitAssemblerRecipes implements IRecipePool {
+
+    public RecipeMap<?> CAR = RecipeMaps.circuitAssemblerRecipes;
 
     @Override
     public void loadRecipes() {
@@ -46,7 +48,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(50)
             .eut(30)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -62,7 +64,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(90)
             .eut(120)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -78,7 +80,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(150)
             .eut(480)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -94,7 +96,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(230)
             .eut(1920)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -110,7 +112,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(330)
             .eut(7680)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -126,7 +128,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(450)
             .eut(30720)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -142,7 +144,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(570)
             .eut(122880)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -158,7 +160,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(710)
             .eut(491520)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -174,7 +176,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(730)
             .eut(1966080)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -190,7 +192,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(750)
             .eut(7864320)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -206,7 +208,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(770)
             .eut(31457280)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -222,7 +224,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .duration(790)
             .eut(125829120)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -233,7 +235,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.VerySimpleCircuit.get(2))
             .duration(40)
             .eut(7)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -245,7 +247,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.SimpleCircuit.get(2))
             .duration(80)
             .eut(16)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -258,7 +260,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.BasicCircuit.get(2))
             .duration(160)
             .eut(30)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -272,7 +274,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.AdvancedCircuit.get(1))
             .duration(80)
             .eut(120)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -283,7 +285,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .itemOutputs(GTNLItemList.EliteCircuit.get(1))
             .duration(200)
             .eut(480)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -296,14 +298,12 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(100)
             .eut(TierEU.RECIPE_UV)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         if (MainConfig.recipe.enableDeleteRecipe) loadDeleteRecipe();
     }
 
     public void loadDeleteRecipe() {
-
-        ItemStack opticalCable = new ItemStack(GregTechAPI.sBlockMachines, 8, 15470);
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
             .itemInputs(
@@ -311,14 +311,14 @@ public class CircuitAssemblerRecipes implements IRecipePool {
                 ItemList.Optically_Compatible_Memory.get(2),
                 ItemList.Circuit_Parts_CapacitorXSMD.get(16),
                 ItemList.Circuit_Parts_DiodeXSMD.get(16),
-                opticalCable,
+                CustomItemList.DATApipe.get(8),
                 GTOreDictUnificator.get(OrePrefixes.bolt, Materials.EnrichedHolmium, 8))
             .fluidInputs(MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(144))
             .itemOutputs(ItemList.Circuit_OpticalProcessor.get(1))
             .requiresCleanRoom()
             .duration(300)
             .eut(TierEU.RECIPE_UHV)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -334,7 +334,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(300)
             .eut(TierEU.RECIPE_UV)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -350,7 +350,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(200)
             .eut(TierEU.RECIPE_UV)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -366,7 +366,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(200)
             .eut(TierEU.RECIPE_LuV)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -380,7 +380,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(100)
             .eut(TierEU.RECIPE_ZPM)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -396,7 +396,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(400)
             .eut(TierEU.RECIPE_LuV)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -412,7 +412,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(400)
             .eut(TierEU.RECIPE_LuV)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -427,7 +427,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(600)
             .eut(TierEU.RECIPE_ZPM)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -443,7 +443,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(200)
             .eut(TierEU.RECIPE_ZPM)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -459,7 +459,7 @@ public class CircuitAssemblerRecipes implements IRecipePool {
             .requiresCleanRoom()
             .duration(400)
             .eut(TierEU.RECIPE_ZPM)
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         RecipeBuilder.builder()
             .setNEIDesc("Remove Change by GTNotLeisure")
@@ -470,12 +470,12 @@ public class CircuitAssemblerRecipes implements IRecipePool {
                 ItemList.Circuit_Parts_InductorASMD.get(8),
                 ItemList.Circuit_Parts_CapacitorASMD.get(16),
                 ItemList.Circuit_Parts_DiodeASMD.get(8))
-            .fluidInputs(Materials.SolderingAlloy.getMolten(1440))
+            .fluidInputs(Materials.SolderingAlloy.getMolten(144))
             .itemOutputs(ItemList.Circuit_Crystalmainframe.get(1))
             .eut(TierEU.RECIPE_LuV)
             .duration(20 * GTRecipeBuilder.SECONDS)
             .requiresCleanRoom()
-            .addTo(RecipeMaps.circuitAssemblerRecipes);
+            .addTo(CAR);
 
         loadCircuitRecipes();
     }
