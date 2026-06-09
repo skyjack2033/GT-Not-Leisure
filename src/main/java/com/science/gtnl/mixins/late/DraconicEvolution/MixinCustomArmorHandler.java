@@ -1,5 +1,6 @@
 package com.science.gtnl.mixins.late.DraconicEvolution;
 
+import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -9,12 +10,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.brandon3055.draconicevolution.common.handler.MinecraftForgeEventHandler;
 import com.reavaritia.common.items.InfinitySword;
 import com.science.gtnl.config.MainConfig;
 
-@Mixin(value = MinecraftForgeEventHandler.class, remap = false)
-public abstract class MixinMinecraftForgeEventHandler {
+@Mixin(value = CustomArmorHandler.class, remap = false)
+public abstract class MixinCustomArmorHandler {
 
     @Inject(method = "onLivingDeath", at = @At(value = "HEAD"), cancellable = true)
     private void injectDeath(LivingDeathEvent event, CallbackInfo ci) {

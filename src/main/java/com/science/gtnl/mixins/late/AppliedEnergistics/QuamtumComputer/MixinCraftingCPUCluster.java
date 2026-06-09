@@ -71,7 +71,7 @@ public abstract class MixinCraftingCPUCluster implements ECPUCluster {
         method = "submitJob",
         at = @At(
             value = "INVOKE",
-            target = "Lappeng/api/networking/crafting/ICraftingJob;getOutput()Lappeng/api/storage/data/IAEItemStack;"),
+            target = "Lappeng/api/networking/crafting/ICraftingJob;startCrafting(Lappeng/crafting/MECraftingInventory;Lappeng/api/networking/crafting/ICraftingCPU;Lappeng/api/networking/security/BaseActionSource;)V"),
         require = 1)
     private void injectSubmitJob(IGrid g, ICraftingJob job, BaseActionSource src, ICraftingRequester requestingMachine,
         CallbackInfoReturnable<ICraftingLink> cir) {

@@ -13,7 +13,6 @@ import com.science.gtnl.common.machine.multiblock.FOGExtractorModule;
 import com.science.gtnl.common.machine.multiblock.FOGSolarMuonCatalystModule;
 
 import tectech.thing.metaTileEntity.multi.godforge.MTEBaseModule;
-import tectech.thing.metaTileEntity.multi.godforge.MTEForgeOfGods;
 import tectech.thing.metaTileEntity.multi.godforge.upgrade.ForgeOfGodsUpgrade;
 import tectech.thing.metaTileEntity.multi.godforge.util.ForgeOfGodsData;
 import tectech.thing.metaTileEntity.multi.godforge.util.GodforgeMath;
@@ -22,21 +21,18 @@ import tectech.thing.metaTileEntity.multi.godforge.util.GodforgeMath;
 public abstract class MixinGodForgeMath {
 
     @Inject(method = "allowModuleConnection", at = @At("HEAD"), cancellable = true)
-    private static void recipesLoader(MTEBaseModule module, MTEForgeOfGods godforge,
-        CallbackInfoReturnable<Boolean> cir) {
+    private static void recipesLoader(MTEBaseModule module, ForgeOfGodsData data, CallbackInfoReturnable<Boolean> cir) {
         if (module instanceof FOGAlloySmelterModule) {
             cir.setReturnValue(true);
             return;
         }
-        if ((module instanceof FOGAlloyBlastSmelterModule || module instanceof FOGExtractorModule) && godforge.getData()
+        if ((module instanceof FOGAlloyBlastSmelterModule || module instanceof FOGExtractorModule) && data
             .isUpgradeActive(ForgeOfGodsUpgrade.FDIM)) {
             cir.setReturnValue(true);
             return;
         }
-        if (module instanceof FOGSolarMuonCatalystModule && godforge.getData()
-            .isUpgradeActive(ForgeOfGodsUpgrade.QGPIU)) {
+        if (module instanceof FOGSolarMuonCatalystModule && data.isUpgradeActive(ForgeOfGodsUpgrade.QGPIU)) {
             cir.setReturnValue(true);
-            return;
         }
     }
 

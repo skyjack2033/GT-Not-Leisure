@@ -24,14 +24,13 @@ import appeng.api.config.YesNo;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.IMEInventory;
-import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
 import appeng.helpers.MultiCraftingTracker;
 import appeng.helpers.UnlockCraftingEvent;
 import appeng.me.helpers.AENetworkProxy;
-import appeng.me.storage.MEMonitorPassThrough;
 import appeng.parts.automation.UpgradeInventory;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -54,10 +53,6 @@ public abstract class MixinDualityInterface implements IDualityInterface {
     @Final
     @Mutable
     private IAEItemStack[] requireWork;
-    @Shadow
-    @Final
-    @Mutable
-    private boolean[] hasFuzzyConfig;
     @Shadow
     @Final
     @Mutable
@@ -93,24 +88,12 @@ public abstract class MixinDualityInterface implements IDualityInterface {
     @Shadow
     @Final
     @Mutable
-    private MEMonitorPassThrough<IAEItemStack> items;
-    @Shadow
-    @Final
-    @Mutable
-    private MEMonitorPassThrough<IAEFluidStack> fluids;
-    @Shadow
-    @Final
-    @Mutable
     private UpgradeInventory upgrades;
 
     @Shadow
     private AppEngInternalInventory storage;
     @Shadow
     private WrapperInvSlot slotInv;
-    @Shadow
-    private ItemStack stored;
-    @Shadow
-    private IAEItemStack fuzzyItemStack;
     @Shadow
     private boolean hasConfig;
     @Shadow
@@ -120,7 +103,7 @@ public abstract class MixinDualityInterface implements IDualityInterface {
     @Shadow
     public boolean sharedInventory;
     @Shadow
-    private List<ItemStack> waitingToSend;
+    private List<IAEStack<?>> waitingToSend;
     @Shadow
     private IMEInventory<IAEItemStack> destination;
     @Shadow
@@ -130,17 +113,30 @@ public abstract class MixinDualityInterface implements IDualityInterface {
     @Shadow
     private UnlockCraftingEvent unlockEvent;
     @Shadow
-    private List<IAEItemStack> unlockStacks;
+    private List<IAEStack<?>> unlockStacks;
     @Shadow
     private int lastInputHash;
     @Shadow
     private ScheduledReason scheduledReason;
 
+    @Unique
+    private boolean[] gtnl$hasFuzzyConfig = new boolean[9];
+
+    @Override
+    public boolean[] getHasFuzzyConfig() {
+        return gtnl$hasFuzzyConfig;
+    }
+
+    @Override
+    public void setHasFuzzyConfig(boolean[] hasFuzzyConfig) {
+        gtnl$hasFuzzyConfig = hasFuzzyConfig;
+    }
+
     @Invoker("updatePlan")
     public abstract void gtnl$updatePlan(int slot);
 
     @Inject(
-        method = "getTermName",
+        method = "getRawTermName",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/item/ItemStack;getUnlocalizedName()Ljava/lang/String;",

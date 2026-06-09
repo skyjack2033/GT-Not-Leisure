@@ -29,6 +29,7 @@ public class OutputBusMEProxy extends MTEHatchOutputBusME {
     public MTEHatchOutputBusME master;
     public int masterX, masterY, masterZ, masterDim;
     public boolean masterSet = false; // indicate if values of masterX, masterY, masterZ are valid
+    private long lastProxyFlushTick;
 
     public OutputBusMEProxy(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -60,6 +61,10 @@ public class OutputBusMEProxy extends MTEHatchOutputBusME {
             trySetMasterFromCoord(masterX, masterY, masterZ, masterDim);
         }
         super.onPostTick(aBaseMetaTileEntity, aTimer);
+        if (aBaseMetaTileEntity.isServerSide() && aTimer > lastProxyFlushTick + 40) {
+            flushCachedStack();
+            lastProxyFlushTick = aTimer;
+        }
     }
 
     @Override
@@ -69,7 +74,6 @@ public class OutputBusMEProxy extends MTEHatchOutputBusME {
 
     public void flushCachedStack() {
         if (getMaster() == null) {
-            getProvider().onPostTick(getBaseMetaTileEntity(), getProvider().getTickCounter() + 41);
             return;
         }
         if (getMaster().canAcceptAnyItem()) {
@@ -77,10 +81,10 @@ public class OutputBusMEProxy extends MTEHatchOutputBusME {
                 if (stack != null && stack.getStackSize() > 0) {
                     getMaster().getProvider()
                         .storeToCache(stack.copy());
-                    getProvider().getCacheList()
-                        .forEach(cachedStack -> cachedStack.setStackSize(0));
                 }
             }
+            getProvider().getCacheList()
+                .forEach(cachedStack -> cachedStack.setStackSize(0));
         }
     }
 
