@@ -280,23 +280,19 @@ public class ElectricProspectorTool extends Item {
 
             if (Mods.VisualProspecting.isModLoaded()) {
                 if (data == 0 || data == 1) {
-                    VisualProspecting_API.LogicalServer.sendProspectionResultsToClient(
+                    sendVisualProspectingOreResults(
+                        aWorld,
                         (EntityPlayerMP) aPlayer,
-                        VisualProspecting_API.LogicalServer.prospectOreVeinsWithinRadius(
-                            aWorld.provider.dimensionId,
-                            (int) aPlayer.posX,
-                            (int) aPlayer.posZ,
-                            size * 16),
-                        Collections.emptyList());
+                        (int) aPlayer.posX,
+                        (int) aPlayer.posZ,
+                        size * 16);
                 } else if (data == 2) {
-                    VisualProspecting_API.LogicalServer.sendProspectionResultsToClient(
+                    sendVisualProspectingFluidResults(
+                        aWorld,
                         (EntityPlayerMP) aPlayer,
-                        Collections.emptyList(),
-                        VisualProspecting_API.LogicalServer.prospectUndergroundFluidsWithingRadius(
-                            aWorld,
-                            (int) aPlayer.posX,
-                            (int) aPlayer.posZ,
-                            size * 16));
+                        (int) aPlayer.posX,
+                        (int) aPlayer.posZ,
+                        size * 16);
                 }
             }
 
@@ -476,14 +472,7 @@ public class ElectricProspectorTool extends Item {
         }
 
         if (Mods.VisualProspecting.isModLoaded()) {
-            VisualProspecting_API.LogicalServer.sendProspectionResultsToClient(
-                (EntityPlayerMP) aPlayer,
-                VisualProspecting_API.LogicalServer.prospectOreVeinsWithinRadius(
-                    aWorld.provider.dimensionId,
-                    (int) aPlayer.posX,
-                    (int) aPlayer.posZ,
-                    range * 16),
-                Collections.emptyList());
+            sendVisualProspectingOreResults(aWorld, (EntityPlayerMP) aPlayer, bX, bZ, range * 16);
         }
     }
 
@@ -509,15 +498,26 @@ public class ElectricProspectorTool extends Item {
         }
 
         if (Mods.VisualProspecting.isModLoaded()) {
-            VisualProspecting_API.LogicalServer.sendProspectionResultsToClient(
-                (EntityPlayerMP) aPlayer,
-                VisualProspecting_API.LogicalServer.prospectOreVeinsWithinRadius(
-                    aWorld.provider.dimensionId,
-                    (int) aPlayer.posX,
-                    (int) aPlayer.posZ,
-                    0),
-                Collections.emptyList());
+            sendVisualProspectingOreResults(aWorld, (EntityPlayerMP) aPlayer, aX, aZ, 0);
         }
+    }
+
+    private void sendVisualProspectingOreResults(World world, EntityPlayerMP player, int blockX, int blockZ,
+        int blockRadius) {
+        VisualProspecting_API.LogicalServer.sendProspectionResultsToClient(
+            player,
+            VisualProspecting_API.LogicalServer
+                .prospectOreVeinsWithinRadius(world.provider.dimensionId, blockX, blockZ, blockRadius),
+            Collections.emptyList());
+    }
+
+    private void sendVisualProspectingFluidResults(World world, EntityPlayerMP player, int blockX, int blockZ,
+        int blockRadius) {
+        VisualProspecting_API.LogicalServer.sendProspectionResultsToClient(
+            player,
+            Collections.emptyList(),
+            VisualProspecting_API.LogicalServer
+                .prospectUndergroundFluidsWithingRadius(world, blockX, blockZ, blockRadius));
     }
 
     public void processOreProspecting(ItemStack aStack, EntityPlayer aPlayer, Chunk aChunk, TileEntity aTileEntity,
