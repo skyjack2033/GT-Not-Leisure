@@ -5,7 +5,6 @@ import static gregtech.api.metatileentity.BaseTileEntity.TOOLTIP_DELAY;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumChatFormatting;
 
-import org.jetbrains.annotations.Nullable;
-
-import com.cleanroommc.modularui.api.IPanelHandler;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
@@ -25,7 +21,6 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.utils.Alignment;
-import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.value.sync.DynamicSyncHandler;
 import com.cleanroommc.modularui.value.sync.GenericListSyncHandler;
 import com.cleanroommc.modularui.value.sync.IntSyncValue;
@@ -37,30 +32,31 @@ import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.DynamicSyncedWidget;
 import com.cleanroommc.modularui.widgets.ItemDisplayWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.gtnewhorizon.cropsnh.utility.CropsNHUtils;
+import com.gtnewhorizon.cropsnh.utility.IFDropTable;
 import com.science.gtnl.common.machine.multiblock.module.steamElevator.SteamGreenhouseModule;
-import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseBucket;
+import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseStoredCrop;
+import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseViewMode;
 
 import gregtech.api.modularui2.GTGuiTextures;
 
 public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
-    private static final String INVENTORY_VIEW_SYNC_KEY = "steamGreenhouseInventoryView";
-    private static final String SEED_SLOT_LIST_SYNC_KEY = "steamGreenhouseSeedSlots";
-    private static final String SEED_SLOT_WIDGET_SYNC_KEY = "steamGreenhouseSeedSlotWidget";
-    private static final String MAX_SEED_TYPES_SYNC_KEY = "steamGreenhouseMaxSeedTypes";
+    private static final String VIEW_MODE_SYNC_KEY = "steamGreenhouseViewMode";
+    private static final String CROP_SLOT_LIST_SYNC_KEY = "steamGreenhouseCropSlots";
+    private static final String CROP_SLOT_WIDGET_SYNC_KEY = "steamGreenhouseCropSlotWidget";
     private static final String MAX_SEED_COUNT_SYNC_KEY = "steamGreenhouseMaxSeedCount";
-    private static final String USED_SEED_TYPES_SYNC_KEY = "steamGreenhouseUsedSeedTypes";
     private static final String USED_SEED_COUNT_SYNC_KEY = "steamGreenhouseUsedSeedCount";
-    private static final String SEED_INVENTORY_ENABLED_SYNC_KEY = "steamGreenhouseSeedInventoryEnabled";
     private static final String DROP_TRACKER_SYNC_KEY = "steamGreenhouseDropTracker";
-    private static final int TERMINAL_HEIGHT = 85;
-    private static final int SEED_INVENTORY_WIDTH = 128;
-    private static final int SEED_INVENTORY_HEIGHT = 60;
+    private static final int TERMINAL_WIDTH = 190;
+    private static final int TERMINAL_HEIGHT = 94;
+    private static final int INVENTORY_WIDTH = 162;
+    private static final int INVENTORY_HEIGHT = 72;
     private static final int SLOT_SIZE = 18;
-    private static final int SLOTS_PER_ROW = SEED_INVENTORY_WIDTH / SLOT_SIZE;
+    private static final int SLOTS_PER_ROW = INVENTORY_WIDTH / SLOT_SIZE;
 
     private final SteamGreenhouseModule steamGreenhouse;
-    private DynamicSyncHandler seedInventoryWidgetSyncer;
+    private DynamicSyncHandler cropInventoryWidgetSyncer;
 
     public SteamGreenhouseModuleGui(SteamGreenhouseModule multiblock) {
         super(multiblock);
@@ -69,7 +65,6 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
     @Override
     public ModularPanel build(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
-        steamGreenhouse.isInInventory = !baseMetaTileEntity.isActive();
         return super.build(guiData, syncManager, uiSettings);
     }
 
@@ -83,79 +78,60 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
                 .serializer(DropEntry::write)
                 .deserializer(DropEntry::read)
                 .equals(SteamGreenhouseModuleGui::areDropEntriesEqual)
+                .immutableCopy()
                 .build());
         super.registerSyncValues(syncManager);
-        new GTNLGreenHouseGui(steamGreenhouse).registerSyncValues(syncManager);
 
-        BooleanSyncValue inventoryViewSyncer = new BooleanSyncValue(
-            () -> steamGreenhouse.isInInventory,
-            value -> steamGreenhouse.isInInventory = value).allowC2S();
-        syncManager.syncValue(INVENTORY_VIEW_SYNC_KEY, inventoryViewSyncer);
+        IntSyncValue viewModeSyncer = new IntSyncValue(
+            () -> steamGreenhouse.getGreenHouseViewMode()
+                .ordinal(),
+            value -> steamGreenhouse.setGreenHouseViewMode(GreenHouseViewMode.fromOrdinal(value))).allowC2S();
+        syncManager.syncValue(VIEW_MODE_SYNC_KEY, viewModeSyncer);
+        syncManager.syncValue(MAX_SEED_COUNT_SYNC_KEY, new IntSyncValue(steamGreenhouse::getMaxSeedCount));
+        syncManager.syncValue(USED_SEED_COUNT_SYNC_KEY, new IntSyncValue(steamGreenhouse::getTotalStoredCropCount));
 
-        IntSyncValue maxSeedTypesSyncer = new IntSyncValue(steamGreenhouse::getMaxSeedTypes);
-        IntSyncValue maxSeedCountSyncer = new IntSyncValue(steamGreenhouse::getMaxSeedCount);
-        IntSyncValue usedSeedTypesSyncer = new IntSyncValue(
-            () -> steamGreenhouse.getBuckets()
-                .size());
-        IntSyncValue usedSeedCountSyncer = new IntSyncValue(steamGreenhouse::getTotalSeedCount);
-        syncManager.syncValue(MAX_SEED_TYPES_SYNC_KEY, maxSeedTypesSyncer);
-        syncManager.syncValue(MAX_SEED_COUNT_SYNC_KEY, maxSeedCountSyncer);
-        syncManager.syncValue(USED_SEED_TYPES_SYNC_KEY, usedSeedTypesSyncer);
-        syncManager.syncValue(USED_SEED_COUNT_SYNC_KEY, usedSeedCountSyncer);
-        syncManager.syncValue(
-            SEED_INVENTORY_ENABLED_SYNC_KEY,
-            new BooleanSyncValue(() -> steamGreenhouse.getMaxProgressTime() == 0));
-
-        GenericListSyncHandler<SeedSlot> seedSlotSyncer = GenericListSyncHandler.<SeedSlot>builder()
-            .getter(this::createSeedSlots)
-            .setter(unused -> {})
-            .serializer(SeedSlot::write)
-            .deserializer(SeedSlot::read)
-            .equals(SteamGreenhouseModuleGui::areSeedSlotsEqual)
+        GenericListSyncHandler<CropSlot> cropSlotSyncer = GenericListSyncHandler.<CropSlot>builder()
+            .getter(this::createCropSlots)
+            .setter(value -> {})
+            .serializer(CropSlot::write)
+            .deserializer(CropSlot::read)
+            .equals(SteamGreenhouseModuleGui::areCropSlotsEqual)
             .immutableCopy()
             .build();
-        syncManager.syncValue(SEED_SLOT_LIST_SYNC_KEY, seedSlotSyncer);
-        seedInventoryWidgetSyncer = new DynamicSyncHandler().widgetProvider((unused, packet) -> {
-            if (packet == null) {
-                return new EmptyWidget();
-            }
-            return createSeedInventoryWidget(syncManager);
+        syncManager.syncValue(CROP_SLOT_LIST_SYNC_KEY, cropSlotSyncer);
+        cropInventoryWidgetSyncer = new DynamicSyncHandler().widgetProvider((panelSyncManager, packet) -> {
+            if (packet == null) return new EmptyWidget();
+            return createCropInventoryWidget(syncManager);
         });
-        syncManager.syncValue(SEED_SLOT_WIDGET_SYNC_KEY, seedInventoryWidgetSyncer);
+        syncManager.syncValue(CROP_SLOT_WIDGET_SYNC_KEY, cropInventoryWidgetSyncer);
         if (!syncManager.isClient()) {
-            seedSlotSyncer.setChangeListener(this::notifySeedInventoryUpdate);
-            maxSeedTypesSyncer.setChangeListener(this::notifySeedInventoryUpdate);
-            maxSeedCountSyncer.setChangeListener(this::notifySeedInventoryUpdate);
-            usedSeedTypesSyncer.setChangeListener(this::notifySeedInventoryUpdate);
-            usedSeedCountSyncer.setChangeListener(this::notifySeedInventoryUpdate);
+            cropSlotSyncer.setChangeListener(this::notifyCropInventoryUpdate);
         }
     }
 
     @Override
-    protected void initPanelMap(ModularPanel parent, PanelSyncManager syncManager) {
-        super.initPanelMap(parent, syncManager);
-        new GTNLGreenHouseGui(steamGreenhouse).registerPanel(parent, syncManager, panelMap);
-    }
-
-    @Override
     protected ParentWidget<?> createTerminalParentWidget(ModularPanel panel, PanelSyncManager syncManager) {
-        BooleanSyncValue inventoryViewSyncer = syncManager
-            .findSyncHandler(INVENTORY_VIEW_SYNC_KEY, BooleanSyncValue.class);
-        DynamicSyncedWidget<?> seedInventoryWidget = createDynamicSeedInventoryWidget(syncManager);
-        seedInventoryWidget.pos(10, 16)
-            .setEnabledIf(unused -> inventoryViewSyncer.getBoolValue());
+        IntSyncValue viewModeSyncer = syncManager.findSyncHandler(VIEW_MODE_SYNC_KEY, IntSyncValue.class);
+        DynamicSyncedWidget<?> cropInventoryWidget = createDynamicCropInventoryWidget(syncManager);
+        cropInventoryWidget.pos(10, 12)
+            .setEnabledIf(
+                widget -> GreenHouseViewMode.fromOrdinal(viewModeSyncer.getIntValue()) != GreenHouseViewMode.STATUS);
         return new ParentWidget<>().size(getTerminalWidgetWidth(), getTerminalWidgetHeight())
             .child(
                 GTGuiTextures.PICTURE_SCREEN_BLACK.asWidget()
                     .pos(4, 4)
-                    .size(190, 85)
-                    .setEnabledIf(unused -> !inventoryViewSyncer.getBoolValue()))
-            .child(seedInventoryWidget)
+                    .size(TERMINAL_WIDTH, 85)
+                    .setEnabledIf(
+                        widget -> GreenHouseViewMode.fromOrdinal(viewModeSyncer.getIntValue())
+                            == GreenHouseViewMode.STATUS))
+            .child(cropInventoryWidget)
             .child(
                 createTerminalTextWidget(syncManager, panel).pos(0, 7)
-                    .size(190, 79)
+                    .size(TERMINAL_WIDTH, 79)
                     .collapseDisabledChild()
-                    .setEnabledIf(unused -> !inventoryViewSyncer.getBoolValue()))
+                    .setEnabledIf(
+                        widget -> GreenHouseViewMode.fromOrdinal(viewModeSyncer.getIntValue())
+                            == GreenHouseViewMode.STATUS))
             .childIf(
                 steamGreenhouse.supportsTerminalRightCornerColumn(),
                 () -> createTerminalRightCornerColumn(panel, syncManager))
@@ -166,12 +142,12 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
     @Override
     protected int getTerminalRowHeight() {
-        return TERMINAL_HEIGHT + 9;
+        return TERMINAL_HEIGHT;
     }
 
     @Override
     protected int getTerminalWidgetHeight() {
-        return TERMINAL_HEIGHT + 9;
+        return TERMINAL_HEIGHT;
     }
 
     @Override
@@ -182,65 +158,61 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
             .paddingLeft(4)
             .paddingRight(25)
             .mainAxisAlignment(Alignment.MainAxis.END)
-            .child(createInventoryStatusToggle(syncManager))
-            .child(createConfigurationButton())
+            .child(createViewModeToggle(syncManager))
             .child(createRightPanelGapRow(parent, syncManager));
     }
 
-    private IWidget createInventoryStatusToggle(PanelSyncManager syncManager) {
-        BooleanSyncValue inventoryViewSyncer = syncManager
-            .findSyncHandler(INVENTORY_VIEW_SYNC_KEY, BooleanSyncValue.class);
+    private IWidget createViewModeToggle(PanelSyncManager syncManager) {
+        IntSyncValue viewModeSyncer = syncManager.findSyncHandler(VIEW_MODE_SYNC_KEY, IntSyncValue.class);
         return new ButtonWidget<>().size(55, 16)
             .background(GTGuiTextures.BUTTON_STANDARD)
             .overlay(
                 new DynamicDrawable(
-                    () -> IKey
-                        .lang(
-                            inventoryViewSyncer.getBoolValue() ? "Info_EdenGarden_Inventory" : "Info_EdenGarden_Status")
+                    () -> IKey.lang(getViewModeLangKey(viewModeSyncer.getIntValue()))
                         .asIcon()
                         .size(55, 16)))
-            .syncHandler(
-                new InteractionSyncHandler().setOnMousePressed(
-                    unused -> inventoryViewSyncer.setBoolValue(!inventoryViewSyncer.getBoolValue(), true, true)))
+            .syncHandler(new InteractionSyncHandler().setOnMousePressed(mouseData -> {
+                GreenHouseViewMode next = GreenHouseViewMode.fromOrdinal(viewModeSyncer.getIntValue())
+                    .next();
+                viewModeSyncer.setIntValue(next.ordinal(), true, true);
+                notifyCropInventoryUpdate();
+            }))
             .tooltipShowUpTimer(TOOLTIP_DELAY);
     }
 
-    private IWidget createConfigurationButton() {
-        IPanelHandler panelHandler = panelMap.get(GTNLGreenHouseGui.CONFIGURATION_PANEL_KEY);
-        return new GTNLGreenHouseGui(steamGreenhouse).createConfigurationButton(panelHandler);
+    private String getViewModeLangKey(int mode) {
+        return switch (GreenHouseViewMode.fromOrdinal(mode)) {
+            case BLOCKS -> "Info_EdenGarden_Blocks";
+            case STATUS -> "Info_EdenGarden_Status";
+            default -> "Info_EdenGarden_Seeds";
+        };
     }
 
-    private DynamicSyncedWidget<?> createDynamicSeedInventoryWidget(PanelSyncManager syncManager) {
-        DynamicSyncHandler syncer = syncManager.findSyncHandler(SEED_SLOT_WIDGET_SYNC_KEY, DynamicSyncHandler.class);
+    private DynamicSyncedWidget<?> createDynamicCropInventoryWidget(PanelSyncManager syncManager) {
+        DynamicSyncHandler syncer = syncManager.findSyncHandler(CROP_SLOT_WIDGET_SYNC_KEY, DynamicSyncHandler.class);
         return new DynamicSyncedWidget<>().syncHandler(syncer)
-            .initialChild(createSeedInventoryWidget(syncManager))
-            .size(SEED_INVENTORY_WIDTH, SEED_INVENTORY_HEIGHT);
+            .initialChild(createCropInventoryWidget(syncManager))
+            .size(INVENTORY_WIDTH, INVENTORY_HEIGHT);
     }
 
-    private IWidget createSeedInventoryWidget(PanelSyncManager syncManager) {
-        GenericListSyncHandler<SeedSlot> seedSlotSyncer = getSeedSlotSyncer(syncManager);
-        IntSyncValue maxSeedTypesSyncer = syncManager.findSyncHandler(MAX_SEED_TYPES_SYNC_KEY, IntSyncValue.class);
-        IntSyncValue maxSeedCountSyncer = syncManager.findSyncHandler(MAX_SEED_COUNT_SYNC_KEY, IntSyncValue.class);
-        IntSyncValue usedSeedTypesSyncer = syncManager.findSyncHandler(USED_SEED_TYPES_SYNC_KEY, IntSyncValue.class);
-        IntSyncValue usedSeedCountSyncer = syncManager.findSyncHandler(USED_SEED_COUNT_SYNC_KEY, IntSyncValue.class);
+    private IWidget createCropInventoryWidget(PanelSyncManager syncManager) {
+        GenericListSyncHandler<CropSlot> cropSlotSyncer = getCropSlotSyncer(syncManager);
+        IntSyncValue viewModeSyncer = syncManager.findSyncHandler(VIEW_MODE_SYNC_KEY, IntSyncValue.class);
+        GreenHouseViewMode viewMode = GreenHouseViewMode.fromOrdinal(viewModeSyncer.getIntValue());
+        List<IWidget> buttons = new ArrayList<>();
+        for (CropSlot cropSlot : cropSlotSyncer.getValue()) {
+            ItemStack stack = viewMode == GreenHouseViewMode.BLOCKS ? cropSlot.blockUnderStack() : cropSlot.seedStack();
+            if (stack == null && viewMode == GreenHouseViewMode.BLOCKS) continue;
+            buttons.add(createCropSlotButton(cropSlot.index(), stack, syncManager, viewMode));
+        }
+        if (viewMode == GreenHouseViewMode.SEEDS
+            && steamGreenhouse.getTotalStoredCropCount() < steamGreenhouse.getMaxSeedCount()) {
+            buttons.add(createInsertionSlotButton(syncManager));
+        }
 
         Flow column = Flow.column()
-            .size(SEED_INVENTORY_WIDTH, SEED_INVENTORY_HEIGHT)
+            .size(INVENTORY_WIDTH, INVENTORY_HEIGHT)
             .crossAxisAlignment(Alignment.CrossAxis.START);
-        List<IWidget> buttons = new ArrayList<>();
-        for (SeedSlot seedSlot : seedSlotSyncer.getValue()) {
-            buttons.add(createSeedSlotButton(seedSlot, syncManager));
-        }
-        if (usedSeedCountSyncer.getIntValue() < maxSeedCountSyncer.getIntValue()) {
-            buttons.add(
-                createInsertionSlotButton(
-                    maxSeedTypesSyncer,
-                    maxSeedCountSyncer,
-                    usedSeedTypesSyncer,
-                    usedSeedCountSyncer,
-                    syncManager));
-        }
-
         for (int i = 0; i < buttons.size(); i += SLOTS_PER_ROW) {
             Flow row = Flow.row()
                 .height(SLOT_SIZE);
@@ -252,23 +224,29 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         return column;
     }
 
-    private IWidget createSeedSlotButton(SeedSlot seedSlot, PanelSyncManager syncManager) {
+    private IWidget createCropSlotButton(int cropIndex, ItemStack stack, PanelSyncManager syncManager,
+        GreenHouseViewMode viewMode) {
         return new ButtonWidget<>().size(SLOT_SIZE, SLOT_SIZE)
             .background(GTGuiTextures.SLOT_ITEM_DARK)
             .child(
-                new ItemDisplayWidget().item(seedSlot.stack())
+                new ItemDisplayWidget().item(stack)
                     .displayAmount(true)
                     .disableThemeBackground(true)
                     .disableHoverThemeBackground(true)
                     .size(SLOT_SIZE, SLOT_SIZE))
+            .child(
+                GTGuiTextures.OVERLAY_SLOT_BLOCK_STANDARD.asWidget()
+                    .size(SLOT_SIZE, SLOT_SIZE)
+                    .setEnabledIf(widget -> viewMode == GreenHouseViewMode.BLOCKS))
             .syncHandler(new InteractionSyncHandler().setOnMousePressed(mouseData -> {
-                if (!isSeedInventoryEnabled()) return;
+                if (!steamGreenhouse.isGreenHouseStorageEditable()) return;
+                if (viewMode == GreenHouseViewMode.BLOCKS) return;
                 if (mouseData.mouseButton == 2) {
-                    handleCreativeSeedCopy(seedSlot, syncManager);
+                    handleCreativeSeedCopy(stack, syncManager);
                     return;
                 }
                 if (mouseData.shift) {
-                    extractSeedToInventory(seedSlot.index(), syncManager);
+                    extractSeedToInventory(cropIndex, syncManager);
                     return;
                 }
                 ItemStack cursorStack = syncManager.getCursorItem();
@@ -276,14 +254,15 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
                     insertCursorSeed(cursorStack, mouseData.mouseButton == 1, syncManager);
                     return;
                 }
-                extractSeedToCursor(seedSlot.index(), syncManager);
+                extractSeedToCursor(cropIndex, syncManager);
             }))
-            .tooltipBuilder(tooltip -> addSeedTooltip(tooltip, seedSlot.stack(), syncManager))
+            .tooltipBuilder(tooltip -> addStackTooltip(tooltip, stack, syncManager))
             .tooltipShowUpTimer(TOOLTIP_DELAY);
     }
 
-    private IWidget createInsertionSlotButton(IntSyncValue maxSeedTypesSyncer, IntSyncValue maxSeedCountSyncer,
-        IntSyncValue usedSeedTypesSyncer, IntSyncValue usedSeedCountSyncer, PanelSyncManager syncManager) {
+    private IWidget createInsertionSlotButton(PanelSyncManager syncManager) {
+        IntSyncValue maxSeedCountSyncer = syncManager.findSyncHandler(MAX_SEED_COUNT_SYNC_KEY, IntSyncValue.class);
+        IntSyncValue usedSeedCountSyncer = syncManager.findSyncHandler(USED_SEED_COUNT_SYNC_KEY, IntSyncValue.class);
         return new ButtonWidget<>().size(SLOT_SIZE, SLOT_SIZE)
             .background(GTGuiTextures.SLOT_ITEM_DARK)
             .child(
@@ -292,40 +271,31 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
                     .size(SLOT_SIZE, SLOT_SIZE)
                     .textAlign(Alignment.BottomRight))
             .syncHandler(new InteractionSyncHandler().setOnMousePressed(mouseData -> {
-                if (!isSeedInventoryEnabled()) return;
+                if (!steamGreenhouse.isGreenHouseStorageEditable()) return;
                 ItemStack cursorStack = syncManager.getCursorItem();
                 if (cursorStack != null) {
                     insertCursorSeed(cursorStack, mouseData.mouseButton == 1, syncManager);
                 }
             }))
             .tooltipBuilder(
-                tooltip -> tooltip
-                    .addLine(
-                        IKey.str(
-                            EnumChatFormatting.DARK_PURPLE + "Remaining seed types: "
-                                + (maxSeedTypesSyncer.getIntValue() - usedSeedTypesSyncer.getIntValue())))
-                    .addLine(
-                        IKey.str(
-                            EnumChatFormatting.DARK_GREEN + "Remaining seed capacity: "
-                                + (maxSeedCountSyncer.getIntValue() - usedSeedCountSyncer.getIntValue()))))
+                tooltip -> tooltip.addLine(
+                    IKey.str(
+                        EnumChatFormatting.DARK_GREEN + "Remaining seed capacity: "
+                            + (maxSeedCountSyncer.getIntValue() - usedSeedCountSyncer.getIntValue()))))
             .tooltipShowUpTimer(TOOLTIP_DELAY);
     }
 
-    private boolean isSeedInventoryEnabled() {
-        return steamGreenhouse.getMaxProgressTime() == 0;
-    }
-
-    private void handleCreativeSeedCopy(SeedSlot seedSlot, PanelSyncManager syncManager) {
-        if (!syncManager.getPlayer().capabilities.isCreativeMode || syncManager.getCursorItem() != null) return;
-        ItemStack stack = seedSlot.stack()
-            .copy();
-        stack.stackSize = stack.getMaxStackSize();
-        syncManager.setCursorItem(stack);
+    private void handleCreativeSeedCopy(ItemStack stack, PanelSyncManager syncManager) {
+        if (stack == null || !syncManager.getPlayer().capabilities.isCreativeMode
+            || syncManager.getCursorItem() != null) return;
+        ItemStack copy = stack.copy();
+        copy.stackSize = copy.getMaxStackSize();
+        syncManager.setCursorItem(copy);
         updateHeldItem(syncManager);
     }
 
-    private void extractSeedToInventory(int bucketIndex, PanelSyncManager syncManager) {
-        ItemStack removed = removeSeedStack(bucketIndex, syncManager);
+    private void extractSeedToInventory(int cropIndex, PanelSyncManager syncManager) {
+        ItemStack removed = removeSeedStack(cropIndex);
         if (removed == null) return;
         if (syncManager.getPlayer().inventory.addItemStackToInventory(removed)) {
             syncManager.getPlayer().inventoryContainer.detectAndSendChanges();
@@ -333,60 +303,47 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
             syncManager.getPlayer()
                 .entityDropItem(removed, 0.0f);
         }
-        notifySeedInventoryUpdate();
+        notifyCropInventoryUpdate();
     }
 
-    private void extractSeedToCursor(int bucketIndex, PanelSyncManager syncManager) {
-        ItemStack removed = removeSeedStack(bucketIndex, syncManager);
+    private void extractSeedToCursor(int cropIndex, PanelSyncManager syncManager) {
+        ItemStack removed = removeSeedStack(cropIndex);
         if (removed == null) return;
         syncManager.setCursorItem(removed);
         updateHeldItem(syncManager);
-        notifySeedInventoryUpdate();
+        notifyCropInventoryUpdate();
     }
 
-    private @Nullable ItemStack removeSeedStack(int bucketIndex, PanelSyncManager syncManager) {
-        if (bucketIndex < 0 || bucketIndex >= steamGreenhouse.getBuckets()
-            .size()) {
-            return null;
+    private ItemStack removeSeedStack(int cropIndex) {
+        if (cropIndex < 0 || cropIndex >= steamGreenhouse.getStoredCrops()
+            .size()) return null;
+        GreenHouseStoredCrop crop = steamGreenhouse.getStoredCrops()
+            .get(cropIndex);
+        ItemStack removed = crop.removeSeeds(
+            crop.getSeedStack()
+                .getMaxStackSize());
+        if (crop.getSeedCount() <= 0) {
+            steamGreenhouse.getStoredCrops()
+                .remove(cropIndex);
         }
-        GreenHouseBucket bucket = steamGreenhouse.getBuckets()
-            .get(bucketIndex);
-        int maxRemove = bucket.getSeedStack()
-            .getMaxStackSize();
-        ItemStack[] outputs = bucket.tryRemoveSeed(maxRemove, false);
-        if (outputs == null || outputs.length == 0) return null;
-        ItemStack result = outputs[0];
-        for (int i = 1; i < outputs.length; i++) {
-            addSupportItemToPlayer(outputs[i], syncManager);
-        }
-        if (bucket.getSeedCount() <= 0) {
-            steamGreenhouse.getBuckets()
-                .remove(bucket);
-        }
-        return result;
+        return removed;
     }
 
     private void insertCursorSeed(ItemStack cursorStack, boolean singleItem, PanelSyncManager syncManager) {
-        ItemStack stackToInsert = cursorStack;
+        ItemStack stackToInsert = singleItem ? cursorStack.copy() : cursorStack;
+        if (singleItem) stackToInsert.stackSize = 1;
+        int before = stackToInsert.stackSize;
+        steamGreenhouse.tryAddCropStack(stackToInsert, false);
+        int inserted = before - stackToInsert.stackSize;
+        if (inserted <= 0) return;
         if (singleItem) {
-            stackToInsert = cursorStack.copy();
-            stackToInsert.stackSize = 1;
-        }
-        steamGreenhouse.addCrop(stackToInsert);
-        if (singleItem) {
-            if (stackToInsert.stackSize == 1) return;
             cursorStack.stackSize--;
         }
-        if (cursorStack.stackSize > 0) {
+        if (cursorStack.stackSize <= 0) {
             syncManager.setCursorItem(null);
-            updateHeldItem(syncManager);
-            syncManager.setCursorItem(cursorStack);
-            updateHeldItem(syncManager);
-        } else {
-            syncManager.setCursorItem(null);
-            updateHeldItem(syncManager);
         }
-        notifySeedInventoryUpdate();
+        updateHeldItem(syncManager);
+        notifyCropInventoryUpdate();
     }
 
     private void updateHeldItem(PanelSyncManager syncManager) {
@@ -396,14 +353,8 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         }
     }
 
-    private void addSupportItemToPlayer(ItemStack supportItem, PanelSyncManager syncManager) {
-        if (!syncManager.getPlayer().inventory.addItemStackToInventory(supportItem)) {
-            syncManager.getPlayer()
-                .entityDropItem(supportItem, 0.0f);
-        }
-    }
-
-    private void addSeedTooltip(RichTooltip tooltip, ItemStack stack, PanelSyncManager syncManager) {
+    private void addStackTooltip(RichTooltip tooltip, ItemStack stack, PanelSyncManager syncManager) {
+        if (stack == null) return;
         List<String> lines = stack.getTooltip(syncManager.getPlayer(), false);
         if (!lines.isEmpty() && lines.get(0) != null) {
             lines.set(0, stack.stackSize + " x " + lines.get(0));
@@ -413,33 +364,32 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         }
     }
 
-    private void notifySeedInventoryUpdate() {
-        if (seedInventoryWidgetSyncer != null) {
-            seedInventoryWidgetSyncer.notifyUpdate(unused -> {});
+    private void notifyCropInventoryUpdate() {
+        if (cropInventoryWidgetSyncer != null) {
+            cropInventoryWidgetSyncer.notifyUpdate(buffer -> {});
         }
     }
 
-    private List<SeedSlot> createSeedSlots() {
-        List<SeedSlot> slots = new ArrayList<>();
-        for (int i = 0; i < steamGreenhouse.getBuckets()
+    private List<CropSlot> createCropSlots() {
+        List<CropSlot> slots = new ArrayList<>();
+        for (int i = 0; i < steamGreenhouse.getStoredCrops()
             .size(); i++) {
-            GreenHouseBucket bucket = steamGreenhouse.getBuckets()
+            GreenHouseStoredCrop crop = steamGreenhouse.getStoredCrops()
                 .get(i);
-            if (bucket == null) continue;
-            ItemStack stack = bucket.getSeedStack();
-            if (stack == null) continue;
-            slots.add(new SeedSlot(i, stack.copy()));
+            if (crop == null || CropsNHUtils.isStackInvalid(crop.getSeedStack())) continue;
+            ItemStack seed = crop.getSeedStack()
+                .copy();
+            ItemStack block = CropsNHUtils.isStackValid(crop.getBlockUnderStack()) ? crop.getBlockUnderStack()
+                .copy() : null;
+            slots.add(new CropSlot(i, seed, block));
         }
         return slots;
     }
 
     private List<DropEntry> createDropEntries() {
-        Map<ItemStack, Double> merged = new HashMap<>();
-        for (Map.Entry<ItemStack, Double> drop : steamGreenhouse.guiDropTracker.entrySet()) {
-            merged.merge(drop.getKey(), drop.getValue(), Double::sum);
-        }
-        List<DropEntry> entries = new ArrayList<>(merged.size());
-        for (Map.Entry<ItemStack, Double> drop : merged.entrySet()) {
+        List<DropEntry> entries = new ArrayList<>();
+        IFDropTable tracker = steamGreenhouse.getIndustrialFarmGuiDropTracker();
+        for (Map.Entry<ItemStack, Double> drop : tracker.entrySet()) {
             entries.add(
                 new DropEntry(
                     drop.getKey()
@@ -455,21 +405,22 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
     }
 
     private void setClientDropEntries(List<DropEntry> entries) {
-        HashMap<ItemStack, Double> tracker = new HashMap<>(entries.size());
+        IFDropTable tracker = new IFDropTable();
         for (DropEntry entry : entries) {
-            tracker.put(entry.stack(), entry.chance());
+            tracker.addDrop(entry.stack(), entry.chance());
         }
-        steamGreenhouse.synchedGUIDropTracker = tracker;
+        steamGreenhouse.setIndustrialFarmGuiDropTracker(tracker);
     }
 
     @SuppressWarnings("unchecked")
-    private GenericListSyncHandler<SeedSlot> getSeedSlotSyncer(PanelSyncManager syncManager) {
-        return syncManager.findSyncHandler(SEED_SLOT_LIST_SYNC_KEY, GenericListSyncHandler.class);
+    private GenericListSyncHandler<CropSlot> getCropSlotSyncer(PanelSyncManager syncManager) {
+        return syncManager.findSyncHandler(CROP_SLOT_LIST_SYNC_KEY, GenericListSyncHandler.class);
     }
 
-    private static boolean areSeedSlotsEqual(SeedSlot first, SeedSlot second) {
+    private static boolean areCropSlotsEqual(CropSlot first, CropSlot second) {
         if (first == null || second == null) return first == second;
-        return first.index() == second.index() && ItemStack.areItemStacksEqual(first.stack(), second.stack());
+        return first.index() == second.index() && ItemStack.areItemStacksEqual(first.seedStack(), second.seedStack())
+            && ItemStack.areItemStacksEqual(first.blockUnderStack(), second.blockUnderStack());
     }
 
     private static boolean areDropEntriesEqual(DropEntry first, DropEntry second) {
@@ -478,15 +429,19 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
             && ItemStack.areItemStacksEqual(first.stack(), second.stack());
     }
 
-    public record SeedSlot(int index, ItemStack stack) {
+    public record CropSlot(int index, ItemStack seedStack, ItemStack blockUnderStack) {
 
-        public static void write(PacketBuffer buffer, SeedSlot seedSlot) throws IOException {
-            buffer.writeVarIntToBuffer(seedSlot.index());
-            buffer.writeItemStackToBuffer(seedSlot.stack());
+        public static void write(PacketBuffer buffer, CropSlot cropSlot) throws IOException {
+            buffer.writeVarIntToBuffer(cropSlot.index());
+            buffer.writeItemStackToBuffer(cropSlot.seedStack());
+            buffer.writeItemStackToBuffer(cropSlot.blockUnderStack());
         }
 
-        public static SeedSlot read(PacketBuffer buffer) throws IOException {
-            return new SeedSlot(buffer.readVarIntFromBuffer(), buffer.readItemStackFromBuffer());
+        public static CropSlot read(PacketBuffer buffer) throws IOException {
+            return new CropSlot(
+                buffer.readVarIntFromBuffer(),
+                buffer.readItemStackFromBuffer(),
+                buffer.readItemStackFromBuffer());
         }
     }
 

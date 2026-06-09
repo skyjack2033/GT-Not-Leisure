@@ -36,7 +36,7 @@ public class GTNLMultiBlockBaseGui<T extends MTEMultiBlockBase> extends MTEMulti
         if (multiblock instanceof IControllerInfo controllerInfo && controllerInfo.supportsMachineInfo()) {
             new GTNLControllerInfoGui(controllerInfo).registerPanel(parent, syncManager, panelMap);
         }
-        if (multiblock instanceof IGreenHouse greenHouse) {
+        if (multiblock instanceof IGreenHouse greenHouse && greenHouse.supportsGreenHouseConfigurationPanel()) {
             new GTNLGreenHouseGui(greenHouse).registerPanel(parent, syncManager, panelMap);
         }
         if (multiblock instanceof IControllerUpgrade controllerUpgrade) {
@@ -48,7 +48,7 @@ public class GTNLMultiBlockBaseGui<T extends MTEMultiBlockBase> extends MTEMulti
     @Override
     protected void registerSyncValues(PanelSyncManager syncManager) {
         super.registerSyncValues(syncManager);
-        if (multiblock instanceof IGreenHouse greenHouse) {
+        if (multiblock instanceof IGreenHouse greenHouse && greenHouse.supportsGreenHouseConfigurationPanel()) {
             new GTNLGreenHouseGui(greenHouse).registerSyncValues(syncManager);
         }
         if (multiblock instanceof IControllerUpgrade controllerUpgrade) {
@@ -75,7 +75,7 @@ public class GTNLMultiBlockBaseGui<T extends MTEMultiBlockBase> extends MTEMulti
     }
 
     private Optional<IWidget> createGreenHouseConfigurationButton() {
-        if (!(multiblock instanceof IGreenHouse greenHouse)) {
+        if (!(multiblock instanceof IGreenHouse greenHouse) || !greenHouse.supportsGreenHouseConfigurationPanel()) {
             return Optional.empty();
         }
         return Optional.of(
