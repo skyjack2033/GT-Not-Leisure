@@ -873,11 +873,6 @@ Tooltip_NinefoldInputHatch_02=可容纳 %s 种流体
 
 QuadrupleOutputHatchEV=四重输出仓 (EV)
 NinefoldOutputHatchEV=九重输出仓 (EV)
-Tooltip_DualOutputHatch_00=为多方块机器输出流体
-Tooltip_DualOutputHatch_01=容量：
-Tooltip_DualOutputHatch_02_00=可容纳
-Tooltip_DualOutputHatch_02_01=种流体
-
 DualInputHatchLV=输入总成 (LV)
 DualInputHatchMV=输入总成 (MV)
 DualInputHatchHV=输入总成 (HV)

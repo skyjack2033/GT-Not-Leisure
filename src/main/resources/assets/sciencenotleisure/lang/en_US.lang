@@ -873,11 +873,6 @@ Tooltip_NinefoldInputHatch_02=Can hold %s types of fluids
 
 QuadrupleOutputHatchEV=Quadruple Output Hatch (EV)
 NinefoldOutputHatchEV=Nonuple Output Hatch (EV)
-Tooltip_DualOutputHatch_00=Output fluids for multiblock machines
-Tooltip_DualOutputHatch_01=Capacity: 
-Tooltip_DualOutputHatch_02_00=Can hold
-Tooltip_DualOutputHatch_02_01=types of fluids
-
 DualInputHatchLV=Input Assembly (LV)
 DualInputHatchMV=Input Assembly (MV)
 DualInputHatchHV=Input Assembly (HV)
