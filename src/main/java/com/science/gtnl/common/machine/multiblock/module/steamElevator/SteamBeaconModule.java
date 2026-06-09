@@ -56,31 +56,31 @@ import vazkii.botania.common.brew.ModPotions;
 
 public class SteamBeaconModule extends SteamElevatorModule {
 
-    private boolean hasSpeedEffect; // 速度效果
-    private boolean hasStrengthEffect; // 力量效果
-    private boolean hasJumpBoostEffect; // 跳跃提升效果
-    private boolean hasResistanceEffect; // 抗性效果
-    private boolean hasHealthRegenerationEffect; // 生命恢复
-    private boolean hasNightVisionEffect; // 夜视
-    private boolean hasHasteEffect; // 急迫
-    private boolean hasFireResistanceEffect; // 防火
-    private boolean hasWaterBreathingEffect; // 水下呼吸
-    private boolean hasWarpWardEffect; // 扭曲守护
-    private boolean hasFeatherFeetEffect; // 羽翼
-    private boolean hasVisRegenEffect; // 灵气创生
+    private boolean hasSpeedEffect;
+    private boolean hasStrengthEffect;
+    private boolean hasJumpBoostEffect;
+    private boolean hasResistanceEffect;
+    private boolean hasHealthRegenerationEffect;
+    private boolean hasNightVisionEffect;
+    private boolean hasHasteEffect;
+    private boolean hasFireResistanceEffect;
+    private boolean hasWaterBreathingEffect;
+    private boolean hasWarpWardEffect;
+    private boolean hasFeatherFeetEffect;
+    private boolean hasVisRegenEffect;
 
-    private boolean enableSpeedEffect; // 速度效果
-    private boolean enableStrengthEffect; // 力量效果
-    private boolean enableJumpBoostEffect; // 跳跃提升效果
-    private boolean enableResistanceEffect; // 抗性效果
-    private boolean enableHealthRegenerationEffect; // 生命恢复
-    private boolean enableNightVisionEffect; // 夜视
-    private boolean enableHasteEffect; // 急迫
-    private boolean enableFireResistanceEffect; // 防火
-    private boolean enableWaterBreathingEffect; // 水下呼吸
-    private boolean enableFeatherFeetEffect; // 羽翼
-    private boolean enableVisRegenEffect; // 灵气创生
-    private boolean enableWarpWardEffect; // 扭曲守护
+    private boolean enableSpeedEffect;
+    private boolean enableStrengthEffect;
+    private boolean enableJumpBoostEffect;
+    private boolean enableResistanceEffect;
+    private boolean enableHealthRegenerationEffect;
+    private boolean enableNightVisionEffect;
+    private boolean enableHasteEffect;
+    private boolean enableFireResistanceEffect;
+    private boolean enableWaterBreathingEffect;
+    private boolean enableFeatherFeetEffect;
+    private boolean enableVisRegenEffect;
+    private boolean enableWarpWardEffect;
     private int activeEffectsCount = 0;
     private int machineEffectsCount = 0;
     private boolean canWork;
@@ -714,51 +714,51 @@ public class SteamBeaconModule extends SteamElevatorModule {
                 if (distance <= getMachineEffectRange()) {
                     if (enableSpeedEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, setMaxEffectLevel()));
-                        setEnableSpeedEffect(enableSpeedEffect); // 更新启用状态
+                        setEnableSpeedEffect(enableSpeedEffect); // Refresh enabled state.
                     }
                     if (enableStrengthEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.damageBoost.id, 300, setMaxEffectLevel()));
-                        setEnableStrengthEffect(enableStrengthEffect); // 更新启用状态
+                        setEnableStrengthEffect(enableStrengthEffect); // Refresh enabled state.
                     }
                     if (enableJumpBoostEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.jump.id, 300, setMaxEffectLevel()));
-                        setEnableJumpBoostEffect(enableJumpBoostEffect); // 更新启用状态
+                        setEnableJumpBoostEffect(enableJumpBoostEffect); // Refresh enabled state.
                     }
                     if (enableResistanceEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.resistance.id, 300, setMaxEffectLevel()));
-                        setEnableResistanceEffect(enableResistanceEffect); // 更新启用状态
+                        setEnableResistanceEffect(enableResistanceEffect); // Refresh enabled state.
                     }
                     if (enableHealthRegenerationEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.regeneration.id, 300, setMaxEffectLevel()));
-                        setEnableHealthRegenerationEffect(enableHealthRegenerationEffect); // 更新启用状态
+                        setEnableHealthRegenerationEffect(enableHealthRegenerationEffect); // Refresh enabled state.
                     }
                     if (enableNightVisionEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.nightVision.id, 300, setMaxEffectLevel()));
-                        setEnableNightVisionEffect(enableNightVisionEffect); // 更新启用状态
+                        setEnableNightVisionEffect(enableNightVisionEffect); // Refresh enabled state.
                     }
                     if (enableHasteEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.digSpeed.id, 300, setMaxEffectLevel()));
-                        setEnableHasteEffect(enableHasteEffect); // 更新启用状态
+                        setEnableHasteEffect(enableHasteEffect); // Refresh enabled state.
                     }
                     if (enableFireResistanceEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 300, setMaxEffectLevel()));
-                        setEnableFireResistanceEffect(enableFireResistanceEffect); // 更新启用状态
+                        setEnableFireResistanceEffect(enableFireResistanceEffect); // Refresh enabled state.
                     }
                     if (enableWaterBreathingEffect) {
                         player.addPotionEffect(new PotionEffect(Potion.waterBreathing.id, 300, setMaxEffectLevel()));
-                        setEnableWaterBreathingEffect(enableWaterBreathingEffect); // 更新启用状态
+                        setEnableWaterBreathingEffect(enableWaterBreathingEffect); // Refresh enabled state.
                     }
                     if (enableWarpWardEffect) {
                         player.addPotionEffect(new PotionEffect(Config.potionWarpWardID, 300, setMaxEffectLevel()));
-                        setEnableWarpWardEffect(enableWarpWardEffect); // 更新启用状态
+                        setEnableWarpWardEffect(enableWarpWardEffect); // Refresh enabled state.
                     }
                     if (enableFeatherFeetEffect) {
                         player.addPotionEffect(new PotionEffect(ModPotions.featherfeet.id, 300, setMaxEffectLevel()));
-                        setEnableFeatherFeetEffect(enableFeatherFeetEffect); // 更新启用状态
+                        setEnableFeatherFeetEffect(enableFeatherFeetEffect); // Refresh enabled state.
                     }
                     if (Mods.ThaumicHorizons.isModLoaded() && enableVisRegenEffect) {
                         player.addPotionEffect(new PotionEffect(PotionVisRegen.instance.id, 300, setMaxEffectLevel()));
-                        setEnableVisRegenEffect(enableVisRegenEffect); // 更新启用状态
+                        setEnableVisRegenEffect(enableVisRegenEffect); // Refresh enabled state.
                     }
                 }
             }

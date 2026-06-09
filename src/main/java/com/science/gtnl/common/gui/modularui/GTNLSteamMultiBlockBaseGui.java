@@ -106,8 +106,8 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
         LongSyncValue steamStoredSyncer = syncManager.findSyncHandler(STEAM_STORED_SYNC_KEY, LongSyncValue.class);
         LongSyncValue steamCapacitySyncer = syncManager.findSyncHandler(STEAM_CAPACITY_SYNC_KEY, LongSyncValue.class);
         IntSyncValue anySteamSyncer = syncManager.findSyncHandler(STEAM_ANY_TYPE_SYNC_KEY, IntSyncValue.class);
-        return (steamMachine.tierMachine == 2 ? GTGuiTextures.STEAM_GAUGE_BG_STEEL : GTGuiTextures.STEAM_GAUGE_BG)
-            .asWidget()
+        boolean steelGauge = steamMachine != null && steamMachine.tierMachine == 2;
+        return (steelGauge ? GTGuiTextures.STEAM_GAUGE_BG_STEEL : GTGuiTextures.STEAM_GAUGE_BG).asWidget()
             .size(64, 42)
             .left(-64)
             .top(100)
@@ -138,11 +138,10 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
 
     private IWidget createWrongSteamWarning(PanelSyncManager syncManager) {
         LongSyncValue steamStoredSyncer = syncManager.findSyncHandler(STEAM_STORED_SYNC_KEY, LongSyncValue.class);
-        IntSyncValue anySteamSyncer = syncManager.findSyncHandler(STEAM_ANY_TYPE_SYNC_KEY, IntSyncValue.class);
         return new ItemDrawable(GTNLItemList.FakeItemSiren.get(1)).asWidget()
             .pos(-50, 80)
             .size(16, 16)
-            .setEnabledIf(widget -> steamStoredSyncer.getLongValue() == 0 && anySteamSyncer.getIntValue() != 0);
+            .setEnabledIf(widget -> steamStoredSyncer.getLongValue() == 0);
     }
 
     private IWidget createRecipeOcButton() {

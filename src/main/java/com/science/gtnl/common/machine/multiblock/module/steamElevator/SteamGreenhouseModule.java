@@ -332,18 +332,14 @@ public class SteamGreenhouseModule extends SteamElevatorModule implements IGreen
         return new SteamGreenhouseModuleGui(this);
     }
 
-    /**
-     * TODO: Remove this MUI1 startup path after Steam Greenhouse Module only uses MUI2.
-     */
+    // TODO: Remove this MUI1 startup path after Steam Greenhouse Module only uses MUI2.
     @Deprecated
     public static final UIInfo<?, ?> GreenhouseUI = GreenHouseMode
         .createGreenhouseUI(GreenHouseMode.MUIContainer_Greenhouse::new);
 
-    /**
-     * TODO: Remove this MUI1 configuration button after Steam Greenhouse Module only uses MUI2.
-     */
     @Deprecated
     public void addConfigurationWidgets(DynamicPositionedRow configurationElements, UIBuildContext buildContext) {
+        // TODO: Remove this MUI1 configuration button after Steam Greenhouse Module only uses MUI2.
         buildContext.addSyncedWindow(GreenHouseMode.CONFIGURATION_WINDOW_ID, this::createConfigurationWindow);
         configurationElements.setSynced(false);
         configurationElements.widget(

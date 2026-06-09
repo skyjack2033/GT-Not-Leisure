@@ -58,6 +58,7 @@ import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.science.gtnl.common.block.blocks.BlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
+import com.science.gtnl.common.gui.modularui.EternalGregTechWorkshopGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EGTWUpgradeStorage;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopTextures;
@@ -97,6 +98,7 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.core.block.ModBlocks;
 import lombok.Setter;
@@ -993,6 +995,177 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         return fuelConsumptionFactor;
     }
 
+    public void setFuelFactorFromGui(int fuelFactor) {
+        fuelConsumptionFactor = MathHelper.clamp_int(fuelFactor, 1, calculateMaxFuelFactor(this));
+    }
+
+    public long getFuelConsumptionForGui() {
+        return fuelConsumption;
+    }
+
+    public FluidStack getFuelStackForGui(int fuelType) {
+        return validFuelList.get(MathHelper.clamp_int(fuelType, 0, validFuelList.size() - 1));
+    }
+
+    public int getMachineTierForGui() {
+        return mMachineTier;
+    }
+
+    public boolean isExtraModuleEnabledForGui() {
+        return enableExtraModule;
+    }
+
+    public void setExtraModuleEnabledFromGui(boolean enabled) {
+        enableExtraModule = enabled;
+        checkStructure(true, getBaseMetaTileEntity());
+    }
+
+    public boolean isExtraModuleBuiltForGui() {
+        return mExtraModule;
+    }
+
+    public String getMachineStateTextForGui() {
+        if (mProgresstime > 0) {
+            return StatCollector.translateToLocal("EGTW_MachineRunning");
+        }
+        if (mMachine) {
+            return StatCollector.translateToLocal("EGTW_MachineStandby");
+        }
+        return StatCollector.translateToLocal("EGTW_MachineIncomplete");
+    }
+
+    public int getCurrentMilestoneIdForGui() {
+        return MathHelper.clamp_int(currentMilestoneID, 0, MilestoneIcon.VALUES.length - 1);
+    }
+
+    public void setCurrentMilestoneIdFromGui(int milestoneId) {
+        currentMilestoneID = MathHelper.clamp_int(milestoneId, 0, MilestoneIcon.VALUES.length - 1);
+    }
+
+    public MilestoneFormatter getFormattingModeForGui() {
+        return formattingMode;
+    }
+
+    public void setFormattingModeFromGui(MilestoneFormatter formatter) {
+        formattingMode = formatter == null ? DEFAULT_FORMATTING_MODE : formatter;
+    }
+
+    public BigInteger getTotalPowerConsumedForGui() {
+        return totalPowerConsumed;
+    }
+
+    public long getTotalRecipesProcessedForGui() {
+        return totalRecipesProcessed;
+    }
+
+    public long getTotalFuelConsumedForGui() {
+        return totalFuelConsumed;
+    }
+
+    public int getMilestoneProgressLevelForGui(int milestoneId) {
+        return milestoneProgress[MathHelper.clamp_int(milestoneId, 0, milestoneProgress.length - 1)];
+    }
+
+    public float getMilestonePercentageForGui(int milestoneId) {
+        return switch (MathHelper.clamp_int(milestoneId, 0, MilestoneIcon.VALUES.length - 1)) {
+            case 1 -> recipeMilestonePercentage;
+            case 2 -> fuelMilestonePercentage;
+            case 3 -> structureMilestonePercentage;
+            default -> powerMilestonePercentage;
+        };
+    }
+
+    public int getGravitonShardsAvailableForGui() {
+        return gravitonShardsAvailable;
+    }
+
+    public void setGravitonShardsAvailableFromGui(int shards) {
+        gravitonShardsAvailable = MathHelper.clamp_int(shards, 0, 112);
+    }
+
+    public boolean isGravitonShardEjectionForGui() {
+        return gravitonShardEjection;
+    }
+
+    public void setGravitonShardEjectionFromGui(boolean enabled) {
+        gravitonShardEjection = enabled && upgrades.isUpgradeActive(EternalGregTechWorkshopUpgrade.END);
+    }
+
+    public boolean isSecretUpgradeForGui() {
+        return secretUpgrade;
+    }
+
+    public void setSecretUpgradeFromGui(boolean enabled) {
+        secretUpgrade = enabled;
+    }
+
+    public EternalGregTechWorkshopUpgrade getCurrentUpgradeForGui() {
+        return currentUpgradeWindow == null ? EternalGregTechWorkshopUpgrade.START : currentUpgradeWindow;
+    }
+
+    public void setCurrentUpgradeFromGui(EternalGregTechWorkshopUpgrade upgrade) {
+        currentUpgradeWindow = upgrade == null ? EternalGregTechWorkshopUpgrade.START : upgrade;
+    }
+
+    public List<EGTWUpgradeStorage.UpgradeData> getUpgradeDataForGui() {
+        ArrayList<EGTWUpgradeStorage.UpgradeData> data = new ArrayList<>(EternalGregTechWorkshopUpgrade.VALUES.length);
+        for (EternalGregTechWorkshopUpgrade upgrade : EternalGregTechWorkshopUpgrade.VALUES) {
+            data.add(upgrades.getData(upgrade));
+        }
+        return data;
+    }
+
+    public void setUpgradeDataFromGui(List<EGTWUpgradeStorage.UpgradeData> data) {
+        for (int i = 0; i < data.size() && i < EternalGregTechWorkshopUpgrade.VALUES.length; i++) {
+            upgrades.unlockedUpgrades.put(EternalGregTechWorkshopUpgrade.VALUES[i], data.get(i));
+        }
+    }
+
+    public boolean isUpgradeActiveForGui(EternalGregTechWorkshopUpgrade upgrade) {
+        return isUpgradeActive(upgrade);
+    }
+
+    public boolean isUpgradeCostPaidForGui(EternalGregTechWorkshopUpgrade upgrade) {
+        return upgrades.isCostPaid(upgrade);
+    }
+
+    public int[] getPaidUpgradeCostsForGui(EternalGregTechWorkshopUpgrade upgrade) {
+        return upgrades.getPaidCosts(upgrade);
+    }
+
+    public void completeUpgradeFromGui(EternalGregTechWorkshopUpgrade upgrade) {
+        completeUpgrade(upgrade);
+    }
+
+    public void respecUpgradeFromGui(EternalGregTechWorkshopUpgrade upgrade) {
+        respecUpgrade(upgrade);
+    }
+
+    public void payUpgradeCostFromGui(EternalGregTechWorkshopUpgrade upgrade) {
+        upgrades.payCost(upgrade, inputSlotHandler);
+    }
+
+    public void resetUpgradesFromGui() {
+        upgrades.resetAll();
+    }
+
+    public void unlockAllUpgradesFromGui() {
+        upgrades.unlockAll();
+    }
+
+    public ItemStackHandler getUpgradeInputHandlerForGui() {
+        restoreStoredUpgradeWindowItemsForGui();
+        return inputSlotHandler;
+    }
+
+    private void restoreStoredUpgradeWindowItemsForGui() {
+        for (int i = 0; i < storedUpgradeWindowItems.length; i++) {
+            if (storedUpgradeWindowItems[i] == null) continue;
+            inputSlotHandler.insertItem(i, storedUpgradeWindowItems[i], false);
+            storedUpgradeWindowItems[i] = null;
+        }
+    }
+
     public double getEUtDiscount() {
         return mEUtDiscount;
     }
@@ -1127,7 +1300,14 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
     public int currentMilestoneID = 0;
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new EternalGregTechWorkshopGui(this);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after every Eternal GregTech Workshop panel is covered by mui2.
         buildContext.addSyncedWindow(FUEL_CONFIG_WINDOW_ID, this::createFuelConfigWindow);
         buildContext.addSyncedWindow(UPGRADE_TREE_WINDOW_ID, this::createUpgradeTreeWindow);
         buildContext.addSyncedWindow(INDIVIDUAL_UPGRADE_WINDOW_ID, this::createIndividualUpgradeWindow);
@@ -1233,7 +1413,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                     .setTooltipShowUpDelay(TOOLTIP_DELAY))
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 if (!widget.isClient()) {
-                    mMachine = checkMachine(this.getBaseMetaTileEntity(), null);
+                    checkStructure(true, getBaseMetaTileEntity());
                 }
                 enableExtraModule = !enableExtraModule;
             })
@@ -1250,7 +1430,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                 .setSize(16, 16))
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 if (!widget.isClient()) {
-                    mMachine = checkMachine(this.getBaseMetaTileEntity(), null);
+                    checkStructure(true, getBaseMetaTileEntity());
                 }
             })
                 .setSize(16, 16)
@@ -1306,11 +1486,15 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         return new Text(fuelConsumption + " L/5s");
     }
 
+    @Deprecated
     public ModularWindow createGeneralInfoWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop info panel is verified in mui2.
         return EternalGregTechWorkshopUI.createGeneralInfoWindow();
     }
 
+    @Deprecated
     public ModularWindow createFuelConfigWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop fuel panel is verified in mui2.
         final int w = 78;
         final int h = 130;
         final int parentW = getGUIWidth();
@@ -1502,7 +1686,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         return upgrades.getTotalActiveUpgrades();
     }
 
+    @Deprecated
     public ModularWindow createManualInsertionWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop manual insertion panel is ported to mui2.
         EternalGregTechWorkshopUpgrade upgrade = currentUpgradeWindow;
         ItemStack[] inputs = upgrade.getExtraCost();
         final int WIDTH = 261;
@@ -1582,7 +1768,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         return new Text(inversionStatus);
     }
 
+    @Deprecated
     public ModularWindow createIndividualMilestoneWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop individual milestone panel uses mui2.
         final int w = 150;
         final int h = 150;
         final MilestoneIcon icon = MilestoneIcon.VALUES[currentMilestoneID];
@@ -1763,7 +1951,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .setTooltipShowUpDelay(TOOLTIP_DELAY);
     }
 
+    @Deprecated
     public ModularWindow createMilestoneWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop milestone panel is ported to mui2.
         final int WIDTH = 400;
         final int HEIGHT = 300;
         ModularWindow.Builder builder = ModularWindow.builder(WIDTH, HEIGHT);
@@ -1929,7 +2119,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .attachSyncer(upgrades.getSyncer(upgrade), builder);
     }
 
+    @Deprecated
     public ModularWindow createIndividualUpgradeWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop individual upgrade panel uses mui2.
         EternalGregTechWorkshopUpgrade upgrade = currentUpgradeWindow;
 
         ModularWindow.Builder builder = ModularWindow.builder(upgrade.getWindowSize());
@@ -1961,7 +2153,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         return builder.build();
     }
 
+    @Deprecated
     public ModularWindow createUpgradeTreeWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop upgrade tree panel is ported to mui2.
         ModularWindow.Builder builder = ModularWindow.builder(300, 300);
         Scrollable scrollable = new Scrollable().setVerticalScroll();
 

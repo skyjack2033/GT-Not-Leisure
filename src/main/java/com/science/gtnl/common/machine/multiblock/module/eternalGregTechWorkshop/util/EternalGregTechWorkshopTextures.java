@@ -8,7 +8,10 @@ import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import gregtech.api.enums.Mods;
 import tectech.thing.gui.TecTechUITextures;
 
+@Deprecated
 public class EternalGregTechWorkshopTextures {
+
+    // TODO: Remove this MUI1 texture holder after Eternal GregTech Workshop fallback windows are removed.
 
     public static final AdaptableUITexture BACKGROUND_SCREEN_BLUE = TecTechUITextures.BACKGROUND_SCREEN_BLUE;
     public static final UITexture OVERLAY_SLOT_MESH = TecTechUITextures.OVERLAY_SLOT_MESH;

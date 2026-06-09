@@ -37,6 +37,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.gui.modularui.EternalGregTechWorkshopModuleGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopTextures;
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.util.EternalGregTechWorkshopUI;
@@ -60,6 +61,7 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import lombok.Getter;
 import lombok.Setter;
 import tectech.thing.casing.TTCasingsContainer;
@@ -357,7 +359,18 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
     private static final int GENERAL_INFO_WINDOW_ID = 10;
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new EternalGregTechWorkshopModuleGui(this);
+    }
+
+    public boolean isConnectedForGui() {
+        return isConnected;
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after every Eternal GregTech Workshop module widget is covered by mui2.
         final DynamicPositionedColumn screenElements = new DynamicPositionedColumn();
         final SlotWidget inventorySlot = new SlotWidget(inventoryHandler, 1);
         drawTexts(screenElements, inventorySlot);
@@ -428,7 +441,7 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
                 .setSize(16, 16))
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 if (!widget.isClient()) {
-                    checkMachine(this.getBaseMetaTileEntity(), null);
+                    checkStructure(true, getBaseMetaTileEntity());
                 }
             })
                 .setSize(16, 16)
@@ -464,27 +477,37 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
             StatCollector.translateToLocal("gt.blockmachines.multimachine.FOG.modulestatus") + " " + status);
     }
 
+    @Deprecated
     public ModularWindow createGeneralInfoWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop module info panel is verified in mui2.
         return EternalGregTechWorkshopUI.createGeneralInfoWindow();
     }
 
     @Override
+    @Deprecated
     public ButtonWidget createInputSeparationButton(IWidgetBuilder<?> builder) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop module buttons are verified in mui2.
         return EternalGregTechWorkshopUI.createInputSeparationButton(getBaseMetaTileEntity(), this, builder);
     }
 
     @Override
+    @Deprecated
     public ButtonWidget createBatchModeButton(IWidgetBuilder<?> builder) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop module buttons are verified in mui2.
         return EternalGregTechWorkshopUI.createBatchModeButton(getBaseMetaTileEntity(), this, builder);
     }
 
     @Override
+    @Deprecated
     public ButtonWidget createLockToSingleRecipeButton(IWidgetBuilder<?> builder) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop module buttons are verified in mui2.
         return EternalGregTechWorkshopUI.createLockToSingleRecipeButton(getBaseMetaTileEntity(), this, builder);
     }
 
     @Override
+    @Deprecated
     public ButtonWidget createVoidExcessButton(IWidgetBuilder<?> builder) {
+        // TODO: Remove this mui1 fallback after the Eternal GregTech Workshop module buttons are verified in mui2.
         return EternalGregTechWorkshopUI.createVoidExcessButton(getBaseMetaTileEntity(), this, builder);
     }
 

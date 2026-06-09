@@ -1248,12 +1248,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return new GTNLSteamMultiBlockBaseGui(this);
     }
 
-    /**
-     * TODO: Remove this MUI1 logo hook after steam multiblocks only use MUI2.
-     */
     @Deprecated
     @Override
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this MUI1 logo hook after steam multiblocks only use MUI2.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
                 .setSize(18, 18)
@@ -1464,12 +1462,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return (hatchColors & (1 << color)) == 0;
     }
 
-    /**
-     * TODO: Remove this MUI1 window assembly after the GTNL steam MUI2 wrapper is complete.
-     */
     @Deprecated
     @Override
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this MUI1 window assembly after the GTNL steam MUI2 wrapper is complete.
         if (doesBindPlayerInventory()) {
             builder.widget(
                 new DrawableWidget().setDrawable(GTUITextures.PICTURE_SCREEN_BLACK)
@@ -1600,12 +1596,10 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return false;
     }
 
-    /**
-     * TODO: Remove this MUI1 muffler button after the GTNL steam MUI2 wrapper is complete.
-     */
     @Deprecated
     @Override
     public ButtonWidget createMuffleButton(IWidgetBuilder<?> builder, boolean canBeMuffled) {
+        // TODO: Remove this MUI1 muffler button after the GTNL steam MUI2 wrapper is complete.
         return (ButtonWidget) new ButtonWidget().setOnClick((clickData, widget) -> setMuffled(!isMuffled()))
             .setPlayClickSound(true)
             .setEnabled(canBeMuffled)
@@ -1649,11 +1643,9 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return cleared > 0;
     }
 
-    /**
-     * TODO: Remove this MUI1 recipe OC window after the GTNL steam MUI2 wrapper is complete.
-     */
     @Deprecated
     public ModularWindow createRecipeOcCountWindow(EntityPlayer player) {
+        // TODO: Remove this MUI1 recipe OC window after the GTNL steam MUI2 wrapper is complete.
         final int WIDTH = 158;
         final int HEIGHT = 52;
         final int PARENT_WIDTH = getGUIWidth();

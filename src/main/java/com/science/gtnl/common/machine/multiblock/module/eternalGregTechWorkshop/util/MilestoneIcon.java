@@ -7,33 +7,42 @@ import com.gtnewhorizons.modularui.api.math.Size;
 
 public enum MilestoneIcon {
 
-    CHARGE(EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CHARGE, 60, 75, "power"),
-    CONVERSION(EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CONVERSION, 54, 75, "recipe"),
-    CATALYST(EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CATALYST, 75, 75, "fuel"),
-    COMPOSITION(EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_COMPOSITION, 75, 75, "purchasable");
+    CHARGE(60, 75, "power"),
+    CONVERSION(54, 75, "recipe"),
+    CATALYST(75, 75, "fuel"),
+    COMPOSITION(75, 75, "purchasable");
 
     public static final MilestoneIcon[] VALUES = values();
 
-    private final UITexture symbol;
-    private final Size size;
+    private final int width;
+    private final int height;
     private final String name;
 
-    MilestoneIcon(UITexture symbol, int width, int height, String shortName) {
-        this.symbol = symbol;
-        this.size = new Size(width, height);
+    MilestoneIcon(int width, int height, String shortName) {
+        this.width = width;
+        this.height = height;
         this.name = "gt.blockmachines.multimachine.FOG." + shortName + "milestone";
     }
 
+    @Deprecated
     public UITexture getSymbol() {
-        return symbol;
+        // TODO: Remove this MUI1 texture getter after Eternal GregTech Workshop fallback windows are removed.
+        return switch (this) {
+            case CHARGE -> EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CHARGE;
+            case CONVERSION -> EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CONVERSION;
+            case CATALYST -> EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_CATALYST;
+            case COMPOSITION -> EternalGregTechWorkshopTextures.PICTURE_GODFORGE_MILESTONE_COMPOSITION;
+        };
     }
 
+    @Deprecated
     public Size getSize() {
-        return size;
+        // TODO: Remove this MUI1 size getter after Eternal GregTech Workshop fallback windows are removed.
+        return new Size(width, height);
     }
 
     public float getWidthRatio() {
-        return (float) size.width / size.height;
+        return (float) width / height;
     }
 
     public String getNameText() {

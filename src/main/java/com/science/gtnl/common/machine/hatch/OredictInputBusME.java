@@ -15,7 +15,11 @@ import net.minecraft.util.StatCollector;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.utils.item.ItemStackHandler;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.Text;
@@ -35,6 +39,7 @@ import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
+import com.science.gtnl.common.gui.modularui.OredictInputBusMEGui;
 import com.science.gtnl.mixins.early.Gregtech.AccessorCommonMetaTileEntity;
 import com.science.gtnl.mixins.early.Gregtech.AccessorMetaTileEntity;
 import com.science.gtnl.utils.enums.GTNLItemList;
@@ -161,6 +166,10 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
             refreshItemList();
         }
         updateAllInformationSlots();
+    }
+
+    public String getOreDictForGui() {
+        return hasFilter() ? oreDict : "";
     }
 
     @Override
@@ -501,8 +510,39 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     }
 
     @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        if (!isSuper) {
+            return super.buildUI(data, syncManager, uiSettings);
+        }
+        return new OredictInputBusMEGui(this).build(data, syncManager, uiSettings);
+    }
+
+    @Override
     public int getGUIWidth() {
         return isSuper ? 392 : super.getGUIWidth();
+    }
+
+    public int getFilterSlotCountForGui() {
+        return isSuper ? SIDE_SLOT_COUNT : SLOT_COUNT;
+    }
+
+    public int getStockSlotOffsetForGui() {
+        return isSuper ? SIDE_SLOT_COUNT : SLOT_COUNT;
+    }
+
+    public int getManualSlotStartForGui() {
+        return isSuper ? SIDE_SLOT_COUNT * 2 + 1 : getManualSlot();
+    }
+
+    public ItemStack updateInformationSlotForGui(int index, ItemStack stack) {
+        return updateInformationSlot(index, stack);
+    }
+
+    public boolean containsFilterStackForGui(ItemStack stack) {
+        for (int i = 0; i < getFilterSlotCountForGui(); ++i) {
+            if (GTUtility.areStacksEqual(mInventory[i], stack, false)) return true;
+        }
+        return false;
     }
 
     @Override
@@ -547,7 +587,9 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     }
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after OredictInputBusME mui2 parity is verified.
         if (!isSuper) {
             super.addUIWidgets(builder, buildContext);
             return;
@@ -702,7 +744,9 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
         addGregTechLogo(builder);
     }
 
+    @Deprecated
     public ModularWindow createSlotManualWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after OredictInputBusME mui2 parity is verified.
         final int WIDTH = 176;
         final int HEIGHT = 86;
         final int PARENT_WIDTH = getGUIWidth();
@@ -730,7 +774,9 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
         return builder.build();
     }
 
+    @Deprecated
     public ModularWindow createStackSizeConfigurationWindow(EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after OredictInputBusME mui2 parity is verified.
         final int WIDTH = 78;
         final int HEIGHT = 169;
         final int PARENT_WIDTH = getGUIWidth();
@@ -803,7 +849,9 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after OredictInputBusME mui2 parity is verified.
         if (!isSuper) return;
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)

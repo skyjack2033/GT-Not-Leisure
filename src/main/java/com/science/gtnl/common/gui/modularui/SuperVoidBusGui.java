@@ -53,7 +53,8 @@ public class SuperVoidBusGui {
                 SLOT_COLUMNS,
                 SLOT_ROWS,
                 ($x, $y, index) -> new PhantomItemSlot().slot(new ModularSlot(lockedInventoryHandler, index))
-                    .background(GTGuiTextures.SLOT_ITEM_STANDARD));
+                    .background(GTGuiTextures.SLOT_ITEM_STANDARD)
+                    .backgroundOverlay(GTGuiTextures.OVERLAY_SLOT_FILTER));
     }
 
     private IWidget createLogo() {

@@ -65,6 +65,7 @@ import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.gui.modularui.SuperSpaceElevatorGui;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.Utils;
@@ -86,6 +87,7 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
 import gregtech.common.misc.spaceprojects.SpaceProjectManager;
 import gtnhintergalactic.config.IGConfig;
@@ -245,6 +247,42 @@ public class SuperSpaceElevator extends TTMultiblockBase
 
     public int getNumberOfModules() {
         return mProjectModuleHatches != null ? mProjectModuleHatches.size() : 0;
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new SuperSpaceElevatorGui(this);
+    }
+
+    public boolean isMachineForGui() {
+        return mMachine;
+    }
+
+    public boolean isAllowedToWorkForGui() {
+        return getBaseMetaTileEntity().isAllowedToWork();
+    }
+
+    public int getNumberOfModulesForGui() {
+        return getNumberOfModules();
+    }
+
+    public int getTierForGui() {
+        return mTier;
+    }
+
+    public void openCelestialSelection(EntityPlayer player) {
+        if (!isAllowedToWorkForGui() || motorTier <= 0 || !(player instanceof EntityPlayerMP playerBase)) {
+            return;
+        }
+
+        GCPlayerStats stats = GCPlayerStats.get(playerBase);
+        stats.coordsTeleportedFromX = playerBase.posX;
+        stats.coordsTeleportedFromZ = playerBase.posZ;
+        try {
+            WorldUtil.toCelestialSelection(playerBase, stats, 250, GuiCelestialSelection.MapMode.TELEPORTATION);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public int getChunkX() {
@@ -576,7 +614,9 @@ public class SuperSpaceElevator extends TTMultiblockBase
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after the Super Space Elevator GUI no longer supports mui1 startup paths.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)
@@ -584,7 +624,9 @@ public class SuperSpaceElevator extends TTMultiblockBase
     }
 
     @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the Super Space Elevator GUI no longer supports mui1 startup paths.
         screenElements.setSynced(false)
             .setSpace(0);
         screenElements
@@ -613,31 +655,17 @@ public class SuperSpaceElevator extends TTMultiblockBase
     }
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the Super Space Elevator GUI no longer supports mui1 startup paths.
         super.addUIWidgets(builder, buildContext);
 
-        // Teleportation button
         builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
             if (!widget.getContext()
                 .isClient()) {
-                if (getBaseMetaTileEntity().isAllowedToWork() && motorTier > 0) {
-                    EntityPlayer player = widget.getContext()
-                        .getPlayer();
-                    if (player instanceof EntityPlayerMP playerBase) {
-                        final GCPlayerStats stats = GCPlayerStats.get(playerBase);
-                        stats.coordsTeleportedFromX = playerBase.posX;
-                        stats.coordsTeleportedFromZ = playerBase.posZ;
-                        try {
-                            WorldUtil.toCelestialSelection(
-                                playerBase,
-                                stats,
-                                250,
-                                GuiCelestialSelection.MapMode.TELEPORTATION);
-                        } catch (final Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                openCelestialSelection(
+                    widget.getContext()
+                        .getPlayer());
             }
         })
             .setPlayClickSound(false)

@@ -28,6 +28,8 @@ import com.cleanroommc.modularui.value.sync.IntSyncValue;
 import com.cleanroommc.modularui.value.sync.InteractionSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
+import com.cleanroommc.modularui.widget.ParentWidget;
+import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.Dialog;
 import com.cleanroommc.modularui.widgets.DynamicSyncedWidget;
@@ -36,11 +38,13 @@ import com.cleanroommc.modularui.widgets.ListWidget;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
+import com.science.gtnl.common.gui.GTNLMui2Textures;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEItemStack;
 import gregtech.api.modularui2.GTGuiTextures;
+import gregtech.api.modularui2.GTWidgetThemes;
 import gregtech.api.util.GTUtility;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2LongMap;
@@ -135,6 +139,26 @@ public class AssemblerMatrixGui extends GTNLMultiBlockBaseGui<AssemblerMatrix> {
             })
             .tooltipBuilder(tooltip -> tooltip.addLine(IKey.lang("Info_AssemblerMatrix_01")))
             .tooltipShowUpTimer(TOOLTIP_DELAY);
+    }
+
+    @Override
+    protected Widget<? extends Widget<?>> makeLogoWidget(PanelSyncManager syncManager, ModularPanel parent) {
+        return new ParentWidget<>().size(18, 40)
+            .marginTop(4)
+            .child(createCirculationLogo())
+            .child(createGtnlLogo());
+    }
+
+    private IWidget createCirculationLogo() {
+        return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_CIRCULATION).size(18, 18)
+            .pos(0, 0)
+            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+    }
+
+    private IWidget createGtnlLogo() {
+        return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_GTNL_LOGO).size(18, 18)
+            .pos(0, 22)
+            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
     }
 
     private IWidget createShowPatternButton(PanelSyncManager syncManager) {

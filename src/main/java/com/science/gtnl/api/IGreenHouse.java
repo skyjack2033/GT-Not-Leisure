@@ -75,11 +75,9 @@ public interface IGreenHouse extends IVoidable {
 
     int getWaterUsage();
 
-    /**
-     * TODO: Remove this MUI1 configuration window after greenhouse machines use the MUI2 panel.
-     */
     @Deprecated
     default ModularWindow createConfigurationWindow(final EntityPlayer player) {
+        // TODO: Remove this MUI1 configuration window after greenhouse machines use the MUI2 panel.
         ModularWindow.Builder builder = ModularWindow.builder(200, 100);
         builder.setBackground(ModularUITextures.VANILLA_BACKGROUND);
         builder.widget(

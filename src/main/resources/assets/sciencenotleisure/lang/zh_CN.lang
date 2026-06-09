@@ -57,8 +57,6 @@ gtnl.gui.config.general.tickrate.tooltip=调整服务器运行速度与同步
 
 gtnl.gui.config.general.debug.enabledebugmode=调试模式
 gtnl.gui.config.general.debug.enabledebugmode.tooltip=启用调试日志输出
-gtnl.gui.config.general.debug.enablequest=加载GTNL任务
-gtnl.gui.config.general.debug.enablequest.tooltip=启用GTNL任务添加，添加尚未完成的任务
 
 gtnl.gui.config.general.effect.enableghostlyshape=启用幽灵形态
 gtnl.gui.config.general.effect.enableghostlyshape.tooltip=当玩家死亡重生时，给予玩家幽灵形态效果

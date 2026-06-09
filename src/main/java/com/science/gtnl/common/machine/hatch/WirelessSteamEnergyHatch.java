@@ -101,11 +101,18 @@ public class WirelessSteamEnergyHatch extends CustomFluidHatch {
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after WirelessSteamEnergyHatch mui2 parity is verified.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
                 .setSize(18, 18)
                 .setPos(151, 62));
+    }
+
+    @Override
+    public boolean usesSteamLogoForMui2() {
+        return true;
     }
 
     @Override

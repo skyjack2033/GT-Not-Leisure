@@ -47,6 +47,7 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.gui.modularui.SteamElevatorGui;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
@@ -76,6 +77,7 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.spaceprojects.SpaceProjectManager;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.MTEHatchCustomFluidBase;
 import gtnhintergalactic.gui.IG_UITextures;
@@ -468,12 +470,56 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
     }
 
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new SteamElevatorGui(this);
+    }
+
+    @Override
+    public boolean supportsSteamOC() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsSteamCapacityUI() {
+        return false;
+    }
+
+    public boolean isMachineForGui() {
+        return mMachine;
+    }
+
+    public boolean isAllowedToWorkForGui() {
+        return getBaseMetaTileEntity().isAllowedToWork();
+    }
+
+    public int getNumberOfModulesForGui() {
+        return getNumberOfModules();
+    }
+
+    public void openCelestialSelection(EntityPlayer player) {
+        if (!isAllowedToWorkForGui() || !(player instanceof EntityPlayerMP playerBase)) {
+            return;
+        }
+
+        GCPlayerStats stats = GCPlayerStats.get(playerBase);
+        stats.coordsTeleportedFromX = playerBase.posX;
+        stats.coordsTeleportedFromZ = playerBase.posZ;
+        try {
+            WorldUtil.toCelestialSelection(playerBase, stats, 0, GuiCelestialSelection.MapMode.TELEPORTATION);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public boolean doesBindPlayerInventory() {
         return false;
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after the Steam Elevator GUI no longer supports mui1 startup paths.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
                 .setSize(18, 18)
@@ -481,7 +527,9 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
     }
 
     @Override
+    @Deprecated
     public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the Steam Elevator GUI no longer supports mui1 startup paths.
         screenElements.setSynced(false)
             .setSpace(0)
             .setPos(10, 7);
@@ -510,7 +558,9 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
     }
 
     @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the Steam Elevator GUI no longer supports mui1 startup paths.
         builder.widget(
             new DrawableWidget().setDrawable(TecTechUITextures.BACKGROUND_SCREEN_BLUE_NO_INVENTORY)
                 .setPos(4, 4)
@@ -539,24 +589,9 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
         builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
             if (!widget.getContext()
                 .isClient()) {
-                if (getBaseMetaTileEntity().isAllowedToWork()) {
-                    EntityPlayer player = widget.getContext()
-                        .getPlayer();
-                    if (player instanceof EntityPlayerMP playerBase) {
-                        final GCPlayerStats stats = GCPlayerStats.get(playerBase);
-                        stats.coordsTeleportedFromX = playerBase.posX;
-                        stats.coordsTeleportedFromZ = playerBase.posZ;
-                        try {
-                            WorldUtil.toCelestialSelection(
-                                playerBase,
-                                stats,
-                                0,
-                                GuiCelestialSelection.MapMode.TELEPORTATION);
-                        } catch (final Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                openCelestialSelection(
+                    widget.getContext()
+                        .getPlayer());
             }
         })
             .setPlayClickSound(false)
@@ -575,7 +610,9 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
     }
 
     @Override
+    @Deprecated
     public ButtonWidget createPowerSwitchButton(IWidgetBuilder<?> builder) {
+        // TODO: Remove this mui1 fallback after the Steam Elevator GUI no longer supports mui1 startup paths.
         Widget button = new ButtonWidget().setOnClick((clickData, widget) -> {
             if (isAllowedToWork()) {
                 disableWorking();
@@ -607,7 +644,9 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
     }
 
     @Override
+    @Deprecated
     public ButtonWidget createStructureUpdateButton(IWidgetBuilder<?> builder) {
+        // TODO: Remove this mui1 fallback after the Steam Elevator GUI no longer supports mui1 startup paths.
         Widget button = new ButtonWidget()
             .setOnClick((clickData, widget) -> { if (getStructureUpdateTime() <= -20) setStructureUpdateTime(1); })
             .setPlayClickSound(true)

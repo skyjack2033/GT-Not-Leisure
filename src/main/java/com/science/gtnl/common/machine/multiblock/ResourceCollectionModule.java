@@ -27,7 +27,7 @@ import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.DynamicTextWidget;
-import com.science.gtnl.common.gui.modularui.GTNLTileEntityModuleBaseGui;
+import com.science.gtnl.common.gui.modularui.ResourceCollectionModuleGui;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
@@ -107,7 +107,9 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this MUI1 logo hook after Resource Collection Module only uses the MUI2 GUI.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)
@@ -135,7 +137,7 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
     @Override
     protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
-        return new GTNLTileEntityModuleBaseGui<>(this).withMachineModeIcons(
+        return new ResourceCollectionModuleGui(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
     }

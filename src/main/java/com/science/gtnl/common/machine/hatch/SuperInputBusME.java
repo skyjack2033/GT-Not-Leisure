@@ -16,7 +16,11 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.utils.item.ItemStackHandler;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.Text;
@@ -35,6 +39,7 @@ import com.gtnewhorizons.modularui.common.widget.SlotGroup;
 import com.gtnewhorizons.modularui.common.widget.SlotWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
+import com.science.gtnl.common.gui.modularui.SuperInputBusMEGui;
 import com.science.gtnl.mixins.early.Gregtech.AccessorCommonMetaTileEntity;
 import com.science.gtnl.mixins.early.Gregtech.AccessorMetaTileEntity;
 import com.science.gtnl.utils.enums.GTNLItemList;
@@ -543,7 +548,52 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        return new SuperInputBusMEGui(this).build(data, syncManager, uiSettings);
+    }
+
+    public int getFilterSlotCountForGui() {
+        return SIDE_SLOT_COUNT;
+    }
+
+    public int getStockSlotOffsetForGui() {
+        return SIDE_SLOT_COUNT;
+    }
+
+    public int getManualSlotStartForGui() {
+        return SIDE_SLOT_COUNT * 2 + 1;
+    }
+
+    public ItemStack updateInformationSlotForGui(int index, ItemStack stack) {
+        return updateInformationSlot(index, stack);
+    }
+
+    public boolean containsFilterStackForGui(ItemStack stack) {
+        for (int i = 0; i < getFilterSlotCountForGui(); ++i) {
+            if (GTUtility.areStacksEqual(mInventory[i], stack, false)) return true;
+        }
+        return false;
+    }
+
+    public int getStoredStackSizeForGui(int slot) {
+        if (slot < 0 || slot >= storedStackSizes.length) {
+            return Integer.MAX_VALUE;
+        }
+        return storedStackSizes[slot];
+    }
+
+    public void setStoredStackSizeForGui(int slot, int stackSize) {
+        if (slot < 0 || slot >= storedStackSizes.length) {
+            return;
+        }
+        storedStackSizes[slot] = Math.max(1, stackSize);
+        updateInformationSlot(slot);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
         buildContext.addSyncedWindow(MANUAL_SLOT_WINDOW, this::createSlotManualWindow);
         final SlotWidget[] aeSlotWidgets = new SlotWidget[100];
 
@@ -727,7 +777,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         addGregTechLogo(builder);
     }
 
+    @Deprecated
     public ModularWindow createSlotManualWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
         final int WIDTH = 176;
         final int HEIGHT = 86;
         final int PARENT_WIDTH = getGUIWidth();
@@ -755,7 +807,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         return builder.build();
     }
 
+    @Deprecated
     public ModularWindow createStroedStackSizeWindow(EntityPlayer player, int slotID) {
+        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
         final int WIDTH = 110;
         final int HEIGHT = 66;
         final int PARENT_WIDTH = getGUIWidth();
@@ -795,7 +849,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         return builder.build();
     }
 
+    @Deprecated
     public ModularWindow createStackSizeConfigurationWindow(EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
         final int WIDTH = 78;
         final int HEIGHT = 115;
         final int PARENT_WIDTH = getGUIWidth();
@@ -854,7 +910,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)

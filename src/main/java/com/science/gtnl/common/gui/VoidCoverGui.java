@@ -28,7 +28,6 @@ public class VoidCoverGui extends CoverBaseGui<VoidCover> {
 
     private static final int FILTER_COLUMNS = 10;
     private static final int FILTER_ROWS = 2;
-    private static final int FILTER_SIZE = FILTER_COLUMNS * FILTER_ROWS;
 
     public VoidCoverGui(VoidCover cover) {
         super(cover);
@@ -75,7 +74,11 @@ public class VoidCoverGui extends CoverBaseGui<VoidCover> {
     private IWidget createItemFilterGrid() {
         return SlotGroupWidget.builder()
             .matrix("IIIIIIIIII", "IIIIIIIIII")
-            .key('I', index -> new PhantomItemSlot().slot(new ModularSlot(cover.lockedInventoryHandler, index)))
+            .key(
+                'I',
+                index -> new PhantomItemSlot().slot(new ModularSlot(cover.lockedInventoryHandler, index))
+                    .background(GTGuiTextures.SLOT_ITEM_STANDARD)
+                    .backgroundOverlay(GTGuiTextures.OVERLAY_SLOT_FILTER))
             .build()
             .marginTop(WIDGET_MARGIN);
     }

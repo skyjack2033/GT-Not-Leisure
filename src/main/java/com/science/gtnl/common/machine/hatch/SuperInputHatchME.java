@@ -17,6 +17,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gtnewhorizons.modularui.api.ModularUITextures;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.Text;
@@ -36,6 +40,7 @@ import com.gtnewhorizons.modularui.common.widget.Scrollable;
 import com.gtnewhorizons.modularui.common.widget.SlotGroup;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
+import com.science.gtnl.common.gui.modularui.SuperInputHatchMEGui;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.item.ItemUtils;
 
@@ -372,6 +377,11 @@ public class SuperInputHatchME extends MTEHatchInputME {
         return expediteRecipeCheck;
     }
 
+    @Override
+    public void setRecipeCheck(boolean value) {
+        expediteRecipeCheck = value;
+    }
+
     public void updateAllInformationSlots() {
         for (int index = 0; index < SLOT_COUNT; index++) {
             updateInformationSlot(index);
@@ -697,7 +707,79 @@ public class SuperInputHatchME extends MTEHatchInputME {
     }
 
     @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        return new SuperInputHatchMEGui(this).build(data, syncManager, uiSettings);
+    }
+
+    public int getFluidSlotCountForGui() {
+        return SLOT_COUNT;
+    }
+
+    public boolean isAutoPullFluidListForGui() {
+        return autoPullFluidList;
+    }
+
+    public int getMinAutoPullAmountForGui() {
+        return minAutoPullAmount;
+    }
+
+    public void setMinAutoPullAmountForGui(int amount) {
+        minAutoPullAmount = Math.max(1, amount);
+    }
+
+    public int getAutoPullRefreshTimeForGui() {
+        return autoPullRefreshTime;
+    }
+
+    public void setAutoPullRefreshTimeForGui(int refreshTime) {
+        autoPullRefreshTime = Math.max(1, refreshTime);
+    }
+
+    public FluidStack getFilterFluidForGui(int slot) {
+        if (slot < 0 || slot >= storedFluids.length) {
+            return null;
+        }
+        return storedFluids[slot];
+    }
+
+    public void setFilterFluidForGui(int slot, FluidStack fluid) {
+        if (slot < 0 || slot >= storedFluids.length) {
+            return;
+        }
+        storedFluids[slot] = fluid;
+        updateInformationSlot(slot);
+    }
+
+    public FluidStack getInformationFluidForGui(int slot) {
+        if (slot < 0 || slot >= storedInformationFluids.length) {
+            return null;
+        }
+        return storedInformationFluids[slot];
+    }
+
+    public boolean containsFluidForGui(FluidStack fluid) {
+        return containsSuchStack(fluid);
+    }
+
+    public int getStoredStackSizeForGui(int slot) {
+        if (slot < 0 || slot >= storedStackSizes.length) {
+            return Integer.MAX_VALUE;
+        }
+        return storedStackSizes[slot];
+    }
+
+    public void setStoredStackSizeForGui(int slot, int stackSize) {
+        if (slot < 0 || slot >= storedStackSizes.length) {
+            return;
+        }
+        storedStackSizes[slot] = Math.max(1, stackSize);
+        updateInformationSlot(slot);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after SuperInputHatchME mui2 parity is verified.
         if (autoPullAvailable) {
             buildContext.addSyncedWindow(CONFIG_WINDOW_ID, this::createStackSizeConfigurationWindow);
         }
@@ -880,7 +962,9 @@ public class SuperInputHatchME extends MTEHatchInputME {
         }, capacity);
     }
 
+    @Deprecated
     public ModularWindow createStackSizeConfigurationWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after SuperInputHatchME mui2 parity is verified.
         final int WIDTH = 78;
         final int HEIGHT = 115;
         final int PARENT_WIDTH = getGUIWidth();
@@ -938,7 +1022,9 @@ public class SuperInputHatchME extends MTEHatchInputME {
         return builder.build();
     }
 
+    @Deprecated
     public ModularWindow createStroedStackSizeWindow(EntityPlayer player, int slotID) {
+        // TODO: Remove this mui1 fallback after SuperInputHatchME mui2 parity is verified.
         final int WIDTH = 110;
         final int HEIGHT = 66;
         final int PARENT_WIDTH = getGUIWidth();
@@ -978,7 +1064,9 @@ public class SuperInputHatchME extends MTEHatchInputME {
         return builder.build();
     }
 
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after SuperInputHatchME mui2 parity is verified.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)

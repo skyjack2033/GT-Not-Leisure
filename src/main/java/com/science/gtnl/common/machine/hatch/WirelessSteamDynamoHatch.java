@@ -21,12 +21,17 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.google.common.collect.ImmutableSet;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.gui.modularui.WirelessSteamDynamoHatchGui;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.mixins.early.Gregtech.AccessorMTEHatch;
 import com.science.gtnl.utils.enums.SteamTypes;
@@ -84,11 +89,23 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after WirelessSteamDynamoHatch mui2 parity is verified.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
                 .setSize(18, 18)
                 .setPos(151, 62));
+    }
+
+    @Override
+    protected boolean useMui2() {
+        return true;
+    }
+
+    @Override
+    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
+        return new WirelessSteamDynamoHatchGui(this).build(guiData, syncManager, uiSettings);
     }
 
     @Override
@@ -134,7 +151,9 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
     }
 
     @Override
+    @Deprecated
     public FluidSlotWidget createFluidSlot() {
+        // TODO: Remove this mui1 fallback after WirelessSteamDynamoHatch mui2 parity is verified.
         return super.createFluidSlot().setFilter(mLockedFluids::contains);
     }
 
@@ -216,7 +235,7 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
 
     @Override
     public boolean canStoreFluid(@NotNull FluidStack fluidStack) {
-        return mFluid == null || GTUtility.areFluidsEqual(mFluid, fluidStack);
+        return isFluidInputAllowed(fluidStack) && (mFluid == null || GTUtility.areFluidsEqual(mFluid, fluidStack));
     }
 
     @Override

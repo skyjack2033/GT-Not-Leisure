@@ -43,8 +43,12 @@ import tectech.TecTech;
 /**
  * Holds UI element builders and other conveniences shared between the primary Forge of the Gods and its modules.
  */
+@Deprecated
 public class EternalGregTechWorkshopUI {
 
+    // TODO: Remove this MUI1 helper class after Eternal GregTech Workshop only uses MUI2 panels.
+
+    @Deprecated
     public static ButtonWidget createInputSeparationButton(final IGregTechTileEntity tileEntity,
         final IControllerWithOptionalFeatures mte, IWidgetBuilder<?> builder) {
         Widget button = new ButtonWidget().setOnClick((clickData, widget) -> {
@@ -72,6 +76,7 @@ public class EternalGregTechWorkshopUI {
         return (ButtonWidget) button;
     }
 
+    @Deprecated
     public static ButtonWidget createBatchModeButton(final IGregTechTileEntity tileEntity,
         final IControllerWithOptionalFeatures mte, IWidgetBuilder<?> builder) {
         Widget button = new ButtonWidget().setOnClick((clickData, widget) -> {
@@ -97,6 +102,7 @@ public class EternalGregTechWorkshopUI {
         return (ButtonWidget) button;
     }
 
+    @Deprecated
     public static ButtonWidget createLockToSingleRecipeButton(final IGregTechTileEntity tileEntity,
         final IControllerWithOptionalFeatures mte, IWidgetBuilder<?> builder) {
         Widget button = new ButtonWidget().setOnClick((clickData, widget) -> {
@@ -122,6 +128,7 @@ public class EternalGregTechWorkshopUI {
         return (ButtonWidget) button;
     }
 
+    @Deprecated
     public static ButtonWidget createVoidExcessButton(final IGregTechTileEntity tileEntity,
         final IControllerWithOptionalFeatures mte, IWidgetBuilder<?> builder) {
         Widget button = new ButtonWidget().setOnClick((clickData, widget) -> {
@@ -167,6 +174,7 @@ public class EternalGregTechWorkshopUI {
         return (ButtonWidget) button;
     }
 
+    @Deprecated
     public static ModularWindow createGeneralInfoWindow() {
         final Scrollable scrollable = new Scrollable().setVerticalScroll();
         final int WIDTH = 300;
@@ -311,6 +319,7 @@ public class EternalGregTechWorkshopUI {
         return builder.build();
     }
 
+    @Deprecated
     public static void reopenWindow(Widget widget, int windowId) {
         if (!widget.isClient()) {
             ModularUIContext ctx = widget.getContext();
@@ -321,6 +330,7 @@ public class EternalGregTechWorkshopUI {
         }
     }
 
+    @Deprecated
     public static void closeWindow(Widget widget, int windowId) {
         if (!widget.isClient()) {
             ModularUIContext ctx = widget.getContext();
@@ -330,6 +340,7 @@ public class EternalGregTechWorkshopUI {
         }
     }
 
+    @Deprecated
     public static Widget getIndividualUpgradeGroup(EternalGregTechWorkshopUpgrade upgrade,
         Supplier<Integer> shardGetter, Runnable complete, Runnable respec, Supplier<Boolean> check) {
         MultiChildWidget widget = new MultiChildWidget();
@@ -437,6 +448,7 @@ public class EternalGregTechWorkshopUI {
         return widget;
     }
 
+    @Deprecated
     public static Widget createMaterialInputButton(EternalGregTechWorkshopUpgrade upgrade, Supplier<Boolean> check,
         BiConsumer<Widget.ClickData, Widget> clickAction) {
         Size windowSize = upgrade.getWindowSize();
@@ -485,6 +497,7 @@ public class EternalGregTechWorkshopUI {
         return ImmutableList.of(StatCollector.translateToLocal("fog.button.materialrequirements.tooltip"));
     }
 
+    @Deprecated
     public static Widget createExtraCostWidget(final ItemStack costStack, Supplier<Integer> paidAmount) {
         MultiChildWidget widget = new MultiChildWidget();
         widget.setSize(36, 18);

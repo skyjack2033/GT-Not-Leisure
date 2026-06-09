@@ -113,7 +113,9 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
     }
 
     @Override
+    @Deprecated
     public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this MUI1 logo hook after Energy Infuser only uses the MUI2 GUI.
         builder.widget(
             new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
                 .setSize(18, 18)

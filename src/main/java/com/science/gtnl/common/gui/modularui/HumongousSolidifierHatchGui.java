@@ -37,7 +37,7 @@ public class HumongousSolidifierHatchGui {
         return panel.child(
             GTNLMui2Textures.PICTURE_GTNL_LOGO.asWidget()
                 .size(18)
-                .pos(151, 80));
+                .pos(151, 62));
     }
 
     private FluidSlot createFluidSlot(int index) {

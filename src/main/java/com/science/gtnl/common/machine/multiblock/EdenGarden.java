@@ -386,9 +386,7 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
-    /**
-     * TODO: Remove this mui1 fallback after Eden Garden no longer supports mui1 startup paths.
-     */
+    // TODO: Remove this MUI1 fallback after Eden Garden no longer supports MUI1 startup paths.
     @Deprecated
     public static final UIInfo<?, ?> GreenhouseUI = GreenHouseMode
         .createGreenhouseUI(GreenHouseMode.MUIContainer_Greenhouse::new);

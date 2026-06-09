@@ -51,6 +51,7 @@ import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
 import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
+import com.science.gtnl.common.gui.modularui.GrandAssemblyLineGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
@@ -85,6 +86,7 @@ import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.ParallelHelper;
 import gregtech.api.util.VoidProtectionHelper;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
@@ -955,8 +957,23 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         return (1 / 1.67 - (Math.max(0, mParallelTier - 1) / 50.0)) * ((mParallelTier >= 12) ? 1.0 / 20.0 : 1);
     }
 
+    public int getMinRecipeTimeForGui() {
+        return minRecipeTime;
+    }
+
+    public void setMinRecipeTimeFromGui(int minRecipeTime) {
+        this.minRecipeTime = Math.max(1, minRecipeTime);
+    }
+
     @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new GrandAssemblyLineGui(this);
+    }
+
+    @Override
+    @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after GrandAssemblyLine mui2 parity is verified.
         buildContext.addSyncedWindow(PARALLEL_WINDOW_ID, this::createParallelWindow);
         builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
             if (!widget.isClient()) {
@@ -978,7 +995,9 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
         super.addUIWidgets(builder, buildContext);
     }
 
+    @Deprecated
     public ModularWindow createParallelWindow(final EntityPlayer player) {
+        // TODO: Remove this mui1 fallback after GrandAssemblyLine mui2 parity is verified.
         final int WIDTH = 158;
         final int HEIGHT = 52;
         final int PARENT_WIDTH = getGUIWidth();

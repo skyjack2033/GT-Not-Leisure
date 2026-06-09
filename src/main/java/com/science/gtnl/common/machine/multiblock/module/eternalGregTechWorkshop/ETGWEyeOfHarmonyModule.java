@@ -368,7 +368,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
                 if (aBaseMetaTileEntity instanceof BaseTileEntity) {
                     ((BaseTileEntity) aBaseMetaTileEntity).ignoreUnloadedChunks = mMachine;
                 }
-                mMachine = checkMachine(aBaseMetaTileEntity, mInventory[1]);
+                mMachine = checkStructure(true, aBaseMetaTileEntity);
             }
 
             if (mStartUpCheck < 0) {
