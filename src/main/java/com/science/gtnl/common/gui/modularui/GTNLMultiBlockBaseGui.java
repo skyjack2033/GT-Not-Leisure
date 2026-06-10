@@ -14,7 +14,6 @@ import com.science.gtnl.api.IGreenHouse;
 import com.science.gtnl.common.gui.GTNLMui2Textures;
 
 import gregtech.api.metatileentity.implementations.MTEMultiBlockBase;
-import gregtech.api.modularui2.GTWidgetThemes;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 public class GTNLMultiBlockBaseGui<T extends MTEMultiBlockBase> extends MTEMultiBlockBaseGui<T> {
@@ -26,8 +25,7 @@ public class GTNLMultiBlockBaseGui<T extends MTEMultiBlockBase> extends MTEMulti
     @Override
     protected Widget<? extends Widget<?>> makeLogoWidget(PanelSyncManager syncManager, ModularPanel parent) {
         return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_GTNL_LOGO).size(18)
-            .marginTop(4)
-            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+            .marginTop(4);
     }
 
     @Override

@@ -97,8 +97,7 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
     @Override
     protected Widget<? extends Widget<?>> makeLogoWidget(PanelSyncManager syncManager, ModularPanel parent) {
         return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_GTNL_STEAM_LOGO).size(18)
-            .marginTop(4)
-            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+            .marginTop(4);
     }
 
     private IWidget createSteamGauge(PanelSyncManager syncManager) {

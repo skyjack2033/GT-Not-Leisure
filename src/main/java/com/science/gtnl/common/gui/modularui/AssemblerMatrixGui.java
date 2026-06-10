@@ -44,7 +44,6 @@ import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEItemStack;
 import gregtech.api.modularui2.GTGuiTextures;
-import gregtech.api.modularui2.GTWidgetThemes;
 import gregtech.api.util.GTUtility;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2LongMap;
@@ -151,14 +150,12 @@ public class AssemblerMatrixGui extends GTNLMultiBlockBaseGui<AssemblerMatrix> {
 
     private IWidget createCirculationLogo() {
         return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_CIRCULATION).size(18, 18)
-            .pos(0, 0)
-            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+            .pos(0, 0);
     }
 
     private IWidget createGtnlLogo() {
         return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_GTNL_LOGO).size(18, 18)
-            .pos(0, 22)
-            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+            .pos(0, 22);
     }
 
     private IWidget createShowPatternButton(PanelSyncManager syncManager) {

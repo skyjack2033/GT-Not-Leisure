@@ -29,7 +29,6 @@ import com.science.gtnl.common.machine.multiblock.QuantumComputer;
 import com.science.gtnl.utils.Utils;
 
 import gregtech.api.modularui2.GTGuiTextures;
-import gregtech.api.modularui2.GTWidgetThemes;
 
 public class QuantumComputerGui extends GTNLMultiBlockBaseGui<QuantumComputer> {
 
@@ -211,14 +210,12 @@ public class QuantumComputerGui extends GTNLMultiBlockBaseGui<QuantumComputer> {
     private IWidget createCirculationLogo() {
         return new IDrawable.DrawableWidget(new DynamicDrawable(() -> GTNLMui2Textures.PICTURE_CIRCULATION))
             .size(18, 18)
-            .pos(172, 49)
-            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+            .pos(172, 49);
     }
 
     private IWidget createGtnlLogo() {
         return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_GTNL_LOGO).size(18, 18)
-            .pos(172, 67)
-            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+            .pos(172, 67);
     }
 
     private static String formatPercent(long used, long maximum) {

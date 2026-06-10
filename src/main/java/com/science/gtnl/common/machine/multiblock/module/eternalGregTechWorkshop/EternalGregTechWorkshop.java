@@ -426,6 +426,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         HatchElement.InputHatch,
                         HatchElement.OutputHatch)
                     .casingIndex(getCasingTextureID() + 1)
+                    .hint(1)
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,

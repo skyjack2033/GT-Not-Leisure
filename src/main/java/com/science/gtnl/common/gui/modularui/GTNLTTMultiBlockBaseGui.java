@@ -6,7 +6,6 @@ import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widget.Widget;
 import com.science.gtnl.common.gui.GTNLMui2Textures;
 
-import gregtech.api.modularui2.GTWidgetThemes;
 import gregtech.common.gui.modularui.multiblock.base.TTMultiblockBaseGui;
 import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 
@@ -19,7 +18,6 @@ public class GTNLTTMultiBlockBaseGui<T extends TTMultiblockBase> extends TTMulti
     @Override
     protected Widget<? extends Widget<?>> makeLogoWidget(PanelSyncManager syncManager, ModularPanel parent) {
         return new IDrawable.DrawableWidget(GTNLMui2Textures.PICTURE_GTNL_LOGO).size(18)
-            .marginTop(4)
-            .widgetTheme(GTWidgetThemes.PICTURE_LOGO);
+            .marginTop(4);
     }
 }
