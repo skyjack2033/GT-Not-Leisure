@@ -366,12 +366,12 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         if (side == facing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID() + 1),
                 TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_GOD_FORGE_MODULE_ACTIVE)
+                    .addIcon(BlockIcons.OVERLAY_FRONT_GOD_FORGE_CONTROLLER)
                     .extFacing()
                     .build() };
             return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID() + 1),
                 TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK)
+                    .addIcon(BlockIcons.OVERLAY_FRONT_GOD_FORGE_CONTROLLER)
                     .extFacing()
                     .build() };
         }

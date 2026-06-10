@@ -1,7 +1,7 @@
 package com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static com.science.gtnl.utils.enums.BlockIcons.OVERLAY_FRONT_GOD_FORGE_MODULE_ACTIVE;
+import static com.science.gtnl.utils.enums.BlockIcons.OVERLAY_FRONT_GOD_FORGE_CONTROLLER;
 import static gregtech.api.metatileentity.BaseTileEntity.TOOLTIP_DELAY;
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 
@@ -259,12 +259,12 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
         if (side == facing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
                 TextureFactory.builder()
-                    .addIcon(OVERLAY_FRONT_GOD_FORGE_MODULE_ACTIVE)
+                    .addIcon(OVERLAY_FRONT_GOD_FORGE_CONTROLLER)
                     .extFacing()
                     .build() };
             return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
                 TextureFactory.builder()
-                    .addIcon(OVERLAY_FRONT_GOD_FORGE_MODULE_ACTIVE)
+                    .addIcon(OVERLAY_FRONT_GOD_FORGE_CONTROLLER)
                     .extFacing()
                     .build() };
         }
