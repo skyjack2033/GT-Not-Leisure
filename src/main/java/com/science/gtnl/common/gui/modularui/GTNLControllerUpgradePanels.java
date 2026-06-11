@@ -62,7 +62,8 @@ public class GTNLControllerUpgradePanels {
             syncManager.syncedPanel(
                 UPGRADE_CURRENT_PANEL_KEY,
                 true,
-                (panelSyncManager, panelHandler) -> createUpgradePanel(parent, panelSyncManager, panelHandler, 0)));
+                (panelSyncManager,
+                    panelHandler) -> createUpgradePanel(parent, syncManager, panelSyncManager, panelHandler, 0)));
 
         int maxPreviewLevel = controllerUpgrade.getMaxPreviewUpgradeLevel();
         for (int level = 1; level <= maxPreviewLevel; level++) {
@@ -73,8 +74,12 @@ public class GTNLControllerUpgradePanels {
                 syncManager.syncedPanel(
                     panelKey,
                     true,
-                    (panelSyncManager,
-                        panelHandler) -> createUpgradePanel(parent, panelSyncManager, panelHandler, previewLevel)));
+                    (panelSyncManager, panelHandler) -> createUpgradePanel(
+                        parent,
+                        syncManager,
+                        panelSyncManager,
+                        panelHandler,
+                        previewLevel)));
         }
     }
 
@@ -107,11 +112,10 @@ public class GTNLControllerUpgradePanels {
             .setEnabledIf(widget -> controllerUpgrade.isUpgradeButtonEnabled());
     }
 
-    protected ModularPanel createUpgradePanel(ModularPanel parent, PanelSyncManager syncManager,
-        IPanelHandler panelHandler, int previewLevel) {
+    protected ModularPanel createUpgradePanel(ModularPanel parent, PanelSyncManager rootSyncManager,
+        PanelSyncManager panelSyncManager, IPanelHandler panelHandler, int previewLevel) {
         boolean previewMode = previewLevel > 0;
         ItemStack[] upgradeItems = getUpgradeItems(previewLevel);
-        int[] upgradePaidCosts = getUpgradePaidCosts(previewLevel);
         int costColumns = Math.max(1, Math.min(upgradeItems.length, controllerUpgrade.getUpgradeCostItemsPerRow()));
         int inputColumns = Math.max(1, controllerUpgrade.getUpgradeInputSlotsPerRow());
         int costRows = Math.max(1, (int) Math.ceil(upgradeItems.length / (double) costColumns));
@@ -135,14 +139,14 @@ public class GTNLControllerUpgradePanels {
             .setDraggable(true);
 
         panel.child(ButtonWidget.panelCloseButton());
-        panel.child(createCostGrid(upgradeItems, upgradePaidCosts, costColumns).pos(PANEL_MARGIN, 6));
+        panel.child(createCostGrid(upgradeItems, previewLevel, costColumns).pos(PANEL_MARGIN, 6));
 
         if (!previewMode) {
             transferStoredItemsToInputHandler();
             panel.child(
-                createInputGrid(syncManager, inputColumns, inputRows)
+                createInputGrid(panelSyncManager, inputColumns, inputRows)
                     .pos(PANEL_MARGIN + costColumns * COST_CELL_WIDTH, 6));
-            panel.child(createConsumeButton(panelHandler, syncManager, width).pos(10, height - 26));
+            panel.child(createConsumeButton(panelHandler, rootSyncManager, width).pos(10, height - 26));
         }
 
         panel.child(createPreviousButton(previewLevel).pos(PANEL_MARGIN, height - 20));
@@ -151,7 +155,7 @@ public class GTNLControllerUpgradePanels {
         return panel;
     }
 
-    private Grid createCostGrid(ItemStack[] upgradeItems, int[] upgradePaidCosts, int columns) {
+    private Grid createCostGrid(ItemStack[] upgradeItems, int previewLevel, int columns) {
         int rows = Math.max(1, (int) Math.ceil(upgradeItems.length / (double) columns));
         return new Grid().coverChildren()
             .gridOfWidthHeight(columns, rows, (x, y, index) -> {
@@ -159,10 +163,8 @@ public class GTNLControllerUpgradePanels {
                     return new Widget<>().size(COST_CELL_WIDTH, ItemSlot.SIZE);
                 }
                 int costIndex = index;
-                return createCostWidget(
-                    upgradeItems[index],
-                    () -> costIndex < upgradePaidCosts.length ? upgradePaidCosts[costIndex] : 0)
-                        .size(COST_CELL_WIDTH, ItemSlot.SIZE);
+                return createCostWidget(upgradeItems[index], () -> getPaidCost(previewLevel, costIndex))
+                    .size(COST_CELL_WIDTH, ItemSlot.SIZE);
             });
     }
 
@@ -186,14 +188,7 @@ public class GTNLControllerUpgradePanels {
                     .asWidget()
                     .size(ItemSlot.SIZE)
                     .scale(0.8f)
-                    .textAlign(Alignment.Center)
-                    .setEnabledIf(widget -> !isCostPaid(stack, paidCostSupplier)))
-            .child(
-                GTGuiTextures.GREEN_CHECKMARK_11x9.asWidget()
-                    .size(11, 9)
-                    .marginRight(4)
-                    .marginTop(5)
-                    .setEnabledIf(widget -> isCostPaid(stack, paidCostSupplier)));
+                    .textAlign(Alignment.Center));
     }
 
     private String getRemainingCostText(ItemStack stack, IntSupplier paidCostSupplier) {
@@ -208,8 +203,9 @@ public class GTNLControllerUpgradePanels {
         return color + "x" + remaining;
     }
 
-    private boolean isCostPaid(ItemStack stack, IntSupplier paidCostSupplier) {
-        return paidCostSupplier.getAsInt() >= stack.stackSize;
+    private int getPaidCost(int previewLevel, int costIndex) {
+        int[] paidCosts = getUpgradePaidCosts(previewLevel);
+        return costIndex < paidCosts.length ? paidCosts[costIndex] : 0;
     }
 
     private Grid createInputGrid(PanelSyncManager syncManager, int columns, int rows) {
@@ -226,8 +222,10 @@ public class GTNLControllerUpgradePanels {
             });
     }
 
-    private ButtonWidget<?> createConsumeButton(IPanelHandler panelHandler, PanelSyncManager syncManager,
+    private ButtonWidget<?> createConsumeButton(IPanelHandler panelHandler, PanelSyncManager rootSyncManager,
         int panelWidth) {
+        BooleanSyncValue upgradeConsumedSyncer = rootSyncManager
+            .findSyncHandler(UPGRADE_CONSUMED_SYNC_KEY, BooleanSyncValue.class);
         return new ButtonWidget<>().size(panelWidth - 20, 20)
             .background(GTGuiTextures.BUTTON_STANDARD)
             .overlay(
@@ -240,8 +238,6 @@ public class GTNLControllerUpgradePanels {
                     controllerUpgrade.setUpgradeConsumed(true);
                     panelHandler.closePanel();
                 }
-                BooleanSyncValue upgradeConsumedSyncer = syncManager
-                    .findSyncHandler(UPGRADE_CONSUMED_SYNC_KEY, BooleanSyncValue.class);
                 upgradeConsumedSyncer.setBoolValue(controllerUpgrade.isUpgradeConsumed(), false, true);
             }))
             .tooltipShowUpTimer(TOOLTIP_DELAY);

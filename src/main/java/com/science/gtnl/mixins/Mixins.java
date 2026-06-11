@@ -21,11 +21,10 @@ public enum Mixins implements IMixins {
         "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine",
         "Gregtech.MixinBaseMetaTileEntity"),
 
-    NO_NHU_EARY(new MixinBuilder("Early Mixins when NHUtilities is absent")
-        .addCommonMixins(
-            "NoNHU.MixinBaseMetaTileEntity")
-        .setPhase(Phase.LATE)
-        .addExcludedMod(ModList.NHUtilities)),
+    NO_NHU_EARLY(
+        new MixinBuilder("Early Mixins when NHUtilities is absent").addCommonMixins("NoNHU.MixinBaseMetaTileEntity")
+            .setPhase(Phase.EARLY)
+            .addExcludedMod(ModList.NHUtilities)),
 
     NH_CORE_MOD_EARLY(new MixinBuilder().addCommonMixins("NHCoreMod.AccessorBacteriaRegistry")
         .setPhase(Phase.EARLY)

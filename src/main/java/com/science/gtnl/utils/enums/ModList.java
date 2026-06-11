@@ -22,7 +22,7 @@ public enum ModList implements IMod, ITargetMod {
     ProgrammableHatches(ModIds.PROGRAMMABLE_HATCHES, Names.PROGRAMMABLE_HATCHES),
     TwistSpaceTechnology(ModIds.TWIST_SPACE_TECHNOLOGY, Names.TWIST_SPACE_TECHNOLOGY),
     BoxPlusPlus(ModIds.BOX_PLUS_PLUS, Names.BOX_PLUS_PLUS),
-    NHUtilities(ModIds.NH_UTILITIES, Names.NH_UTILITIES),
+    NHUtilities(ModIds.NH_UTILITIES, Names.NH_UTILITIES, "com.xir.NHUtilities.main.NHUtilitiesCore"),
     AE2Thing(ModIds.AE2_THING, Names.AE2_THING),
     QzMiner(ModIds.QZ_MINER, Names.QZ_MINER),
     OTHTechnology(ModIds.OTH_TECHNOLOGY, Names.OTH_TECHNOLOGY),
