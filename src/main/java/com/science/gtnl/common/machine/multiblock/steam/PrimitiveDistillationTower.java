@@ -16,6 +16,7 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
@@ -253,11 +254,11 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPiece(STRUCTURE_PIECE_BASE, 1, 0, 0, errors)) checkStructureCondition(errors, false);
         while (mHeight < 7) {
-            if (!checkPiece(STRUCTURE_PIECE_LAYER, 1, mHeight, 0)) {
+            if (!checkPiece(STRUCTURE_PIECE_LAYER, 1, mHeight, 0, errors)) {
                 checkStructureCondition(errors, false);
             }
             if (mOutputHatchesByLayer.size() < mHeight || mOutputHatchesByLayer.get(mHeight - 1)
-                .isEmpty()) checkStructureCondition(errors, false);
+                .isEmpty()) errors.add(GTNLStructureErrors.missingDistillationLayerOutputHatch());
             if (mTopLayerFound) {
                 break;
             }

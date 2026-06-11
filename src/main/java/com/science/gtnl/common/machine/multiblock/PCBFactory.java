@@ -434,12 +434,20 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
         if (machineTier == 0) checkStructureCondition(errors, false);
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
-        if (machineTier >= 2
-            && !checkPiece(STRUCTURE_PIECE_MAIN_T2, HORIZONTAL_OFF_SET_T2, VERTICAL_OFF_SET_T2, DEPTH_OFF_SET_T2)) {
+        if (machineTier >= 2 && !checkPiece(
+            STRUCTURE_PIECE_MAIN_T2,
+            HORIZONTAL_OFF_SET_T2,
+            VERTICAL_OFF_SET_T2,
+            DEPTH_OFF_SET_T2,
+            null)) {
             machineTier = 1;
         }
-        if (machineTier >= 3
-            && !checkPiece(STRUCTURE_PIECE_MAIN_T3, HORIZONTAL_OFF_SET_T3, VERTICAL_OFF_SET_T3, DEPTH_OFF_SET_T3)) {
+        if (machineTier >= 3 && !checkPiece(
+            STRUCTURE_PIECE_MAIN_T3,
+            HORIZONTAL_OFF_SET_T3,
+            VERTICAL_OFF_SET_T3,
+            DEPTH_OFF_SET_T3,
+            null)) {
             machineTier = 2;
         }
         if (!checkHatch()) {

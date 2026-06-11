@@ -476,14 +476,16 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                 STRUCTURE_PIECE_MAIN_UP,
                 HORIZONTAL_OFF_SET_UP,
                 VERTICAL_OFF_SET_UP + checkTier * 22,
-                DEPTH_OFF_SET_UP)) {
+                DEPTH_OFF_SET_UP,
+                null)) {
                 break;
             }
             if (!checkPiece(
                 STRUCTURE_PIECE_MAIN_DOWN,
                 HORIZONTAL_OFF_SET_DOWN,
                 VERTICAL_OFF_SET_DOWN - checkTier * 22,
-                DEPTH_OFF_SET_DOWN)) {
+                DEPTH_OFF_SET_DOWN,
+                null)) {
                 break;
             }
             checkTier++;
@@ -493,7 +495,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             STRUCTURE_PIECE_MAIN_TOP,
             HORIZONTAL_OFF_SET_TOP,
             VERTICAL_OFF_SET_TOP + (checkTier - 1) * 22,
-            DEPTH_OFF_SET_TOP)) {
+            DEPTH_OFF_SET_TOP,
+            errors)) {
             if (isRenderActive) destroyRenderer();
             mMachineTier = 0;
             mExtraModule = false;
@@ -504,7 +507,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             STRUCTURE_PIECE_MAIN_BOTTOM,
             HORIZONTAL_OFF_SET_BOTTOM,
             VERTICAL_OFF_SET_BOTTOM - (checkTier - 1) * 22,
-            DEPTH_OFF_SET_BOTTOM)) {
+            DEPTH_OFF_SET_BOTTOM,
+            errors)) {
             if (isRenderActive) destroyRenderer();
             mMachineTier = 0;
             mExtraModule = false;
@@ -518,7 +522,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         STRUCTURE_PIECE_MAIN_EXTRA_AIR,
                         HORIZONTAL_OFF_SET_EXTRA,
                         VERTICAL_OFF_SET_EXTRA_UP + i * 22,
-                        DEPTH_OFF_SET_EXTRA)) {
+                        DEPTH_OFF_SET_EXTRA,
+                        null)) {
                         destroyRenderer();
                         mExtraModule = false;
                         break;
@@ -527,7 +532,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         STRUCTURE_PIECE_MAIN_EXTRA_AIR,
                         HORIZONTAL_OFF_SET_EXTRA,
                         VERTICAL_OFF_SET_EXTRA_DOWN - i * 22,
-                        DEPTH_OFF_SET_EXTRA)) {
+                        DEPTH_OFF_SET_EXTRA,
+                        null)) {
                         mExtraModule = false;
                         break;
                     }
@@ -536,7 +542,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         STRUCTURE_PIECE_MAIN_EXTRA,
                         HORIZONTAL_OFF_SET_EXTRA,
                         VERTICAL_OFF_SET_EXTRA_UP + i * 22,
-                        DEPTH_OFF_SET_EXTRA)) {
+                        DEPTH_OFF_SET_EXTRA,
+                        null)) {
                         mExtraModule = false;
                         break;
                     }
@@ -544,7 +551,8 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                         STRUCTURE_PIECE_MAIN_EXTRA,
                         HORIZONTAL_OFF_SET_EXTRA,
                         VERTICAL_OFF_SET_EXTRA_DOWN - i * 22,
-                        DEPTH_OFF_SET_EXTRA)) {
+                        DEPTH_OFF_SET_EXTRA,
+                        null)) {
                         mExtraModule = false;
                         break;
                     }

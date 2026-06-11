@@ -463,17 +463,20 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
                     STRUCTURE_PIECE_MAIN_RING_ONE_AIR,
                     HORIZONTAL_OFF_SET_RING_ONE,
                     VERTICAL_OFF_SET_RING_ONE,
-                    DEPTH_OFF_SET_RING_ONE)
+                    DEPTH_OFF_SET_RING_ONE,
+                    errors)
                 || !checkPiece(
                     STRUCTURE_PIECE_MAIN_RING_TWO_AIR,
                     HORIZONTAL_OFF_SET_RING_TWO,
                     VERTICAL_OFF_SET_RING_TWO,
-                    DEPTH_OFF_SET_RING_TWO)
+                    DEPTH_OFF_SET_RING_TWO,
+                    errors)
                 || !checkPiece(
                     STRUCTURE_PIECE_MAIN_RING_THREE_AIR,
                     HORIZONTAL_OFF_SET_RING_THREE,
                     VERTICAL_OFF_SET_RING_THREE,
-                    DEPTH_OFF_SET_RING_THREE)) {
+                    DEPTH_OFF_SET_RING_THREE,
+                    errors)) {
                 destroyRenderer();
                 checkStructureCondition(errors, false);
             }
@@ -482,17 +485,20 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
                 STRUCTURE_PIECE_MAIN_RING_ONE,
                 HORIZONTAL_OFF_SET_RING_ONE,
                 VERTICAL_OFF_SET_RING_ONE,
-                DEPTH_OFF_SET_RING_ONE)
+                DEPTH_OFF_SET_RING_ONE,
+                errors)
             || !checkPiece(
                 STRUCTURE_PIECE_MAIN_RING_TWO,
                 HORIZONTAL_OFF_SET_RING_TWO,
                 VERTICAL_OFF_SET_RING_TWO,
-                DEPTH_OFF_SET_RING_TWO)
+                DEPTH_OFF_SET_RING_TWO,
+                errors)
             || !checkPiece(
                 STRUCTURE_PIECE_MAIN_RING_THREE,
                 HORIZONTAL_OFF_SET_RING_THREE,
                 VERTICAL_OFF_SET_RING_THREE,
-                DEPTH_OFF_SET_RING_THREE)) {
+                DEPTH_OFF_SET_RING_THREE,
+                errors)) {
                     checkStructureCondition(errors, false);
                 }
 

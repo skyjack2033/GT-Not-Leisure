@@ -330,7 +330,8 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                     STRUCTURE_PIECE_SPHERE_AIR,
                     HORIZONTAL_OFF_SET_SPHERE,
                     VERTICAL_OFF_SET_SPHERE,
-                    DEPTH_OFF_SET_SPHERE)) {
+                    DEPTH_OFF_SET_SPHERE,
+                    errors)) {
                 buildSphere();
                 checkStructureCondition(errors, false);
             }
@@ -339,7 +340,8 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                 STRUCTURE_PIECE_SPHERE,
                 HORIZONTAL_OFF_SET_SPHERE,
                 VERTICAL_OFF_SET_SPHERE,
-                DEPTH_OFF_SET_SPHERE)) {
+                DEPTH_OFF_SET_SPHERE,
+                errors)) {
                     checkStructureCondition(errors, false);
                 }
 

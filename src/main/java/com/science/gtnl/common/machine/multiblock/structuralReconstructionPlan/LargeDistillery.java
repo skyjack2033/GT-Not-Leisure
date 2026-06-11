@@ -27,6 +27,7 @@ import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.SoundResource;
@@ -292,18 +293,18 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
             checkStructureCondition(errors, false);
 
         while (mHeight <= 12) {
-            if (!checkPiece(STRUCTURE_PIECE_LAYER, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET)) {
+            if (!checkPiece(STRUCTURE_PIECE_LAYER, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET, errors)) {
                 checkStructureCondition(errors, false);
             }
             if (mOutputHatchesByLayer.size() < mHeight || mOutputHatchesByLayer.get(mHeight - 1)
-                .isEmpty()) checkStructureCondition(errors, false);
-            if (checkPiece(STRUCTURE_PIECE_TOP, HORIZONTAL_OFF_SET, mHeight + 1, DEPTH_OFF_SET)) {
+                .isEmpty()) errors.add(GTNLStructureErrors.missingDistillationLayerOutputHatch());
+            if (checkPiece(STRUCTURE_PIECE_TOP, HORIZONTAL_OFF_SET, mHeight + 1, DEPTH_OFF_SET, null)) {
                 break;
             }
             mHeight++;
         }
 
-        if (!checkPiece(STRUCTURE_PIECE_TOP_HINT, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET))
+        if (!checkPiece(STRUCTURE_PIECE_TOP_HINT, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET, errors))
             checkStructureCondition(errors, false);
 
         setupParameters();

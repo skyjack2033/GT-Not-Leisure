@@ -833,6 +833,7 @@ GTNL.gui.text.structure_error.invalid_hatch_configuration=仓室配置无效
 GTNL.gui.text.structure_error.invalid_energy_hatch_configuration=能源仓配置无效
 GTNL.gui.text.structure_error.laser_energy_tunnel_disabled=此机器禁用激光靶仓
 GTNL.gui.text.structure_error.energy_input_amperage_too_high=能源输入电流过高
+GTNL.gui.text.structure_error.missing_distillation_layer_output_hatch=蒸馏塔的每一层都需要一个输出仓
 GTNL.gui.text.structure_error.legacy_check_failed=结构验证失败
 Tooltip_ParallelControllerHatch_00=为多方块机器提供最大并行
 Tooltip_ParallelControllerHatch_01=允许同时处理至多%s个配方 

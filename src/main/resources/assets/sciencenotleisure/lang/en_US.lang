@@ -833,6 +833,7 @@ GTNL.gui.text.structure_error.invalid_hatch_configuration=Invalid hatch configur
 GTNL.gui.text.structure_error.invalid_energy_hatch_configuration=Invalid energy hatch configuration
 GTNL.gui.text.structure_error.laser_energy_tunnel_disabled=Laser energy tunnels are disabled for this machine
 GTNL.gui.text.structure_error.energy_input_amperage_too_high=Energy input amperage is too high
+GTNL.gui.text.structure_error.missing_distillation_layer_output_hatch=Each distillation layer requires an output hatch
 GTNL.gui.text.structure_error.legacy_check_failed=Structure validation failed
 Tooltip_ParallelControllerHatch_00=Provides maximum parallel for multiblock machines
 Tooltip_ParallelControllerHatch_01=Allows up to %s recipes to be processed simultaneously

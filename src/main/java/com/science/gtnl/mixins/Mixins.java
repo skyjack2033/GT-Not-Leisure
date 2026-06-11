@@ -18,7 +18,14 @@ public enum Mixins implements IMixins {
     GREGTECH_EARLY(Side.COMMON, "Gregtech.AccessorMTETieredMachineBlock", "Gregtech.AccessorEyeOfHarmonyRecipe",
         "Gregtech.AccessorGTRecipe", "Gregtech.AccessorGTRecipeBuilder", "Gregtech.AccessorGTLanguageManager",
         "Gregtech.AccessorCommonMetaTileEntity", "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch",
-        "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine"),
+        "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine",
+        "Gregtech.MixinBaseMetaTileEntity"),
+
+    NO_NHU_EARY(new MixinBuilder("Early Mixins when NHUtilities is absent")
+        .addCommonMixins(
+            "NoNHU.MixinBaseMetaTileEntity")
+        .setPhase(Phase.LATE)
+        .addExcludedMod(ModList.NHUtilities)),
 
     NH_CORE_MOD_EARLY(new MixinBuilder().addCommonMixins("NHCoreMod.AccessorBacteriaRegistry")
         .setPhase(Phase.EARLY)
@@ -104,7 +111,6 @@ public enum Mixins implements IMixins {
             "DraconicEvolution.AccessorCustomArmorHandler",
             "DraconicEvolution.MixinCustomArmorHandler",
             "DraconicEvolution.MixinReactorExplosion",
-            "Gregtech.MixinBaseMetaTileEntity",
             "Gregtech.MixinEyeOfHarmonyRecipeStorage",
             "Gregtech.MixinGodForgeMath",
             "Gregtech.MixinGTOreDictUnificator",
@@ -221,10 +227,9 @@ public enum Mixins implements IMixins {
             .addRequiredMod(ModList.TwistSpaceTechnology)
             .addExcludedMod(ModList.Overpowered)),
 
-    NO_NHU_MIXINS(new MixinBuilder("Mixins when NHUtilities is absent")
+    NO_NHU(new MixinBuilder("Mixins when NHUtilities is absent")
         .addCommonMixins(
             "NoNHU.MixinAbstractPoweredMachineEntity",
-            "NoNHU.MixinBaseMetaTileEntity",
             "NoNHU.MixinBlockItemCapBank",
             "NoNHU.MixinMTEAdvAssLineAcceleration",
             "NoNHU.MixinResearchStationAcceleration",
@@ -232,7 +237,7 @@ public enum Mixins implements IMixins {
         .setPhase(Phase.LATE)
         .addExcludedMod(ModList.NHUtilities)),
 
-    TST_MIXINS(new MixinBuilder("Twist Space Technology Mixins")
+    TST(new MixinBuilder("Twist Space Technology Mixins")
         .addCommonMixins(
             "TwistSpaceTechnology.MixinRecipeLoader",
             "TwistSpaceTechnology.MixinTST_OreProcessingFactory",
