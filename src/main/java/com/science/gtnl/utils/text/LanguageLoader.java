@@ -8,13 +8,17 @@ import bartworks.system.material.WerkstoffLoader;
 import cpw.mods.fml.common.FMLCommonHandler;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
+import gregtech.api.util.GTLanguageManager;
 
 public class LanguageLoader {
 
     public static void registry() {
-        if (!FMLCommonHandler.instance()
-            .getCurrentLanguage()
-            .equals("zh_CN")) return;
+        String currentLanguage = FMLCommonHandler.instance()
+            .getCurrentLanguage();
+        if (currentLanguage == null || currentLanguage.isEmpty()) {
+            currentLanguage = GTLanguageManager.LanguageCode;
+        }
+        if (!"zh_CN".equals(currentLanguage)) return;
 
         // Bartwork material
         addWerkstoffLocalization(GTNLMaterials.Hexanitrohexaazaisowurtzitane, "六硝基六氮杂异伍兹烷", false);

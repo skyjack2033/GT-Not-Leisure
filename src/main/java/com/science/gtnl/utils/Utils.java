@@ -656,15 +656,19 @@ public class Utils {
         String translation = writeToLangFile(trimmedKey, text);
         AccessorGTLanguageManager.getLangMap()
             .put(trimmedKey, translation);
+        AccessorGTLanguageManager.getStringTranslateLanguageListFallBack()
+            .put(trimmedKey, translation);
         Map<String, String> langList = ((AccessorStringTranslate) AccessorStringTranslate.getInstance())
             .getLanguageList();
         if (langList != null) langList.put(trimmedKey, translation);
         AccessorGTLanguageManager.getTempMap()
             .put(trimmedKey, translation);
-        LanguageRegistry.instance()
-            // If we use the actual user configured locale here, switching lang to others while running game
-            // turns everything into unlocalized string. So we make it "default" and call it a day.
-            .injectLanguage(language, AccessorGTLanguageManager.getTempMap());
+        if (FMLCommonHandler.instance()
+            .getCurrentLanguage() != null) {
+            LanguageRegistry.instance()
+                // Inject only after the client language is selected.
+                .injectLanguage(language, AccessorGTLanguageManager.getTempMap());
+        }
         AccessorGTLanguageManager.getTempMap()
             .clear();
         return translation;

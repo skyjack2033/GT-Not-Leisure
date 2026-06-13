@@ -22,6 +22,10 @@ public enum Mixins implements IMixins {
         "Gregtech.MixinBaseMetaTileEntity", "Gregtech.AssLineRemover.MixinGTMod",
         "Gregtech.AssLineRemover.MixinGTRecipeBuilder", "Gregtech.AssLineRemover.MixinTTRecipeAdder"),
 
+    GREGTECH_CLIENT_EARLY(
+        new MixinBuilder("Gregtech early client safety mixins").addClientMixins("Gregtech.MixinGTLanguageManager")
+            .setPhase(Phase.EARLY)),
+
     NO_NHU_EARLY(
         new MixinBuilder("Early Mixins when NHUtilities is absent").addCommonMixins("NoNHU.MixinBaseMetaTileEntity")
             .setPhase(Phase.EARLY)
@@ -180,6 +184,11 @@ public enum Mixins implements IMixins {
         .addCommonMixins("NotEnoughEnergistics.MixinNEEPatternTerminalHandler")
         .setPhase(Phase.LATE)
         .addRequiredMod(ModList.NotEnoughEnergistics)),
+
+    NOT_ENOUGH_ITEMS(new MixinBuilder("Not Enough Items stability mixins")
+        .addClientMixins("NotEnoughItems.AccessorItemList", "NotEnoughItems.MixinItemListUpdateFilter")
+        .setPhase(Phase.LATE)
+        .addRequiredMod(ModList.NotEnoughItems)),
 
     NEI_CUSTOM_DIAGRAM(new MixinBuilder("NEI Custom Diagram Mixin")
         .addCommonMixins("NEICustomDiagram.AccessorNeiCustomDiagram", "NEICustomDiagram.MixinNeiCustomDiagram")
