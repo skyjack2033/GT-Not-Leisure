@@ -19,9 +19,9 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.MouseEvent;
@@ -39,6 +39,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.common.ModItems;
+import com.gtnewhorizon.gtnhlib.client.title.TitleAPI;
 import com.reavaritia.client.render.CustomEntityRenderer;
 import com.science.gtnl.api.TickrateAPI;
 import com.science.gtnl.common.item.BaubleItem;
@@ -48,7 +49,6 @@ import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionHitEffec
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionState;
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionType;
 import com.science.gtnl.common.packet.NBTUpdatePacket;
-import com.science.gtnl.common.packet.client.TitleDisplayHandler;
 import com.science.gtnl.common.render.item.ItemNullPointerExceptionRender;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.EffectLoader;
@@ -223,8 +223,8 @@ public class SubscribeEventClientUtils {
             PotionEffect effect = player.getActivePotionEffect(EffectLoader.awe);
 
             if (effect != null && event.gui instanceof GuiIngameMenu) {
-                TitleDisplayHandler
-                    .displayTitle(StatCollector.translateToLocal("Awe_Cancel_01"), 100, 0xFFFFFF, 3, 10, 20);
+                TitleAPI.setTimes(10, 100, 20);
+                TitleAPI.setTitle(new ChatComponentTranslation("Awe_Cancel_01"));
                 event.setCanceled(true);
             }
         }
@@ -241,7 +241,8 @@ public class SubscribeEventClientUtils {
             if (effect != null && event.gui instanceof GuiInventory) {
                 String[] messages = { "Awe_Cancel_02_01", "Awe_Cancel_02_02" };
                 String message = messages[RANDOM.nextInt(messages.length)];
-                TitleDisplayHandler.displayTitle(StatCollector.translateToLocal(message), 100, 0xFFFFFF, 3, 10, 20);
+                TitleAPI.setTimes(10, 100, 20);
+                TitleAPI.setTitle(new ChatComponentTranslation(message));
 
                 event.setCanceled(true);
             }
