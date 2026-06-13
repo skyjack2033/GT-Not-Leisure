@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.science.gtnl.loader.RecordLoader;
 
-@Mixin(Item.class)
+@Mixin(value = Item.class, remap = true)
 public abstract class MixinItem {
 
     @Inject(
