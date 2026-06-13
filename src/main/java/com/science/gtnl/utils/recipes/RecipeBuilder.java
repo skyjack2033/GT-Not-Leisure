@@ -223,9 +223,7 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder itemOutputs(ItemStack... outputItems) {
-        if (outputItems != null && outputItems.length > 0) {
-            this.outputItems = outputItems;
-        }
+        this.outputItems = filterValidItemStacks(outputItems);
         return this;
     }
 
@@ -266,9 +264,8 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder fluidOutputs(FluidStack... outputFluids) {
-        if (outputFluids != null && outputFluids.length > 0) {
-            this.outputFluids = outputFluids;
-        }
+        this.outputFluids = outputFluids == null ? GTValues.emptyFluidStackArray
+            : ArrayExt.removeNullFluids(outputFluids);
         return this;
     }
 
@@ -410,6 +407,8 @@ public class RecipeBuilder {
             return this;
         }
 
+        normalizeChanceArrays();
+
         GTRecipeBuilder builder = GTValues.RA.stdBuilder();
         if (inputsOreDict != null) {
             builder = builder.itemInputs(inputsOreDict);
@@ -494,6 +493,7 @@ public class RecipeBuilder {
             handleInvalidRecipe();
             return Optional.empty();
         }
+        normalizeChanceArrays();
         preBuildChecks();
         if (inputsOreDict != null || altFluidInputs != null) {
             return Optional.of(
@@ -590,6 +590,52 @@ public class RecipeBuilder {
             }
         }
         recipe.mSpecialValue = specialValue;
+    }
+
+    private void normalizeChanceArrays() {
+        inputChance = ArrayExt.fixChancesArray(inputChance, countValidItemStacks(inputItems));
+        inputFluidChance = ArrayExt.fixChancesArray(inputFluidChance, countFluidStacks(inputFluids));
+        outputChance = ArrayExt.fixChancesArray(outputChance, countValidItemStacks(outputItems));
+        outputFluidChance = ArrayExt.fixChancesArray(outputFluidChance, countFluidStacks(outputFluids));
+    }
+
+    private ItemStack[] filterValidItemStacks(ItemStack[] stacks) {
+        if (stacks == null || stacks.length == 0) {
+            return GTValues.emptyItemStackArray;
+        }
+        List<ItemStack> validStacks = new ArrayList<>(stacks.length);
+        for (ItemStack stack : stacks) {
+            if (GTUtility.isStackValid(stack)) {
+                validStacks.add(stack);
+            }
+        }
+        return validStacks.isEmpty() ? GTValues.emptyItemStackArray : validStacks.toArray(new ItemStack[0]);
+    }
+
+    private int countValidItemStacks(ItemStack[] stacks) {
+        if (stacks == null || stacks.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        for (ItemStack stack : stacks) {
+            if (GTUtility.isStackValid(stack)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int countFluidStacks(FluidStack[] stacks) {
+        if (stacks == null || stacks.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        for (FluidStack stack : stacks) {
+            if (stack != null) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public static void handleInvalidRecipe() {
