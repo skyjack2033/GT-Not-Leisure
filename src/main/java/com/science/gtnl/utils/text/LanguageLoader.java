@@ -369,6 +369,10 @@ public class LanguageLoader {
     }
 
     public static String addStringLocalization(String trimmedKey, String text) {
-        return Utils.storeTranslation(trimmedKey, text);
+        return Utils.storeTranslation(trimmedKey, normalizeMaterialPlaceholder(text));
+    }
+
+    private static String normalizeMaterialPlaceholder(String text) {
+        return text == null ? null : text.replace("%material", "%s");
     }
 }
