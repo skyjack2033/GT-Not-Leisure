@@ -3,12 +3,14 @@ package com.science.gtnl.utils.recipes;
 import static gregtech.api.util.GTRecipeMapUtil.SPECIAL_VALUE_ALIASES;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +18,13 @@ import org.jetbrains.annotations.Nullable;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.mixins.early.Gregtech.AccessorGTRecipe;
 import com.science.gtnl.mixins.early.Gregtech.AccessorGTRecipeBuilder;
+import com.science.gtnl.mixins.early.Gregtech.AccessorGTRecipeWithAlt;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Mods;
 import gregtech.api.interfaces.IRecipeMap;
+import gregtech.api.objects.OreDictItemStack;
+import gregtech.api.objects.SubstituteFluidStack;
 import gregtech.api.recipe.RecipeCategory;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMetadataKey;
@@ -80,7 +85,9 @@ public class RecipeBuilder {
     public Object[] inputsOreDict;
     public ItemStack[] outputItems = GTValues.emptyItemStackArray;
     public ItemStack[][] alts;
+    public int[] altOreIds;
     public FluidStack[] inputFluids = GTValues.emptyFluidStackArray;
+    public FluidStack[][] altFluidInputs;
     public FluidStack[] outputFluids = GTValues.emptyFluidStackArray;
     public int[] inputChance, inputFluidChance, outputChance, outputFluidChance;
     public Object special;
@@ -112,6 +119,7 @@ public class RecipeBuilder {
         inputItems = ArrayExt.removeTrailingNulls(inputs);
         inputsOreDict = null;
         alts = null;
+        altOreIds = null;
         return this;
     }
 
@@ -123,6 +131,9 @@ public class RecipeBuilder {
         if (inputItems != null && inputItems.length > 0) {
             this.inputItems = inputItems;
         }
+        inputsOreDict = null;
+        alts = null;
+        altOreIds = null;
         return this;
     }
 
@@ -132,6 +143,8 @@ public class RecipeBuilder {
         this.inputsOreDict = inputs;
         int len = inputs.length;
         this.alts = new ItemStack[len][];
+        this.altOreIds = new int[len];
+        Arrays.fill(altOreIds, -1);
 
         for (int i = 0; i < len; i++) {
             Object in = inputs[i];
@@ -143,9 +156,30 @@ public class RecipeBuilder {
             } else if (in instanceof ItemStack[]arr) {
                 result = arr.clone();
 
+            } else if (in instanceof OreDictItemStack oreDictItemStack) {
+                altOreIds[i] = OreDictionary.getOreID(oreDictItemStack.mOreName);
+                ArrayList<ItemStack> ores = GTOreDictUnificator.getOres(oreDictItemStack.mOreName);
+                if (ores.isEmpty()) {
+                    GTLog.err.println(
+                        "Warning: OreDict entry \"" + oreDictItemStack.mOreName
+                            + "\" is empty; recipe will be skipped.");
+                    result = GTValues.emptyItemStackArray;
+                } else {
+                    ArrayList<ItemStack> list = new ArrayList<>(ores.size());
+                    for (ItemStack ore : ores) {
+                        ItemStack copy = GTUtility.copyAmount(oreDictItemStack.mAmount, ore);
+                        if (GTUtility.isStackValid(copy)) {
+                            list.add(copy);
+                        }
+                    }
+                    result = list.toArray(new ItemStack[0]);
+                }
+
             } else if (in instanceof Object[]arr && arr.length == 2) {
+                altOreIds[i] = OreDictionary.getOreID(arr[0].toString());
                 ArrayList<ItemStack> ores = GTOreDictUnificator.getOres(arr[0]);
                 if (ores.isEmpty()) {
+                    GTLog.err.println("Warning: OreDict entry \"" + arr[0] + "\" is empty; recipe will be skipped.");
                     result = GTValues.emptyItemStackArray;
                 } else {
                     int size = ((Number) arr[1]).intValue();
@@ -184,6 +218,7 @@ public class RecipeBuilder {
         inputItems = fix(inputs, false);
         inputsOreDict = null;
         alts = null;
+        altOreIds = null;
         return this;
     }
 
@@ -195,9 +230,38 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder fluidInputs(FluidStack... inputFluids) {
-        if (inputFluids != null && inputFluids.length > 0) {
-            this.inputFluids = inputFluids;
+        if (skip) return this;
+        if (debugNull() && containsNull(inputFluids)) handleNullRecipeComponents("fluidInputs");
+        this.inputFluids = inputFluids == null ? GTValues.emptyFluidStackArray : ArrayExt.removeNullFluids(inputFluids);
+        this.altFluidInputs = null;
+        return this;
+    }
+
+    public RecipeBuilder fluidInputs(Object... fluids) {
+        if (skip) return this;
+        if (containsNull(fluids) || fluids.length == 0) {
+            this.inputFluids = GTValues.emptyFluidStackArray;
+            this.altFluidInputs = null;
+            if (debugNull()) handleNullRecipeComponents("SubstituteFluidStack");
+            return this;
         }
+
+        List<FluidStack> mainFluidList = new ArrayList<>(fluids.length);
+        List<FluidStack[]> altFluidList = new ArrayList<>(fluids.length);
+        for (Object fluid : fluids) {
+            if (fluid instanceof SubstituteFluidStack substituteFluidStack) {
+                FluidStack[] alternatives = substituteFluidStack.fluidStacks.toArray(new FluidStack[0]);
+                mainFluidList.add(alternatives.length > 0 ? alternatives[0] : null);
+                altFluidList.add(alternatives);
+            } else if (fluid instanceof FluidStack fluidStack) {
+                mainFluidList.add(fluidStack);
+                altFluidList.add(new FluidStack[] { fluidStack });
+            } else {
+                throw new IllegalArgumentException("Unexpected type: " + fluid.getClass());
+            }
+        }
+        this.inputFluids = mainFluidList.toArray(new FluidStack[0]);
+        this.altFluidInputs = altFluidList.toArray(new FluidStack[0][]);
         return this;
     }
 
@@ -347,7 +411,9 @@ public class RecipeBuilder {
         }
 
         GTRecipeBuilder builder = GTValues.RA.stdBuilder();
-        if (inputItems != null) {
+        if (inputsOreDict != null) {
+            builder = builder.itemInputs(inputsOreDict);
+        } else if (inputItems != null) {
             builder = builder.itemInputs(inputItems);
         }
 
@@ -360,11 +426,11 @@ public class RecipeBuilder {
         }
 
         if (inputChance != null) {
-            builder = builder.outputChances(inputChance);
+            builder = builder.inputChances(inputChance);
         }
 
         if (inputFluidChance != null) {
-            builder = builder.outputChances(inputFluidChance);
+            builder = builder.fluidInputChances(inputFluidChance);
         }
 
         if (outputChance != null) {
@@ -372,10 +438,17 @@ public class RecipeBuilder {
         }
 
         if (outputFluidChance != null) {
-            builder = builder.outputChances(outputFluidChance);
+            builder = builder.fluidOutputChances(outputFluidChance);
         }
 
-        if (inputFluids != null) {
+        if (altFluidInputs != null) {
+            Object[] fluids = new Object[altFluidInputs.length];
+            for (int i = 0; i < altFluidInputs.length; i++) {
+                FluidStack[] alternatives = altFluidInputs[i];
+                fluids[i] = alternatives.length == 1 ? alternatives[0] : new SubstituteFluidStack(alternatives);
+            }
+            builder = builder.fluidInputs(fluids);
+        } else if (inputFluids != null) {
             builder = builder.fluidInputs(inputFluids);
         }
 
@@ -410,12 +483,7 @@ public class RecipeBuilder {
         if (skip) {
             return this;
         }
-
-        this.build()
-            .map(this::decorate)
-            .ifPresent(recipeMap::add);
-
-        return this;
+        return addTo((IRecipeMap) recipeMap);
     }
 
     public Optional<GTRecipe> build() {
@@ -427,6 +495,35 @@ public class RecipeBuilder {
             return Optional.empty();
         }
         preBuildChecks();
+        if (inputsOreDict != null || altFluidInputs != null) {
+            return Optional.of(
+                decorate(
+                    AccessorGTRecipeWithAlt.create(
+                        inputItems,
+                        outputItems,
+                        inputFluids,
+                        outputFluids,
+                        inputChance,
+                        outputChance,
+                        inputFluidChance,
+                        outputFluidChance,
+                        special,
+                        duration,
+                        eut,
+                        specialValue,
+                        enabled,
+                        hidden,
+                        fakeRecipe,
+                        mCanBeBuffered,
+                        mNeedsEmptyOutput,
+                        nbtSensitive,
+                        neiDesc,
+                        metadataStorage,
+                        recipeCategory,
+                        alts,
+                        altOreIds,
+                        altFluidInputs)));
+        }
         return Optional.of(
             decorate(
                 AccessorGTRecipe.create(

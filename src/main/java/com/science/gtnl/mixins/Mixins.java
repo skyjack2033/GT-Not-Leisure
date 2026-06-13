@@ -16,11 +16,12 @@ public enum Mixins implements IMixins {
     FORGE_CORE(Side.COMMON, "Forge.MixinFMLProxyPacket", "Forge.MixinForgeHook"),
 
     GREGTECH_EARLY(Side.COMMON, "Gregtech.AccessorMTETieredMachineBlock", "Gregtech.AccessorEyeOfHarmonyRecipe",
-        "Gregtech.AccessorGTRecipe", "Gregtech.AccessorGTRecipeBuilder", "Gregtech.AccessorGTLanguageManager",
-        "Gregtech.AccessorCommonMetaTileEntity", "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch",
-        "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine",
-        "Gregtech.MixinBaseMetaTileEntity", "Gregtech.AssLineRemover.MixinGTMod",
-        "Gregtech.AssLineRemover.MixinGTRecipeBuilder", "Gregtech.AssLineRemover.MixinTTRecipeAdder"),
+        "Gregtech.AccessorGTRecipe", "Gregtech.AccessorGTRecipeBuilder", "Gregtech.AccessorGTRecipeWithAlt",
+        "Gregtech.AccessorGTLanguageManager", "Gregtech.AccessorCommonMetaTileEntity",
+        "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch", "Gregtech.AccessorProcessingLogic",
+        "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine", "Gregtech.MixinBaseMetaTileEntity",
+        "Gregtech.AssLineRemover.MixinGTMod", "Gregtech.AssLineRemover.MixinGTRecipeBuilder",
+        "Gregtech.AssLineRemover.MixinTTRecipeAdder"),
 
     GREGTECH_CLIENT_EARLY(
         new MixinBuilder("Gregtech early client safety mixins").addClientMixins("Gregtech.MixinGTLanguageManager")
@@ -124,6 +125,7 @@ public enum Mixins implements IMixins {
             "Gregtech.MixinGTShapelessRecipe",
             "Gregtech.MixinGTUtility",
             "Gregtech.MixinGTUtil",
+            "Gregtech.MixinAssemblyLineUtils",
             "Gregtech.MixinMTEBetterJukebox",
             "Gregtech.MixinMTEForgeOfGods",
             "Gregtech.MixinMTEHatch",
