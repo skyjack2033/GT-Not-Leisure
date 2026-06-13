@@ -42,7 +42,7 @@ public class GTNLControllerUpgradePanels {
     public static final String UPGRADE_CURRENT_PANEL_KEY = UPGRADE_PANEL_KEY_PREFIX + "current";
     private static final String UPGRADE_CONSUMED_SYNC_KEY = "gtnlUpgradeConsumed";
     private static final int COST_CELL_WIDTH = 36;
-    private static final int BUTTON_SIZE = 16;
+    private static final int BUTTON_SIZE = 18;
     private static final int PANEL_MARGIN = 5;
 
     private final MTEMultiBlockBase multiblock;
@@ -149,8 +149,12 @@ public class GTNLControllerUpgradePanels {
             panel.child(createConsumeButton(panelHandler, rootSyncManager, width).pos(10, height - 26));
         }
 
-        panel.child(createPreviousButton(previewLevel).pos(PANEL_MARGIN, height - 20));
-        panel.child(createNextButton(previewLevel).pos(width - PANEL_MARGIN - BUTTON_SIZE, height - 20));
+        int costGridWidth = costColumns * COST_CELL_WIDTH;
+        int costGridHeight = costRows * ItemSlot.SIZE;
+
+        panel.child(createPreviousButton(previewLevel).pos(PANEL_MARGIN, 6 + costGridHeight));
+
+        panel.child(createNextButton(previewLevel).pos(PANEL_MARGIN + costGridWidth - BUTTON_SIZE, 6 + costGridHeight));
 
         return panel;
     }

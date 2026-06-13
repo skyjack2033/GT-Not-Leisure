@@ -173,8 +173,8 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
         panel.child(
             new TextFieldWidget().value(recipeOcSyncer)
                 .setFormatAsInteger(true)
-                .setNumbers(0, 4)
-                .setScrollValues(1, 4, 64)
+                .numbersInt(0, 4)
+                .scrollValues(1, 4, 64, 256)
                 .setTextAlignment(Alignment.Center)
                 .size(150, 18)
                 .pos(4, 25)

@@ -19,7 +19,8 @@ public enum Mixins implements IMixins {
         "Gregtech.AccessorGTRecipe", "Gregtech.AccessorGTRecipeBuilder", "Gregtech.AccessorGTLanguageManager",
         "Gregtech.AccessorCommonMetaTileEntity", "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch",
         "Gregtech.AccessorProcessingLogic", "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine",
-        "Gregtech.MixinBaseMetaTileEntity"),
+        "Gregtech.MixinBaseMetaTileEntity", "Gregtech.AssLineRemover.MixinGTMod",
+        "Gregtech.AssLineRemover.MixinGTRecipeBuilder", "Gregtech.AssLineRemover.MixinTTRecipeAdder"),
 
     NO_NHU_EARLY(
         new MixinBuilder("Early Mixins when NHUtilities is absent").addCommonMixins("NoNHU.MixinBaseMetaTileEntity")
@@ -143,9 +144,6 @@ public enum Mixins implements IMixins {
             "Gregtech.MixinRecipeGenFluids",
             "Gregtech.MixinProcessingDust",
             "Gregtech.MixinTTMultiblockBase",
-            "Gregtech.AssLineRemover.MixinGTMod",
-            "Gregtech.AssLineRemover.MixinGTRecipeBuilder",
-            "Gregtech.AssLineRemover.MixinTTRecipeAdder",
             "InventoryBogoSorter.MixinShortcutHandler",
             "InventoryBogoSorter.MixinSortHandler",
             "ModularUI.MixinFluidSlotWidget",

@@ -964,12 +964,12 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
 
     @Override
     public int getGUIWidth() {
-        return super.getGUIWidth() + 16;
+        return 176 + 16;
     }
 
     @Override
-    protected boolean useMui2() {
-        return true;
+    public int getGUIHeight() {
+        return 184;
     }
 
     @Override
