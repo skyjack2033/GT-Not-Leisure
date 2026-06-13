@@ -110,6 +110,11 @@ public class RecipeBuilder {
      */
     public boolean skip = false;
     public boolean valid = true;
+    private boolean preserveNullItemInputs;
+    private int inputItemCount;
+    private int outputItemCount;
+    private int inputFluidCount;
+    private int outputFluidCount;
 
     public RecipeBuilder() {}
 
@@ -117,6 +122,8 @@ public class RecipeBuilder {
         if (skip) return this;
         if (debugNull() && containsNull(inputs)) handleNullRecipeComponents("itemInputUnified");
         inputItems = ArrayExt.removeTrailingNulls(inputs);
+        preserveNullItemInputs = false;
+        inputItemCount = countValidItemStacks(inputItems);
         inputsOreDict = null;
         alts = null;
         altOreIds = null;
@@ -130,7 +137,12 @@ public class RecipeBuilder {
     public RecipeBuilder itemInputs(ItemStack... inputItems) {
         if (inputItems != null && inputItems.length > 0) {
             this.inputItems = inputItems;
+            inputItemCount = countValidItemStacks(this.inputItems);
+        } else {
+            this.inputItems = GTValues.emptyItemStackArray;
+            inputItemCount = 0;
         }
+        preserveNullItemInputs = false;
         inputsOreDict = null;
         alts = null;
         altOreIds = null;
@@ -209,6 +221,8 @@ public class RecipeBuilder {
         }
 
         this.inputItems = basics.isEmpty() ? GTValues.emptyItemStackArray : basics.toArray(new ItemStack[0]);
+        preserveNullItemInputs = false;
+        inputItemCount = countValidItemStacks(this.inputItems);
 
         return this;
     }
@@ -216,6 +230,8 @@ public class RecipeBuilder {
     public RecipeBuilder itemInputsAllowNulls(ItemStack... inputs) {
         if (skip) return this;
         inputItems = fix(inputs, false);
+        preserveNullItemInputs = true;
+        inputItemCount = countValidItemStacks(inputItems);
         inputsOreDict = null;
         alts = null;
         altOreIds = null;
@@ -224,6 +240,7 @@ public class RecipeBuilder {
 
     public RecipeBuilder itemOutputs(ItemStack... outputItems) {
         this.outputItems = filterValidItemStacks(outputItems);
+        outputItemCount = this.outputItems.length;
         return this;
     }
 
@@ -231,6 +248,7 @@ public class RecipeBuilder {
         if (skip) return this;
         if (debugNull() && containsNull(inputFluids)) handleNullRecipeComponents("fluidInputs");
         this.inputFluids = inputFluids == null ? GTValues.emptyFluidStackArray : ArrayExt.removeNullFluids(inputFluids);
+        inputFluidCount = this.inputFluids.length;
         this.altFluidInputs = null;
         return this;
     }
@@ -260,12 +278,14 @@ public class RecipeBuilder {
         }
         this.inputFluids = mainFluidList.toArray(new FluidStack[0]);
         this.altFluidInputs = altFluidList.toArray(new FluidStack[0][]);
+        inputFluidCount = this.inputFluids.length;
         return this;
     }
 
     public RecipeBuilder fluidOutputs(FluidStack... outputFluids) {
         this.outputFluids = outputFluids == null ? GTValues.emptyFluidStackArray
             : ArrayExt.removeNullFluids(outputFluids);
+        outputFluidCount = this.outputFluids.length;
         return this;
     }
 
@@ -408,6 +428,10 @@ public class RecipeBuilder {
         }
 
         normalizeChanceArrays();
+        if (shouldUseDirectRecipePath()) {
+            addDirectRecipe(recipeMap);
+            return this;
+        }
 
         GTRecipeBuilder builder = GTValues.RA.stdBuilder();
         if (inputsOreDict != null) {
@@ -486,6 +510,10 @@ public class RecipeBuilder {
     }
 
     public Optional<GTRecipe> build() {
+        return buildRecipe(true);
+    }
+
+    private Optional<GTRecipe> buildRecipe(boolean normalizeChances) {
         if (skip) {
             return Optional.empty();
         }
@@ -493,7 +521,9 @@ public class RecipeBuilder {
             handleInvalidRecipe();
             return Optional.empty();
         }
-        normalizeChanceArrays();
+        if (normalizeChances) {
+            normalizeChanceArrays();
+        }
         preBuildChecks();
         if (inputsOreDict != null || altFluidInputs != null) {
             return Optional.of(
@@ -593,10 +623,26 @@ public class RecipeBuilder {
     }
 
     private void normalizeChanceArrays() {
-        inputChance = ArrayExt.fixChancesArray(inputChance, countValidItemStacks(inputItems));
-        inputFluidChance = ArrayExt.fixChancesArray(inputFluidChance, countFluidStacks(inputFluids));
-        outputChance = ArrayExt.fixChancesArray(outputChance, countValidItemStacks(outputItems));
-        outputFluidChance = ArrayExt.fixChancesArray(outputFluidChance, countFluidStacks(outputFluids));
+        inputChance = ArrayExt.fixChancesArray(inputChance, inputItemCount);
+        inputFluidChance = ArrayExt.fixChancesArray(inputFluidChance, inputFluidCount);
+        outputChance = ArrayExt.fixChancesArray(outputChance, outputItemCount);
+        outputFluidChance = ArrayExt.fixChancesArray(outputFluidChance, outputFluidCount);
+    }
+
+    private boolean shouldUseDirectRecipePath() {
+        return preserveNullItemInputs;
+    }
+
+    private void addDirectRecipe(IRecipeMap recipeMap) {
+        Optional<GTRecipe> recipe = buildRecipe(false);
+        if (recipe.isEmpty()) {
+            return;
+        }
+        if (recipeMap instanceof RecipeMap<?>actualRecipeMap) {
+            actualRecipeMap.addRecipe(recipe.get(), checkForCollision, fakeRecipe, hidden);
+            return;
+        }
+        throw new IllegalStateException("Null-slot recipes require a concrete RecipeMap instance.");
     }
 
     private ItemStack[] filterValidItemStacks(ItemStack[] stacks) {
@@ -619,19 +665,6 @@ public class RecipeBuilder {
         int count = 0;
         for (ItemStack stack : stacks) {
             if (GTUtility.isStackValid(stack)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private int countFluidStacks(FluidStack[] stacks) {
-        if (stacks == null || stacks.length == 0) {
-            return 0;
-        }
-        int count = 0;
-        for (FluidStack stack : stacks) {
-            if (stack != null) {
                 count++;
             }
         }

@@ -160,6 +160,8 @@ gtnl.gui.config.general.recipe.enableshowdelrecipetitle=Show Recipe Deletion Tit
 gtnl.gui.config.general.recipe.enableshowdelrecipetitle.tooltip=Display a large on-screen title notification regarding deleted recipes when the player joins.
 gtnl.gui.config.general.recipe.enablesomethingrecipe=Add Extra Recipes
 gtnl.gui.config.general.recipe.enablesomethingrecipe.tooltip=Enable various "cheap" convenience recipes.
+gtnl.gui.config.general.recipe.enableshimmerfakerecipeinnei=Register Shimmer Fake Recipes in NEI
+gtnl.gui.config.general.recipe.enableshimmerfakerecipeinnei.tooltip=Register generated Shimmer fake recipes in NEI while keeping actual Shimmer conversions active.
 
 gtnl.gui.config.general.super_creeper.movespeed=Movement Speed
 gtnl.gui.config.general.super_creeper.movespeed.tooltip=Movement speed multiplier for the Super Creeper.
