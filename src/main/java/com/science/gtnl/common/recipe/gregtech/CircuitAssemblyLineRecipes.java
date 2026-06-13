@@ -34,7 +34,7 @@ public class CircuitAssemblyLineRecipes implements IRecipePool {
                 ItemList.Wrap_OpticalSMDCapacitors.get(16),
                 ItemList.Wrap_OpticalSMDDiodes.get(16),
                 CustomItemList.DATApipe.get(64),
-                GTOreDictUnificator.get(OrePrefixes.rod, Materials.EnrichedHolmium, 32))
+                GTOreDictUnificator.get(OrePrefixes.bolt, Materials.EnrichedHolmium, 64))
             .fluidInputs(MaterialMisc.MUTATED_LIVING_SOLDER.getFluidStack(288))
             .itemOutputs(ItemList.Circuit_OpticalProcessor.get(16))
             .special(ItemList.CircuitImprint_OpticalProcessor.get(0))
