@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock.steam;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.entity.item.EntityItem;
@@ -183,10 +182,8 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
+        checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
-
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {

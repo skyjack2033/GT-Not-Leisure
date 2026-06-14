@@ -42,6 +42,7 @@ dependencies {
     devOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughEnergistics:1.7.30:dev")
     devOnlyNonPublishable("com.falsepattern:endlessids-mc1.7.10:1.7.3:dev")
 
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:FindIt:1.4.3:dev")
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:ServerUtilities:2.3.0:dev")
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:BlockRenderer6343:1.4.14:dev")
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:ForestryMC:4.11.26:dev")
