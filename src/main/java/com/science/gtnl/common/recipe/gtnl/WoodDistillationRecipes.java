@@ -9,7 +9,6 @@ import com.science.gtnl.utils.recipes.RecipeBuilder;
 import gregtech.api.enums.Materials;
 import gregtech.api.objects.OreDictItemStack;
 import gregtech.api.recipe.RecipeMap;
-import gregtech.api.util.GTOreDictUnificator;
 import gtPlusPlus.core.fluids.GTPPFluids;
 
 public class WoodDistillationRecipes implements IRecipePool {
@@ -20,7 +19,7 @@ public class WoodDistillationRecipes implements IRecipePool {
     public void loadRecipes() {
         RecipeBuilder.builder()
             .itemInputs(new OreDictItemStack("logWood", 16))
-            .itemOutputs(GTOreDictUnificator.get("dustDarkAsh", 4L))
+            .itemOutputs(Materials.AshDark.getDust(4))
             .fluidInputs(Materials.Nitrogen.getGas(1000))
             .fluidOutputs(
                 Materials.Water.getFluid(400),
