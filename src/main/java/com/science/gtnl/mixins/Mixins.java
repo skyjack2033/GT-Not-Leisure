@@ -41,9 +41,9 @@ public enum Mixins implements IMixins {
         "Minecraft.AccessorMinecraft", "Minecraft.MixinCommandTeleport", "Minecraft.MixinEntity",
         "Minecraft.MixinEntityItem", "Minecraft.MixinEntityLivingBase", "Minecraft.MixinEntityLiving",
         "Minecraft.MixinEntityPlayer", "Minecraft.MixinExplosion", "Minecraft.MixinInventoryCrafting",
-        "Minecraft.MixinItem", "Minecraft.MixinItemStack", "Minecraft.MixinMinecraftServer",
-        "Minecraft.MixinNBTTagList", "Minecraft.MixinPotionEffect", "Minecraft.MixinServerConfigurationManager",
-        "Minecraft.MixinWorld", "Minecraft.MixinWorldServer"),
+        "Minecraft.MixinItemStack", "Minecraft.MixinMinecraftServer", "Minecraft.MixinNBTTagList",
+        "Minecraft.MixinPotionEffect", "Minecraft.MixinServerConfigurationManager", "Minecraft.MixinWorld",
+        "Minecraft.MixinWorldServer"),
 
     APRIL_FOOL(new MixinBuilder("April Fool Late Mixins")
         .addSidedMixins(Side.CLIENT, "AprilFool.MixinBaseMetaTileEntityRenderer", "AprilFool.MixinCommonMetaTileEntity")

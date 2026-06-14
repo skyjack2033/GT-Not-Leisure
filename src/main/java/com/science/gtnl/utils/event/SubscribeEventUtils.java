@@ -9,8 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -28,7 +26,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -473,22 +470,6 @@ public class SubscribeEventUtils {
                 }
             }
         }
-    }
-
-    @SubscribeEvent
-    public void onZombieDeath(LivingDeathEvent event) {
-        if (!(event.entity instanceof EntityZombie zombie)) return;
-        if (zombie.worldObj.isRemote) return;
-        if (!zombie.isChild()) return;
-        if (!(zombie.ridingEntity instanceof EntityChicken)) return;
-        EntityItem drop = new EntityItem(
-            zombie.worldObj,
-            zombie.posX,
-            zombie.posY,
-            zombie.posZ,
-            GTNLItemList.RecordLavaChicken.get(1));
-        drop.delayBeforeCanPickup = 10;
-        zombie.worldObj.spawnEntityInWorld(drop);
     }
 
     // Botania
