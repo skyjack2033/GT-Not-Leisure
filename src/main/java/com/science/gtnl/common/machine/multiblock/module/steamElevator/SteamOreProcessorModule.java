@@ -779,20 +779,12 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
     public static void initHash() {
         for (String name : OreDictionary.getOreNames()) {
             if (name == null || name.isEmpty()) continue;
-            List<ItemStack> ores = OreDictionary.getOres(name);
-            if (name.startsWith("crushedPurified")) {
-                for (ItemStack s : ores) isCrushedPureOre.add(GTUtility.stackToInt(s));
-            } else if (name.startsWith("crushedCentrifuged")) {
-                for (ItemStack s : ores) isThermal.add(GTUtility.stackToInt(s));
-            } else if (name.startsWith("crushed")) {
-                for (ItemStack s : ores) isCrushedOre.add(GTUtility.stackToInt(s));
-            } else if (name.startsWith("dustImpure")) {
-                for (ItemStack s : ores) isImpureDust.add(GTUtility.stackToInt(s));
-            } else if (name.startsWith("dustPure")) {
-                for (ItemStack s : ores) isPureDust.add(GTUtility.stackToInt(s));
-            } else if (name.startsWith("ore") || name.startsWith("rawOre")) {
-                for (ItemStack s : ores) isOre.add(GTUtility.stackToInt(s));
-            }
+            if (name.startsWith("crushedPurified")) registerOrePrefix(name, isCrushedPureOre);
+            else if (name.startsWith("crushedCentrifuged")) registerOrePrefix(name, isThermal);
+            else if (name.startsWith("crushed")) registerOrePrefix(name, isCrushedOre);
+            else if (name.startsWith("dustImpure")) registerOrePrefix(name, isImpureDust);
+            else if (name.startsWith("dustPure")) registerOrePrefix(name, isPureDust);
+            else if (name.startsWith("ore") || name.startsWith("rawOre")) registerOrePrefix(name, isOre);
         }
         // build combined set
         ALL_PROCESSABLE.addAll(isPureDust);
@@ -801,6 +793,12 @@ public class SteamOreProcessorModule extends SteamElevatorModule {
         ALL_PROCESSABLE.addAll(isThermal);
         ALL_PROCESSABLE.addAll(isCrushedOre);
         ALL_PROCESSABLE.addAll(isOre);
+    }
+
+    private static void registerOrePrefix(String prefix, IntOpenHashSet target) {
+        for (ItemStack stack : OreDictionary.getOres(prefix)) {
+            target.add(GTUtility.stackToInt(stack));
+        }
     }
 
     @Override
