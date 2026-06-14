@@ -139,6 +139,7 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
                             HatchElement.Maintenance,
                             ParallelCon)
                         .casingIndex(getCasingTextureID())
+                        .hint(1)
                         .build(),
                     StructureUtility
                         .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 15)),
@@ -147,7 +148,6 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
                         .hatchId(21503)
                         .shouldReject(x -> !x.mFluidBlazeInputHatch.isEmpty())
                         .casingIndex(getCasingTextureID())
-                        .hint(1)
                         .hint(1)
                         .build()))
             .addElement('F', HatchElement.Muffler.newAny(TAE.getIndexFromPage(2, 11), 1))

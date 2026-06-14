@@ -245,6 +245,7 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
                             HatchElement.Maintenance,
                             ParallelCon)
                         .casingIndex(getCasingTextureID())
+                        .hint(1)
                         .build(),
                     StructureUtility
                         .onElementPass(LargeDistillery::onCasingFound, StructureUtility.ofBlock(blockCasingsMisc, 11))))
@@ -254,6 +255,7 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
                     GTStructureUtility.buildHatchAdder(LargeDistillery.class)
                         .atLeast(layeredOutputHatch)
                         .casingIndex(getCasingTextureID())
+                        .hint(1)
                         .disallowOnly(ForgeDirection.UP, ForgeDirection.DOWN)
                         .build(),
                     GTStructureUtility
@@ -277,8 +279,6 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
                 GTStructureUtility.buildHatchAdder(LargeDistillery.class)
                     .atLeast(layeredOutputHatch)
                     .casingIndex(getCasingTextureID())
-                    .hint(1)
-                    .hint(1)
                     .hint(1)
                     .disallowOnly(ForgeDirection.UP)
                     .buildAndChain(blockCasingsMisc, 11))

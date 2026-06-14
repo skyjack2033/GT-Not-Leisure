@@ -508,6 +508,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
                 buildHatchAdder(SupercomputingCenter.class).atLeast(CustomHatchElement.RackHatch)
                     .casingIndex(BlockGTCasingsTT.textureOffset + 1)
                     .shouldReject(t -> !t.mRackHatchs.isEmpty())
+                    .hint(1)
                     .buildAndChain(sBlockCasingsTT, 1))
             .addElement('D', ofBlock(sBlockCasingsTT, 3))
             .addElement('E', ofBlock(sBlockCasingsTT, 1))
@@ -525,12 +526,11 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
                             HatchElement.InputData,
                             HatchElement.OutputData)
                         .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 7))
+                        .hint(1)
                         .buildAndChain(sBlockCasings9, 7),
                     buildHatchAdder(SupercomputingCenter.class)
                         .adder(SupercomputingCenter::addWirelessDataOutputToMachineList)
                         .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 7))
-                        .hint(1)
-                        .hint(1)
                         .hint(1)
                         .buildAndChain(sBlockCasings9, 7)))
             .addElement('H', ofBlock(sBlockCasings8, 7))

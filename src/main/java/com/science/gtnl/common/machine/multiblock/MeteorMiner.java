@@ -146,6 +146,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
                 GTStructureUtility.buildHatchAdder(MeteorMiner.class)
                     .atLeast(HatchElement.Maintenance, HatchElement.OutputBus, HatchElement.Energy)
                     .casingIndex(getCasingTextureID())
+                    .hint(1)
                     .buildAndChain(StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 6)))
             .addElement(
                 'I',
@@ -154,7 +155,6 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
                     .shouldReject(t -> !t.mInputBusses.isEmpty())
                     .adder(MeteorMiner::addInjector)
                     .casingIndex(getCasingTextureID())
-                    .hint(1)
                     .hint(1)
                     .buildAndChain(StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 6)))
             .addElement(

@@ -267,12 +267,12 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
                             HatchElement.InputHatch,
                             HatchElement.Energy.or(HatchElement.ExoticEnergy))
                         .casingIndex(getCasingTextureID())
+                        .hint(1)
                         .build(),
                     buildHatchAdder(SingularityDataHub.class).hatchClass(VaultPortHatch.class)
                         .shouldReject(t -> t.portHatch != null)
                         .adder(SingularityDataHub::addPortBusToMachineList)
                         .casingIndex(getCasingTextureID())
-                        .hint(1)
                         .hint(1)
                         .build(),
                     StructureUtility

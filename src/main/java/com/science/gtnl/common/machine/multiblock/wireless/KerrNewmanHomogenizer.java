@@ -326,6 +326,7 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .casingIndex(getCasingTextureID())
+                    .hint(1)
                     .buildAndChain(
                         StructureUtility
                             .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(defcCasingBlock, 7))))
@@ -358,9 +359,6 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .casingIndex(getCasingTextureID())
-                    .hint(1)
-                    .hint(1)
-                    .hint(1)
                     .hint(1)
                     .buildAndChain(
                         StructureUtility.onElementPass(

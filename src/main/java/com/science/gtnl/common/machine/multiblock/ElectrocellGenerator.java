@@ -135,6 +135,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                             HatchElement.OutputBus,
                             HatchElement.Dynamo.or(ExoticDynamo))
                         .casingIndex(getCasingTextureID())
+                        .hint(1)
                         .build(),
                     StructureUtility
                         .onElementPass(x -> x.mCountCasing++, StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))))

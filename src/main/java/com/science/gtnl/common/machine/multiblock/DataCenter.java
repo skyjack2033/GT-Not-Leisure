@@ -288,6 +288,7 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
                 'A',
                 buildHatchAdder(DataCenter.class).atLeast(DataBankHatches.DataStick)
                     .casingIndex(getCasingTextureID())
+                    .hint(1)
                     .buildAndChain(TTCasingsContainer.sBlockCasingsTT, 0))
             .addElement('B', ofBlock(TTCasingsContainer.sBlockCasingsTT, 3))
             .addElement(
@@ -303,7 +304,6 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
                         DataBankHatches.WirelessOutboundConnector)
                     .casingIndex(getCasingTextureID() + 1)
                     .hint(2)
-                    .hint(1)
                     .buildAndChain(TTCasingsContainer.sBlockCasingsTT, 1))
             .addElement('D', ofBlock(sBlockCasings8, 7))
             .addElement('E', ofBlock(sBlockCasings10, 9))

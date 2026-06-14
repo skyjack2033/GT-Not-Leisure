@@ -116,6 +116,7 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
                             HatchElement.Energy.or(HatchElement.ExoticEnergy),
                             HatchElement.Maintenance)
                         .casingIndex(getCasingTextureID())
+                        .hint(1)
                         .build(),
                     StructureUtility
                         .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 1)),
@@ -124,7 +125,6 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
                         .hatchId(21502)
                         .shouldReject(x -> !x.mFluidIceInputHatch.isEmpty())
                         .casingIndex(getCasingTextureID())
-                        .hint(1)
                         .hint(1)
                         .build()))
             .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))

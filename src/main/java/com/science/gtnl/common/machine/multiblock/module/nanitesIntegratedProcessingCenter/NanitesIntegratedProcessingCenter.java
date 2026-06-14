@@ -194,6 +194,7 @@ public class NanitesIntegratedProcessingCenter
                         HatchElement.OutputHatch,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy))
                     .casingIndex(getCasingTextureID())
+                    .hint(1)
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,

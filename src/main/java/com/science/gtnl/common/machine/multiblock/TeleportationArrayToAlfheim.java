@@ -409,6 +409,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
                             HatchElement.Energy.or(HatchElement.ExoticEnergy),
                             HatchElement.Maintenance)
                         .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10))
+                        .hint(1)
                         .build(),
                     StructureUtility
                         .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10)),
@@ -417,7 +418,6 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
                         .hatchId(21501)
                         .shouldReject(x -> !x.mFluidManaInputHatch.isEmpty())
                         .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10))
-                        .hint(1)
                         .hint(1)
                         .build()))
             .addElement('F', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))

@@ -209,6 +209,7 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
                             HatchElement.InputBus,
                             HatchElement.Maintenance)
                         .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings3, 14))
+                        .hint(1)
                         .build(),
                     StructureUtility.onElementPass(
                         PrimitiveDistillationTower::onCasingFound,
@@ -222,6 +223,7 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
                     GTStructureUtility.buildHatchAdder(PrimitiveDistillationTower.class)
                         .atLeast(layeredOutputHatch)
                         .casingIndex(getCasingTextureID())
+                        .hint(1)
                         .disallowOnly(ForgeDirection.UP, ForgeDirection.DOWN)
                         .build(),
                     GTStructureUtility
@@ -242,8 +244,6 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
                 'D',
                 GTStructureUtility.buildHatchAdder(PrimitiveDistillationTower.class)
                     .casingIndex(getCasingTextureID())
-                    .hint(1)
-                    .hint(1)
                     .hint(1)
                     .atLeast(HatchElement.OutputHatch)
                     .buildAndChain(GregTechAPI.sBlockCasings2, 0))
