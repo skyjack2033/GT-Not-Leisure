@@ -36,6 +36,7 @@ public class ParallelControllerHatchGui extends MTEHatchBaseGui<ParallelControll
         return super.createContentSection(panel, syncManager).child(
             IKey.lang("Info_ParallelControllerHatch_00")
                 .asWidget()
+                .textAlign(Alignment.Center)
                 .pos(49, 18)
                 .size(81, 14))
             .child(

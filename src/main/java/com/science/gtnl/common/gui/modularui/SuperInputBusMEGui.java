@@ -79,7 +79,6 @@ public class SuperInputBusMEGui extends MTEHatchBaseGui<SuperInputBusME> {
         ModularPanel panel = GTGuis.mteTemplatePanelBuilder(machine, guiData, syncManager, uiSettings)
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
-            .doesBindPlayerInventory(false)
             .doesAddGregTechLogo(false)
             .build();
 
@@ -158,6 +157,7 @@ public class SuperInputBusMEGui extends MTEHatchBaseGui<SuperInputBusME> {
 
     public Grid createGridShell(int x) {
         return new Grid().scrollable(new VerticalScrollData())
+            .showScrollShadows(false)
             .minColWidth(SLOT_SIZE)
             .minRowHeight(SLOT_SIZE)
             .size(SLOT_SIZE * SLOT_COLUMNS + 4, SLOT_SIZE * VISIBLE_SLOT_ROWS)
@@ -225,6 +225,7 @@ public class SuperInputBusMEGui extends MTEHatchBaseGui<SuperInputBusME> {
         panel.child(ButtonWidget.panelCloseButton());
         panel.child(
             new Grid().scrollable(new VerticalScrollData())
+                .showScrollShadows(false)
                 .minColWidth(SLOT_SIZE)
                 .minRowHeight(SLOT_SIZE)
                 .size(SLOT_SIZE * 9 + 4, SLOT_SIZE * 4)
@@ -267,10 +268,13 @@ public class SuperInputBusMEGui extends MTEHatchBaseGui<SuperInputBusME> {
     }
 
     public ModularPanel createStackSizeConfigurationPanel(ModularPanel parent, PanelSyncManager syncManager) {
-        IntSyncValue minStackSyncer = syncManager.findSyncHandler(MIN_AUTO_PULL_SYNC_KEY, IntSyncValue.class);
-        IntSyncValue refreshSyncer = syncManager.findSyncHandler(AUTO_PULL_REFRESH_SYNC_KEY, IntSyncValue.class);
-        BooleanSyncValue recipeCheckSyncer = syncManager
-            .findSyncHandler(EXPEDITE_RECIPE_SYNC_KEY, BooleanSyncValue.class);
+        IntSyncValue minStackSyncer = new IntSyncValue(
+            machine::getMinAutoPullStackSize,
+            machine::setMinAutoPullStackSize).allowC2S();
+        IntSyncValue refreshSyncer = new IntSyncValue(machine::getAutoPullRefreshTime, machine::setAutoPullRefreshTime)
+            .allowC2S();
+        BooleanSyncValue recipeCheckSyncer = new BooleanSyncValue(machine::doFastRecipeCheck, machine::setRecipeCheck)
+            .allowC2S();
 
         Flow mainColumn = Flow.column()
             .coverChildren()
@@ -360,7 +364,8 @@ public class SuperInputBusMEGui extends MTEHatchBaseGui<SuperInputBusME> {
 
     @Override
     protected IDrawable.DrawableWidget createLogo() {
-        return new IDrawable.DrawableWidget(getLogoTexture()).size(SLOT_SIZE);
+        return new IDrawable.DrawableWidget(getLogoTexture()).size(SLOT_SIZE)
+            .pos(367, 81);
     }
 
     @Override

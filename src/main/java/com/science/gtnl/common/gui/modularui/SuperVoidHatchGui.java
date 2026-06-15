@@ -40,7 +40,6 @@ public class SuperVoidHatchGui extends MTEHatchBaseGui<SuperVoidHatch> {
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
             .doesAddGregTechLogo(false)
-            .doesBindPlayerInventory(false)
             .build()
             .child(createFilterScroll())
             .child(createLogo());
@@ -48,6 +47,7 @@ public class SuperVoidHatchGui extends MTEHatchBaseGui<SuperVoidHatch> {
 
     private IWidget createFilterScroll() {
         return new ListWidget<>().scrollDirection(new VerticalScrollData())
+            .showScrollShadows(false)
             .size(18 * SLOT_COLUMNS + 4, 72)
             .pos(20, 9)
             .child(createFilterGrid());

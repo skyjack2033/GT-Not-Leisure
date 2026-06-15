@@ -101,6 +101,7 @@ public class SuperCraftingInputHatchMEGui extends MTEHatchBaseGui<SuperCraftingI
         syncManager.registerSlotGroup(PATTERN_INV_NAME, machine.getPatternRowsForGui());
 
         return new Grid().scrollable(new VerticalScrollData())
+            .showScrollShadows(false)
             .minColWidth(SLOT_SIZE)
             .minRowHeight(SLOT_SIZE)
             .size(SLOT_SIZE * PATTERN_SLOT_PER_ROW + 4, SLOT_SIZE * VISIBLE_PATTERN_ROWS)
@@ -212,6 +213,7 @@ public class SuperCraftingInputHatchMEGui extends MTEHatchBaseGui<SuperCraftingI
             .topRel(0);
         panel.child(
             new Grid().scrollable(new VerticalScrollData())
+                .showScrollShadows(false)
                 .minColWidth(SLOT_SIZE)
                 .minRowHeight(SLOT_SIZE)
                 .size(SLOT_SIZE * MANUAL_SLOT_PER_ROW + 4, SLOT_SIZE * VISIBLE_MANUAL_ROWS)

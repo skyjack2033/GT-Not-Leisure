@@ -548,6 +548,11 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     @Override
+    public int getGUIHeight() {
+        return 179;
+    }
+
+    @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
         return new SuperInputBusMEGui(this).build(data, syncManager, uiSettings);
     }

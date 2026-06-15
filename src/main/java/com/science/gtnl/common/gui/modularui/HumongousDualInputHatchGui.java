@@ -38,7 +38,6 @@ public class HumongousDualInputHatchGui extends MTEHatchBaseGui<HumongousDualInp
         ModularPanel panel = GTGuis.mteTemplatePanelBuilder(machine, guiData, syncManager, uiSettings)
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
-            .doesBindPlayerInventory(false)
             .doesAddGregTechLogo(false)
             .build();
 

@@ -1062,7 +1062,8 @@ public class EternalGregTechWorkshopGui extends GTNLMultiBlockBaseGui<EternalGre
 
         VerticalScrollData scrollData = new VerticalScrollData();
         scrollData.setScrollSize(UPGRADE_TREE_SCROLL_SIZE);
-        ScrollWidget<?> tree = new ScrollWidget<>(scrollData).size(292);
+        ScrollWidget<?> tree = new ScrollWidget<>(scrollData).showScrollShadows(false)
+            .size(292);
         addUpgradeConnectors(tree, syncManager);
         for (EternalGregTechWorkshopUpgrade upgrade : EternalGregTechWorkshopUpgrade.VALUES) {
             tree.child(createUpgradeButton(upgrade, syncManager));

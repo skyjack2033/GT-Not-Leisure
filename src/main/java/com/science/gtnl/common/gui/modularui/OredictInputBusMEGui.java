@@ -76,7 +76,6 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
         ModularPanel panel = GTGuis.mteTemplatePanelBuilder(machine, guiData, syncManager, uiSettings)
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
-            .doesBindPlayerInventory(false)
             .doesAddGregTechLogo(false)
             .build();
 
@@ -144,6 +143,7 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
 
     protected Grid createGridShell(int x) {
         return new Grid().scrollable(new VerticalScrollData())
+            .showScrollShadows(false)
             .minColWidth(SLOT_SIZE)
             .minRowHeight(SLOT_SIZE)
             .size(SLOT_SIZE * SLOT_COLUMNS + 4, SLOT_SIZE * VISIBLE_SLOT_ROWS)
@@ -219,6 +219,7 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
         panel.child(ButtonWidget.panelCloseButton());
         panel.child(
             new Grid().scrollable(new VerticalScrollData())
+                .showScrollShadows(false)
                 .minColWidth(SLOT_SIZE)
                 .minRowHeight(SLOT_SIZE)
                 .size(SLOT_SIZE * 9 + 4, SLOT_SIZE * 4)

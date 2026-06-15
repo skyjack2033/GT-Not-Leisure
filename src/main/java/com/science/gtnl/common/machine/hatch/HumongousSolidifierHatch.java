@@ -60,13 +60,18 @@ public class HumongousSolidifierHatch extends MTEHatchSolidifier implements IAdd
         super(aID, aName, aNameRegional, 14);
         this.mStoredFluid = new FluidStack[9];
         fluidTanks = new FluidStackTank[9];
+        initFluidTanks();
     }
 
     public HumongousSolidifierHatch(String aName, int aTier, String[] aDescription, ITexture[][][] aTextures) {
         super(aName, 14, aDescription, aTextures);
         this.mStoredFluid = new FluidStack[9];
         fluidTanks = new FluidStackTank[9];
-        for (int i = 0; i < 9; i++) {
+        initFluidTanks();
+    }
+
+    private void initFluidTanks() {
+        for (int i = 0; i < fluidTanks.length; i++) {
             final int index = i;
             fluidTanks[i] = new FluidStackTank(
                 () -> mStoredFluid[index],
@@ -328,6 +333,6 @@ public class HumongousSolidifierHatch extends MTEHatchSolidifier implements IAdd
 
     @Override
     public boolean isValidSlot(int aIndex) {
-        return aIndex >= 9;
+        return aIndex == moldSlot || aIndex == getCircuitSlot() || aIndex >= 9;
     }
 }

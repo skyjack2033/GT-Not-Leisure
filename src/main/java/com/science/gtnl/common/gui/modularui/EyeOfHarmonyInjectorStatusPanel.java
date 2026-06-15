@@ -178,6 +178,7 @@ public class EyeOfHarmonyInjectorStatusPanel {
 
         ListWidget<IWidget, ?> list = new GTNLListWidget<>(linkedUnitsScrollY).size(PANEL_WIDTH - 10, PANEL_HEIGHT - 25)
             .scrollDirection(new VerticalScrollData())
+            .showScrollShadows(false)
             .crossAxisAlignment(Alignment.CrossAxis.START);
         linkedUnitsScrollY = 0;
         for (EyeOfHarmonyInjector.LinkedUnitGuiData unit : units) {

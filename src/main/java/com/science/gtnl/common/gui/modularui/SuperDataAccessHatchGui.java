@@ -28,7 +28,6 @@ public class SuperDataAccessHatchGui extends MTEHatchDataAccessGUI {
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
             .doesAddGregTechLogo(false)
-            .doesBindPlayerInventory(false)
             .build()
             .child(createDataStickGrid(syncManager))
             .child(createLogo());

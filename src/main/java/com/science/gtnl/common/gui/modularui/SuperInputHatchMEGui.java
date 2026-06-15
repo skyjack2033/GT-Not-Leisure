@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.cleanroommc.modularui.api.IPanelHandler;
 import com.cleanroommc.modularui.api.UpOrDown;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
@@ -81,7 +82,6 @@ public class SuperInputHatchMEGui extends MTEHatchBaseGui<SuperInputHatchME> {
         ModularPanel panel = GTGuis.mteTemplatePanelBuilder(machine, guiData, syncManager, uiSettings)
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
-            .doesBindPlayerInventory(false)
             .doesAddGregTechLogo(false)
             .build();
 
@@ -201,6 +201,11 @@ public class SuperInputHatchMEGui extends MTEHatchBaseGui<SuperInputHatchME> {
                             tooltip.addLine(IKey.lang("modularui2.fluid.empty"));
                         }
                     }
+
+                    @Override
+                    public boolean onMouseScroll(UpOrDown scrollDirection, int amount) {
+                        return false;
+                    }
                 }.syncHandler(new FluidSlotSyncHandler(new InformationFluidTank(index)) {
 
                     @Override
@@ -214,6 +219,7 @@ public class SuperInputHatchMEGui extends MTEHatchBaseGui<SuperInputHatchME> {
 
     public Grid createGridShell(int x) {
         return new Grid().scrollable(new VerticalScrollData())
+            .showScrollShadows(false)
             .minColWidth(SLOT_SIZE)
             .minRowHeight(SLOT_SIZE)
             .size(SLOT_SIZE * SLOT_COLUMNS + 4, SLOT_SIZE * VISIBLE_SLOT_ROWS)
@@ -291,10 +297,14 @@ public class SuperInputHatchMEGui extends MTEHatchBaseGui<SuperInputHatchME> {
     }
 
     public ModularPanel createStackSizeConfigurationPanel(ModularPanel parent, PanelSyncManager syncManager) {
-        IntSyncValue minAmountSyncer = syncManager.findSyncHandler(MIN_AUTO_PULL_SYNC_KEY, IntSyncValue.class);
-        IntSyncValue refreshSyncer = syncManager.findSyncHandler(AUTO_PULL_REFRESH_SYNC_KEY, IntSyncValue.class);
-        BooleanSyncValue recipeCheckSyncer = syncManager
-            .findSyncHandler(EXPEDITE_RECIPE_SYNC_KEY, BooleanSyncValue.class);
+        IntSyncValue minAmountSyncer = new IntSyncValue(
+            machine::getMinAutoPullAmountForGui,
+            machine::setMinAutoPullAmountForGui).allowC2S();
+        IntSyncValue refreshSyncer = new IntSyncValue(
+            machine::getAutoPullRefreshTimeForGui,
+            machine::setAutoPullRefreshTimeForGui).allowC2S();
+        BooleanSyncValue recipeCheckSyncer = new BooleanSyncValue(machine::doFastRecipeCheck, machine::setRecipeCheck)
+            .allowC2S();
 
         Flow mainColumn = Flow.column()
             .coverChildren()
@@ -380,6 +390,12 @@ public class SuperInputHatchMEGui extends MTEHatchBaseGui<SuperInputHatchME> {
             .size(130, 9)
             .textAlign(Alignment.Center)
             .widgetTheme(GTWidgetThemes.DISPLAY_TEXT_WHITE);
+    }
+
+    @Override
+    protected IDrawable.DrawableWidget createLogo() {
+        return new IDrawable.DrawableWidget(getLogoTexture()).size(SLOT_SIZE)
+            .pos(367, 81);
     }
 
     @Override

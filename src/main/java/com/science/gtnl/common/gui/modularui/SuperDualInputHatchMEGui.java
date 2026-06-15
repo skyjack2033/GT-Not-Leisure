@@ -100,7 +100,6 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
         ModularPanel panel = GTGuis.mteTemplatePanelBuilder(machine, guiData, syncManager, uiSettings)
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
-            .doesBindPlayerInventory(false)
             .doesAddGregTechLogo(false)
             .build();
 
@@ -178,6 +177,7 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
 
     public Widget<?> createItemPage(ModularPanel parent, PanelSyncManager syncManager) {
         return new Grid().scrollable(new VerticalScrollData())
+            .showScrollShadows(false)
             .minColWidth(SLOT_SIZE)
             .minRowHeight(SLOT_SIZE)
             .size(SLOT_SIZE * 21 + 10, SLOT_SIZE * VISIBLE_SLOT_ROWS)
@@ -253,6 +253,7 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
 
     public Widget<?> createFluidPage(ModularPanel parent, PanelSyncManager syncManager) {
         return new Grid().scrollable(new VerticalScrollData())
+            .showScrollShadows(false)
             .minColWidth(SLOT_SIZE)
             .minRowHeight(SLOT_SIZE)
             .size(SLOT_SIZE * 21 + 10, SLOT_SIZE * VISIBLE_SLOT_ROWS)
@@ -375,6 +376,7 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
 
     public Grid createGridShell(int x) {
         return new Grid().scrollable(new VerticalScrollData())
+            .showScrollShadows(false)
             .minColWidth(SLOT_SIZE)
             .minRowHeight(SLOT_SIZE)
             .size(SLOT_SIZE * SLOT_COLUMNS + 4, SLOT_SIZE * VISIBLE_SLOT_ROWS)

@@ -2,6 +2,7 @@ package com.science.gtnl.common.machine.hatch;
 
 import java.util.ArrayList;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -24,6 +25,7 @@ import com.science.gtnl.common.gui.modularui.NinefoldInputHatchGui;
 import com.science.gtnl.utils.enums.BlockIcons;
 import com.science.gtnl.utils.item.ItemUtils;
 
+import gregtech.api.interfaces.IConfigurationCircuitSupport;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.modularui.IAddGregtechLogo;
 import gregtech.api.interfaces.modularui.IAddUIWidgets;
@@ -32,7 +34,8 @@ import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchMultiInput;
 import gregtech.api.render.TextureFactory;
 
-public class NinefoldInputHatch extends MTEHatchMultiInput implements IAddUIWidgets, IAddGregtechLogo {
+public class NinefoldInputHatch extends MTEHatchMultiInput
+    implements IConfigurationCircuitSupport, IAddUIWidgets, IAddGregtechLogo {
 
     private final FluidStack[] mStoredFluid;
     private final FluidStackTank[] fluidTanks;
@@ -43,6 +46,7 @@ public class NinefoldInputHatch extends MTEHatchMultiInput implements IAddUIWidg
         this.mStoredFluid = new FluidStack[aSlot];
         fluidTanks = new FluidStackTank[aSlot];
         mCapacityPer = getCapacityPerTank(aTier, aSlot);
+        initFluidTanks();
     }
 
     public NinefoldInputHatch(String aName, int aSlot, int aTier, String[] aDescription, ITexture[][][] aTextures) {
@@ -50,7 +54,11 @@ public class NinefoldInputHatch extends MTEHatchMultiInput implements IAddUIWidg
         this.mStoredFluid = new FluidStack[aSlot];
         fluidTanks = new FluidStackTank[aSlot];
         mCapacityPer = getCapacityPerTank(aTier, aSlot);
-        for (int i = 0; i < aSlot; i++) {
+        initFluidTanks();
+    }
+
+    private void initFluidTanks() {
+        for (int i = 0; i < fluidTanks.length; i++) {
             final int index = i;
             fluidTanks[i] = new FluidStackTank(
                 () -> mStoredFluid[index],
@@ -120,7 +128,39 @@ public class NinefoldInputHatch extends MTEHatchMultiInput implements IAddUIWidg
 
     @Override
     public boolean isValidSlot(int aIndex) {
-        return aIndex >= 9;
+        return aIndex >= 9 && aIndex != getCircuitSlot();
+    }
+
+    @Override
+    public boolean allowPullStack(IGregTechTileEntity aBaseMetaTileEntity, int aIndex, ForgeDirection side,
+        ItemStack aStack) {
+        return aIndex != getCircuitSlot() && super.allowPullStack(aBaseMetaTileEntity, aIndex, side, aStack);
+    }
+
+    @Override
+    public boolean allowPutStack(IGregTechTileEntity aBaseMetaTileEntity, int aIndex, ForgeDirection side,
+        ItemStack aStack) {
+        return aIndex != getCircuitSlot() && super.allowPutStack(aBaseMetaTileEntity, aIndex, side, aStack);
+    }
+
+    @Override
+    public int getCircuitSlot() {
+        return 0;
+    }
+
+    @Override
+    public boolean allowSelectCircuit() {
+        return true;
+    }
+
+    @Override
+    public int getCircuitSlotX() {
+        return 153;
+    }
+
+    @Override
+    public int getCircuitSlotY() {
+        return 63;
     }
 
     @Override
