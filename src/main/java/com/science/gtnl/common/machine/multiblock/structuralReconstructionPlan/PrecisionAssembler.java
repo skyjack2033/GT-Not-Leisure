@@ -289,7 +289,7 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
             return;
         setupParameters();
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
-        checkStructureCondition(errors, mCountCasing >= 30);
+        checkCasingMin(errors, mCountCasing, 30);
     }
 
     @Override

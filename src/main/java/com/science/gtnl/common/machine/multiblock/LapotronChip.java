@@ -251,7 +251,7 @@ public class LapotronChip extends MultiMachineBase<LapotronChip>
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mCountCasing >= 10000);
+        checkCasingMin(errors, mCountCasing, 10000);
     }
 
     @Override

@@ -268,7 +268,9 @@ public class NanitesIntegratedProcessingCenter
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mHeatingCapacity > 0);
+        if (mHeatingCapacity <= 0) {
+            failStructureCheck(errors);
+        }
     }
 
     @Override

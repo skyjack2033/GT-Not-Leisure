@@ -186,7 +186,7 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mCountCasing > 50);
+        checkCasingMin(errors, mCountCasing, 51);
     }
 
     @Override

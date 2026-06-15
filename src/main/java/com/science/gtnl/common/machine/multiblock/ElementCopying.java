@@ -478,7 +478,7 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mCountCasing >= 5);
+        checkCasingMin(errors, mCountCasing, 5);
     }
 
     public long getTotal(ToLongFunction<ElementCopyingEntry> costGetter) {

@@ -172,7 +172,7 @@ public class LargeSteamAlloySmelter extends SteamMultiMachineBase<LargeSteamAllo
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

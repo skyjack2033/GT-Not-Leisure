@@ -220,7 +220,7 @@ public class LargeSteamMixer extends SteamMultiMachineBase<LargeSteamMixer> impl
             enableHVRecipe = getUpgradeTier(aStack);
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

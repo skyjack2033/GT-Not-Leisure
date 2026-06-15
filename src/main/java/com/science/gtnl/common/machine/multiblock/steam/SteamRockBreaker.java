@@ -195,7 +195,7 @@ public class SteamRockBreaker extends SteamMultiMachineBase<SteamRockBreaker> im
             tierMachine = 2;
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

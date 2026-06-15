@@ -203,7 +203,7 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, this.mCountCasing > 256);
+        checkCasingMin(errors, mCountCasing, 257);
     }
 
     @Override

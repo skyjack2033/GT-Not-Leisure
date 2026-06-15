@@ -200,7 +200,7 @@ public class LargeSteamSifter extends SteamMultiMachineBase<LargeSteamSifter> im
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

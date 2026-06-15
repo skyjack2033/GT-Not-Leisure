@@ -314,7 +314,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack itemStack,
         List<StructureError> errors) {
         if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
-            checkStructureCondition(errors, false);
+            return;
         }
         boolean isFlipped = this.getFlip()
             .isHorizontallyFlipped();
@@ -328,7 +328,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
             "G",
             Blocks.water);
         setupParameters();
-        checkStructureCondition(errors, mCountCasing > 19);
+        checkCasingMin(errors, mCountCasing, 20);
     }
 
     @Override

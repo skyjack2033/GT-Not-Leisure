@@ -246,7 +246,7 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mCountCasing > 750);
+        checkCasingMin(errors, mCountCasing, 751);
     }
 
     @Override

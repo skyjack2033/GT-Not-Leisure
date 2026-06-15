@@ -209,7 +209,7 @@ public class LargeSteamCrusher extends SteamMultiMachineBase<LargeSteamCrusher> 
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

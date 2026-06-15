@@ -200,7 +200,7 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

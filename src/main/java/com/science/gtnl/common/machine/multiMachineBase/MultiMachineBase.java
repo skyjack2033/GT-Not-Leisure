@@ -1074,12 +1074,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         return errors.size() == existingErrors;
     }
 
-    protected void checkStructureCondition(List<StructureError> errors, boolean condition) {
-        if (!condition) {
-            failStructureCheck(errors);
-        }
-    }
-
     protected void failStructureCheck(List<StructureError> errors) {
         errors.add(GTNLStructureErrors.unknownLegacyCheckFailure());
     }

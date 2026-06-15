@@ -929,7 +929,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
             getProxy().setValidSides(emptyDirection);
-            checkStructureCondition(errors, false);
+            return;
         }
         final var old = mMaxSlots;
         setupParameters();

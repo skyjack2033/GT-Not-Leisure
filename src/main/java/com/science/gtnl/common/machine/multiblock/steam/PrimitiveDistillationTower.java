@@ -33,6 +33,8 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
+import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
@@ -252,21 +254,27 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPiece(STRUCTURE_PIECE_BASE, 1, 0, 0, errors)) checkStructureCondition(errors, false);
+        if (!checkPiece(STRUCTURE_PIECE_BASE, 1, 0, 0, errors)) return;
         while (mHeight < 7) {
-            if (!checkPiece(STRUCTURE_PIECE_LAYER, 1, mHeight, 0, errors)) {
-                checkStructureCondition(errors, false);
-            }
+            if (!checkPiece(STRUCTURE_PIECE_LAYER, 1, mHeight, 0, errors)) return;
             if (mOutputHatchesByLayer.size() < mHeight || mOutputHatchesByLayer.get(mHeight - 1)
                 .isEmpty()) errors.add(GTNLStructureErrors.missingDistillationLayerOutputHatch());
             if (mTopLayerFound) {
                 break;
             }
+            // not top
             mHeight++;
         }
         updateHatchTexture();
-
-        checkStructureCondition(errors, mCountCasing >= 7 * (mHeight + 1) - 5 && mHeight == 6);
+        if (mHeight < 6) {
+            errors.add(StructureErrorRegistry.TOO_SHORT_HEIGHT);
+            return;
+        }
+        if (!mTopLayerFound) {
+            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.missing_top"));
+            return;
+        }
+        checkCasingMin(errors, mCountCasing, 7 * (mHeight + 1) - 5);
     }
 
     @Override

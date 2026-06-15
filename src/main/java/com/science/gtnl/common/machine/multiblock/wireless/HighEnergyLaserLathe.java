@@ -175,7 +175,7 @@ public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEne
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mCountCasing > 1000);
+        checkCasingMin(errors, mCountCasing, 1001);
     }
 
     @Override

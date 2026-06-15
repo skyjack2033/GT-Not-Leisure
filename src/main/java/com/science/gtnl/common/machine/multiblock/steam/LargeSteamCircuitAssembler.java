@@ -176,7 +176,7 @@ public class LargeSteamCircuitAssembler extends SteamMultiMachineBase<LargeSteam
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

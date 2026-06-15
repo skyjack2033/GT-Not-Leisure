@@ -199,7 +199,7 @@ public class LargeSteamHammer extends SteamMultiMachineBase<LargeSteamHammer> im
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

@@ -394,7 +394,7 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mCountCasing > 200);
+        checkCasingMin(errors, mCountCasing, 201);
     }
 
     @Override

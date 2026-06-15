@@ -184,7 +184,7 @@ public class SteamCracking extends SteamMultiMachineBase<SteamCracking> implemen
         }
         getCasingTextureID();
         updateHatchTexture();
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

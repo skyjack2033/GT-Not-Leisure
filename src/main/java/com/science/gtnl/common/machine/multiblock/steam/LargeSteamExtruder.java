@@ -224,7 +224,7 @@ public class LargeSteamExtruder extends SteamMultiMachineBase<LargeSteamExtruder
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

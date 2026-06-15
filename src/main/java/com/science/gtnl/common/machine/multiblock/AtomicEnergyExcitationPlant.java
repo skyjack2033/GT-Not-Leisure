@@ -333,7 +333,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                     DEPTH_OFF_SET_SPHERE,
                     errors)) {
                 buildSphere();
-                checkStructureCondition(errors, false);
+                return;
             }
         } else if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)
             || !checkPiece(
@@ -342,10 +342,10 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                 VERTICAL_OFF_SET_SPHERE,
                 DEPTH_OFF_SET_SPHERE,
                 errors)) {
-                    checkStructureCondition(errors, false);
+                    return;
                 }
 
-        if (mCountCasing < 350) checkStructureCondition(errors, false);
+        checkCasingMin(errors, mCountCasing, 350);
 
         setupParameters();
 
@@ -357,7 +357,6 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
 
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
 
-        return;
     }
 
     @Override

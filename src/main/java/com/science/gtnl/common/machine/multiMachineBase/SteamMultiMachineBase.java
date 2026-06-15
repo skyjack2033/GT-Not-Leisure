@@ -374,12 +374,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return errors.size() == existingErrors;
     }
 
-    protected void checkStructureCondition(List<StructureError> errors, boolean condition) {
-        if (!condition) {
-            failStructureCheck(errors);
-        }
-    }
-
     protected void failStructureCheck(List<StructureError> errors) {
         errors.add(GTNLStructureErrors.unknownLegacyCheckFailure());
     }

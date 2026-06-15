@@ -478,7 +478,7 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
                     DEPTH_OFF_SET_RING_THREE,
                     errors)) {
                 destroyRenderer();
-                checkStructureCondition(errors, false);
+                return;
             }
         } else if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)
             || !checkPiece(
@@ -499,7 +499,7 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
                 VERTICAL_OFF_SET_RING_THREE,
                 DEPTH_OFF_SET_RING_THREE,
                 errors)) {
-                    checkStructureCondition(errors, false);
+                    return;
                 }
 
         if (!isRenderActive && enableRender && mTotalRunTime > 0) {
@@ -508,7 +508,7 @@ public class NanoPhagocytosisPlant extends WirelessEnergyMultiMachineBase<NanoPh
 
         setupParameters();
         checkHatch(errors);
-        checkStructureCondition(errors, mCountCasing > 1);
+        checkCasingMin(errors, mCountCasing, 2);
     }
 
     @Override

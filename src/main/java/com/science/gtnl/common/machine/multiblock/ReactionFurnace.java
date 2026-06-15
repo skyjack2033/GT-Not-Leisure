@@ -143,7 +143,7 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        checkStructureCondition(errors, mCountCasing >= 115);
+        checkCasingMin(errors, mCountCasing, 115);
     }
 
     @Override

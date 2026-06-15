@@ -251,7 +251,7 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

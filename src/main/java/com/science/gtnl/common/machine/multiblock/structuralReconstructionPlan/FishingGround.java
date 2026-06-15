@@ -151,7 +151,7 @@ public class FishingGround extends GTMMultiMachineBase<FishingGround> implements
             "D",
             Blocks.water);
         setupParameters();
-        checkStructureCondition(errors, mCountCasing >= 25);
+        checkCasingMin(errors, mCountCasing, 25);
     }
 
     @Override

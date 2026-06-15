@@ -179,7 +179,7 @@ public class LargeSteamChemicalBath extends SteamMultiMachineBase<LargeSteamChem
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

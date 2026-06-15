@@ -297,10 +297,9 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack itemStack,
         List<StructureError> errors) {
-        if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            checkStructureCondition(errors, false);
+        if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
-        checkStructureCondition(errors, this.mCountCasing >= 19);
+        checkCasingMin(errors, mCountCasing, 19);
     }
 
     @Override

@@ -218,7 +218,7 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
             return;
         replaceWater();
         setupParameters();
-        checkStructureCondition(errors, mCountCasing >= 55);
+        checkCasingMin(errors, mCountCasing, 55);
     }
 
     @Override

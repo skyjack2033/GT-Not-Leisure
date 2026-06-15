@@ -404,7 +404,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
-        checkStructureCondition(errors, mCountCasing >= 40);
+        checkCasingMin(errors, mCountCasing, 40);
     }
 
     @Override

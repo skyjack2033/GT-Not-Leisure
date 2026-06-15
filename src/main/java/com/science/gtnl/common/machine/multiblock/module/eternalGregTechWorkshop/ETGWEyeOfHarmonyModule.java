@@ -23,6 +23,7 @@ import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -712,42 +713,36 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         super.checkMachine(aBaseMetaTileEntity, aStack, errors);
         if (errors.size() > existingErrors) return;
         if (!mDualInputHatches.isEmpty()) {
-            checkStructureCondition(errors, false);
+            failStructureCheck(errors);
         }
 
-        if (mOutputBusses.size() != 1) {
-            checkStructureCondition(errors, false);
-        }
+        checkHatchExact(errors, HatchElement.OutputBus, 1);
 
         if (getPrimaryOutputBusME() == null) {
-            checkStructureCondition(errors, false);
+            failStructureCheck(errors);
         }
 
-        if (mOutputHatches.size() != 1) {
-            checkStructureCondition(errors, false);
-        }
+        checkOneOutputHatch(errors);
 
         if (getPrimaryOutputHatchME() == null) {
-            checkStructureCondition(errors, false);
+            failStructureCheck(errors);
         }
 
-        if (mInputBusses.size() != 1) {
-            checkStructureCondition(errors, false);
-        }
+        checkHatchExact(errors, HatchElement.InputBus, 1);
 
         if (getPrimaryInputBus() instanceof MTEHatchInputBusME) {
-            checkStructureCondition(errors, false);
+            failStructureCheck(errors);
         }
 
         if (!mEnergyHatches.isEmpty()) {
-            checkStructureCondition(errors, false);
+            failStructureCheck(errors);
         }
 
         if (!mExoticEnergyHatches.isEmpty()) {
-            checkStructureCondition(errors, false);
+            failStructureCheck(errors);
         }
 
-        checkStructureCondition(errors, mInputHatches.size() == 2);
+        checkHatchExact(errors, HatchElement.InputHatch, 2);
     }
 
     public MTEHatchInputBus getPrimaryInputBus() {

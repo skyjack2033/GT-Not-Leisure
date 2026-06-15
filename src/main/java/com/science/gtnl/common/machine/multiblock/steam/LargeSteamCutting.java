@@ -235,7 +235,7 @@ public class LargeSteamCutting extends SteamMultiMachineBase<LargeSteamCutting> 
             return;
         }
         updateHatchTexture();
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

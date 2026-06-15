@@ -208,7 +208,7 @@ public class LargeSteamCompressor extends SteamMultiMachineBase<LargeSteamCompre
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

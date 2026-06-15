@@ -196,7 +196,7 @@ public class LargeSteamExtractor extends SteamMultiMachineBase<LargeSteamExtract
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

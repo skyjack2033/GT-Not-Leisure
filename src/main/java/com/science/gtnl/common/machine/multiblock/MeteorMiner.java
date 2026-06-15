@@ -322,12 +322,14 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             tierMachine = 1;
         } else if (checkPiece(STRUCTURE_PIECE_TIER2, 9, 15, 3, errors)) {
             tierMachine = 2;
+        } else {
+            return;
         }
-        if (mInputBusses.isEmpty() && this.tierMachine == 1 || !findLaserRenderer(getBaseMetaTileEntity().getWorld()))
-            checkStructureCondition(errors, false);
+        if (mInputBusses.isEmpty() && this.tierMachine == 1 || !findLaserRenderer(getBaseMetaTileEntity().getWorld())) {
+            failStructureCheck(errors);
+        }
         setupParameters();
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
-        checkStructureCondition(errors, this.tierMachine > 0);
     }
 
     @Override

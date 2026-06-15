@@ -431,7 +431,10 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         machineTier = getMachineTier();
-        if (machineTier == 0) checkStructureCondition(errors, false);
+        if (machineTier == 0) {
+            failStructureCheck(errors);
+            return;
+        }
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         if (machineTier >= 2 && !checkPiece(
@@ -451,10 +454,9 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             machineTier = 2;
         }
         if (!checkHatch()) {
-            checkStructureCondition(errors, false);
+            failStructureCheck(errors);
         }
         setupParameters();
-        return;
     }
 
     @Override

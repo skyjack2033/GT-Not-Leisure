@@ -199,7 +199,7 @@ public class LargeSteamBending extends SteamMultiMachineBase<LargeSteamBending> 
             return;
         }
         updateHatchTexture();
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

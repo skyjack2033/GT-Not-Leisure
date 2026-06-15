@@ -199,7 +199,7 @@ public class LargeSteamThermalCentrifuge extends SteamMultiMachineBase<LargeStea
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

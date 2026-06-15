@@ -183,7 +183,7 @@ public class LargeSteamFormingPress extends SteamMultiMachineBase<LargeSteamForm
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override

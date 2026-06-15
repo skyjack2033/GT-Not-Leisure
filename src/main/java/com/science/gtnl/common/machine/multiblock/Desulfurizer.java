@@ -167,10 +167,10 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
-            checkStructureCondition(errors, false);
+            return;
         }
         setupParameters();
-        checkStructureCondition(errors, mCountCasing >= 20);
+        checkCasingMin(errors, mCountCasing, 20);
     }
 
     @Override

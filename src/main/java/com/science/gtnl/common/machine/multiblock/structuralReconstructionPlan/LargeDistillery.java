@@ -289,12 +289,11 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPiece(STRUCTURE_PIECE_BASE, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            checkStructureCondition(errors, false);
+        if (!checkPiece(STRUCTURE_PIECE_BASE, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
 
         while (mHeight <= 12) {
             if (!checkPiece(STRUCTURE_PIECE_LAYER, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET, errors)) {
-                checkStructureCondition(errors, false);
+                return;
             }
             if (mOutputHatchesByLayer.size() < mHeight || mOutputHatchesByLayer.get(mHeight - 1)
                 .isEmpty()) errors.add(GTNLStructureErrors.missingDistillationLayerOutputHatch());
@@ -304,12 +303,11 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
             mHeight++;
         }
 
-        if (!checkPiece(STRUCTURE_PIECE_TOP_HINT, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET, errors))
-            checkStructureCondition(errors, false);
+        if (!checkPiece(STRUCTURE_PIECE_TOP_HINT, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET, errors)) return;
 
         setupParameters();
         checkHatch(errors);
-        checkStructureCondition(errors, mCountCasing >= 5 * (mHeight + 1) - 5);
+        checkCasingMin(errors, mCountCasing, 5 * (mHeight + 1) - 5);
     }
 
     @Override

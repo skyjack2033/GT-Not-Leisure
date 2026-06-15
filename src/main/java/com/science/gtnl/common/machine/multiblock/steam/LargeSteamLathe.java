@@ -242,7 +242,7 @@ public class LargeSteamLathe extends SteamMultiMachineBase<LargeSteamLathe> impl
             updateHatchTexture();
             return;
         }
-        checkStructureCondition(errors, false);
+        failStructureCheck(errors);
     }
 
     @Override
