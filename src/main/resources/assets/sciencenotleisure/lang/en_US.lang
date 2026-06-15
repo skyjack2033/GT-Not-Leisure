@@ -31,9 +31,9 @@ Info_ShowPattern_Disabled=§cHide on Interface Terminal
 commands.kill.success.single=Killed %s
 commands.kill.success.multiple=Killed %s entities
 
-GT5U.gui.text.parallel_overflow=§4Parallel overflow
-GT5U.gui.text.parallel_zero=§4Insufficient parallel, check whether your inputs meet the recipe or machine requirements
-GT5U.gui.text.crash=§4Machine turned off due to crash. Refer to the log for more info.
+GT5U.gui.text.recipe_result.parallel_overflow=§4Parallel overflow
+GT5U.gui.text.recipe_result.parallel_zero=§4Insufficient parallel, check whether your inputs meet the recipe or machine requirements
+GT5U.gui.text.recipe_result.crash=§4Machine turned off due to crash. Refer to the log for more info.
 
 gtnl.gui.config.general=GTNL General Config
 gtnl.gui.config.general.debug=Debug Settings
