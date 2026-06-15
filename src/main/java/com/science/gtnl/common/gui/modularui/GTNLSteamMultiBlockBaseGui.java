@@ -81,7 +81,7 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
             syncManager.syncedPanel(
                 STEAM_OC_PANEL_KEY,
                 true,
-                (panelSyncManager, panelHandler) -> createRecipeOcPanel(parent, panelSyncManager)));
+                (panelSyncManager, panelHandler) -> createRecipeOcPanel(parent, syncManager)));
     }
 
     @Override
