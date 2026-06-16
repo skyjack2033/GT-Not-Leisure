@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -291,10 +292,6 @@ public class SubscribeEventClientUtils {
 
     @SubscribeEvent
     public void onRenderProjectedArmor(RenderPlayerEvent.SetArmorModel event) {
-        if (event.stack != null) {
-            return;
-        }
-
         DraconicArmorProjectionType projectionType = DraconicArmorProjectionState.get(event.entityPlayer);
         if (projectionType == null) {
             return;
@@ -305,16 +302,36 @@ public class SubscribeEventClientUtils {
             return;
         }
 
-        ModelBiped model = itemArmor.getArmorModel(event.entityPlayer, projectedArmor, event.slot);
-        if (model == null) {
-            return;
-        }
-
+        Minecraft.getMinecraft()
+            .getTextureManager()
+            .bindTexture(RenderBiped.getArmorResource(event.entityPlayer, projectedArmor, event.slot, null));
+        ModelBiped model = event.slot == 2 ? event.renderer.modelArmor : event.renderer.modelArmorChestplate;
+        model.bipedHead.showModel = event.slot == 0;
+        model.bipedHeadwear.showModel = event.slot == 0;
+        model.bipedBody.showModel = event.slot == 1 || event.slot == 2;
+        model.bipedRightArm.showModel = event.slot == 1;
+        model.bipedLeftArm.showModel = event.slot == 1;
+        model.bipedRightLeg.showModel = event.slot == 2 || event.slot == 3;
+        model.bipedLeftLeg.showModel = event.slot == 2 || event.slot == 3;
+        model = net.minecraftforge.client.ForgeHooksClient
+            .getArmorModel(event.entityPlayer, projectedArmor, event.slot, model);
         event.renderer.setRenderPassModel(model);
         model.onGround = event.renderer.modelBipedMain.onGround;
         model.isRiding = event.renderer.modelBipedMain.isRiding;
         model.isChild = event.renderer.modelBipedMain.isChild;
-        event.result = 1;
+
+        int color = itemArmor.getColor(projectedArmor);
+        if (color != -1) {
+            float red = (float) (color >> 16 & 255) / 255.0F;
+            float green = (float) (color >> 8 & 255) / 255.0F;
+            float blue = (float) (color & 255) / 255.0F;
+            GL11.glColor3f(red, green, blue);
+            event.result = projectedArmor.isItemEnchanted() ? 31 : 16;
+            return;
+        }
+
+        GL11.glColor3f(1.0F, 1.0F, 1.0F);
+        event.result = projectedArmor.isItemEnchanted() ? 15 : 1;
     }
 
     @SubscribeEvent

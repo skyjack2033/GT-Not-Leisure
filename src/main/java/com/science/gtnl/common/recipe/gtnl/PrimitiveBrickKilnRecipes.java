@@ -142,7 +142,7 @@ public class PrimitiveBrickKilnRecipes implements IRecipePool {
     public void loadNHRecipe() {
         RecipeBuilder.builder()
             .itemInputs(NHItemList.CokeOvenBrick.get(4))
-            .itemOutputs(GTModHandler.getModItem(Mods.Railcraft.ID, "machine.alpha", 1, 7))
+            .itemOutputs(ItemList.CokeOvenCasing.get(1))
             .duration(200)
             .eut(16)
             .addTo(PBKR);
