@@ -3164,6 +3164,38 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
+                GTModHandler.getModItem(Mods.Thaumcraft.ID, "ItemBaubleBlanks", 1, 1),
+                new ItemStack(Items.string, 4),
+                new ItemStack(Items.dye, 4, 5))
+            .itemOutputs(GTNLItemList.WyvernProjectionNecklace.get(1))
+            .duration(20)
+            .eut(TierEU.RECIPE_LV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTModHandler.getModItem(Mods.Thaumcraft.ID, "ItemBaubleBlanks", 1, 1),
+                new ItemStack(Items.string, 4),
+                new ItemStack(Items.dye, 4, 14))
+            .itemOutputs(GTNLItemList.DraconicProjectionNecklace.get(1))
+            .duration(20)
+            .eut(TierEU.RECIPE_LV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
+                GTUtility.getIntegratedCircuit(18),
+                new ItemStack(Blocks.furnace, 1),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LV, 2),
+                new ItemStack(Blocks.hopper, 4),
+                new ItemStack(Blocks.piston, 2))
+            .itemOutputs(GTModHandler.getModItem(Mods.Avaritia.ID, "cluster_opener", 1))
+            .duration(100)
+            .eut(TierEU.RECIPE_LV)
+            .addTo(As);
+
+        RecipeBuilder.builder()
+            .itemInputs(
                 aeMaterials.fluixPearl()
                     .maybeStack(1)
                     .orNull(),
