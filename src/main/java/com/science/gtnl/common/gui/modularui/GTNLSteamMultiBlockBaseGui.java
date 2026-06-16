@@ -105,11 +105,11 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
         LongSyncValue steamStoredSyncer = syncManager.findSyncHandler(STEAM_STORED_SYNC_KEY, LongSyncValue.class);
         LongSyncValue steamCapacitySyncer = syncManager.findSyncHandler(STEAM_CAPACITY_SYNC_KEY, LongSyncValue.class);
         IntSyncValue anySteamSyncer = syncManager.findSyncHandler(STEAM_ANY_TYPE_SYNC_KEY, IntSyncValue.class);
-        boolean steelGauge = steamMachine != null && steamMachine.tierMachine == 2;
+        boolean steelGauge = steamMachine != null && steamMachine.tierMachine >= 2;
         return (steelGauge ? GTGuiTextures.STEAM_GAUGE_BG_STEEL : GTGuiTextures.STEAM_GAUGE_BG).asWidget()
-            .size(64, 42)
-            .left(-64)
-            .top(100)
+            .size(48, 42)
+            .left(-48)
+            .top(8)
             .tooltipDynamic(tooltip -> {
                 tooltip.addLine(
                     StatCollector.translateToLocal("AllSteamCapacity") + steamStoredSyncer.getLongValue()
@@ -131,14 +131,14 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
                 : (float) steamStoredSyncer.getLongValue() / steamCapacitySyncer.getLongValue()).asWidget()
                     .widgetTheme(GTWidgetThemes.STEAM_GAUGE_NEEDLE)
                     .size(18, 4)
-                    .left(-43)
-                    .top(121);
+                    .left(-48 + 21)
+                    .top(8 + 21);
     }
 
     private IWidget createWrongSteamWarning(PanelSyncManager syncManager) {
         LongSyncValue steamStoredSyncer = syncManager.findSyncHandler(STEAM_STORED_SYNC_KEY, LongSyncValue.class);
         return new ItemDrawable(GTNLItemList.FakeItemSiren.get(1)).asWidget()
-            .pos(-50, 80)
+            .pos(-34, -12)
             .size(16, 16)
             .setEnabledIf(widget -> steamStoredSyncer.getLongValue() == 0);
     }

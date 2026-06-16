@@ -388,7 +388,7 @@ public class EternalGregTechWorkshopGui extends GTNLMultiBlockBaseGui<EternalGre
     private IWidget createGeneralInfoButton() {
         IPanelHandler generalInfoPanel = panelMap.get(GENERAL_INFO_PANEL_KEY);
         return new ButtonWidget<>().overlay(IDrawable.EMPTY)
-            .background(GTNLMui2Textures.PICTURE_GODFORGE_LOGO)
+            .background(GTGuiTextures.PICTURE_GODFORGE_LOGO)
             .disableHoverBackground()
             .onMousePressed(mouseButton -> {
                 togglePanel(generalInfoPanel);

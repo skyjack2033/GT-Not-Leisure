@@ -319,7 +319,7 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
         return new GTNLControllerUpgradeGui<>(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
-            GTNLMui2Textures.OVERLAY_BUTTON_MACHINEMODE_SLICING);
+            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_SLICING);
     }
 
     @Override
