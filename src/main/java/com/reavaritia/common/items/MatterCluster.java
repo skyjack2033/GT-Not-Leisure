@@ -42,7 +42,7 @@ public class MatterCluster extends Item implements ICosmicRenderItem {
     public static final String COUNTTAG = "count";
     public static final String MAINCOUNTTAG = "total";
 
-    public static int capacity = 64 * 1024;
+    public static int capacity = 1638400;
 
     public IIcon iconFull;
     public IIcon cosmicIcon;
