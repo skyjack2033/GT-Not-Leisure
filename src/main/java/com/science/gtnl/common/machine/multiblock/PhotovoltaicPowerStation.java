@@ -135,10 +135,12 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
             startRecipeProcessing();
             if (!depleteInput(GTModHandler.getDistilledWater(lEUt / 4))) {
                 stopMachine(ShutDownReasonRegistry.NONE);
+                endRecipeProcessing();
+                return false;
             }
             endRecipeProcessing();
         }
-        return true;
+        return super.onRunningTick(stack);
     }
 
     @Override
