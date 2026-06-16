@@ -103,7 +103,7 @@ public enum Mixins implements IMixins {
             "AppliedEnergistics.assembler.AccessorInvTracker",
             "AppliedEnergistics.assembler.MixinContainerInterfaceTerminal",
             "AppliedEnergistics.MixinCraftingCPUCluster",
-            "AppliedEnergistics.MixinCraftingCPUCluster$AccessorTaskProgress",
+            "AppliedEnergistics.AccessorTaskProgress",
             "AppliedEnergistics.QuamtumComputer.MixinCraftingCPUCluster",
             "AppliedEnergistics.QuamtumComputer.MixinCraftingGridCache",
             "Bartwork.MixinItemRegistry",
