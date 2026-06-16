@@ -14,12 +14,10 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.value.sync.IntSyncValue;
-import com.cleanroommc.modularui.value.sync.InteractionSyncHandler;
 import com.cleanroommc.modularui.value.sync.LongSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
-import com.cleanroommc.modularui.widgets.Dialog;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import com.science.gtnl.common.gui.GTNLMui2Textures;
@@ -27,7 +25,6 @@ import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import gregtech.api.modularui2.GTGuiTextures;
-import gregtech.api.modularui2.GTWidgetThemes;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.gui.modularui.widget.CircularGaugeDrawable;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.MTESteamMultiBlockBase;
@@ -39,6 +36,8 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
     private static final String STEAM_ANY_TYPE_SYNC_KEY = "gtnlSteamAnyTypeStored";
     private static final String STEAM_OC_SYNC_KEY = "gtnlSteamRecipeOcCount";
     private static final String STEAM_OC_PANEL_KEY = "gtnl_steam_recipe_oc";
+    private static final int STEAM_OC_PANEL_WIDTH = 120;
+    private static final int STEAM_OC_PANEL_HEIGHT = 54;
 
     public GTNLSteamMultiBlockBaseGui(MTESteamMultiBlockBase<?> multiblock) {
         super(multiblock);
@@ -129,7 +128,6 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
         return new CircularGaugeDrawable(
             () -> steamCapacitySyncer.getLongValue() <= 0 ? 0.0F
                 : (float) steamStoredSyncer.getLongValue() / steamCapacitySyncer.getLongValue()).asWidget()
-                    .widgetTheme(GTWidgetThemes.STEAM_GAUGE_NEEDLE)
                     .size(18, 4)
                     .left(-48 + 21)
                     .top(8 + 21);
@@ -144,42 +142,50 @@ public class GTNLSteamMultiBlockBaseGui extends MTEMultiBlockBaseGui<MTESteamMul
     }
 
     private IWidget createRecipeOcButton() {
-        return new ButtonWidget<>().size(16, 16)
-            .background(GTGuiTextures.BUTTON_STANDARD)
+        return new ButtonWidget<>().size(18, 18)
+            .marginLeft(4)
             .overlay(GTGuiTextures.OVERLAY_BUTTON_BATCH_MODE_ON)
-            .syncHandler(new InteractionSyncHandler().setOnMousePressed(mouseData -> {
+            .onMousePressed(mouseButton -> {
                 var panel = panelMap.get(STEAM_OC_PANEL_KEY);
-                if (panel != null) panel.openPanel();
-            }))
+                if (panel == null) return false;
+                if (!panel.isPanelOpen()) {
+                    panel.openPanel();
+                } else {
+                    panel.closePanel();
+                }
+                return true;
+            })
             .tooltipBuilder(tooltip -> tooltip.addLine(IKey.lang("Info_SteamMachine_00")))
             .tooltipShowUpTimer(TOOLTIP_DELAY);
     }
 
     private ModularPanel createRecipeOcPanel(ModularPanel parent, PanelSyncManager syncManager) {
         IntSyncValue recipeOcSyncer = syncManager.findSyncHandler(STEAM_OC_SYNC_KEY, IntSyncValue.class);
-        Dialog<?> panel = new Dialog<>(STEAM_OC_PANEL_KEY, null);
-        panel.relative(parent)
-            .size(158, 52)
-            .background(GTGuiTextures.BACKGROUND_POPUP_STANDARD);
-        panel.setDisablePanelsBelow(false)
-            .setCloseOnOutOfBoundsClick(false)
-            .setDraggable(true);
-        panel.child(ButtonWidget.panelCloseButton());
-        panel.child(
-            IKey.lang("Info_SteamMachine_00")
-                .asWidget()
-                .pos(3, 4)
-                .size(150, 20));
-        panel.child(
-            new TextFieldWidget().value(recipeOcSyncer)
-                .setFormatAsInteger(true)
-                .numbersInt(0, 4)
-                .scrollValues(1, 4, 64, 256)
-                .setTextAlignment(Alignment.Center)
-                .size(150, 18)
-                .pos(4, 25)
-                .background(GTGuiTextures.BACKGROUND_TEXT_FIELD));
-        return panel;
+        return new ModularPanel(STEAM_OC_PANEL_KEY).relative(parent)
+            .leftRel(1)
+            .topRel(0)
+            .size(STEAM_OC_PANEL_WIDTH, STEAM_OC_PANEL_HEIGHT)
+            .child(
+                Flow.column()
+                    .full()
+                    .padding(3)
+                    .child(makeRecipeOcTitleWidget())
+                    .child(
+                        new TextFieldWidget().value(recipeOcSyncer)
+                            .setFormatAsInteger(true)
+                            .numbersInt(0, 4)
+                            .scrollValues(1, 4, 64, 256)
+                            .setTextAlignment(Alignment.Center)
+                            .size(STEAM_OC_PANEL_WIDTH - 6, 18)
+                            .background(GTGuiTextures.BACKGROUND_TEXT_FIELD)));
+    }
+
+    private IWidget makeRecipeOcTitleWidget() {
+        return IKey.str(EnumChatFormatting.UNDERLINE + StatCollector.translateToLocal("Info_SteamMachine_00"))
+            .asWidget()
+            .textAlign(Alignment.Center)
+            .size(STEAM_OC_PANEL_WIDTH, 18)
+            .marginBottom(4);
     }
 
     private SteamMultiMachineBase<?> getGTNLSteamMachine() {

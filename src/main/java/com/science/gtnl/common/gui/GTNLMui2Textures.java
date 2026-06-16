@@ -4,7 +4,6 @@ import com.cleanroommc.modularui.drawable.UITexture;
 import com.science.gtnl.utils.enums.ModList;
 
 import gregtech.api.enums.Mods;
-import gregtech.api.modularui2.GTGuiTextures;
 
 public class GTNLMui2Textures {
 
