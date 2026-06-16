@@ -115,7 +115,6 @@ import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IMEConnectable;
-import gregtech.api.interfaces.IOutputBus;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -1592,12 +1591,11 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         int emptySlots = 0;
         boolean ignoreEmptiness = false;
 
-        for (IOutputBus i : mOutputBusses) {
-            if (Utils.isMEOutputBus(i)) {
+        for (MTEHatchOutputBus outputBus : mOutputBusses) {
+            if (Utils.isMEOutputBus(outputBus)) {
                 ignoreEmptiness = true;
                 break;
             }
-            MTEHatchOutputBus outputBus = (MTEHatchOutputBus) i;
             for (int j = 0; j < outputBus.getSizeInventory(); j++) {
                 if (outputBus.isValidSlot(j) && outputBus.getStackInSlot(j) == null) {
                     emptySlots++;
@@ -1613,7 +1611,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
 
             if (!ignoreEmptiness && emptySlots < 1) break;
 
-            addItemOutputs(new ItemStack[] { stack });
+            addOutputPartial(stack);
 
             emptySlots--;
 

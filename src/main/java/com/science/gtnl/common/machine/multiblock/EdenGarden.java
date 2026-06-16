@@ -379,7 +379,7 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
             holder.seed.stackSize = holder.count;
             CheckRecipeResult result = tryAddCropStack(holder.seed, false);
             if (!result.wasSuccessful() && holder.seed.stackSize > 0) {
-                addItemOutputs(new ItemStack[] { holder.seed });
+                addOutputPartial(holder.seed);
             }
         }
     }

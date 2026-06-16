@@ -261,7 +261,7 @@ public class EnergyInfuser extends TTMultiblockBase implements IConstructable, I
 
                 if ((isItemStackFullyCharged(individualStack) && isItemStackFullyRepaired(individualStack))
                     || outputAllItems) {
-                    if (addItemOutputs(new ItemStack[] { individualStack })) {
+                    if (addOutputAtomic(individualStack)) {
                         continue;
                     }
                 }

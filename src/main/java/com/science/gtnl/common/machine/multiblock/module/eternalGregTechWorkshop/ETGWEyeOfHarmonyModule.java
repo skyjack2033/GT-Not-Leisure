@@ -451,7 +451,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         if (mOutputItems != null) {
             for (ItemStack tStack : mOutputItems) {
                 if (tStack != null) {
-                    addItemOutputs(new ItemStack[] { tStack });
+                    addOutputPartial(tStack);
                 }
             }
         }

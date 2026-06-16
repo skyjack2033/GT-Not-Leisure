@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.cleanroommc.modularui.api.IPanelHandler;
 import com.cleanroommc.modularui.api.UpOrDown;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
@@ -33,6 +34,7 @@ import com.cleanroommc.modularui.value.sync.FluidSlotSyncHandler;
 import com.cleanroommc.modularui.value.sync.IntSyncValue;
 import com.cleanroommc.modularui.value.sync.LongSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widget.scroll.VerticalScrollData;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
@@ -83,8 +85,18 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
     public static final int SLOT_COLUMNS = 10;
     public static final int VISIBLE_SLOT_ROWS = 4;
     public static final int FILTER_GRID_X = 7;
-    public static final int GRID_Y = 9;
+    public static final int GRID_Y = 0;
     public static final int STOCK_GRID_X = 205;
+    public static final int PAGE_WIDTH = SLOT_SIZE * 21 + 10;
+    public static final int PAGE_HEIGHT = SLOT_SIZE * VISIBLE_SLOT_ROWS;
+    public static final int CENTER_CONTROL_X = 188;
+    public static final int CENTER_CIRCUIT_X = 187;
+    public static final int CENTER_CIRCUIT_Y = 54;
+    public static final int CENTER_AUTOPULL_X = 1;
+    public static final int CENTER_AUTOPULL_Y = 1;
+    public static final int CENTER_ARROW_X = 190;
+    public static final int CENTER_ARROW_Y = 21;
+    public static final int CONFIG_FIELD_WIDTH = 84;
     public static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("#,###");
     public static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#,###.00");
 
@@ -101,6 +113,7 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
             .setWidth(machine.getGUIWidth())
             .setHeight(machine.getGUIHeight())
             .doesAddGregTechLogo(false)
+            .doesAddGhostCircuitSlot(false)
             .build();
 
         PagedWidget.Controller controller = new PagedWidget.Controller();
@@ -144,7 +157,7 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
             .addPage(createItemPage(panel, syncManager))
             .addPage(createFluidPage(panel, syncManager))
             .addPage(createConfigPage(syncManager))
-            .size(18 * 21 + 10, 72)
+            .size(PAGE_WIDTH, PAGE_HEIGHT)
             .pos(0, 9);
     }
 
@@ -156,37 +169,30 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
         return Flow.row()
             .coverChildren()
             .child(
-                new PageButton(0, controller).background(true, GTGuiTextures.BUTTON_STANDARD_PRESSED)
-                    .background(false, GTGuiTextures.BUTTON_STANDARD)
+                new PageButton(0, controller).background(true, createTabBackground(0, true))
+                    .background(false, createTabBackground(0, false))
                     .overlay(new ItemDrawable(itemTab).asIcon())
                     .pos(machine.getGUIWidth() - 4, 0)
-                    .size(28, 28))
+                    .size(28, 32))
             .child(
-                new PageButton(1, controller).background(true, GTGuiTextures.BUTTON_STANDARD_PRESSED)
-                    .background(false, GTGuiTextures.BUTTON_STANDARD)
+                new PageButton(1, controller).background(true, createTabBackground(1, true))
+                    .background(false, createTabBackground(1, false))
                     .overlay(new ItemDrawable(fluidTab).asIcon())
                     .pos(machine.getGUIWidth() - 4, 28)
-                    .size(28, 28))
+                    .size(28, 32))
             .child(
-                new PageButton(2, controller).background(true, GTGuiTextures.BUTTON_STANDARD_PRESSED)
-                    .background(false, GTGuiTextures.BUTTON_STANDARD)
+                new PageButton(2, controller).background(true, createTabBackground(2, true))
+                    .background(false, createTabBackground(2, false))
                     .overlay(new ItemDrawable(configTab).asIcon())
                     .pos(machine.getGUIWidth() - 4, 56)
-                    .size(28, 28));
+                    .size(28, 32));
     }
 
-    public Widget<?> createItemPage(ModularPanel parent, PanelSyncManager syncManager) {
-        return new Grid().scrollable(new VerticalScrollData())
-            .showScrollShadows(false)
-            .minColWidth(SLOT_SIZE)
-            .minRowHeight(SLOT_SIZE)
-            .size(SLOT_SIZE * 21 + 10, SLOT_SIZE * VISIBLE_SLOT_ROWS)
+    public ParentWidget<?> createItemPage(ModularPanel parent, PanelSyncManager syncManager) {
+        return new ParentWidget<>().size(PAGE_WIDTH, PAGE_HEIGHT)
             .child(createItemFilterGrid(parent, syncManager))
             .child(createItemStockGrid())
-            .child(
-                GTGuiTextures.PICTURE_ARROW_DOUBLE.asWidget()
-                    .size(12)
-                    .pos(190, 30));
+            .child(createCenterControls(syncManager));
     }
 
     public Grid createItemFilterGrid(ModularPanel parent, PanelSyncManager syncManager) {
@@ -251,18 +257,11 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
                             .slotGroup(ITEM_STOCK_INV_NAME))));
     }
 
-    public Widget<?> createFluidPage(ModularPanel parent, PanelSyncManager syncManager) {
-        return new Grid().scrollable(new VerticalScrollData())
-            .showScrollShadows(false)
-            .minColWidth(SLOT_SIZE)
-            .minRowHeight(SLOT_SIZE)
-            .size(SLOT_SIZE * 21 + 10, SLOT_SIZE * VISIBLE_SLOT_ROWS)
+    public ParentWidget<?> createFluidPage(ModularPanel parent, PanelSyncManager syncManager) {
+        return new ParentWidget<>().size(PAGE_WIDTH, PAGE_HEIGHT)
             .child(createFluidFilterGrid(parent, syncManager))
             .child(createFluidStockGrid(syncManager))
-            .child(
-                GTGuiTextures.PICTURE_ARROW_DOUBLE.asWidget()
-                    .size(12)
-                    .pos(190, 30));
+            .child(createCenterControls(syncManager));
     }
 
     public Grid createFluidFilterGrid(ModularPanel parent, PanelSyncManager syncManager) {
@@ -363,6 +362,11 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
                             tooltip.addLine(IKey.lang("modularui2.fluid.empty"));
                         }
                     }
+
+                    @Override
+                    public boolean onMouseScroll(UpOrDown scrollDirection, int amount) {
+                        return false;
+                    }
                 }.syncHandler(new FluidSlotSyncHandler(new InformationFluidTank(index)) {
 
                     @Override
@@ -387,47 +391,49 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
         return machine.getDualSlotCountForGui() / SLOT_COLUMNS;
     }
 
-    public Widget<?> createConfigPage(PanelSyncManager syncManager) {
+    public ParentWidget<?> createConfigPage(PanelSyncManager syncManager) {
         LongSyncValue minItemSyncer = syncManager.findSyncHandler(MIN_ITEM_SYNC_KEY, LongSyncValue.class);
         LongSyncValue minFluidSyncer = syncManager.findSyncHandler(MIN_FLUID_SYNC_KEY, LongSyncValue.class);
         IntSyncValue refreshSyncer = syncManager.findSyncHandler(AUTO_PULL_REFRESH_SYNC_KEY, IntSyncValue.class);
         IntSyncValue intMaxSyncer = syncManager.findSyncHandler(INT_MAX_SCALE_SYNC_KEY, IntSyncValue.class);
-        BooleanSyncValue autoPullSyncer = syncManager.findSyncHandler(AUTO_PULL_SYNC_KEY, BooleanSyncValue.class);
         BooleanSyncValue recipeCheckSyncer = syncManager
             .findSyncHandler(EXPEDITE_RECIPE_SYNC_KEY, BooleanSyncValue.class);
 
-        return new Grid().coverChildren()
-            .pos(3, 3)
+        return new ParentWidget<>().size(PAGE_WIDTH, PAGE_HEIGHT)
             .child(
-                createConfigField("GT5U.machines.stocking_bus.refresh_time", createIntegerField(refreshSyncer), 0, 0))
+                createConfigField("GT5U.machines.stocking_bus.refresh_time", createIntegerField(refreshSyncer), 10, 6))
             .child(
-                createConfigField("Info_AdvancedSuperDualInputHatchME_IntMax", createIntegerField(intMaxSyncer), 0, 40))
-            .child(createConfigField("Info_SuperDualInputHatchME_03", createLongField(minItemSyncer), 77, 0))
-            .child(createConfigField("Info_SuperDualInputHatchME_04", createLongField(minFluidSyncer), 77, 40))
-            .child(createAutoPullButton(autoPullSyncer))
+                createConfigField(
+                    "Info_AdvancedSuperDualInputHatchME_IntMax",
+                    createIntegerField(intMaxSyncer),
+                    104,
+                    6))
+            .child(createConfigField("Info_SuperDualInputHatchME_03", createLongField(minItemSyncer), 198, 6))
+            .child(createConfigField("Info_SuperDualInputHatchME_04", createLongField(minFluidSyncer), 292, 6))
             .child(createRecipeCheckRow(recipeCheckSyncer));
     }
 
     public Widget<?> createConfigField(String labelKey, TextFieldWidget field, int x, int y) {
-        return Flow.row()
+        Flow column = Flow.column()
             .coverChildren()
             .pos(x, y)
-            .child(field.size(74, 18))
             .child(
                 IKey.lang(labelKey)
                     .asWidget()
-                    .pos(0, 19)
-                    .size(74, 14)
-                    .addTooltipLine(
-                        labelKey.equals("Info_AdvancedSuperDualInputHatchME_IntMax")
-                            ? translate("Info_AdvancedSuperDualInputHatchME_IntMaxTooltip")
-                            : ""));
+                    .size(CONFIG_FIELD_WIDTH, 14)
+                    .textAlign(Alignment.Center))
+            .child(field.size(CONFIG_FIELD_WIDTH, 18));
+        if ("Info_AdvancedSuperDualInputHatchME_IntMax".equals(labelKey)) {
+            column.tooltip(tooltip -> tooltip.addLine(IKey.lang("Info_AdvancedSuperDualInputHatchME_IntMaxTooltip")));
+        }
+        return column;
     }
 
-    public Widget<?> createAutoPullButton(BooleanSyncValue autoPullSyncer) {
+    public Widget<?> createPageAutoPullButton(PanelSyncManager syncManager) {
+        BooleanSyncValue autoPullSyncer = syncManager.findSyncHandler(AUTO_PULL_SYNC_KEY, BooleanSyncValue.class);
         return new ToggleButton().value(autoPullSyncer)
             .size(16, 16)
-            .pos(157, 4)
+            .pos(CENTER_AUTOPULL_X, CENTER_AUTOPULL_Y)
             .background(true, GTGuiTextures.BUTTON_STANDARD_PRESSED)
             .background(false, GTGuiTextures.BUTTON_STANDARD)
             .overlay(true, GTGuiTextures.OVERLAY_BUTTON_AUTOPULL_ME)
@@ -436,11 +442,22 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
             .addTooltipLine(translate("GT5U.machines.stocking_bus.auto_pull.tooltip.1"));
     }
 
+    public Widget<?> createCenterControls(PanelSyncManager syncManager) {
+        return new ParentWidget<>().size(30, 72)
+            .pos(CENTER_CONTROL_X, 0)
+            .child(createPageAutoPullButton(syncManager))
+            .child(
+                GTGuiTextures.PICTURE_ARROW_DOUBLE.asWidget()
+                    .size(12)
+                    .pos(CENTER_ARROW_X - CENTER_CONTROL_X, CENTER_ARROW_Y))
+            .child(createCircuitSlot(syncManager).pos(CENTER_CIRCUIT_X - CENTER_CONTROL_X, CENTER_CIRCUIT_Y));
+    }
+
     public Flow createRecipeCheckRow(BooleanSyncValue recipeCheckSyncer) {
         return Flow.row()
             .coverChildren()
             .childPadding(4)
-            .pos(157, 44)
+            .pos(10, 48)
             .child(
                 new ToggleButton().value(recipeCheckSyncer)
                     .size(16)
@@ -452,7 +469,7 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
             .child(
                 IKey.lang("GT5U.machines.stocking_bus.force_check")
                     .asWidget()
-                    .maxWidth(50));
+                    .maxWidth(150));
     }
 
     public ModularPanel createStoredStackSizePanel(String key, ModularPanel parent, PanelSyncManager syncManager,
@@ -539,8 +556,27 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
     }
 
     @Override
+    protected IDrawable.DrawableWidget createLogo() {
+        return new IDrawable.DrawableWidget(getLogoTexture()).size(SLOT_SIZE)
+            .pos(367, 81);
+    }
+
+    @Override
     protected UITexture getLogoTexture() {
         return GTNLMui2Textures.PICTURE_GTNL_LOGO;
+    }
+
+    public UITexture createTabBackground(int pageIndex, boolean selected) {
+        UITexture texture = selected ? GTGuiTextures.BUTTON_COVER_TAB_HIGHLIGHT_STANDARD
+            : GTGuiTextures.BUTTON_COVER_TAB_NORMAL_STANDARD;
+        return new UITexture(
+            texture.location,
+            texture.u1,
+            texture.v0,
+            texture.u0,
+            texture.v1,
+            texture.colorType,
+            texture.nonOpaque);
     }
 
     public class ConfigFluidTank implements IFluidTank {
