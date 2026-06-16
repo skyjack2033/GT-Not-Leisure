@@ -216,6 +216,18 @@ public class SubscribeEventUtils {
         if (DraconicArmorProjectionState.get(player) == null) {
             return;
         }
+        DamageSource source = event.source;
+        if (source != null) {
+            EntityLivingBase trueSource = null;
+            if (source.getEntity() instanceof EntityLivingBase entitySource) {
+                trueSource = entitySource;
+            } else if (source.getSourceOfDamage() instanceof EntityLivingBase indirectSource) {
+                trueSource = indirectSource;
+            }
+            if (trueSource == player) {
+                return;
+            }
+        }
 
         ScienceNotLeisure.network.sendToAllAround(
             new DraconicArmorProjectionHitEffectPacket(player, 1.0F),
