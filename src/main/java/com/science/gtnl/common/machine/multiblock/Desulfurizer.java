@@ -19,7 +19,6 @@ import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -180,7 +179,12 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+        return super.checkHatch();
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

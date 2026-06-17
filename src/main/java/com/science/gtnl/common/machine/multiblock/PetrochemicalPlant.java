@@ -24,7 +24,6 @@ import com.science.gtnl.utils.StructureUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
@@ -216,7 +215,12 @@ public class PetrochemicalPlant extends MultiMachineBase<PetrochemicalPlant> imp
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None && mMufflerHatches.size() == 8;
+        return super.checkHatch() && mMufflerHatches.size() == 8;
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

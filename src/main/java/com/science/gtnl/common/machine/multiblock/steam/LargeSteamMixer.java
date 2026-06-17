@@ -197,30 +197,28 @@ public class LargeSteamMixer extends SteamMultiMachineBase<LargeSteamMixer> impl
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         enableHVRecipe = false;
-        if (!checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
-        if (tierMachineCasing == 1 && tierGearCasing == 1
-            && tierPipeCasing == 1
-            && tierFireboxCasing == 1
-            && tierIndustrialCasing == 1
-            && mCountCasing >= 30) {
-            tierMachine = 1;
-            getCasingTextureID();
-            updateHatchTexture();
+        if (!checkPieceAndSteamInput(
+            STRUCTURE_PIECE_MAIN,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            errors)) {
             return;
         }
-        if (tierMachineCasing == 2 && tierGearCasing == 2
-            && tierPipeCasing == 2
-            && tierFireboxCasing == 2
-            && tierIndustrialCasing == 2
-            && mCountCasing >= 30) {
-            tierMachine = 2;
-            getCasingTextureID();
-            updateHatchTexture();
+        if (checkMachineTier(
+            errors,
+            30,
+            tierMachineCasing == 1 && tierGearCasing == 1
+                && tierPipeCasing == 1
+                && tierFireboxCasing == 1
+                && tierIndustrialCasing == 1,
+            tierMachineCasing == 2 && tierGearCasing == 2
+                && tierPipeCasing == 2
+                && tierFireboxCasing == 2
+                && tierIndustrialCasing == 2)
+            && tierMachine == 2) {
             enableHVRecipe = getUpgradeTier(aStack);
-            return;
         }
-        failStructureCheck(errors);
     }
 
     @Override

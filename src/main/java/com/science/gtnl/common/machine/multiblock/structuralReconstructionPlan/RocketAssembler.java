@@ -4,7 +4,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static com.science.gtnl.loader.BlockLoader.metaCasing02;
 
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -210,9 +209,6 @@ public class RocketAssembler extends GTMMultiMachineBase<RocketAssembler>
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 1);
-    }
-
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 

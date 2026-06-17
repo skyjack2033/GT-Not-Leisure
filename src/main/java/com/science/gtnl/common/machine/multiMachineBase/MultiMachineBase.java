@@ -65,6 +65,8 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
+import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
@@ -1020,14 +1022,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         failStructureCheck(errors);
     }
 
-    protected void validateStructureErrors(List<StructureError> errors) {
-        int existingErrors = errors.size();
-        checkHatch(errors);
-        if (errors.size() == existingErrors) {
-            failStructureCheck(errors);
-        }
-    }
-
     protected void checkHatch(List<StructureError> errors) {
         int existingErrors = errors.size();
         checkHatchMax(errors, HatchElement.Maintenance, 1);
@@ -1036,6 +1030,7 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         }
         checkParallelControllerHatchMax(errors, 1);
         checkEnergyHatch(errors);
+        checkStructureRequirements(errors);
         if (!checkHatch() && errors.size() == existingErrors) {
             errors.add(GTNLStructureErrors.invalidHatchConfiguration());
         }
@@ -1062,6 +1057,48 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             return;
         }
         errors.add(GTNLStructureErrors.invalidEnergyHatchConfiguration());
+    }
+
+    protected void checkStructureRequirements(List<StructureError> errors) {
+        checkCoilStructureRequirement(errors);
+        checkGlassEnergyHatchRequirement(errors);
+    }
+
+    protected void checkCoilStructureRequirement(List<StructureError> errors) {
+        if (requiresCoilStructureCheck() && getMCoilLevel() == HeatingCoilLevel.None) {
+            errors.add(StructureErrorRegistry.COIL_LEVEL_NOT_ENOUGH);
+        }
+    }
+
+    protected boolean requiresCoilStructureCheck() {
+        return false;
+    }
+
+    protected void checkGlassEnergyHatchRequirement(List<StructureError> errors) {
+        int requiredGlassTier = getGlassEnergyTierLimit();
+        if (requiredGlassTier < 0 || mGlassTier >= requiredGlassTier) {
+            return;
+        }
+        for (MTEHatch hatch : this.mExoticEnergyHatches) {
+            if (hatch.getConnectionType() == MTEHatch.ConnectionType.LASER) {
+                errors.add(StructureErrors.glassTierNotEnough(requiredGlassTier));
+                return;
+            }
+            if (this.mGlassTier < hatch.mTier) {
+                errors.add(StructureErrorRegistry.ENERGY_TIER_EXCEED_GLASS);
+                return;
+            }
+        }
+        for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
+            if (this.mGlassTier < mEnergyHatch.mTier) {
+                errors.add(StructureErrorRegistry.ENERGY_TIER_EXCEED_GLASS);
+                return;
+            }
+        }
+    }
+
+    protected int getGlassEnergyTierLimit() {
+        return -1;
     }
 
     protected boolean checkPieceAndHatch(String piece, int horizontalOffset, int verticalOffset, int depthOffset,

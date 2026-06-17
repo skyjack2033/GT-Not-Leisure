@@ -5,7 +5,6 @@ import static gregtech.api.GregTechAPI.sBlockCasings1;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.init.Blocks;
@@ -63,6 +62,21 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
     private static final int HORIZONTAL_OFF_SET = 4;
     private static final int VERTICAL_OFF_SET = 8;
     private static final int DEPTH_OFF_SET = 2;
+    public static final ItemStack[] POSSIBLE_INPUTS = { GregtechItemList.CactusCharcoal.get(1),
+        GregtechItemList.BlockCactusCharcoal.get(1), GregtechItemList.CompressedCactusCharcoal.get(1),
+        GregtechItemList.DoubleCompressedCactusCharcoal.get(1), GregtechItemList.TripleCompressedCactusCharcoal.get(1),
+        GregtechItemList.QuadrupleCompressedCactusCharcoal.get(1),
+        GregtechItemList.QuintupleCompressedCactusCharcoal.get(1), GregtechItemList.CactusCoke.get(1),
+        GregtechItemList.BlockCactusCoke.get(1), GregtechItemList.CompressedCactusCoke.get(1),
+        GregtechItemList.DoubleCompressedCactusCoke.get(1), GregtechItemList.TripleCompressedCactusCoke.get(1),
+        GregtechItemList.QuadrupleCompressedCactusCoke.get(1), GregtechItemList.QuintupleCompressedCactusCoke.get(1) };
+    public static final long[] TOTAL_VALUE = { 8_000L, 90_000L, 1_012_500L, 11_390_625L, 128_144_531L, 1_441_625_977L,
+        16_218_292_236L, 16_000L, 180_000L, 2_025_000L, 22_781_250L, 256_289_063L, 2_883_251_953L, 32_436_584_473L };
+    public static final int[] STEAM_TYPE = { 1, 1, 1, 2, 2, 3, 3, 1, 1, 1, 2, 2, 3, 3 };
+
+    public int currentSteam;
+    public ItemStack currentOffer;
+    public long fueledAmount = 0;
 
     public SteamCactusWonder(String aName) {
         super(aName);
@@ -99,21 +113,7 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
         return StatCollector.translateToLocal("SteamCactusWonderRecipeType");
     }
 
-    public int currentSteam;
-    public ItemStack currentOffer;
-    public long fueledAmount = 0;
-    public static final ItemStack[] possibleInputs = { GregtechItemList.CactusCharcoal.get(1),
-        GregtechItemList.BlockCactusCharcoal.get(1), GregtechItemList.CompressedCactusCharcoal.get(1),
-        GregtechItemList.DoubleCompressedCactusCharcoal.get(1), GregtechItemList.TripleCompressedCactusCharcoal.get(1),
-        GregtechItemList.QuadrupleCompressedCactusCharcoal.get(1),
-        GregtechItemList.QuintupleCompressedCactusCharcoal.get(1), GregtechItemList.CactusCoke.get(1),
-        GregtechItemList.BlockCactusCoke.get(1), GregtechItemList.CompressedCactusCoke.get(1),
-        GregtechItemList.DoubleCompressedCactusCoke.get(1), GregtechItemList.TripleCompressedCactusCoke.get(1),
-        GregtechItemList.QuadrupleCompressedCactusCoke.get(1), GregtechItemList.QuintupleCompressedCactusCoke.get(1) };
-    public static final long[] totalValue = { 8_000L, 90_000L, 1_012_500L, 11_390_625L, 128_144_531L, 1_441_625_977L,
-        16_218_292_236L, 16_000L, 180_000L, 2_025_000L, 22_781_250L, 256_289_063L, 2_883_251_953L, 32_436_584_473L };
-    public static final int[] steamType = { 1, 1, 1, 2, 2, 3, 3, 1, 1, 1, 2, 2, 3, 3 };
-
+    @Override
     public IStructureDefinition<SteamCactusWonder> getStructureDefinition() {
         return StructureDefinition.<SteamCactusWonder>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -188,10 +188,8 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
+        checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
-
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     @Override
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
@@ -210,14 +208,14 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
         ArrayList<ItemStack> storedInputs = getStoredInputs();
         for (ItemStack stack : storedInputs) {
             for (int i = 0; i < 14; i++) {
-                if (stack.isItemEqual(possibleInputs[i])) {
+                if (stack.isItemEqual(POSSIBLE_INPUTS[i])) {
                     if (currentOffer == null) {
                         currentOffer = stack;
-                        fueledAmount += totalValue[i] * stack.stackSize;
-                        currentSteam = steamType[i];
+                        fueledAmount += TOTAL_VALUE[i] * stack.stackSize;
+                        currentSteam = STEAM_TYPE[i];
                         this.depleteInput(stack);
                     } else if (stack.isItemEqual(currentOffer)) {
-                        fueledAmount += totalValue[i] * stack.stackSize;
+                        fueledAmount += TOTAL_VALUE[i] * stack.stackSize;
                         this.depleteInput(stack);
                     }
                 }

@@ -411,9 +411,13 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     public boolean checkHatch() {
         refreshControllerStateIfNeeded();
         setupParameters();
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None
-            && GTUtility.getTier(this.getMaxInputVoltage()) <= tTier + 4
+        return super.checkHatch() && GTUtility.getTier(this.getMaxInputVoltage()) <= tTier + 4
             && mMufflerHatches.size() == 1;
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

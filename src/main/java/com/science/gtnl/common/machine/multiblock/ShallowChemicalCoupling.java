@@ -34,8 +34,6 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
-import gregtech.api.metatileentity.implementations.MTEHatch;
-import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
@@ -270,17 +268,17 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
 
     @Override
     public boolean checkHatch() {
-        for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        for (MTEHatch mExoticEnergyHatch : this.mExoticEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mExoticEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+        return super.checkHatch();
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
+    }
+
+    @Override
+    protected int getGlassEnergyTierLimit() {
+        return VoltageIndex.UHV;
     }
 
     @Override

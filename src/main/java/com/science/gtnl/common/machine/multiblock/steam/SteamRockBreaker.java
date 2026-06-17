@@ -183,19 +183,19 @@ public class SteamRockBreaker extends SteamMultiMachineBase<SteamRockBreaker> im
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
-        if (tierPipeCasing == 1 && tierMachineCasing == 1 && mCountCasing >= 14) {
-            updateHatchTexture();
-            tierMachine = 1;
-            return;
-        }
-        if (tierPipeCasing == 2 && tierMachineCasing == 2 && mCountCasing >= 14) {
-            updateHatchTexture();
-            tierMachine = 2;
+        if (!checkPieceAndSteamInput(
+            STRUCTURE_PIECE_MAIN,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            errors)) {
             return;
         }
-        failStructureCheck(errors);
+        checkMachineTier(
+            errors,
+            14,
+            tierPipeCasing == 1 && tierMachineCasing == 1,
+            tierPipeCasing == 2 && tierMachineCasing == 2);
     }
 
     @Override

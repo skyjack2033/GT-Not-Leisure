@@ -22,7 +22,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.TAE;
@@ -32,7 +31,6 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatch;
-import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
@@ -244,17 +242,17 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
 
     @Override
     public boolean checkHatch() {
-        for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        for (MTEHatch mExoticEnergyHatch : this.mExoticEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mExoticEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None && mMufflerHatches.size() == 6;
+        return super.checkHatch() && mMufflerHatches.size() == 6;
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
+    }
+
+    @Override
+    protected int getGlassEnergyTierLimit() {
+        return VoltageIndex.UHV;
     }
 
     @Override

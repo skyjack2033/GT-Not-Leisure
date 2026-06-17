@@ -26,7 +26,6 @@ import com.science.gtnl.utils.recipes.metadata.FuelRefiningMetadata;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
@@ -168,7 +167,12 @@ public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+        return super.checkHatch();
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

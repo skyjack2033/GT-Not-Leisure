@@ -4,7 +4,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gregtech.api.GregTechAPI.sBlockCasings1;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.init.Blocks;
@@ -149,10 +148,8 @@ public class SteamInfernalCokeOven extends SteamMultiMachineBase<SteamInfernalCo
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
+        checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
-
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     @Override
     public int clampRecipeOcCount(int value) {

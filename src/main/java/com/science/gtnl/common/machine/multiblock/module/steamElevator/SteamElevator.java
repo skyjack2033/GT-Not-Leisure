@@ -6,7 +6,6 @@ import static gregtech.api.metatileentity.BaseTileEntity.TOOLTIP_DELAY;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -220,12 +219,8 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
         if (mSteamInputFluids.isEmpty() && mSteamBigInputFluids.isEmpty() && mSteamWirelessInputFluids.isEmpty()) {
             wirelessMode = true;
         }
-        getCasingTextureID();
         updateHatchTexture();
-        return;
     }
-
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     public boolean addModuleToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
         if (aTileEntity == null) {

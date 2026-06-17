@@ -37,7 +37,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -402,7 +401,12 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+        return super.checkHatch();
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

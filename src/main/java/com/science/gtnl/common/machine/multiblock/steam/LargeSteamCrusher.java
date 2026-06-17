@@ -187,29 +187,25 @@ public class LargeSteamCrusher extends SteamMultiMachineBase<LargeSteamCrusher> 
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
-        if (tierGearCasing == 1 && tierMachineCasing == 1
-            && tierFrameCasing == 1
-            && tierPlatedCasing == 1
-            && tierBrickCasing == 1
-            && mCountCasing >= 100) {
-            tierMachine = 1;
-            getCasingTextureID();
-            updateHatchTexture();
+        if (!checkPieceAndSteamInput(
+            STRUCTURE_PIECE_MAIN,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            errors)) {
             return;
         }
-        if (tierGearCasing == 2 && tierMachineCasing == 2
-            && tierFrameCasing == 2
-            && tierPlatedCasing == 2
-            && tierBrickCasing == 2
-            && mCountCasing >= 100) {
-            tierMachine = 2;
-            getCasingTextureID();
-            updateHatchTexture();
-            return;
-        }
-        failStructureCheck(errors);
+        checkMachineTier(
+            errors,
+            100,
+            tierGearCasing == 1 && tierMachineCasing == 1
+                && tierFrameCasing == 1
+                && tierPlatedCasing == 1
+                && tierBrickCasing == 1,
+            tierGearCasing == 2 && tierMachineCasing == 2
+                && tierFrameCasing == 2
+                && tierPlatedCasing == 2
+                && tierBrickCasing == 2);
     }
 
     @Override

@@ -169,21 +169,19 @@ public class LargeSteamFormingPress extends SteamMultiMachineBase<LargeSteamForm
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
-        if (tierGearCasing == 1 && tierMachineCasing == 1 && tierPipeCasing == 1 && mCountCasing >= 15) {
-            tierMachine = 1;
-            getCasingTextureID();
-            updateHatchTexture();
-            return;
-        }
-        if (tierGearCasing == 2 && tierMachineCasing == 2 && tierPipeCasing == 2 && mCountCasing >= 15) {
-            tierMachine = 2;
-            getCasingTextureID();
-            updateHatchTexture();
+        if (!checkPieceAndSteamInput(
+            STRUCTURE_PIECE_MAIN,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            errors)) {
             return;
         }
-        failStructureCheck(errors);
+        checkMachineTier(
+            errors,
+            15,
+            tierGearCasing == 1 && tierMachineCasing == 1 && tierPipeCasing == 1,
+            tierGearCasing == 2 && tierMachineCasing == 2 && tierPipeCasing == 2);
     }
 
     @Override

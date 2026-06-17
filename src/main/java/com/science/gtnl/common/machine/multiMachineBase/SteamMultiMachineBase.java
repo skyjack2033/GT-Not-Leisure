@@ -1,6 +1,5 @@
 package com.science.gtnl.common.machine.multiMachineBase;
 
-import static bartworks.system.material.WerkstoffLoader.BWBlockCasings;
 import static gregtech.api.metatileentity.BaseTileEntity.TOOLTIP_DELAY;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
@@ -89,6 +88,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
@@ -163,14 +163,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
             colorOptions[color] = Optional.of(color);
         }
         return colorOptions;
-    }
-
-    @Nullable
-    public static Integer getTierAdvancedCasing(Block block, int meta) {
-        if (block == null) return null;
-        if (block == BWBlockCasings && 32066 == meta) return 1;
-        if (block == BWBlockCasings && 32071 == meta) return 2;
-        return null;
     }
 
     @Nullable
@@ -338,14 +330,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         failStructureCheck(errors);
     }
 
-    public void validateStructureErrors(List<StructureError> errors) {
-        int existingErrors = errors.size();
-        checkHatch(errors);
-        if (errors.size() == existingErrors) {
-            failStructureCheck(errors);
-        }
-    }
-
     protected void checkHatch(List<StructureError> errors) {
         int existingErrors = errors.size();
         checkHasAnySteamInput(errors);
@@ -372,6 +356,27 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         }
         checkHasAnySteamInput(errors);
         return errors.size() == existingErrors;
+    }
+
+    protected boolean checkMachineTier(List<StructureError> errors, int minCasing, boolean tier1Valid,
+        boolean tier2Valid) {
+        int existingErrors = errors.size();
+        checkCasingMin(errors, mCountCasing, minCasing);
+        if (errors.size() != existingErrors) {
+            return false;
+        }
+        if (tier1Valid) {
+            tierMachine = 1;
+            updateHatchTexture();
+            return true;
+        }
+        if (tier2Valid) {
+            tierMachine = 2;
+            updateHatchTexture();
+            return true;
+        }
+        errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        return false;
     }
 
     protected void failStructureCheck(List<StructureError> errors) {

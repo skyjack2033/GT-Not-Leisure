@@ -5,7 +5,6 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import static kubatech.loaders.BlockLoader.defcCasingBlock;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -414,10 +413,6 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        return;
-    }
-
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 

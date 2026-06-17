@@ -26,8 +26,6 @@ import gregtech.api.enums.VoltageIndex;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
-import gregtech.api.metatileentity.implementations.MTEHatch;
-import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
@@ -174,16 +172,11 @@ public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssem
 
     @Override
     public boolean checkHatch() {
-        for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UV && mEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        for (MTEHatch mExoticEnergyHatch : this.mExoticEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UV && mExoticEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
         return super.checkHatch() && this.mEnergyHatches.size() + this.mExoticEnergyHatches.size() < 2;
+    }
+
+    @Override
+    protected int getGlassEnergyTierLimit() {
+        return VoltageIndex.UV;
     }
 }

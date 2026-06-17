@@ -4,7 +4,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.utils.enums.BlockIcons.OVERLAY_FRONT_MEGA_SOLAR_BOILER;
 import static gregtech.api.GregTechAPI.sBlockCasings1;
 
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -169,8 +168,6 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
-
-    public void validateStructure(Collection<StructureError> errors, NBTTagCompound context) {}
 
     public String state;
 
