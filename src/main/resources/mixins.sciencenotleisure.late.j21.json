@@ -5,7 +5,7 @@
   "refmap": "mixins.sciencenotleisure.refmap.json",
   "target": "@env(DEFAULT)",
   "injectors":{
-    "maxShiftBy": 2
+    "maxShiftBy": 5
   },
   "compatibilityLevel": "JAVA_21",
   "overwrites": {
