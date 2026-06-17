@@ -852,6 +852,18 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return rList;
     }
 
+    @Override
+    public List<IOutputBus> getOutputBusses() {
+        List<IOutputBus> output = new ArrayList<>();
+        for (MTEHatchOutputBus outputBus : mSteamOutputs) {
+            if (outputBus.isValid()) output.add(outputBus);
+        }
+        for (MTEHatchOutputBus outputBus : mOutputBusses) {
+            if (outputBus.isValid()) output.add(outputBus);
+        }
+        return output;
+    }
+
     public ArrayList<ItemStack> getStoredOutputs() {
         ArrayList<ItemStack> rList = new ArrayList<>();
 
