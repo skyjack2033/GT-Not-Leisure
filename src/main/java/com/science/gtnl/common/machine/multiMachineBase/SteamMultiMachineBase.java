@@ -156,6 +156,61 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         super(aName);
     }
 
+    @Override
+    public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
+        super.onFirstTick(aBaseMetaTileEntity);
+        if (!aBaseMetaTileEntity.isServerSide()) return;
+
+        ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
+
+        SpaceProjectManager.checkOrCreateTeam(ownerUUID);
+
+        isInTeam = SpaceProjectManager.isInTeam(ownerUUID);
+
+        if (isInTeam) {
+            teamUUID = SpaceProjectManager.getLeader(ownerUUID);
+            steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
+        }
+    }
+
+    @Override
+    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        if (aBaseMetaTileEntity.isServerSide()) {
+            if (aTick % 200 == 0L) {
+                isInTeam = SpaceProjectManager.isInTeam(ownerUUID);
+                if (isInTeam) {
+                    teamUUID = SpaceProjectManager.getLeader(ownerUUID);
+                    steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
+                }
+            }
+        }
+        super.onPostTick(aBaseMetaTileEntity, aTick);
+    }
+
+    @Override
+    public void clearHatches() {
+        super.clearHatches();
+        mInputHatches.clear();
+        mSteamInputFluids.clear();
+        mSteamBigInputFluids.clear();
+        mSteamWirelessInputFluids.clear();
+        mSteamInputs.clear();
+        mSteamOutputs.clear();
+        tierAdvancedCasing = -1;
+        tierBrickCasing = -1;
+        tierPlatedCasing = -1;
+        tierPipeCasing = -1;
+        tierFireboxCasing = -1;
+        tierMaterialBlock = -1;
+        tierGearCasing = -1;
+        tierFrameCasing = -1;
+        tierIndustrialCasing = -1;
+        tierMachineFrame = -1;
+        tierMachineCasing = -1;
+        tierMachine = -1;
+        mCountCasing = 0;
+    }
+
     @SuppressWarnings("unchecked")
     public static Optional<Byte>[] createHatchColorOptions() {
         Optional<Byte>[] colorOptions = new Optional[16];
@@ -373,17 +428,51 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         errors.add(GTNLStructureErrors.unknownLegacyCheckFailure());
     }
 
-    @Override
-    public void onValueUpdate(byte aValue) {
-        if ((byte) tierMachine != aValue) {
-            tierMachine = (byte) (aValue & 0x0F);
-        }
+    @ApiStatus.OverrideOnly
+    public ProcessingLogic createProcessingLogic() {
+        return new GTNLProcessingLogic() {
+
+            @Override
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+                return super.createOverclockCalculator(recipe).setExtraDurationModifier(configSpeedBoost)
+                    .setEUtDiscount(getEUtDiscount())
+                    .setDurationModifier(getDurationModifier())
+                    .setPerfectOC(getPerfectOC())
+                    .setMaxTierSkips(getMaxTierSkip())
+                    .setMaxOverclocks(getMaxOverclocks());
+            }
+
+        }.setMaxParallelSupplier(this::getTrueParallel);
     }
 
-    @Override
-    public byte getUpdateData() {
-        if (tierMachine <= 0) return 0;
-        return (byte) tierMachine;
+    /**
+     * Proxy Perfect Overclock Supplier.
+     *
+     * @return If true, enable Perfect Overclock.
+     */
+    @ApiStatus.OverrideOnly
+    public boolean getPerfectOC() {
+        return false;
+    }
+
+    @ApiStatus.OverrideOnly
+    public int getMaxOverclocks() {
+        return 0;
+    }
+
+    @ApiStatus.OverrideOnly
+    public int getMaxTierSkip() {
+        return 0;
+    }
+
+    @ApiStatus.OverrideOnly
+    public double getEUtDiscount() {
+        return (1 << (2 * Math.min(4, recipeOcCount)));
+    }
+
+    @ApiStatus.OverrideOnly
+    public double getDurationModifier() {
+        return 1.0 / (1 << Math.min(4, recipeOcCount));
     }
 
     @Override
@@ -477,81 +566,16 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
     }
 
     @Override
-    public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
-        super.onFirstTick(aBaseMetaTileEntity);
-        if (!aBaseMetaTileEntity.isServerSide()) return;
-
-        ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
-
-        SpaceProjectManager.checkOrCreateTeam(ownerUUID);
-
-        isInTeam = SpaceProjectManager.isInTeam(ownerUUID);
-
-        if (isInTeam) {
-            teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-            steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
+    public void onValueUpdate(byte aValue) {
+        if ((byte) tierMachine != aValue) {
+            tierMachine = (byte) (aValue & 0x0F);
         }
     }
 
     @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        if (aBaseMetaTileEntity.isServerSide()) {
-            if (aTick % 200 == 0L) {
-                isInTeam = SpaceProjectManager.isInTeam(ownerUUID);
-                if (isInTeam) {
-                    teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-                    steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
-                }
-            }
-        }
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-    }
-
-    @ApiStatus.OverrideOnly
-    public ProcessingLogic createProcessingLogic() {
-        return new GTNLProcessingLogic() {
-
-            @Override
-            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
-                return super.createOverclockCalculator(recipe).setExtraDurationModifier(configSpeedBoost)
-                    .setEUtDiscount(getEUtDiscount())
-                    .setDurationModifier(getDurationModifier())
-                    .setPerfectOC(getPerfectOC())
-                    .setMaxTierSkips(getMaxTierSkip())
-                    .setMaxOverclocks(getMaxOverclocks());
-            }
-
-        }.setMaxParallelSupplier(this::getTrueParallel);
-    }
-
-    /**
-     * Proxy Perfect Overclock Supplier.
-     *
-     * @return If true, enable Perfect Overclock.
-     */
-    @ApiStatus.OverrideOnly
-    public boolean getPerfectOC() {
-        return false;
-    }
-
-    @ApiStatus.OverrideOnly
-    public int getMaxOverclocks() {
-        return 0;
-    }
-
-    @ApiStatus.OverrideOnly
-    public int getMaxTierSkip() {
-        return 0;
-    }
-
-    @ApiStatus.OverrideOnly
-    public double getEUtDiscount() {
-        return (1 << (2 * Math.min(4, recipeOcCount)));
-    }
-
-    @ApiStatus.OverrideOnly
-    public double getDurationModifier() {
-        return 1.0 / (1 << Math.min(4, recipeOcCount));
+    public byte getUpdateData() {
+        if (tierMachine <= 0) return 0;
+        return (byte) tierMachine;
     }
 
     @Override
@@ -1175,30 +1199,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) tHatch.updateSlots();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) tHatch.updateSlots();
         super.updateSlots();
-    }
-
-    @Override
-    public void clearHatches() {
-        super.clearHatches();
-        mInputHatches.clear();
-        mSteamInputFluids.clear();
-        mSteamBigInputFluids.clear();
-        mSteamWirelessInputFluids.clear();
-        mSteamInputs.clear();
-        mSteamOutputs.clear();
-        tierAdvancedCasing = -1;
-        tierBrickCasing = -1;
-        tierPlatedCasing = -1;
-        tierPipeCasing = -1;
-        tierFireboxCasing = -1;
-        tierMaterialBlock = -1;
-        tierGearCasing = -1;
-        tierFrameCasing = -1;
-        tierIndustrialCasing = -1;
-        tierMachineFrame = -1;
-        tierMachineCasing = -1;
-        tierMachine = -1;
-        mCountCasing = 0;
     }
 
     protected void checkHasAnySteamInput(List<StructureError> errors) {

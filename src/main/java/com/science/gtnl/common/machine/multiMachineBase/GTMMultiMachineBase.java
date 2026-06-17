@@ -25,30 +25,9 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
     }
 
     @Override
-    public boolean getPerfectOC() {
-        return false;
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setInteger("parallelTier", mParallelTier);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        mParallelTier = aNBT.getInteger("parallelTier");
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return 0.8 - (mParallelTier / 50.0);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1 / 1.67 - (Math.max(0, mParallelTier - 1) / 50.0);
+    public void checkHatch(List<StructureError> errors) {
+        super.checkHatch(errors);
+        checkEnergyHatch(errors);
     }
 
     @Override
@@ -66,10 +45,11 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
         }
     }
 
+    @NotNull
     @Override
-    public void checkHatch(List<StructureError> errors) {
-        super.checkHatch(errors);
-        checkEnergyHatch(errors);
+    public CheckRecipeResult checkProcessing() {
+        resetParallelTier();
+        return super.checkProcessing();
     }
 
     @Override
@@ -83,26 +63,42 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
     }
 
     @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setInteger("parallelTier", mParallelTier);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        mParallelTier = aNBT.getInteger("parallelTier");
+    }
+
+    @Override
+    public boolean getPerfectOC() {
+        return false;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.8 - (mParallelTier / 50.0);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1 / 1.67 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
     public int getMaxParallelRecipes() {
         resetParallelTier();
-
         for (ParallelControllerHatch module : GTUtility.filterValidMTEs(mParallelControllerHatches)) {
             mParallelTier = module.mTier;
             return module.getParallel();
         }
-
         if (mParallelTier <= 1) {
             return 8;
         }
-
         return 1 << (2 * (mParallelTier - 2));
     }
-
-    @NotNull
-    @Override
-    public CheckRecipeResult checkProcessing() {
-        resetParallelTier();
-        return super.checkProcessing();
-    }
-
 }

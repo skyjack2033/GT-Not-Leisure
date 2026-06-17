@@ -129,6 +129,8 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         return colorOptions;
     }
 
+    public List<SlotWidget> slotWidgets = new ArrayList<>(1);
+
     @Override
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         if (aBaseMetaTileEntity.isServerSide()) {
@@ -495,8 +497,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         }
         return tier;
     }
-
-    public List<SlotWidget> slotWidgets = new ArrayList<>(1);
 
     public void createInventorySlots() {
         final SlotWidget inventorySlot = new SlotWidget(inventoryHandler, 1);
@@ -986,33 +986,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         return false;
     }
 
-    @Override
-    public String[] getInfoData() {
-        String dSpeed = String.format("%.3f", this.getDurationModifier() * 100) + "%";
-        String dEUMod = String.format("%.3f", this.getEUtDiscount() * 100) + "%";
-
-        String[] origin = super.getInfoData();
-        String[] ret = new String[origin.length + 3];
-        System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = EnumChatFormatting.AQUA + StatCollector.translateToLocal("MachineInfoData.Parallels")
-            + ": "
-            + EnumChatFormatting.GOLD
-            + this.getTrueParallel();
-        ret[origin.length + 1] = EnumChatFormatting.AQUA + StatCollector
-            .translateToLocal("MachineInfoData.SpeedMultiplier") + ": " + EnumChatFormatting.GOLD + dSpeed;
-        ret[origin.length + 2] = EnumChatFormatting.AQUA + StatCollector.translateToLocal("MachineInfoData.EuModifier")
-            + ": "
-            + EnumChatFormatting.GOLD
-            + dEUMod;
-        return ret;
-    }
-
-    @Override
-    public boolean addToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
-        return super.addToMachineList(aTileEntity, aBaseCasingIndex)
-            || addExoticEnergyInputToMachineList(aTileEntity, aBaseCasingIndex);
-    }
-
     public void checkHatch(List<StructureError> errors) {
         checkHatchMax(errors, HatchElement.Maintenance, 1);
         if (getPollutionPerSecond(null) > 0) {
@@ -1154,6 +1127,27 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         mParallelTier = 0;
     }
 
+    @Override
+    public String[] getInfoData() {
+        String dSpeed = String.format("%.3f", this.getDurationModifier() * 100) + "%";
+        String dEUMod = String.format("%.3f", this.getEUtDiscount() * 100) + "%";
+
+        String[] origin = super.getInfoData();
+        String[] ret = new String[origin.length + 3];
+        System.arraycopy(origin, 0, ret, 0, origin.length);
+        ret[origin.length] = EnumChatFormatting.AQUA + StatCollector.translateToLocal("MachineInfoData.Parallels")
+            + ": "
+            + EnumChatFormatting.GOLD
+            + this.getTrueParallel();
+        ret[origin.length + 1] = EnumChatFormatting.AQUA + StatCollector
+            .translateToLocal("MachineInfoData.SpeedMultiplier") + ": " + EnumChatFormatting.GOLD + dSpeed;
+        ret[origin.length + 2] = EnumChatFormatting.AQUA + StatCollector.translateToLocal("MachineInfoData.EuModifier")
+            + ": "
+            + EnumChatFormatting.GOLD
+            + dEUMod;
+        return ret;
+    }
+
     public IMetaTileEntity getMetaTileEntity(final IGregTechTileEntity aTileEntity) {
         if (aTileEntity == null) {
             return null;
@@ -1194,6 +1188,12 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean addToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        return super.addToMachineList(aTileEntity, aBaseCasingIndex)
+            || addExoticEnergyInputToMachineList(aTileEntity, aBaseCasingIndex);
     }
 
     /**
