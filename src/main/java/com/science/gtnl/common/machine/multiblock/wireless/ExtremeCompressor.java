@@ -207,11 +207,12 @@ public class ExtremeCompressor extends WirelessEnergyMultiMachineBase<ExtremeCom
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 201);
+        checkHatchExact(errors, HatchElement.Muffler, 5);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mMufflerHatches.size() == 5;
+        return super.checkHatch();
     }
 
     @Override

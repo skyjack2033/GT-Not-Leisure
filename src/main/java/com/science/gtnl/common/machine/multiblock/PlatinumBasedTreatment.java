@@ -238,11 +238,12 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 30);
+        checkHatchExact(errors, HatchElement.Muffler, 6);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mMufflerHatches.size() == 6;
+        return super.checkHatch();
     }
 
     @Override

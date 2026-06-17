@@ -61,6 +61,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -270,6 +271,9 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 1001);
+        if (mCasingTier < 0) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
     }
 
     @Override
@@ -286,7 +290,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mCasingTier >= 0;
+        return super.checkHatch();
     }
 
     @Override

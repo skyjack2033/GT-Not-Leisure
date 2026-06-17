@@ -149,11 +149,12 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 115);
+        checkHasAnyEnergy(errors);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && (mEnergyHatches.size() == 1 || mExoticEnergyHatches.size() == 1);
+        return super.checkHatch();
     }
 
     @Override

@@ -22,7 +22,6 @@ import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -190,8 +189,8 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

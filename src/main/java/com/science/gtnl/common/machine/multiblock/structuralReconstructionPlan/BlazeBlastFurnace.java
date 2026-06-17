@@ -50,6 +50,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -61,6 +62,8 @@ import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
 public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> implements ISurvivalConstructable {
+
+    private static final TranslatableText BLAZE_INPUT_HATCH_NAME = TranslatableText.lang("FluidBlazeInputHatch");
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String BBF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/blaze_blast_furnace";
@@ -187,6 +190,7 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 50);
+        checkHatchMin(errors, BLAZE_INPUT_HATCH_NAME, mFluidBlazeInputHatch.size(), 1);
     }
 
     @Override
@@ -205,9 +209,12 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && !mFluidBlazeInputHatch.isEmpty()
-            && getMCoilLevel() != HeatingCoilLevel.None
-            && checkEnergyHatch();
+        return super.checkHatch();
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

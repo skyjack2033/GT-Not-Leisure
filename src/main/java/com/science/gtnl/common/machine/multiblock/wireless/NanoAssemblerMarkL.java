@@ -39,6 +39,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.core.material.MaterialsAlloy;
@@ -213,11 +214,14 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 251);
+        if (mCasingTier < 0) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mCasingTier >= 0;
+        return super.checkHatch();
     }
 
     @Override

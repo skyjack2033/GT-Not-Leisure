@@ -20,7 +20,6 @@ import com.science.gtnl.utils.StructureUtils;
 
 import bartworks.util.BWUtil;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -144,11 +143,17 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 25);
+        checkHatchExact(errors, HatchElement.Muffler, 1);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None && mMufflerHatches.size() == 1;
+        return super.checkHatch();
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

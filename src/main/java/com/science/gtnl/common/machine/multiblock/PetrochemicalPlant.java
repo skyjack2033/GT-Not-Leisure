@@ -211,11 +211,12 @@ public class PetrochemicalPlant extends MultiMachineBase<PetrochemicalPlant> imp
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 5);
+        checkHatchExact(errors, HatchElement.Muffler, 8);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mMufflerHatches.size() == 8;
+        return super.checkHatch();
     }
 
     @Override

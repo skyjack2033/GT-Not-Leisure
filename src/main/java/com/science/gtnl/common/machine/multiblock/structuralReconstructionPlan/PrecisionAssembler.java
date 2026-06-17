@@ -53,6 +53,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -290,6 +291,9 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
         setupParameters();
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
         checkCasingMin(errors, mCountCasing, 30);
+        if (mCasingTier < 0) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
     }
 
     @Override
@@ -312,7 +316,7 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
                 return false;
             }
         }
-        return super.checkHatch() && mCasingTier >= 0;
+        return super.checkHatch();
     }
 
     @Override

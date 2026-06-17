@@ -45,6 +45,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
@@ -308,6 +309,10 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
         setupParameters();
         checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 5 * (mHeight + 1) - 5);
+        checkHatchExact(errors, HatchElement.Muffler, 1);
+        if (mHeight + 1 < 3) {
+            errors.add(StructureErrorRegistry.TOO_SHORT_HEIGHT);
+        }
     }
 
     @Override
@@ -319,7 +324,7 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mHeight + 1 >= 3 && mMufflerHatches.size() == 1;
+        return super.checkHatch();
     }
 
     @Override

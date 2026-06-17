@@ -32,7 +32,6 @@ import bartworks.util.BWUtil;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.IHatchElement;
@@ -268,9 +267,13 @@ public class NanitesIntegratedProcessingCenter
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
         setupParameters();
-        if (mHeatingCapacity <= 0) {
-            failStructureCheck(errors);
-        }
+        checkCasingMin(errors, mCountCasing, 2);
+        checkGlassEnergyHatchRequirement(errors);
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override
@@ -291,7 +294,7 @@ public class NanitesIntegratedProcessingCenter
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None && mGlassTier > 0 && mCountCasing > 1;
+        return super.checkHatch();
     }
 
     @Override

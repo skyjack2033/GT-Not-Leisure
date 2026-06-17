@@ -38,6 +38,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
@@ -210,6 +211,9 @@ public class DraconicFusionCrafting extends GTMMultiMachineBase<DraconicFusionCr
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 25);
+        if (tierCasing < 0) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
     }
 
     @Override
@@ -220,7 +224,7 @@ public class DraconicFusionCrafting extends GTMMultiMachineBase<DraconicFusionCr
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && tierCasing >= 0;
+        return super.checkHatch();
     }
 
     @Override

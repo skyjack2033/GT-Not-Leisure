@@ -46,6 +46,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
@@ -391,14 +392,16 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 55);
+        checkHatchMin(errors, HatchElement.OutputHatch, 1);
+        if (mLeftInputBusses == null || mRightInputBusses == null) {
+            errors.add(StructureErrors.missingHatch(HatchElement.InputBus));
+        }
+        checkHasInputHatch(errors);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mLeftInputBusses != null
-            && mRightInputBusses != null
-            && !mInputHatches.isEmpty()
-            && !mOutputHatches.isEmpty();
+        return super.checkHatch();
     }
 
     @Override

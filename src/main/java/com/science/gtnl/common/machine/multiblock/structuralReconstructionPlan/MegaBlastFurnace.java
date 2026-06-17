@@ -348,8 +348,8 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

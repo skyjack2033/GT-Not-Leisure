@@ -52,6 +52,7 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.recipe.metadata.CompressionTierKey;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -404,15 +405,18 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
+        if (GTUtility.getTier(this.getMaxInputVoltage()) <= tTier + 4) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
         checkCasingMin(errors, mCountCasing, 40);
+        checkHatchExact(errors, HatchElement.Muffler, 1);
     }
 
     @Override
     public boolean checkHatch() {
         refreshControllerStateIfNeeded();
         setupParameters();
-        return super.checkHatch() && GTUtility.getTier(this.getMaxInputVoltage()) <= tTier + 4
-            && mMufflerHatches.size() == 1;
+        return super.checkHatch();
     }
 
     @Override

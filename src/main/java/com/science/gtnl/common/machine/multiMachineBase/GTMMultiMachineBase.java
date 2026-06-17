@@ -1,5 +1,7 @@
 package com.science.gtnl.common.machine.multiMachineBase;
 
+import java.util.List;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +10,7 @@ import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTUtility;
 
@@ -64,8 +67,9 @@ public abstract class GTMMultiMachineBase<T extends GTMMultiMachineBase<T>> exte
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
+    public void checkHatch(List<StructureError> errors) {
+        super.checkHatch(errors);
+        checkEnergyHatch(errors);
     }
 
     @Override

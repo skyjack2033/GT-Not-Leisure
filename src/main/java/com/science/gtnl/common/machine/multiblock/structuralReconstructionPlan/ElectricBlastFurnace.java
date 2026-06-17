@@ -246,8 +246,8 @@ public class ElectricBlastFurnace extends MultiMachineBase<ElectricBlastFurnace>
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

@@ -44,6 +44,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -268,14 +269,16 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 50);
+        checkHatchExact(errors, HatchElement.Maintenance, 1);
+        checkHatchMax(errors, HatchElement.Energy, 2);
         if (mCasingTier >= 8) {
-            failStructureCheck(errors);
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
         }
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mEnergyHatches.size() <= 2 && mMaintenanceHatches.size() == 1;
+        return super.checkHatch();
     }
 
     @Override

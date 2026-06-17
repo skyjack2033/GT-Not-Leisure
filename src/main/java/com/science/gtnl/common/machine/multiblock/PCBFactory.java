@@ -66,6 +66,7 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.recipe.metadata.PCBFactoryTierKey;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
@@ -432,7 +433,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         machineTier = getMachineTier();
         if (machineTier == 0) {
-            failStructureCheck(errors);
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
             return;
         }
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
@@ -452,9 +453,6 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             DEPTH_OFF_SET_T3,
             null)) {
             machineTier = 2;
-        }
-        if (!checkHatch()) {
-            failStructureCheck(errors);
         }
         setupParameters();
     }

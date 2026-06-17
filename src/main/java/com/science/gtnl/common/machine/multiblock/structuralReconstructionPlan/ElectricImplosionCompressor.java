@@ -152,11 +152,12 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 35);
+        checkHatchExact(errors, HatchElement.Muffler, 1);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mMufflerHatches.size() == 1;
+        return super.checkHatch();
     }
 
     @Override

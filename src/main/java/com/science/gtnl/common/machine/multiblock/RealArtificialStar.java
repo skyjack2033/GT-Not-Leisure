@@ -54,6 +54,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
@@ -458,6 +459,10 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
+        if (tierDimensionField <= 0 || tierTimeField <= 0 || tierStabilisationField <= 0) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
+        checkHatchExact(errors, HatchElement.InputBus, 1);
         calculateOutputMultiplier();
         recoveryChance = tierDimensionField * tierTimeField * tierStabilisationField;
         return;
@@ -465,10 +470,7 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && tierDimensionField > 0
-            && tierTimeField > 0
-            && tierStabilisationField > 0
-            && mInputBusses.size() == 1;
+        return super.checkHatch();
     }
 
     @Override

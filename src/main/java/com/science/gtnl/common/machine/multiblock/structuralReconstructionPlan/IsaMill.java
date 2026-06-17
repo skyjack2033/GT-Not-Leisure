@@ -35,14 +35,13 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
-import gregtech.api.metatileentity.implementations.MTEHatch;
-import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
@@ -55,6 +54,9 @@ import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.nbthandlers.M
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
 public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalConstructable {
+
+    private static final TranslatableText MILLING_BALL_BUS_NAME = TranslatableText
+        .lang("gt.blockmachines.hatch.milling.name");
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     public static final String IM_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/isa_mill";
@@ -153,6 +155,7 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 48);
+        checkHatchExact(errors, MILLING_BALL_BUS_NAME, mMillingBallBuses.size(), 1);
     }
 
     @Override
@@ -163,17 +166,12 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
 
     @Override
     public boolean checkHatch() {
-        for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        for (MTEHatch mExoticEnergyHatch : this.mExoticEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mExoticEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        return super.checkHatch() && mMillingBallBuses.size() == 1;
+        return super.checkHatch();
+    }
+
+    @Override
+    protected int getGlassEnergyTierLimit() {
+        return VoltageIndex.UHV;
     }
 
     @Override

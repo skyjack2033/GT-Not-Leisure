@@ -29,7 +29,9 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
@@ -168,11 +170,15 @@ public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssem
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 30);
+        int energyHatchCount = mEnergyHatches.size() + mExoticEnergyHatches.size();
+        if (energyHatchCount > 1) {
+            errors.add(StructureErrors.hatchCount(ErrorType.TOO_MANY, HatchElement.Energy, energyHatchCount, 1));
+        }
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && this.mEnergyHatches.size() + this.mExoticEnergyHatches.size() < 2;
+        return super.checkHatch();
     }
 
     @Override

@@ -59,8 +59,6 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
-import gregtech.api.metatileentity.implementations.MTEHatch;
-import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.metatileentity.implementations.MTEHatchInput;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
@@ -298,8 +296,11 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack itemStack,
         List<StructureError> errors) {
         if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        checkHatch(errors);
         setupParameters();
         checkCasingMin(errors, mCountCasing, 19);
+        checkHatchExact(errors, HatchElement.OutputHatch, 1);
+        checkHatchMax(errors, RadioHatchElement.RadioHatch, 1);
     }
 
     @Override
@@ -310,17 +311,12 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
 
     @Override
     public boolean checkHatch() {
-        for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        for (MTEHatch mExoticEnergyHatch : this.mExoticEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UHV && mExoticEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        return super.checkHatch() && this.mRadHatches.size() <= 1 && this.mOutputHatches.size() == 1;
+        return super.checkHatch();
+    }
+
+    @Override
+    protected int getGlassEnergyTierLimit() {
+        return VoltageIndex.UHV;
     }
 
     public int reCalculateFluidAmount() {

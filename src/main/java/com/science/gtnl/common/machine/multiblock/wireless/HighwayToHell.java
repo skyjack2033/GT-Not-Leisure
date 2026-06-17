@@ -46,8 +46,6 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.items.MetaGeneratedTool;
 import gregtech.api.logic.ProcessingLogic;
-import gregtech.api.metatileentity.implementations.MTEHatch;
-import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
@@ -233,27 +231,22 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
             "M",
             FluidLoader.bioFluidBlock);
         setupParameters();
+        checkHatchExact(errors, HatchElement.Muffler, 1);
+        checkHatchExact(errors, CustomHatchElement.ROTOR_ASSEMBLY, 4);
         rotateTurbines();
-        return;
     }
 
     @Override
     public boolean checkHatch() {
-        for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UMV && mEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        for (MTEHatch mExoticEnergyHatch : this.mExoticEnergyHatches) {
-            if (mGlassTier < VoltageIndex.UMV && mExoticEnergyHatch.mTier > mGlassTier) {
-                return false;
-            }
-        }
-        if (mMufflerHatches.size() != 1 || mTurbineHatches.size() != 4) return false;
         for (MTEHatchTurbine h : GTUtility.validMTEList(this.mTurbineHatches)) {
             if (!h.hasTurbine()) return false;
         }
         return super.checkHatch();
+    }
+
+    @Override
+    protected int getGlassEnergyTierLimit() {
+        return VoltageIndex.UMV;
     }
 
     @Override

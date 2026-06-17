@@ -67,6 +67,7 @@ import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.structure.error.StructureErrors;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
@@ -1017,11 +1018,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             && mParallelControllerHatches.size() <= 1;
     }
 
-    @Override
-    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        failStructureCheck(errors);
-    }
-
     protected void checkHatch(List<StructureError> errors) {
         int existingErrors = errors.size();
         checkHatchMax(errors, HatchElement.Maintenance, 1);
@@ -1029,7 +1025,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             checkHasMufflerHatch(errors);
         }
         checkParallelControllerHatchMax(errors, 1);
-        checkEnergyHatch(errors);
         checkStructureRequirements(errors);
         if (!checkHatch() && errors.size() == existingErrors) {
             errors.add(GTNLStructureErrors.invalidHatchConfiguration());
@@ -1111,10 +1106,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         return errors.size() == existingErrors;
     }
 
-    protected void failStructureCheck(List<StructureError> errors) {
-        errors.add(GTNLStructureErrors.unknownLegacyCheckFailure());
-    }
-
     protected void checkParallelControllerHatchMax(List<StructureError> errors, int max) {
         int count = mParallelControllerHatches.size();
         if (count > max) {
@@ -1122,11 +1113,48 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
         }
     }
 
-    protected void checkOneParallelControllerHatch(List<StructureError> errors) {
-        int count = mParallelControllerHatches.size();
-        if (count != 1) {
-            errors.add(GTNLStructureErrors.parallelControllerHatchCount(ErrorType.NOT_MATCH, count, 1));
+    protected void checkHatchMin(List<StructureError> errors, IHatchElement<? super T> element, int min) {
+        int count = (int) element.count(self());
+        if (count < min) {
+            errors.add(StructureErrors.hatchCount(ErrorType.TOO_FEW, getHatchElementName(element), count, min));
         }
+    }
+
+    protected void checkHatchExact(List<StructureError> errors, IHatchElement<? super T> element, int target) {
+        int count = (int) element.count(self());
+        if (count != target) {
+            errors.add(StructureErrors.hatchCount(ErrorType.NOT_MATCH, getHatchElementName(element), count, target));
+        }
+    }
+
+    protected void checkHatchMax(List<StructureError> errors, IHatchElement<? super T> element, int max) {
+        int count = (int) element.count(self());
+        if (count > max) {
+            errors.add(StructureErrors.hatchCount(ErrorType.TOO_MANY, getHatchElementName(element), count, max));
+        }
+    }
+
+    protected void checkHatchMin(List<StructureError> errors, TranslatableText name, int current, int min) {
+        if (current < min) {
+            errors.add(StructureErrors.hatchCount(ErrorType.TOO_FEW, name, current, min));
+        }
+    }
+
+    protected void checkHatchExact(List<StructureError> errors, TranslatableText name, int current, int target) {
+        if (current != target) {
+            errors.add(StructureErrors.hatchCount(ErrorType.NOT_MATCH, name, current, target));
+        }
+    }
+
+    protected void checkHatchMax(List<StructureError> errors, TranslatableText name, int current, int max) {
+        if (current > max) {
+            errors.add(StructureErrors.hatchCount(ErrorType.TOO_MANY, name, current, max));
+        }
+    }
+
+    protected TranslatableText getHatchElementName(IHatchElement<? super T> element) {
+        element.getDisplayName();
+        return TranslatableText.lang(element.getDescriptionLangKey());
     }
 
     public boolean checkEnergyHatch() {

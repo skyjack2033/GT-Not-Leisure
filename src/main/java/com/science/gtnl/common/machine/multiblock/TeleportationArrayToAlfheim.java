@@ -59,6 +59,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
@@ -72,6 +73,8 @@ import gtnhlanth.common.register.LanthItemList;
 import tectech.thing.casing.TTCasingsContainer;
 
 public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationArrayToAlfheim> {
+
+    private static final TranslatableText MANA_INPUT_HATCH_NAME = TranslatableText.lang("FluidManaInputHatch");
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String TATA_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":"
@@ -485,6 +488,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 350);
+        checkHatchMin(errors, MANA_INPUT_HATCH_NAME, mFluidManaInputHatch.size(), 1);
     }
 
     @Override
@@ -505,7 +509,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && !mFluidManaInputHatch.isEmpty();
+        return super.checkHatch();
     }
 
     @Override

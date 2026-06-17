@@ -57,6 +57,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
@@ -246,11 +247,14 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 751);
+        if (mCasingTier < 0) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mCasingTier >= 0;
+        return super.checkHatch();
     }
 
     @Override

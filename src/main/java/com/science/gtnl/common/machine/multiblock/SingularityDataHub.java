@@ -66,6 +66,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.GTUtility.ItemId;
 import gregtech.api.util.MultiblockTooltipBuilder;
@@ -82,6 +83,8 @@ import tectech.thing.casing.BlockGTCasingsTT;
 
 public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
     implements ISurvivalConstructable, IItemVault {
+
+    private static final TranslatableText VAULT_PORT_HATCH_NAME = TranslatableText.lang("VaultPortHatch");
 
     public static long MAX_DISTINCT_ITEMS = Long.MAX_VALUE - 1;
     public static long MAX_DISTINCT_FLUIDS = Long.MAX_VALUE - 1;
@@ -293,18 +296,19 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 100);
+        checkHatchMin(errors, VAULT_PORT_HATCH_NAME, portHatch == null ? 0 : 1, 1);
     }
 
     @Override
     public void setupParameters() {
         super.setupParameters();
         wirelessMode = mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty();
-        if (portHatch.controller == null) portHatch.bind(this);
+        if (portHatch != null && portHatch.controller == null) portHatch.bind(this);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && portHatch != null;
+        return super.checkHatch();
     }
 
     @Override

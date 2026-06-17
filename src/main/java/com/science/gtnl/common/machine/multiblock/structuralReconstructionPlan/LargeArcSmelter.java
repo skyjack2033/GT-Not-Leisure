@@ -133,11 +133,12 @@ public class LargeArcSmelter extends GTMMultiMachineBase<LargeArcSmelter> implem
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 45);
+        checkHatchExact(errors, HatchElement.Muffler, 1);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && mMufflerHatches.size() == 1;
+        return super.checkHatch();
     }
 
     @Override

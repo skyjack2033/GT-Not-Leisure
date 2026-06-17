@@ -40,6 +40,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
@@ -169,8 +170,12 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
             return;
+        this.multiTier = getMultiTier();
         setupParameters();
         checkCasingMin(errors, mCountCasing, 26);
+        if (multiTier <= 0) {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+        }
     }
 
     @Override
@@ -191,7 +196,7 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
     @Override
     public boolean checkHatch() {
         this.multiTier = getMultiTier();
-        return super.checkHatch() && multiTier > 0;
+        return super.checkHatch();
     }
 
     @Override

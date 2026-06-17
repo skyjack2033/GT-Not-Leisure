@@ -40,6 +40,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
@@ -49,6 +50,8 @@ import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
 public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements ISurvivalConstructable {
+
+    private static final TranslatableText ICE_INPUT_HATCH_NAME = TranslatableText.lang("FluidIceInputHatch");
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String CIF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/cold_ice_freeze";
@@ -160,6 +163,8 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 50);
+        checkHatchExact(errors, HatchElement.Muffler, 1);
+        checkHatchMin(errors, ICE_INPUT_HATCH_NAME, mFluidIceInputHatch.size(), 1);
     }
 
     @Override
@@ -170,9 +175,7 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && !mFluidIceInputHatch.isEmpty()
-            && mMufflerHatches.size() == 1
-            && checkEnergyHatch();
+        return super.checkHatch();
     }
 
     @Override

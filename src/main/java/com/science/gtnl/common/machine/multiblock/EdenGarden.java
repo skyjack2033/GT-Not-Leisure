@@ -292,11 +292,12 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
             return;
         setupParameters();
         checkCasingMin(errors, mCountCasing, 1000);
+        checkHasAnyEnergy(errors);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && !(this.mEnergyHatches.isEmpty() && this.mExoticEnergyHatches.isEmpty());
+        return super.checkHatch();
     }
 
     @Override

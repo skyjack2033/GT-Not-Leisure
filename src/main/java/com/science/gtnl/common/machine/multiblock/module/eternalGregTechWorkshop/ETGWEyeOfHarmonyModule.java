@@ -1,5 +1,8 @@
 package com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop;
 
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +26,6 @@ import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -35,7 +37,10 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
+import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
+import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
@@ -713,36 +718,28 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         super.checkMachine(aBaseMetaTileEntity, aStack, errors);
         if (errors.size() > existingErrors) return;
         if (!mDualInputHatches.isEmpty()) {
-            failStructureCheck(errors);
+            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.crib_not_allowed"));
         }
 
-        checkHatchExact(errors, HatchElement.OutputBus, 1);
+        // Check if there are output buses
+        checkHasOutputBus(errors);
 
-        if (getPrimaryOutputBusME() == null) {
-            failStructureCheck(errors);
-        }
-
+        // Check if there is 1 output hatch
         checkOneOutputHatch(errors);
 
-        if (getPrimaryOutputHatchME() == null) {
-            failStructureCheck(errors);
+        if (mInputBusses.size() != 1) {
+            errors.add(StructureErrors.hatchCount(ErrorType.NOT_MATCH, InputBus, mInputBusses.size(), 1));
+        } else if (mInputBusses.get(0) instanceof MTEHatchInputBusME) {
+            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.stocking_input_bus_not_allowed"));
         }
 
-        checkHatchExact(errors, HatchElement.InputBus, 1);
-
-        if (getPrimaryInputBus() instanceof MTEHatchInputBusME) {
-            failStructureCheck(errors);
+        // Make sure there are no energy hatches.
+        if (!mEnergyHatches.isEmpty() || !mExoticEnergyHatches.isEmpty()) {
+            errors.add(StructureErrorRegistry.NO_ENERGY_HATCH_NEEDED);
         }
 
-        if (!mEnergyHatches.isEmpty()) {
-            failStructureCheck(errors);
-        }
-
-        if (!mExoticEnergyHatches.isEmpty()) {
-            failStructureCheck(errors);
-        }
-
-        checkHatchExact(errors, HatchElement.InputHatch, 2);
+        // Make sure there are 2 input hatches.
+        checkHatchExact(errors, InputHatch, 2);
     }
 
     public MTEHatchInputBus getPrimaryInputBus() {

@@ -65,7 +65,11 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrorRegistry;
+import gregtech.api.structure.error.StructureErrors;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
@@ -93,6 +97,8 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         + "multiblock/meteor_miner_two";
     private static final String[][] shape_t1 = StructureUtils.readStructureFromFile(MMO_STRUCTURE_FILE_PATH);
     private static final String[][] shape_t2 = StructureUtils.readStructureFromFile(MMT_STRUCTURE_FILE_PATH);
+
+    private static final TranslatableText LASER_BEACON_NAME = TranslatableText.lang("tile.LaserBeacon.name");
 
     public TileEntityLaserBeacon renderer;
     public int xStart, yStart, zStart;
@@ -318,16 +324,19 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        tierMachine = 0;
         if (checkPiece(STRUCTURE_PIECE_MAIN, 9, 13, 7, errors)) {
             tierMachine = 1;
         } else if (checkPiece(STRUCTURE_PIECE_TIER2, 9, 15, 3, errors)) {
             tierMachine = 2;
         } else {
+            errors.add(StructureErrorRegistry.UNKNOWN_TIER);
             return;
         }
-        if (mInputBusses.isEmpty() && this.tierMachine == 1 || !findLaserRenderer(getBaseMetaTileEntity().getWorld())) {
-            failStructureCheck(errors);
-        }
+        checkOneEnergyHatchMaybeExotic(errors);
+        if (tierMachine == 1) checkHatchMin(errors, HatchElement.InputBus, 1);
+        if (!findLaserRenderer(getBaseMetaTileEntity().getWorld()))
+            errors.add(StructureErrors.hatchCount(ErrorType.NOT_MATCH, LASER_BEACON_NAME, 0, 1));
         setupParameters();
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
@@ -340,7 +349,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && !mEnergyHatches.isEmpty();
+        return super.checkHatch();
     }
 
     public boolean findLaserRenderer(World w) {

@@ -19,7 +19,6 @@ import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -141,8 +140,8 @@ public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> im
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch() && getMCoilLevel() != HeatingCoilLevel.None;
+    protected boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

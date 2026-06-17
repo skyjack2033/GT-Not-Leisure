@@ -316,6 +316,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
         if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
             return;
         }
+        checkHatch(errors);
         boolean isFlipped = this.getFlip()
             .isHorizontallyFlipped();
         StructureUtils.setStringBlockXZ(
@@ -329,11 +330,13 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
             Blocks.water);
         setupParameters();
         checkCasingMin(errors, mCountCasing, 20);
+        checkHatchMin(errors, HatchElement.OutputHatch, 1);
+        checkHatchMax(errors, RadioHatchElement.RadioHatch, 1);
     }
 
     @Override
     public boolean checkHatch() {
-        return super.checkHatch() && this.mRadHatches.size() <= 1 && !this.mOutputHatches.isEmpty();
+        return super.checkHatch();
     }
 
     @Override
