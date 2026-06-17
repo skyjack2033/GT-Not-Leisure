@@ -72,11 +72,11 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
     private static final String DC_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/data_center";
     private static final String[][] shape = StructureUtils.readStructureFromFile(DC_STRUCTURE_FILE_PATH);
 
+    public boolean wirelessModeEnabled = false;
     public ArrayList<MTEHatchDataItemsOutput> mStacksDataOutputs = new ArrayList<>();
     public ArrayList<MTEHatchWirelessDataItemsOutput> mWirelessStacksDataOutputs = new ArrayList<>();
     public ArrayList<MTEHatchDataAccess> mDataAccessHatches = new ArrayList<>();
     public boolean slave = false;
-    public boolean wirelessModeEnabled = false;
 
     public DataCenter(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -91,48 +91,6 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new DataCenter(mName);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("DataCenterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 9, 15, true)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_DataCenter_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_DataCenter_Casing"), 1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("gt.blockmachines.hatch.dataoutass.tier.07.name"),
-                StatCollector.translateToLocal("tt.keyword.Structure.AnyComputerCasing"),
-                1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("tt.keyword.Structure.DataAccessHatch"),
-                StatCollector.translateToLocal("tt.keyword.Structure.AnyHighPowerCasing"),
-                2)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public void checkMachine(IGregTechTileEntity iGregTechTileEntity, ItemStack itemStack,
-        List<StructureError> errors) {
-        mDataAccessHatches.clear();
-        mStacksDataOutputs.clear();
-        mWirelessStacksDataOutputs.clear();
-        slave = false;
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        checkHasAnyEnergy(errors);
-        checkHasMaintenanceHatch(errors);
-        if (mDataAccessHatches.isEmpty()) {
-            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.databank_missing_data_access"));
-        }
-        if (mStacksDataOutputs.isEmpty() && mWirelessStacksDataOutputs.isEmpty()) {
-            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.databank_missing_data_output"));
-        }
     }
 
     @Override
@@ -180,83 +138,20 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
     }
 
     @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
-        int colorIndex, boolean aActive, boolean aRedstone) {
-        if (side == facing) {
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                new TTRenderedExtendedFacingTexture(aActive ? TTMultiblockBase.ScreenON : TTMultiblockBase.ScreenOFF) };
+    public void checkMachine(IGregTechTileEntity iGregTechTileEntity, ItemStack itemStack,
+        List<StructureError> errors) {
+        mDataAccessHatches.clear();
+        mStacksDataOutputs.clear();
+        mWirelessStacksDataOutputs.clear();
+        slave = false;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        checkHasAnyEnergy(errors);
+        checkHasMaintenanceHatch(errors);
+        if (mDataAccessHatches.isEmpty()) {
+            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.databank_missing_data_access"));
         }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public SoundResource getActivitySoundLoop() {
-        return SoundResource.TECTECH_MACHINES_FX_HIGH_FREQ;
-    }
-
-    public boolean addDataBankHatchToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
-        if (aTileEntity == null) {
-            return false;
-        }
-
-        IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
-        if (aMetaTileEntity == null) {
-            return false;
-        }
-
-        if (aMetaTileEntity instanceof MTEHatchWirelessDataItemsOutput hatch) {
-            hatch.updateTexture(aBaseCasingIndex);
-            return mWirelessStacksDataOutputs.add(hatch);
-        }
-
-        if (aMetaTileEntity instanceof MTEHatchDataItemsOutput hatch) {
-            hatch.updateTexture(aBaseCasingIndex);
-            return mStacksDataOutputs.add(hatch);
-        }
-
-        if (aMetaTileEntity instanceof MTEHatchDataAccess hatch
-            && !(aMetaTileEntity instanceof MTEHatchDataItemsInput)) {
-            hatch.updateTexture(aBaseCasingIndex);
-            return mDataAccessHatches.add(hatch);
-        }
-
-        if (aMetaTileEntity instanceof MTEHatchDataItemsInput hatch) {
-            hatch.updateTexture(aBaseCasingIndex);
-            slave = true;
-            return mDataAccessHatches.add(hatch);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
-        ItemStack aTool) {
-        if (getBaseMetaTileEntity().isServerSide()) {
-            wirelessModeEnabled = !wirelessModeEnabled;
-            if (wirelessModeEnabled) {
-                GTUtility.sendChatToPlayer(aPlayer, "Wireless mode enabled");
-                WirelessComputationPacket.enableWirelessNetWork(getBaseMetaTileEntity());
-            } else {
-                GTUtility.sendChatToPlayer(aPlayer, "Wireless mode disabled");
-                WirelessComputationPacket.disableWirelessNetWork(getBaseMetaTileEntity());
-            }
-        }
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setBoolean("wirelessModeEnabled", wirelessModeEnabled);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        if (aNBT.hasKey("wirelessModeEnabled")) {
-            wirelessModeEnabled = aNBT.getBoolean("wirelessModeEnabled");
-        } else {
-            wirelessModeEnabled = false;
+        if (mStacksDataOutputs.isEmpty() && mWirelessStacksDataOutputs.isEmpty()) {
+            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.databank_missing_data_output"));
         }
     }
 
@@ -316,8 +211,118 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
             .build();
     }
 
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
+        int colorIndex, boolean aActive, boolean aRedstone) {
+        if (side == facing) {
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                new TTRenderedExtendedFacingTexture(aActive ? TTMultiblockBase.ScreenON : TTMultiblockBase.ScreenOFF) };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public SoundResource getActivitySoundLoop() {
+        return SoundResource.TECTECH_MACHINES_FX_HIGH_FREQ;
+    }
+
     public int getCasingTextureID() {
         return BlockGTCasingsTT.textureOffset;
+    }
+
+    public boolean addDataBankHatchToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        if (aTileEntity == null) {
+            return false;
+        }
+
+        IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
+        if (aMetaTileEntity == null) {
+            return false;
+        }
+
+        if (aMetaTileEntity instanceof MTEHatchWirelessDataItemsOutput hatch) {
+            hatch.updateTexture(aBaseCasingIndex);
+            return mWirelessStacksDataOutputs.add(hatch);
+        }
+
+        if (aMetaTileEntity instanceof MTEHatchDataItemsOutput hatch) {
+            hatch.updateTexture(aBaseCasingIndex);
+            return mStacksDataOutputs.add(hatch);
+        }
+
+        if (aMetaTileEntity instanceof MTEHatchDataAccess hatch
+            && !(aMetaTileEntity instanceof MTEHatchDataItemsInput)) {
+            hatch.updateTexture(aBaseCasingIndex);
+            return mDataAccessHatches.add(hatch);
+        }
+
+        if (aMetaTileEntity instanceof MTEHatchDataItemsInput hatch) {
+            hatch.updateTexture(aBaseCasingIndex);
+            slave = true;
+            return mDataAccessHatches.add(hatch);
+        }
+
+        return false;
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("DataCenterRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_03"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(15, 9, 15, true)
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_DataCenter_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_DataCenter_Casing"), 1)
+            .addOtherStructurePart(
+                StatCollector.translateToLocal("gt.blockmachines.hatch.dataoutass.tier.07.name"),
+                StatCollector.translateToLocal("tt.keyword.Structure.AnyComputerCasing"),
+                1)
+            .addOtherStructurePart(
+                StatCollector.translateToLocal("tt.keyword.Structure.DataAccessHatch"),
+                StatCollector.translateToLocal("tt.keyword.Structure.AnyHighPowerCasing"),
+                2)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
+        ItemStack aTool) {
+        if (getBaseMetaTileEntity().isServerSide()) {
+            wirelessModeEnabled = !wirelessModeEnabled;
+            if (wirelessModeEnabled) {
+                GTUtility.sendChatToPlayer(aPlayer, "Wireless mode enabled");
+                WirelessComputationPacket.enableWirelessNetWork(getBaseMetaTileEntity());
+            } else {
+                GTUtility.sendChatToPlayer(aPlayer, "Wireless mode disabled");
+                WirelessComputationPacket.disableWirelessNetWork(getBaseMetaTileEntity());
+            }
+        }
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setBoolean("wirelessModeEnabled", wirelessModeEnabled);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        if (aNBT.hasKey("wirelessModeEnabled")) {
+            wirelessModeEnabled = aNBT.getBoolean("wirelessModeEnabled");
+        } else {
+            wirelessModeEnabled = false;
+        }
+    }
+
+    @Override
+    public boolean isSafeVoidButtonEnabled() {
+        return false;
     }
 
     public enum DataBankHatches implements IHatchElement<DataCenter> {
@@ -367,10 +372,5 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
         public IGTHatchAdder<? super DataCenter> adder() {
             return DataCenter::addDataBankHatchToMachineList;
         }
-    }
-
-    @Override
-    public boolean isSafeVoidButtonEnabled() {
-        return false;
     }
 }

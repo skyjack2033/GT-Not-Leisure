@@ -70,65 +70,6 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("CompoundDistillationFractionatorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(27, 38, 11, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 7);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
-        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
-        if (sideDirection == facingDirection) {
-            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<CompoundDistillationFractionator> getStructureDefinition() {
         return StructureDefinition.<CompoundDistillationFractionator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -214,6 +155,65 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
     }
 
     @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 7);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
+        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
+        if (sideDirection == facingDirection) {
+            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISTILLATION_TOWER_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("CompoundDistillationFractionatorRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(27, 38, 11, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
     protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
         return new GTNLMultiBlockBaseGui<>(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT,
@@ -226,11 +226,6 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
         // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
         machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT);
         machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-    }
-
-    @Override
-    public boolean supportsMachineModeSwitch() {
-        return true;
     }
 
     @Override
@@ -247,4 +242,8 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
         return StatCollector.translateToLocal("CompoundDistillationFractionator_Mode_" + machineMode);
     }
 
+    @Override
+    public boolean supportsMachineModeSwitch() {
+        return true;
+    }
 }

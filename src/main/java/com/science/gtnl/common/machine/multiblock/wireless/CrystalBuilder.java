@@ -59,45 +59,6 @@ public class CrystalBuilder extends WirelessEnergyMultiMachineBase<CrystalBuilde
     }
 
     @Override
-    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        setupParameters();
-        checkHatch(errors);
-        checkCasingMin(errors, mCountCasing, 101);
-    }
-
-    @Override
-    public boolean requiresCoilStructureCheck() {
-        return true;
-    }
-
-    @Override
-    public void construct(ItemStack stackSize, boolean hintsOnly) {
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            hintsOnly,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET);
-    }
-
-    @Override
-    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        if (this.mMachine) return -1;
-        return this.survivalBuildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET,
-            elementBudget,
-            env,
-            false,
-            true);
-    }
-
-    @Override
     public IStructureDefinition<CrystalBuilder> getStructureDefinition() {
         return StructureDefinition.<CrystalBuilder>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -138,6 +99,45 @@ public class CrystalBuilder extends WirelessEnergyMultiMachineBase<CrystalBuilde
             .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 14))
             .addElement('P', StructureUtility.ofBlock(BlockQuantumGlass.INSTANCE, 0))
             .build();
+    }
+
+    @Override
+    public void construct(ItemStack stackSize, boolean hintsOnly) {
+        this.buildPiece(
+            STRUCTURE_PIECE_MAIN,
+            stackSize,
+            hintsOnly,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET);
+    }
+
+    @Override
+    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+        if (this.mMachine) return -1;
+        return this.survivalBuildPiece(
+            STRUCTURE_PIECE_MAIN,
+            stackSize,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            elementBudget,
+            env,
+            false,
+            true);
+    }
+
+    @Override
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        setupParameters();
+        checkHatch(errors);
+        checkCasingMin(errors, mCountCasing, 101);
+    }
+
+    @Override
+    public boolean requiresCoilStructureCheck() {
+        return true;
     }
 
     @Override

@@ -62,60 +62,6 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("CrackerHubRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_CrackerHub_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_CrackerHub_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 23, 25, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<CrackerHub> getStructureDefinition() {
         return StructureDefinition.<CrackerHub>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -204,18 +150,6 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
     }
 
     @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setInteger("mGlassTier", mGlassTier);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        mGlassTier = aNBT.getInteger("mGlassTier");
-    }
-
-    @Override
     public double getEUtDiscount() {
         return super.getEUtDiscount() * Math.pow(0.95, mGlassTier);
     }
@@ -244,7 +178,6 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
         mOutputItems = outputItems;
 
         FluidStack[] outputFluids = processingLogic.getOutputFluids();
-
         mOutputFluids = outputFluids;
         if (outputFluids != null) {
             List<FluidStack> expandedFluids = new ArrayList<>();
@@ -265,4 +198,69 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("CrackerHubRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_CrackerHub_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_CrackerHub_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(15, 23, 25, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setInteger("mGlassTier", mGlassTier);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        mGlassTier = aNBT.getInteger("mGlassTier");
+    }
 }

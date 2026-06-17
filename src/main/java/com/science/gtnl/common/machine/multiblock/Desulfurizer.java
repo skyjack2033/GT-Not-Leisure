@@ -55,33 +55,6 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
     }
 
     @Override
-    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        setupParameters();
-        checkCasingMin(errors, mCountCasing, 20);
-    }
-
-    @Override
-    public void construct(ItemStack stackSize, boolean hintsOnly) {
-        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
-    }
-
-    @Override
-    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        if (mMachine) return -1;
-        return survivalBuildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET,
-            elementBudget,
-            env,
-            false,
-            true);
-    }
-
-    @Override
     public IStructureDefinition<Desulfurizer> getStructureDefinition() {
         return StructureDefinition.<Desulfurizer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -111,6 +84,34 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
                         GTStructureUtility.ofCoil(Desulfurizer::setMCoilLevel, Desulfurizer::getMCoilLevel))))
             .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 2))
             .build();
+    }
+
+    @Override
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        setupParameters();
+        checkHatch(errors);
+        checkCasingMin(errors, mCountCasing, 20);
+    }
+
+    @Override
+    public void construct(ItemStack stackSize, boolean hintsOnly) {
+        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
+    }
+
+    @Override
+    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+        if (mMachine) return -1;
+        return survivalBuildPiece(
+            STRUCTURE_PIECE_MAIN,
+            stackSize,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            elementBudget,
+            env,
+            false,
+            true);
     }
 
     @Override
@@ -159,6 +160,11 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
     }
 
     @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 1);
+    }
+
+    @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
         if (side == aFacing) {
@@ -184,11 +190,6 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
                     .build() };
         }
         return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 1);
     }
 
     @Override

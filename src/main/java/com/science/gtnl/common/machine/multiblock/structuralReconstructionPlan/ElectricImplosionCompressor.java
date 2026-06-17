@@ -63,62 +63,6 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
     }
 
     @Override
-    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
-        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
-        if (sideDirection == facingDirection) {
-            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 0);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return BartWorksRecipeMaps.electricImplosionCompressorRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ElectricImplosionCompressorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 8, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<ElectricImplosionCompressor> getStructureDefinition() {
         return StructureDefinition.<ElectricImplosionCompressor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -176,6 +120,11 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
     }
 
     @Override
+    public RecipeMap<?> getRecipeMap() {
+        return BartWorksRecipeMaps.electricImplosionCompressorRecipes;
+    }
+
+    @Override
     public ProcessingLogic createProcessingLogic() {
         return new GTNLProcessingLogic() {
 
@@ -189,5 +138,56 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
                     .setDurationModifier(getDurationModifier());
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
+        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
+        if (sideDirection == facingDirection) {
+            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_IMPLOSION_COMPRESSOR_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("ElectricImplosionCompressorRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 8, 5, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
+            .toolTipFinisher();
+        return tt;
     }
 }
