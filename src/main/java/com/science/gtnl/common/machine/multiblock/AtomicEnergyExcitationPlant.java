@@ -395,14 +395,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
     }
 
     @Override
-    public boolean checkEnergyHatch() {
-        return true;
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
-    }
+    public void checkEnergyHatch(List<StructureError> errors) {}
 
     @Override
     protected boolean requiresCoilStructureCheck() {

@@ -122,7 +122,10 @@ import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.structure.error.StructureErrors;
+import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
@@ -145,6 +148,8 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     public static final int MODE_INPUT = 0;
     public static final int MODE_OUTPUT = 1;
     public static final int MODE_OPERATING = 2;
+
+    private static final TranslatableText SPEED_CASING_NAME = TranslatableText.lang("tile.MetaCasing02.9.name");
 
     public int mCountPatternCasing = -1;
     public int mCountCrafterCasing = -1;
@@ -932,9 +937,9 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         }
         final var old = mMaxSlots;
         setupParameters();
+        checkHatch(errors);
         if (mMaxSlots != old) upPatterns();
         getProxy().setValidSides(allDirection);
-        return;
     }
 
     public void upPatterns() {
@@ -1000,20 +1005,24 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch()
-            && mCountCasing + mCountPatternCasing
-                + mCountCrafterCasing
-                + mCountSingularityCrafterCasing
-                + mCountDebugCrafterCasing
-                + mCountSpeedCasing == 343
-            && mCountSpeedCasing <= 5;
+    public void checkHatch(List<StructureError> errors) {
+        super.checkHatch(errors);
+        int totalCasings = mCountCasing + mCountPatternCasing
+            + mCountCrafterCasing
+            + mCountSingularityCrafterCasing
+            + mCountDebugCrafterCasing
+            + mCountSpeedCasing;
+        if (totalCasings != 343) {
+            errors.add(StructureErrors.missingCasings(totalCasings, 343));
+            return;
+        }
+        if (mCountSpeedCasing > 5) {
+            errors.add(StructureErrors.hatchCount(ErrorType.TOO_MANY, SPEED_CASING_NAME, mCountSpeedCasing, 5));
+        }
     }
 
     @Override
-    public boolean checkEnergyHatch() {
-        return true;
-    }
+    public void checkEnergyHatch(List<StructureError> errors) {}
 
     @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {

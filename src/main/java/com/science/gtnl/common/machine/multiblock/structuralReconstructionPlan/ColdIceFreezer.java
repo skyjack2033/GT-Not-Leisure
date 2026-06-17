@@ -159,23 +159,19 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
-        checkCasingMin(errors, mCountCasing, 50);
+        checkHatch(errors);
+        checkEnergyHatch(errors);
         checkHatchExact(errors, HatchElement.Muffler, 1);
         checkHatchMin(errors, ICE_INPUT_HATCH_NAME, mFluidIceInputHatch.size(), 1);
+        checkCasingMin(errors, mCountCasing, 50);
     }
 
     @Override
     public void clearHatches() {
         super.clearHatches();
         mFluidIceInputHatch.clear();
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

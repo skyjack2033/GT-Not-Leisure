@@ -1013,50 +1013,34 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
             || addExoticEnergyInputToMachineList(aTileEntity, aBaseCasingIndex);
     }
 
-    public boolean checkHatch() {
-        return mMaintenanceHatches.size() <= 1 && (this.getPollutionPerSecond(null) <= 0 || !mMufflerHatches.isEmpty())
-            && mParallelControllerHatches.size() <= 1;
-    }
-
-    protected void checkHatch(List<StructureError> errors) {
-        int existingErrors = errors.size();
+    public void checkHatch(List<StructureError> errors) {
         checkHatchMax(errors, HatchElement.Maintenance, 1);
         if (getPollutionPerSecond(null) > 0) {
             checkHasMufflerHatch(errors);
         }
         checkParallelControllerHatchMax(errors, 1);
-        checkStructureRequirements(errors);
-        if (!checkHatch() && errors.size() == existingErrors) {
-            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
-        }
+        checkCoilStructureRequirement(errors);
+        checkGlassEnergyHatchRequirement(errors);
     }
 
     protected void checkEnergyHatch(List<StructureError> errors) {
-        if (checkEnergyHatch()) {
-            return;
-        }
         if (MainConfig.machine.enableLaserHatch) {
-            boolean hasEnergyTunnel = false;
-            for (MTEHatch hatch : getExoticEnergyHatches()) {
-                if (hatch instanceof MTEHatchEnergyTunnel) {
-                    hasEnergyTunnel = true;
-                    break;
-                }
-            }
-            if (hasEnergyTunnel) {
-                errors.add(GTNLStructureErrors.laserEnergyTunnelDisabled());
-            }
-            if (getRealMaxInputAmps() > 64) {
-                errors.add(GTNLStructureErrors.energyInputAmperageTooHigh());
-            }
             return;
         }
-        errors.add(GTNLStructureErrors.invalidEnergyHatchConfiguration());
-    }
-
-    protected void checkStructureRequirements(List<StructureError> errors) {
-        checkCoilStructureRequirement(errors);
-        checkGlassEnergyHatchRequirement(errors);
+        boolean hasEnergyTunnel = false;
+        for (MTEHatch hatch : getExoticEnergyHatches()) {
+            if (hatch instanceof MTEHatchEnergyTunnel) {
+                hasEnergyTunnel = true;
+                break;
+            }
+        }
+        if (hasEnergyTunnel) {
+            errors.add(GTNLStructureErrors.laserEnergyTunnelDisabled());
+            return;
+        }
+        if (getRealMaxInputAmps() > 64) {
+            errors.add(GTNLStructureErrors.energyInputAmperageTooHigh());
+        }
     }
 
     protected void checkCoilStructureRequirement(List<StructureError> errors) {
@@ -1094,16 +1078,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
 
     protected int getGlassEnergyTierLimit() {
         return -1;
-    }
-
-    protected boolean checkPieceAndHatch(String piece, int horizontalOffset, int verticalOffset, int depthOffset,
-        List<StructureError> errors) {
-        int existingErrors = errors.size();
-        if (!checkPiece(piece, horizontalOffset, verticalOffset, depthOffset, errors)) {
-            return false;
-        }
-        checkHatch(errors);
-        return errors.size() == existingErrors;
     }
 
     protected void checkParallelControllerHatchMax(List<StructureError> errors, int max) {
@@ -1155,18 +1129,6 @@ public abstract class MultiMachineBase<T extends MultiMachineBase<T>> extends MT
     protected TranslatableText getHatchElementName(IHatchElement<? super T> element) {
         element.getDisplayName();
         return TranslatableText.lang(element.getDescriptionLangKey());
-    }
-
-    public boolean checkEnergyHatch() {
-        if (MainConfig.machine.enableLaserHatch) {
-            for (MTEHatch hatch : getExoticEnergyHatches()) {
-                if (hatch instanceof MTEHatchEnergyTunnel) {
-                    return false;
-                }
-            }
-            return getRealMaxInputAmps() <= 64;
-        }
-        return true;
     }
 
     @Override

@@ -288,16 +288,11 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack itemStack,
         List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
+        checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 1000);
         checkHasAnyEnergy(errors);
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

@@ -267,13 +267,13 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
-        checkCasingMin(errors, mCountCasing, 1001);
+        checkHatch(errors);
         if (mCasingTier < 0) {
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
         }
+        checkCasingMin(errors, mCountCasing, 1001);
     }
 
     @Override
@@ -286,11 +286,6 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     public void onBlockDestroyed() {
         super.onBlockDestroyed();
         dropStoredUpgradeItems(getBaseMetaTileEntity());
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

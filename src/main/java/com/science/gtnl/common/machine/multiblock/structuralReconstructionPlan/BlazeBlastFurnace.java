@@ -186,11 +186,12 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
-        checkCasingMin(errors, mCountCasing, 50);
+        checkHatch(errors);
+        checkEnergyHatch(errors);
         checkHatchMin(errors, BLAZE_INPUT_HATCH_NAME, mFluidBlazeInputHatch.size(), 1);
+        checkCasingMin(errors, mCountCasing, 50);
     }
 
     @Override
@@ -205,11 +206,6 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
         super.setupParameters();
         this.mMultiTier = getMultiTier(getControllerSlot());
         this.mHeatingCapacity = (int) getMCoilLevel().getHeat() + 100 * (BWUtil.getTier(getMaxInputVoltage()) - 2);
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

@@ -32,6 +32,7 @@ import com.science.gtnl.common.block.blocks.tile.TileEntityEssentiaHatch;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.machine.LargeEssentiaEnergyData;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
@@ -125,7 +126,9 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        checkPieceAndHatch(mName, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
+        if (!checkPiece(mName, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        setupParameters();
+        checkHatch(errors);
     }
 
     @Override
@@ -154,21 +157,30 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
     }
 
     @Override
-    public boolean checkHatch() {
-        setupParameters();
-        if (mDynamoHatches.size() + mExoticDynamoHatches.size() != 1) return false;
+    public void checkHatch(List<StructureError> errors) {
+        if (mDynamoHatches.size() + mExoticDynamoHatches.size() != 1) {
+            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+        }
         for (MTEHatchInput tHatch : mInputHatches) {
-            if (tHatch.mTier > mTierLimit) return false;
+            if (tHatch.mTier > mTierLimit) {
+                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+            }
         }
         for (MTEHatchDynamo tHatch : mDynamoHatches) {
-            if (tHatch.mTier > mTierLimit) return false;
+            if (tHatch.mTier > mTierLimit) {
+                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+            }
         }
         for (MTEHatch tHatch : mExoticDynamoHatches) {
-            if (tHatch.mTier > mTierLimit) return false;
+            if (tHatch.mTier > mTierLimit) {
+                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+            }
             int maxAmp = 64 << (Integer.bitCount(mUpgrade) + Math.max(0, GTUtility.getTier(tHatch.maxEUOutput()) - 5));
-            if (tHatch.maxAmperesOut() > maxAmp) return false;
+            if (tHatch.maxAmperesOut() > maxAmp) {
+                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+            }
         }
-        return super.checkHatch();
+        super.checkHatch(errors);
     }
 
     @Override

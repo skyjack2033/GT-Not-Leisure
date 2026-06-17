@@ -335,11 +335,6 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
-    }
-
-    @Override
     public void clearHatches() {
         super.clearHatches();
         this.mRadHatches.clear();

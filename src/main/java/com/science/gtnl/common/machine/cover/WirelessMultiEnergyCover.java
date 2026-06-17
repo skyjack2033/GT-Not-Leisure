@@ -22,11 +22,6 @@ public class WirelessMultiEnergyCover extends CoverLegacyData {
     }
 
     @Override
-    public boolean isRedstoneSensitive(long aTimer) {
-        return false;
-    }
-
-    @Override
     public boolean allowsCopyPasteTool() {
         return false;
     }

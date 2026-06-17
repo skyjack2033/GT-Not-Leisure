@@ -30,6 +30,7 @@ import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import goodgenerator.loader.Loaders;
@@ -286,14 +287,15 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
-        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
-        checkCasingMin(errors, mCountCasing, 30);
+        checkHatch(errors);
         if (mCasingTier < 0) {
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+            return;
         }
+        checkCasingMin(errors, mCountCasing, 30);
+        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 
     @Override
@@ -304,19 +306,19 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
     }
 
     @Override
-    public boolean checkHatch() {
+    public void checkHatch(List<StructureError> errors) {
         for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
             if (mMachineTier < VoltageIndex.UHV && mEnergyHatch.mTier > mMachineTier) {
-                return false;
+                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
             }
         }
 
         for (MTEHatch mExoEnergyHatch : this.mExoticEnergyHatches) {
             if (mMachineTier < VoltageIndex.UHV && mExoEnergyHatch.mTier > mMachineTier) {
-                return false;
+                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
             }
         }
-        return super.checkHatch();
+        super.checkHatch(errors);
     }
 
     @Override

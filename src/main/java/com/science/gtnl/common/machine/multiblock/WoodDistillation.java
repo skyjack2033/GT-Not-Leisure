@@ -181,14 +181,7 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
-    }
-
-    @Override
-    public boolean checkEnergyHatch() {
-        return true;
-    }
+    public void checkEnergyHatch(List<StructureError> errors) {}
 
     @Override
     public double getEUtDiscount() {

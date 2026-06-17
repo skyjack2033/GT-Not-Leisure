@@ -168,14 +168,15 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         this.multiTier = getMultiTier();
         setupParameters();
-        checkCasingMin(errors, mCountCasing, 26);
+        checkHatch(errors);
         if (multiTier <= 0) {
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
+            return;
         }
+        checkCasingMin(errors, mCountCasing, 26);
     }
 
     @Override
@@ -194,9 +195,9 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
     }
 
     @Override
-    public boolean checkHatch() {
+    public void checkHatch(List<StructureError> errors) {
         this.multiTier = getMultiTier();
-        return super.checkHatch();
+        super.checkHatch(errors);
     }
 
     @Override

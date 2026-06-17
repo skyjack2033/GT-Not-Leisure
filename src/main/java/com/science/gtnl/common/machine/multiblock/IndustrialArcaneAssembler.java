@@ -23,6 +23,7 @@ import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.item.ItemUtils;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
@@ -196,15 +197,16 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
+        checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 25);
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch() && GTUtility.areStacksEqual(
+    public void checkHatch(List<StructureError> errors) {
+        super.checkHatch(errors);
+        if (!GTUtility.areStacksEqual(
             getControllerSlot(),
             ItemUtils.getItemStack(
                 Mods.Thaumcraft.ID,
@@ -212,7 +214,9 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
                 1,
                 9000,
                 "{cap:\"matrix\",rod:\"infinity\",aer:999999900,aqua:999999900,ignis:999999900,ordo:999999900,perditio:999999900,terra:999999900}",
-                null));
+                null))) {
+            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+        }
     }
 
     @Override

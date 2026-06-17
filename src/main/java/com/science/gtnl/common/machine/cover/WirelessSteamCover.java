@@ -31,11 +31,6 @@ public class WirelessSteamCover extends CoverLegacyData {
     }
 
     @Override
-    public boolean isRedstoneSensitive(long aTimer) {
-        return false;
-    }
-
-    @Override
     public boolean allowsCopyPasteTool() {
         return false;
     }
@@ -55,7 +50,7 @@ public class WirelessSteamCover extends CoverLegacyData {
 
     @Override
     public void doCoverThings(byte aInputRedstone, long aTimer) {
-        if (aTimer % 100 == 0) {
+        if (aInputRedstone == 0 && aTimer % 100 == 0) {
             ICoverable coverable = coveredTile.get();
             if (coverable instanceof IMachineProgress machineProgress) {
                 if (machineProgress.isAllowedToWork()) {

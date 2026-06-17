@@ -151,22 +151,17 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
-        checkCasingMin(errors, mCountCasing, 48);
+        checkHatch(errors);
         checkHatchExact(errors, MILLING_BALL_BUS_NAME, mMillingBallBuses.size(), 1);
+        checkCasingMin(errors, mCountCasing, 48);
     }
 
     @Override
     public void clearHatches() {
         super.clearHatches();
         mMillingBallBuses.clear();
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

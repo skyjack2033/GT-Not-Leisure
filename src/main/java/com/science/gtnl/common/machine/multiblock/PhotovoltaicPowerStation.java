@@ -145,9 +145,11 @@ public abstract class PhotovoltaicPowerStation extends MultiMachineBase<Photovol
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
             return;
         }
+        setupParameters();
+        checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 4);
     }
 

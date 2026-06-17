@@ -296,22 +296,17 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack itemStack,
         List<StructureError> errors) {
         if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        checkHatch(errors);
         setupParameters();
-        checkCasingMin(errors, mCountCasing, 19);
+        checkHatch(errors);
         checkHatchExact(errors, HatchElement.OutputHatch, 1);
         checkHatchMax(errors, RadioHatchElement.RadioHatch, 1);
+        checkCasingMin(errors, mCountCasing, 19);
     }
 
     @Override
     public void clearHatches() {
         super.clearHatches();
         this.mRadHatches.clear();
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

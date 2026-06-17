@@ -292,9 +292,9 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
+        checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 100);
         checkHatchMin(errors, VAULT_PORT_HATCH_NAME, portHatch == null ? 0 : 1, 1);
     }
@@ -304,11 +304,6 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
         super.setupParameters();
         wirelessMode = mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty();
         if (portHatch != null && portHatch.controller == null) portHatch.bind(this);
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

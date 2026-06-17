@@ -347,11 +347,6 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         this.tierMachine = 0;
     }
 
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
-    }
-
     public boolean findLaserRenderer(World w) {
         this.setStartCoords();
         if (w.getTileEntity(

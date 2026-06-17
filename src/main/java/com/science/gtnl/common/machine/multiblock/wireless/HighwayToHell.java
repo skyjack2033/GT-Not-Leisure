@@ -31,6 +31,7 @@ import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import bartworks.common.loaders.FluidLoader;
 import bartworks.system.material.WerkstoffLoader;
@@ -217,8 +218,8 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        setupParameters();
         boolean isFlipped = this.getFlip()
             .isHorizontallyFlipped();
         StructureUtils.setStringBlockXZ(
@@ -230,18 +231,21 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
             isFlipped,
             "M",
             FluidLoader.bioFluidBlock);
-        setupParameters();
+        checkHatch(errors);
         checkHatchExact(errors, HatchElement.Muffler, 1);
         checkHatchExact(errors, CustomHatchElement.ROTOR_ASSEMBLY, 4);
         rotateTurbines();
     }
 
     @Override
-    public boolean checkHatch() {
+    public void checkHatch(List<StructureError> errors) {
         for (MTEHatchTurbine h : GTUtility.validMTEList(this.mTurbineHatches)) {
-            if (!h.hasTurbine()) return false;
+            if (!h.hasTurbine()) {
+                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+                break;
+            }
         }
-        return super.checkHatch();
+        super.checkHatch(errors);
     }
 
     @Override

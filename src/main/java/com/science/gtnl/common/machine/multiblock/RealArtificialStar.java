@@ -457,8 +457,8 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        setupParameters();
         if (tierDimensionField <= 0 || tierTimeField <= 0 || tierStabilisationField <= 0) {
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
         }
@@ -466,11 +466,6 @@ public class RealArtificialStar extends MultiMachineBase<RealArtificialStar> {
         calculateOutputMultiplier();
         recoveryChance = tierDimensionField * tierTimeField * tierStabilisationField;
         return;
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

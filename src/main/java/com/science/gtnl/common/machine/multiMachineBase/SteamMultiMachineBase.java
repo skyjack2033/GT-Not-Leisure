@@ -330,22 +330,12 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         failStructureCheck(errors);
     }
 
-    protected void checkHatch(List<StructureError> errors) {
+    public void checkHatch(List<StructureError> errors) {
         int existingErrors = errors.size();
         checkHasAnySteamInput(errors);
         if (!checkHatch() && errors.size() == existingErrors) {
             errors.add(GTNLStructureErrors.invalidHatchConfiguration());
         }
-    }
-
-    protected boolean checkPieceAndHatch(String piece, int horizontalOffset, int verticalOffset, int depthOffset,
-        List<StructureError> errors) {
-        int existingErrors = errors.size();
-        if (!checkPiece(piece, horizontalOffset, verticalOffset, depthOffset, errors)) {
-            return false;
-        }
-        checkHatch(errors);
-        return errors.size() == existingErrors;
     }
 
     protected boolean checkPieceAndSteamInput(String piece, int horizontalOffset, int verticalOffset, int depthOffset,

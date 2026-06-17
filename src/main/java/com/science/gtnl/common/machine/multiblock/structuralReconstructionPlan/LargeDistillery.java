@@ -305,14 +305,15 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
         }
 
         if (!checkPiece(STRUCTURE_PIECE_TOP_HINT, HORIZONTAL_OFF_SET, mHeight, DEPTH_OFF_SET, errors)) return;
+        if (mHeight + 1 < 3) {
+            errors.add(StructureErrorRegistry.TOO_SHORT_HEIGHT);
+            return;
+        }
 
         setupParameters();
         checkHatch(errors);
-        checkCasingMin(errors, mCountCasing, 5 * (mHeight + 1) - 5);
         checkHatchExact(errors, HatchElement.Muffler, 1);
-        if (mHeight + 1 < 3) {
-            errors.add(StructureErrorRegistry.TOO_SHORT_HEIGHT);
-        }
+        checkCasingMin(errors, mCountCasing, 5 * (mHeight + 1) - 5);
     }
 
     @Override
@@ -320,11 +321,6 @@ public class LargeDistillery extends GTMMultiMachineBase<LargeDistillery> implem
         super.clearHatches();
         mOutputHatchesByLayer.forEach(List::clear);
         mHeight = 1;
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

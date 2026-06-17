@@ -484,11 +484,11 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
-        checkCasingMin(errors, mCountCasing, 350);
+        checkHatch(errors);
         checkHatchMin(errors, MANA_INPUT_HATCH_NAME, mFluidManaInputHatch.size(), 1);
+        checkCasingMin(errors, mCountCasing, 350);
     }
 
     @Override
@@ -505,11 +505,6 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
         super.clearHatches();
         mFluidManaInputHatch.clear();
         enableInfinityMana = false;
-    }
-
-    @Override
-    public boolean checkHatch() {
-        return super.checkHatch();
     }
 
     @Override

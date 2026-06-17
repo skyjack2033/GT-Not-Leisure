@@ -58,6 +58,7 @@ import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.BlockIcons;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.HatchElement;
@@ -886,22 +887,29 @@ public class GrandAssemblyLine extends GTMMultiMachineBase<GrandAssemblyLine> im
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        if (!this.checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) {
+            return;
+        }
+        setupParameters();
+        checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 590);
     }
 
     @Override
-    public boolean checkHatch() {
-        setupParameters();
-        if (mParallelTier < 9 && !checkEnergyHatch()) return false;
-
+    public void checkHatch(List<StructureError> errors) {
+        if (mParallelTier < 9) {
+            checkEnergyHatch(errors);
+        }
         if (mParallelTier >= 12 && mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) {
             wirelessMode = true;
             mEnergyHatchTier = 14;
-            return mMaintenanceHatches.size() <= 1;
+            checkHatchMax(errors, HatchElement.Maintenance, 1);
+            return;
         }
-
-        return !(mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) && mMaintenanceHatches.size() <= 1;
+        if (mEnergyHatches.isEmpty() && mExoticEnergyHatches.isEmpty()) {
+            errors.add(GTNLStructureErrors.invalidEnergyHatchConfiguration());
+        }
+        checkHatchMax(errors, HatchElement.Maintenance, 1);
     }
 
     @Override

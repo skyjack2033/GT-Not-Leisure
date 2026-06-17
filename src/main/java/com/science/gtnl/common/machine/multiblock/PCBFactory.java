@@ -436,8 +436,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
             return;
         }
-        if (!checkPieceAndHatch(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         if (machineTier >= 2 && !checkPiece(
             STRUCTURE_PIECE_MAIN_T2,
             HORIZONTAL_OFF_SET_T2,

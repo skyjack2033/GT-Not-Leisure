@@ -29,6 +29,7 @@ import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLStructureChannels;
+import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -235,18 +236,20 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
         }
         replaceWaterWithPortal();
         setupParameters();
+        checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 850);
     }
 
     @Override
-    public boolean checkHatch() {
-        return super.checkHatch() && GTUtility.areStacksEqual(getControllerSlot(), CRYSTAL);
+    public void checkHatch(List<StructureError> errors) {
+        super.checkHatch(errors);
+        if (!GTUtility.areStacksEqual(getControllerSlot(), CRYSTAL)) {
+            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+        }
     }
 
     @Override
-    public boolean checkEnergyHatch() {
-        return true;
-    }
+    public void checkEnergyHatch(List<StructureError> errors) {}
 
     public void replaceWaterWithPortal() {
         IGregTechTileEntity aBaseMetaTileEntity = this.getBaseMetaTileEntity();

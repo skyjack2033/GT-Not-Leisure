@@ -35,13 +35,8 @@ public class FluidCover extends CoverLegacyData {
     }
 
     @Override
-    public boolean isRedstoneSensitive(long aTimer) {
-        return false;
-    }
-
-    @Override
     public void doCoverThings(byte aInputRedstone, long aTimer) {
-        if (aTimer % getTickRate() == 0) {
+        if (aInputRedstone == 0 && aTimer % getTickRate() == 0) {
             ICoverable coverable = coveredTile.get();
             if (coverable instanceof IMachineProgress machineProgress) {
                 if (machineProgress.isAllowedToWork()) {
@@ -58,10 +53,11 @@ public class FluidCover extends CoverLegacyData {
             FluidStack fluid = commonMetaTile.getFluid();
             if (fluid != null && fluid.getFluid() != this.fluid) return;
             int capacity = commonMetaTile.getCapacity();
+            if (capacity <= 0) return;
             int fluidAmount = fluid != null ? commonMetaTile.getFluidAmount() : 0;
             int current = Math.max(0, capacity - fluidAmount);
+            if (current == 0) return;
             commonMetaTile.fill(new FluidStack(this.fluid, current), true);
-
         }
     }
 

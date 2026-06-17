@@ -50,18 +50,13 @@ public class VoidCover extends CoverLegacyData implements IFluidsLockable {
     }
 
     @Override
-    public boolean isRedstoneSensitive(long aTimer) {
-        return false;
-    }
-
-    @Override
     public boolean allowsCopyPasteTool() {
         return false;
     }
 
     @Override
     public void doCoverThings(byte aInputRedstone, long aTimer) {
-        if (aTimer % getTickRate() == 0) {
+        if (aInputRedstone == 0 && aTimer % getTickRate() == 0) {
             ICoverable coverable = coveredTile.get();
             if (coverable instanceof IMachineProgress machineProgress) {
                 if (machineProgress.isAllowedToWork() && machineProgress instanceof BaseMetaTileEntity baseTile) {
