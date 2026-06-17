@@ -387,16 +387,6 @@ public class AdvancedInfiniteDriller extends MultiMachineBase<AdvancedInfiniteDr
         checkCasingMin(errors, mCountCasing, 500);
     }
 
-    @Override
-    public void clearHatches() {
-        super.clearHatches();
-    }
-
-    @Override
-    public void setupParameters() {
-        super.setupParameters();
-    }
-
     public int checkDrillTier() {
         ItemStack controllerSlot = getControllerSlot();
         if (controllerSlot != null) {

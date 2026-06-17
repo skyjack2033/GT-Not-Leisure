@@ -148,29 +148,8 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     public static final int MODE_INPUT = 0;
     public static final int MODE_OUTPUT = 1;
     public static final int MODE_OPERATING = 2;
-
-    private static final TranslatableText SPEED_CASING_NAME = TranslatableText.lang("tile.MetaCasing02.9.name");
-
-    public int mCountPatternCasing = -1;
-    public int mCountCrafterCasing = -1;
-    public int mCountSingularityCrafterCasing = -1;
-    public int mCountDebugCrafterCasing = -1;
-    public int mCountSpeedCasing = -1;
-    public int mMaxSlots = 0;
-    public long usedParallel = 0;
-    public long mMaxParallelLong = 0;
-    public UUID ownerUUID;
-    public boolean wirelessMode;
-    public boolean showPattern = true;
-    public String costingEUText = Utils.ZERO_STRING;
-    public long recipesDone;
-
-    private String customName = "";
-    private AENetworkProxy gridProxy;
-    private DualityInterface di;
-    private final MachineSource source = new MachineSource(this);
-    private final CombinationPatternsIInventory inventory = new CombinationPatternsIInventory();
-    private final AssemblerMatrixPatternState patternState = new AssemblerMatrixPatternState();
+    public static final EnumSet<ForgeDirection> allDirection = EnumSet.complementOf(EnumSet.of(ForgeDirection.UNKNOWN));
+    public static final EnumSet<ForgeDirection> emptyDirection = EnumSet.noneOf(ForgeDirection.class);
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String AM_STRUCTURE_FILE_PATH = ScienceNotLeisure.RESOURCE_ROOT_ID + ":"
@@ -179,6 +158,28 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     private static final int VERTICAL_OFF_SET = 8;
     private static final int DEPTH_OFF_SET = 0;
     private static final String[][] shape = StructureUtils.readStructureFromFile(AM_STRUCTURE_FILE_PATH);
+    private static final TranslatableText SPEED_CASING_NAME = TranslatableText.lang("tile.MetaCasing02.9.name");
+
+    public int mCountPatternCasing = -1;
+    public int mCountCrafterCasing = -1;
+    public int mCountSingularityCrafterCasing = -1;
+    public int mCountDebugCrafterCasing = -1;
+    public int mCountSpeedCasing = -1;
+    public int mMaxSlots = 0;
+    public long mMaxParallelLong = 0;
+    public UUID ownerUUID;
+    public boolean wirelessMode;
+    public boolean showPattern = true;
+    public String costingEUText = Utils.ZERO_STRING;
+    public long recipesDone;
+    public long usedParallel = 0;
+
+    private String customName = "";
+    private AENetworkProxy gridProxy;
+    private DualityInterface di;
+    private final MachineSource source = new MachineSource(this);
+    private final CombinationPatternsIInventory inventory = new CombinationPatternsIInventory();
+    private final AssemblerMatrixPatternState patternState = new AssemblerMatrixPatternState();
 
     public AssemblerMatrix(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -233,113 +234,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         return new AssemblerMatrix(this.mName);
     }
 
-    @MENetworkEventSubscribe
-    public void stateChange(final MENetworkChannelsChanged c) {
-        this.getInterfaceDuality()
-            .notifyNeighbors();
-    }
-
-    @MENetworkEventSubscribe
-    public void stateChange(final MENetworkPowerStatusChange c) {
-        this.getInterfaceDuality()
-            .notifyNeighbors();
-    }
-
-    public boolean isPowered() {
-        return getProxy() != null && getProxy().isPowered();
-    }
-
-    public boolean isActive() {
-        return getProxy() != null && getProxy().isActive();
-    }
-
-    @Override
-    public void getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor,
-        IWailaConfigHandler config) {
-        super.getWailaBody(itemStack, currentTip, accessor, config);
-        NBTTagCompound tag = accessor.getNBTData();
-        boolean isActive = tag.getBoolean("isAEActive");
-        boolean isPowered = tag.getBoolean("isAEPowered");
-        boolean showPattern = tag.getBoolean("showPattern");
-        currentTip.add(WailaText.getPowerState(isActive, isPowered, false));
-        if (tag.getLong("maxParallelLong") > 1) {
-            currentTip.add(
-                StatCollector.translateToLocal("GT5U.multiblock.parallelism") + " (Long): "
-                    + EnumChatFormatting.WHITE
-                    + tag.getLong("maxParallelLong"));
-        }
-        currentTip.add(StatCollector.translateToLocal("Info_ShowPattern_" + (showPattern ? "Enabled" : "Disabled")));
-        if (tag.getBoolean("wirelessMode")) {
-            currentTip.add(EnumChatFormatting.LIGHT_PURPLE + StatCollector.translateToLocal("Waila_WirelessMode"));
-            currentTip.add(
-                EnumChatFormatting.AQUA + StatCollector.translateToLocal("Waila_CurrentEuCost")
-                    + EnumChatFormatting.RESET
-                    + ": "
-                    + EnumChatFormatting.GOLD
-                    + tag.getString("costingEUText")
-                    + EnumChatFormatting.RESET
-                    + " EU");
-        }
-    }
-
-    @Override
-    public void getWailaNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y,
-        int z) {
-        super.getWailaNBTData(player, tile, tag, world, x, y, z);
-        boolean isActive = isActive();
-        boolean isPowered = isPowered();
-        tag.setBoolean("isAEActive", isActive);
-        tag.setBoolean("isAEPowered", isPowered);
-        tag.setLong("maxParallelLong", mMaxParallelLong);
-        tag.setBoolean("wirelessMode", wirelessMode);
-        tag.setBoolean("showPattern", showPattern);
-        if (wirelessMode) tag.setString("costingEUText", costingEUText);
-    }
-
-    /**
-     * 向合成网络公开当前可用的样板。 / Expose currently available crafting patterns to the crafting network.
-     */
-    @Override
-    public void provideCrafting(ICraftingProviderHelper craftingTracker) {
-        if (mMachine && this.getProxy()
-            .isActive()
-            && !patternState.getPatterns()
-                .isEmpty()) {
-            for (var value : patternState.getPatterns()
-                .values()) {
-                craftingTracker.addCraftingOption(this, value);
-            }
-        }
-    }
-
-    /**
-     * 当样板库存变化时同步缓存并发出网络变更事件。
-     * / Sync pattern caches and emit the network change event when the pattern inventory changes.
-     */
-    @Override
-    public void onChangeInventory(IInventory inv, int slot, InvOperation operation, ItemStack removedStack,
-        ItemStack newStack) {
-        if (patternState.onPatternInventoryChanged(this, removedStack, newStack)) {
-            try {
-                this.getProxy()
-                    .getGrid()
-                    .postEvent(
-                        new MENetworkCraftingPatternChange(
-                            this,
-                            this.getProxy()
-                                .getNode()));
-            } catch (GridAccessException ignored) {
-
-            }
-        }
-    }
-
-    @Override
-    public boolean pushPattern(ICraftingPatternDetails patternDetails, InventoryCrafting table) {
-        return patternState.pushPattern(patternDetails, table);
-    }
-
-    // 解析输入消耗后返还的容器物品。 / Resolve container items returned after an input is consumed.
+    // Resolve container items returned after an input is consumed.
     public static ItemStack resolveContainerItem(ItemStack stack) {
         final var item = stack.getItem();
         if (item == null) return null;
@@ -362,6 +257,35 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
             this.mUpdate = 200;
         }
         getProxy().onReady();
+    }
+
+    @Override
+    public void onFacingChange() {
+        super.onFacingChange();
+        updateValidGridProxySides();
+    }
+
+    @Override
+    public boolean onWireCutterRightClick(ForgeDirection side, ForgeDirection wrenchingSide, EntityPlayer aPlayer,
+        float aX, float aY, float aZ, ItemStack aTool) {
+        if (getBaseMetaTileEntity().isServerSide()) {
+            showPattern = !showPattern;
+            GTUtility.sendChatToPlayer(
+                aPlayer,
+                StatCollector.translateToLocal("Info_ShowPattern_" + (showPattern ? "Enabled" : "Disabled")));
+        }
+        return true;
+    }
+
+    @Override
+    public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
+        ItemStack aTool) {
+        if (this.mMaxProgresstime > 0) {
+            GTUtility.sendChatToPlayer(aPlayer, "Can't change mode when running !");
+            return;
+        }
+        this.machineMode = (this.machineMode + 1) % 3;
+        GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("AssemblerMatrix_Mode_" + this.machineMode));
     }
 
     @Override
@@ -612,7 +536,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     /**
-     * 返回该机器是否还能接受新的调度任务。
      * Returns whether this machine can still accept new dispatch work.
      */
     @Override
@@ -629,29 +552,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         mMaxSlots = eachPatternCasingCapacity * mCountPatternCasing;
 
         return (int) mMaxParallelLong;
-    }
-
-    @Override
-    public boolean onWireCutterRightClick(ForgeDirection side, ForgeDirection wrenchingSide, EntityPlayer aPlayer,
-        float aX, float aY, float aZ, ItemStack aTool) {
-        if (getBaseMetaTileEntity().isServerSide()) {
-            showPattern = !showPattern;
-            GTUtility.sendChatToPlayer(
-                aPlayer,
-                StatCollector.translateToLocal("Info_ShowPattern_" + (showPattern ? "Enabled" : "Disabled")));
-        }
-        return true;
-    }
-
-    @Override
-    public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
-        ItemStack aTool) {
-        if (this.mMaxProgresstime > 0) {
-            GTUtility.sendChatToPlayer(aPlayer, "Can't change mode when running !");
-            return;
-        }
-        this.machineMode = (this.machineMode + 1) % 3;
-        GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("AssemblerMatrix_Mode_" + this.machineMode));
     }
 
     @Override
@@ -716,11 +616,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     @Override
-    public void setMachineMode(int index) {
-        super.setMachineMode(index);
-    }
-
-    @Override
     public int nextMachineMode() {
         if (machineMode == MODE_INPUT) return MODE_OUTPUT;
         else if (machineMode == MODE_OUTPUT) return MODE_OPERATING;
@@ -739,11 +634,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     @Override
     public String getMachineModeName() {
         return StatCollector.translateToLocal("AssemblerMatrix_Mode_" + machineMode);
-    }
-
-    @Override
-    public void onRemoval() {
-        super.onRemoval();
     }
 
     @Override
@@ -1260,9 +1150,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         if (ItemUtil.isStackInvalid(stack)) return false;
         if (!ModList.AE2Thing.isModLoaded()) return false;
         if (stack.stackTagCompound == null) return false;
-        // AE2Things 的注魔样板终端会带上 `tc_crafting` 标记并伪装成普通样板，因此这里直接拦截。
-        // / AE2Things infusion pattern terminals mimic standard patterns with the `tc_crafting` flag, so block them
-        // here.
+        // AE2Things infusion pattern terminals mimic standard patterns with the tc_crafting flag, so block them here.
         return stack.stackTagCompound.hasKey("tc_crafting");
     }
 
@@ -1350,8 +1238,56 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         return info.toArray(new String[0]);
     }
 
-    public static final EnumSet<ForgeDirection> allDirection = EnumSet.complementOf(EnumSet.of(ForgeDirection.UNKNOWN));
-    public static final EnumSet<ForgeDirection> emptyDirection = EnumSet.noneOf(ForgeDirection.class);
+    public boolean isPowered() {
+        return getProxy() != null && getProxy().isPowered();
+    }
+
+    public boolean isActive() {
+        return getProxy() != null && getProxy().isActive();
+    }
+
+    @Override
+    public void getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor,
+        IWailaConfigHandler config) {
+        super.getWailaBody(itemStack, currentTip, accessor, config);
+        NBTTagCompound tag = accessor.getNBTData();
+        boolean isActive = tag.getBoolean("isAEActive");
+        boolean isPowered = tag.getBoolean("isAEPowered");
+        boolean showPattern = tag.getBoolean("showPattern");
+        currentTip.add(WailaText.getPowerState(isActive, isPowered, false));
+        if (tag.getLong("maxParallelLong") > 1) {
+            currentTip.add(
+                StatCollector.translateToLocal("GT5U.multiblock.parallelism") + " (Long): "
+                    + EnumChatFormatting.WHITE
+                    + tag.getLong("maxParallelLong"));
+        }
+        currentTip.add(StatCollector.translateToLocal("Info_ShowPattern_" + (showPattern ? "Enabled" : "Disabled")));
+        if (tag.getBoolean("wirelessMode")) {
+            currentTip.add(EnumChatFormatting.LIGHT_PURPLE + StatCollector.translateToLocal("Waila_WirelessMode"));
+            currentTip.add(
+                EnumChatFormatting.AQUA + StatCollector.translateToLocal("Waila_CurrentEuCost")
+                    + EnumChatFormatting.RESET
+                    + ": "
+                    + EnumChatFormatting.GOLD
+                    + tag.getString("costingEUText")
+                    + EnumChatFormatting.RESET
+                    + " EU");
+        }
+    }
+
+    @Override
+    public void getWailaNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y,
+        int z) {
+        super.getWailaNBTData(player, tile, tag, world, x, y, z);
+        boolean isActive = isActive();
+        boolean isPowered = isPowered();
+        tag.setBoolean("isAEActive", isActive);
+        tag.setBoolean("isAEPowered", isPowered);
+        tag.setLong("maxParallelLong", mMaxParallelLong);
+        tag.setBoolean("wirelessMode", wirelessMode);
+        tag.setBoolean("showPattern", showPattern);
+        if (wirelessMode) tag.setString("costingEUText", costingEUText);
+    }
 
     @Override
     public AENetworkProxy getProxy() {
@@ -1371,12 +1307,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         return gridProxy;
     }
 
-    @Override
-    public void onFacingChange() {
-        super.onFacingChange();
-        updateValidGridProxySides();
-    }
-
     public void updateValidGridProxySides() {
         if (mMachine) {
             getProxy().setValidSides(allDirection);
@@ -1391,6 +1321,60 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
             di = new DualityInterface(this.getProxy(), this);
         }
         return di;
+    }
+
+    @MENetworkEventSubscribe
+    public void stateChange(final MENetworkChannelsChanged c) {
+        this.getInterfaceDuality()
+            .notifyNeighbors();
+    }
+
+    @MENetworkEventSubscribe
+    public void stateChange(final MENetworkPowerStatusChange c) {
+        this.getInterfaceDuality()
+            .notifyNeighbors();
+    }
+
+    /**
+     * Exposes currently available crafting patterns to the crafting network.
+     */
+    @Override
+    public void provideCrafting(ICraftingProviderHelper craftingTracker) {
+        if (mMachine && this.getProxy()
+            .isActive()
+            && !patternState.getPatterns()
+                .isEmpty()) {
+            for (var value : patternState.getPatterns()
+                .values()) {
+                craftingTracker.addCraftingOption(this, value);
+            }
+        }
+    }
+
+    /**
+     * Syncs pattern caches and emits the network change event when the pattern inventory changes.
+     */
+    @Override
+    public void onChangeInventory(IInventory inv, int slot, InvOperation operation, ItemStack removedStack,
+        ItemStack newStack) {
+        if (patternState.onPatternInventoryChanged(this, removedStack, newStack)) {
+            try {
+                this.getProxy()
+                    .getGrid()
+                    .postEvent(
+                        new MENetworkCraftingPatternChange(
+                            this,
+                            this.getProxy()
+                                .getNode()));
+            } catch (GridAccessException ignored) {
+
+            }
+        }
+    }
+
+    @Override
+    public boolean pushPattern(ICraftingPatternDetails patternDetails, InventoryCrafting table) {
+        return patternState.pushPattern(patternDetails, table);
     }
 
     @Override
@@ -1419,7 +1403,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     /**
-     * @return 该机器是否应显示在接口终端中。 / Whether this machine should be visible in the interface terminal.
+     * Returns whether this machine should be visible in the interface terminal.
      */
     @Override
     public boolean shouldDisplay() {
@@ -1447,7 +1431,7 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     }
 
     /**
-     * @return 暴露给接口终端的样板库存。 / Pattern inventory exposed to the interface terminal.
+     * Returns the pattern inventory exposed to the interface terminal.
      */
     @Override
     public IInventory getPatterns() {

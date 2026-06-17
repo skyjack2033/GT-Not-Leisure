@@ -514,11 +514,6 @@ public class HighPerformanceComputationArray extends TTMultiblockBase implements
     }
 
     @Override
-    public void onMachineBlockUpdate() {
-        super.onMachineBlockUpdate();
-    }
-
-    @Override
     public void extraExplosions_EM() {
         for (MetaTileEntity tTileEntity : mRackHatchs) {
             tTileEntity.getBaseMetaTileEntity()

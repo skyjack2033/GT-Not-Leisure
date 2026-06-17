@@ -171,11 +171,6 @@ public class Desulfurizer extends MultiMachineBase<Desulfurizer> implements ISur
     }
 
     @Override
-    public void clearHatches() {
-        super.clearHatches();
-    }
-
-    @Override
     protected boolean requiresCoilStructureCheck() {
         return true;
     }

@@ -303,18 +303,8 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     }
 
     @Override
-    public boolean supportsSingleRecipeLocking() {
-        return super.supportsSingleRecipeLocking();
-    }
-
-    @Override
     public boolean isRecipeLockingEnabled() {
         return false;
-    }
-
-    @Override
-    public boolean supportsVoidProtection() {
-        return super.supportsVoidProtection();
     }
 
     @Override
@@ -323,18 +313,8 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
     }
 
     @Override
-    public boolean supportsInputSeparation() {
-        return super.supportsInputSeparation();
-    }
-
-    @Override
     public boolean isInputSeparationEnabled() {
         return false;
-    }
-
-    @Override
-    public boolean supportsBatchMode() {
-        return super.supportsBatchMode();
     }
 
     @Override
