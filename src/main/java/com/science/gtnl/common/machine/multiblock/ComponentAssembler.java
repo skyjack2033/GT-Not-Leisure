@@ -54,7 +54,6 @@ import gregtech.common.misc.GTStructureChannels;
 
 public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> implements ISurvivalConstructable {
 
-    public int mCasingTier;
     private static final String CA_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/component_assembler";
     private static final String[][] shape = StructureUtils.readStructureFromFile(CA_STRUCTURE_FILE_PATH);
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -62,6 +61,35 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 0;
     public static final List<Pair<Block, Integer>> COMPONENT_CASING_VARIANTS = createComponentCasingVariants();
+
+    public int mCasingTier;
+
+    public static List<Pair<Block, Integer>> createComponentCasingVariants() {
+        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(8);
+        for (int tier = 0; tier < 8; tier++) {
+            casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
+        }
+        return casingVariants;
+    }
+
+    public ComponentAssembler(int aID, String aName, String aNameRegional) {
+        super(aID, aName, aNameRegional);
+    }
+
+    public ComponentAssembler(String aName) {
+        super(aName);
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new ComponentAssembler(mName);
+    }
+
+    @Override
+    public void clearHatches() {
+        super.clearHatches();
+        mCasingTier = -2;
+    }
 
     @Override
     public IStructureDefinition<ComponentAssembler> getStructureDefinition() {
@@ -102,32 +130,6 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
     }
 
     @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
-    }
-
-    @Override
-    public int getMaxParallelRecipes() {
-        return 16;
-    }
-
-    public ComponentAssembler(int aID, String aName, String aNameRegional) {
-        super(aID, aName, aNameRegional);
-    }
-
-    public ComponentAssembler(String aName) {
-        super(aName);
-    }
-
-    public static List<Pair<Block, Integer>> createComponentCasingVariants() {
-        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(8);
-        for (int tier = 0; tier < 8; tier++) {
-            casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
-        }
-        return casingVariants;
-    }
-
-    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         this.buildPiece(
             STRUCTURE_PIECE_MAIN,
@@ -136,116 +138,6 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
             HORIZONTAL_OFF_SET,
             VERTICAL_OFF_SET,
             DEPTH_OFF_SET);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ComponentAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_07"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 5, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new ComponentAssembler(mName);
-    }
-
-    @Override
-    public String[] getInfoData() {
-        String[] origin = super.getInfoData();
-        String[] ret = new String[origin.length + 1];
-        System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
-        return ret;
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
-        int colorIndex, boolean aActive, boolean aRedstone) {
-        if (side == facing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public ProcessingLogic createProcessingLogic() {
-        return new GTNLProcessingLogic() {
-
-            @NotNull
-            @Override
-            public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                if (recipe.mSpecialValue > mCasingTier + 1) {
-                    return CheckRecipeResultRegistry.insufficientMachineTier(recipe.mSpecialValue);
-                }
-                return CheckRecipeResultRegistry.SUCCESSFUL;
-            }
-
-            @Override
-            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
-                return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
-                    .setEUtDiscount(getEUtDiscount())
-                    .setDurationModifier(getDurationModifier());
-            }
-        }.setMaxParallelSupplier(this::getTrueParallel);
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return 0.8;
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1.0 / 2.0;
-    }
-
-    @Override
-    public void setProcessingLogicPower(ProcessingLogic logic) {
-        boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty() && getMaxInputAmps() <= 4;
-        logic.setAvailableVoltage(getMachineVoltageLimit());
-        logic.setAvailableAmperage(
-            useSingleAmp ? 1
-                : ExoticEnergyInputHelper.getMaxWorkingInputAmpsMulti(getExoticAndNormalEnergyHatchList()));
-        logic.setAmperageOC(!useSingleAmp);
     }
 
     @Override
@@ -277,14 +169,123 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
     }
 
     @Override
-    protected int getGlassEnergyTierLimit() {
-        return VoltageIndex.UV;
+    public ProcessingLogic createProcessingLogic() {
+        return new GTNLProcessingLogic() {
+
+            @NotNull
+            @Override
+            public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
+                if (recipe.mSpecialValue > mCasingTier + 1) {
+                    return CheckRecipeResultRegistry.insufficientMachineTier(recipe.mSpecialValue);
+                }
+                return CheckRecipeResultRegistry.SUCCESSFUL;
+            }
+
+            @Override
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+                return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
+                    .setEUtDiscount(getEUtDiscount())
+                    .setDurationModifier(getDurationModifier());
+            }
+        }.setMaxParallelSupplier(this::getTrueParallel);
     }
 
     @Override
-    public void clearHatches() {
-        super.clearHatches();
-        mCasingTier = -2;
+    public RecipeMap<?> getRecipeMap() {
+        return GoodGeneratorRecipeMaps.componentAssemblyLineRecipes;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.8;
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1.0 / 2.0;
+    }
+
+    @Override
+    public void setProcessingLogicPower(ProcessingLogic logic) {
+        boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty() && getMaxInputAmps() <= 4;
+        logic.setAvailableVoltage(getMachineVoltageLimit());
+        logic.setAvailableAmperage(
+            useSingleAmp ? 1
+                : ExoticEnergyInputHelper.getMaxWorkingInputAmpsMulti(getExoticAndNormalEnergyHatchList()));
+        logic.setAmperageOC(!useSingleAmp);
+    }
+
+    @Override
+    public int getMaxParallelRecipes() {
+        return 16;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
+        int colorIndex, boolean aActive, boolean aRedstone) {
+        if (side == facing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public String[] getInfoData() {
+        String[] origin = super.getInfoData();
+        String[] ret = new String[origin.length + 1];
+        System.arraycopy(origin, 0, ret, 0, origin.length);
+        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
+            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
+        return ret;
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("ComponentAssemblerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_07"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(7, 5, 5, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
+            .toolTipFinisher();
+        return tt;
     }
 
     @Override
@@ -309,11 +310,6 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
     }
 
     @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GoodGeneratorRecipeMaps.componentAssemblyLineRecipes;
-    }
-
-    @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
         aNBT.setInteger("casingTier", mCasingTier);
@@ -326,5 +322,10 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
         if (!aNBT.hasKey(INPUT_SEPARATION_NBT_KEY)) {
             inputSeparation = aNBT.getBoolean("mSeparate");
         }
+    }
+
+    @Override
+    protected int getGlassEnergyTierLimit() {
+        return VoltageIndex.UV;
     }
 }

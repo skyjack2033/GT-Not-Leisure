@@ -99,6 +99,14 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
         return new AtomicEnergyExcitationPlant(this.mName);
     }
 
+    public void setCoilTier(int tier) {
+        this.machineTier = tier;
+    }
+
+    public int getCoilTier() {
+        return this.machineTier;
+    }
+
     @Override
     public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
         super.onFirstTick(aBaseMetaTileEntity);
@@ -130,6 +138,26 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPostTick(aBaseMetaTileEntity, aTick);
         rotation += 0.5F;
+    }
+
+    @Override
+    public boolean isFlipChangeAllowed() {
+        if (mMachine || isRenderActive) return false;
+        return super.isFlipChangeAllowed();
+    }
+
+    @Override
+    public boolean isRotationChangeAllowed() {
+        if (mMachine || isRenderActive) return false;
+        return super.isRotationChangeAllowed();
+    }
+
+    @Override
+    public void onBlockDestroyed() {
+        super.onBlockDestroyed();
+        if (isRenderActive) {
+            buildSphere();
+        }
     }
 
     @Override
@@ -194,79 +222,6 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
             tiers.add(Pair.of(coil, 0));
         }
         return tiers;
-    }
-
-    public void setCoilTier(int tier) {
-        this.machineTier = tier;
-    }
-
-    public int getCoilTier() {
-        return this.machineTier;
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
-        int colorIndex, boolean aActive, boolean aRedstone) {
-        if (side == facing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 11);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTNLRecipeMaps.FuelRefiningComplexRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("AtomicEnergyExcitationPlantRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_02"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(17, 29, 23, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -343,10 +298,9 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                 errors)) {
                     return;
                 }
-
-        checkCasingMin(errors, mCountCasing, 350);
-
         setupParameters();
+        checkHatch(errors);
+        checkCasingMin(errors, mCountCasing, 350);
 
         if (!isRenderActive && enableRender && mTotalRunTime > 0) {
             destroySphere();
@@ -355,43 +309,6 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
         }
 
         getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
-
-    }
-
-    @Override
-    public boolean isFlipChangeAllowed() {
-        if (mMachine || isRenderActive) return false;
-        return super.isFlipChangeAllowed();
-    }
-
-    @Override
-    public boolean isRotationChangeAllowed() {
-        if (mMachine || isRenderActive) return false;
-        return super.isRotationChangeAllowed();
-    }
-
-    @Override
-    public void onBlockDestroyed() {
-        super.onBlockDestroyed();
-        if (isRenderActive) {
-            buildSphere();
-        }
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setBoolean("isRenderActive", isRenderActive);
-        aNBT.setBoolean("enableRender", enableRender);
-        aNBT.setInteger("mTier", machineTier);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        machineTier = aNBT.getInteger("mTier");
-        isRenderActive = aNBT.getBoolean("isRenderActive");
-        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
     }
 
     @Override
@@ -460,21 +377,6 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
     }
 
     @Override
-    public boolean getHeatOC() {
-        return true;
-    }
-
-    @Override
-    public boolean getHeatDiscount() {
-        return true;
-    }
-
-    @Override
-    public boolean getPerfectOC() {
-        return true;
-    }
-
-    @Override
     public ProcessingLogic createProcessingLogic() {
         return new GTNLProcessingLogic() {
 
@@ -508,5 +410,101 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
     @Override
     public double getEUtDiscount() {
         return super.getEUtDiscount() * Math.pow(0.95, getMCoilLevel().getTier());
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
+        int colorIndex, boolean aActive, boolean aRedstone) {
+        if (side == facing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 11);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTNLRecipeMaps.FuelRefiningComplexRecipes;
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("AtomicEnergyExcitationPlantRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_02"))
+            .addPerfectOCInfo()
+            .addTecTechHatchInfo()
+            .beginStructureBlock(17, 29, 23, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setBoolean("isRenderActive", isRenderActive);
+        aNBT.setBoolean("enableRender", enableRender);
+        aNBT.setInteger("mTier", machineTier);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        machineTier = aNBT.getInteger("mTier");
+        isRenderActive = aNBT.getBoolean("isRenderActive");
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
+    }
+
+    @Override
+    public boolean getHeatOC() {
+        return true;
+    }
+
+    @Override
+    public boolean getHeatDiscount() {
+        return true;
+    }
+
+    @Override
+    public boolean getPerfectOC() {
+        return true;
     }
 }

@@ -52,7 +52,6 @@ import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements ISurvivalConstructable {
 
     private static final TranslatableText ICE_INPUT_HATCH_NAME = TranslatableText.lang("FluidIceInputHatch");
-
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String CIF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/cold_ice_freeze";
     private static final String[][] shape = StructureUtils.readStructureFromFile(CIF_STRUCTURE_FILE_PATH);
@@ -76,28 +75,39 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ColdIceFreezerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 9, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_01"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("FluidIceInputHatch"),
-                StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"),
-                1)
-            .toolTipFinisher();
-        return tt;
+    public void clearHatches() {
+        super.clearHatches();
+        mFluidIceInputHatch.clear();
+    }
+
+    @Override
+    public void updateHatchTexture() {
+        super.updateHatchTexture();
+        for (MTEHatch h : mMufflerHatches) h.updateTexture(TAE.getIndexFromPage(2, 10));
+    }
+
+    @Override
+    public void updateSlots() {
+        for (CustomFluidHatch tHatch : GTUtility.validMTEList(mFluidIceInputHatch)) tHatch.updateSlots();
+        super.updateSlots();
+    }
+
+    @Override
+    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        super.onPostTick(aBaseMetaTileEntity, aTick);
+        if (this.mStartUpCheck < 0) {
+            startRecipeProcessing();
+            if (this.mMaxProgresstime > 0 && aTick % 20 == 0) {
+                int baseAmount = 10 * GTUtility.getTier(-lEUt) * GTUtility.getTier(-lEUt);
+                if (!this.depleteInputFromRestrictedHatches(this.mFluidIceInputHatch, baseAmount)) {
+                    this.causeMaintenanceIssue();
+                    this.stopMachine(
+                        ShutDownReasonRegistry
+                            .outOfFluid(Objects.requireNonNull(FluidStackLookup.getFluidStack("ice", baseAmount))));
+                }
+            }
+            endRecipeProcessing();
+        }
     }
 
     @Override
@@ -169,21 +179,33 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
     }
 
     @Override
-    public void clearHatches() {
-        super.clearHatches();
-        mFluidIceInputHatch.clear();
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.vacuumFreezerRecipes;
     }
 
     @Override
-    public void updateHatchTexture() {
-        super.updateHatchTexture();
-        for (MTEHatch h : mMufflerHatches) h.updateTexture(TAE.getIndexFromPage(2, 10));
+    public double getDurationModifier() {
+        return 1.0 / 2.5;
     }
 
     @Override
-    public void updateSlots() {
-        for (CustomFluidHatch tHatch : GTUtility.validMTEList(mFluidIceInputHatch)) tHatch.updateSlots();
-        super.updateSlots();
+    public double getEUtDiscount() {
+        return 0.8;
+    }
+
+    @Override
+    public int getMaxParallelRecipes() {
+        return 128;
+    }
+
+    @Override
+    public void setProcessingLogicPower(ProcessingLogic logic) {
+        boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty() && getMaxInputAmps() <= 4;
+        logic.setAvailableVoltage(getMachineVoltageLimit());
+        logic.setAvailableAmperage(
+            useSingleAmp ? 1
+                : ExoticEnergyInputHelper.getMaxWorkingInputAmpsMulti(getExoticAndNormalEnergyHatchList()));
+        logic.setAmperageOC(!mExoticEnergyHatches.isEmpty() || mEnergyHatches.size() != 1);
     }
 
     @Override
@@ -209,60 +231,6 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
         return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
     }
 
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.vacuumFreezerRecipes;
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1.0 / 2.5;
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return 0.8;
-    }
-
-    @Override
-    public int getMaxParallelRecipes() {
-        return 128;
-    }
-
-    @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-        if (this.mStartUpCheck < 0) {
-            startRecipeProcessing();
-            if (this.mMaxProgresstime > 0 && aTick % 20 == 0) {
-                int baseAmount = 10 * GTUtility.getTier(-lEUt) * GTUtility.getTier(-lEUt);
-                if (!this.depleteInputFromRestrictedHatches(this.mFluidIceInputHatch, baseAmount)) {
-                    this.causeMaintenanceIssue();
-                    this.stopMachine(
-                        ShutDownReasonRegistry
-                            .outOfFluid(Objects.requireNonNull(FluidStackLookup.getFluidStack("ice", baseAmount))));
-                }
-            }
-            endRecipeProcessing();
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public SoundResource getActivitySoundLoop() {
-        return SoundResource.GT_MACHINES_ADV_FREEZER_LOOP;
-    }
-
-    @Override
-    public void setProcessingLogicPower(ProcessingLogic logic) {
-        boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty() && getMaxInputAmps() <= 4;
-        logic.setAvailableVoltage(getMachineVoltageLimit());
-        logic.setAvailableAmperage(
-            useSingleAmp ? 1
-                : ExoticEnergyInputHelper.getMaxWorkingInputAmpsMulti(getExoticAndNormalEnergyHatchList()));
-        logic.setAmperageOC(!mExoticEnergyHatches.isEmpty() || mEnergyHatches.size() != 1);
-    }
-
     public boolean addFluidIceInputHatch(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
         if (aTileEntity == null) {
             return false;
@@ -276,5 +244,36 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
             }
         }
         return false;
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("ColdIceFreezerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 5, 9, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
+            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_01"), 1)
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
+            .addOtherStructurePart(
+                StatCollector.translateToLocal("FluidIceInputHatch"),
+                StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"),
+                1)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public SoundResource getActivitySoundLoop() {
+        return SoundResource.GT_MACHINES_ADV_FREEZER_LOOP;
     }
 }

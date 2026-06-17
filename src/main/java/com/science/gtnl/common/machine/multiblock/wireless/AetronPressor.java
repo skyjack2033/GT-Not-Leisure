@@ -58,6 +58,38 @@ public class AetronPressor extends WirelessEnergyMultiMachineBase<AetronPressor>
     }
 
     @Override
+    public IStructureDefinition<AetronPressor> getStructureDefinition() {
+        return StructureDefinition.<AetronPressor>builder()
+            .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
+            .addElement('A', StructureUtility.ofBlock(sBlockCasingsTT, 6))
+            .addElement('B', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
+            .addElement('C', StructureUtility.ofBlock(sBlockCasingsTT, 0))
+            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 14))
+            .addElement('E', StructureUtility.ofBlock(BlockLoader.metaCasing, 18))
+            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 9))
+            .addElement(
+                'G',
+                GTStructureUtility.buildHatchAdder(AetronPressor.class)
+                    .atLeast(
+                        HatchElement.Maintenance,
+                        HatchElement.InputBus,
+                        HatchElement.OutputBus,
+                        HatchElement.Energy.or(HatchElement.ExoticEnergy),
+                        ParallelCon)
+                    .casingIndex(getCasingTextureID())
+                    .hint(1)
+                    .buildAndChain(
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 4))))
+            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('I', StructureUtility.ofBlock(BlockQuantumGlass.INSTANCE, 0))
+            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 12))
+            .addElement('K', GTStructureUtility.ofFrame(Materials.Tritanium))
+            .addElement('L', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
+            .build();
+    }
+
+    @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
@@ -89,38 +121,6 @@ public class AetronPressor extends WirelessEnergyMultiMachineBase<AetronPressor>
             env,
             false,
             true);
-    }
-
-    @Override
-    public IStructureDefinition<AetronPressor> getStructureDefinition() {
-        return StructureDefinition.<AetronPressor>builder()
-            .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('B', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('C', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 14))
-            .addElement('E', StructureUtility.ofBlock(BlockLoader.metaCasing, 18))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 9))
-            .addElement(
-                'G',
-                GTStructureUtility.buildHatchAdder(AetronPressor.class)
-                    .atLeast(
-                        HatchElement.Maintenance,
-                        HatchElement.InputBus,
-                        HatchElement.OutputBus,
-                        HatchElement.Energy.or(HatchElement.ExoticEnergy),
-                        ParallelCon)
-                    .casingIndex(getCasingTextureID())
-                    .hint(1)
-                    .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 4))))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
-            .addElement('I', StructureUtility.ofBlock(BlockQuantumGlass.INSTANCE, 0))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 12))
-            .addElement('K', GTStructureUtility.ofFrame(Materials.Tritanium))
-            .addElement('L', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .build();
     }
 
     @Override

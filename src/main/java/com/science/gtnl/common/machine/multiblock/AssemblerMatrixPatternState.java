@@ -62,17 +62,6 @@ public class AssemblerMatrixPatternState {
         }
     }
 
-    public void clearPatternData() {
-        patterns.clear();
-        possibleOutputs.clear();
-    }
-
-    public void clearRuntimeData() {
-        outputs.clear();
-        inputs.clear();
-        cachedOutputItems = new IAEItemStack[0];
-    }
-
     public boolean onPatternInventoryChanged(AssemblerMatrix machine, ItemStack removedStack, ItemStack newStack) {
         boolean changed = false;
         if (removedStack != null) {
@@ -123,5 +112,16 @@ public class AssemblerMatrixPatternState {
             output.copy()
                 .setStackSize(output.getStackSize() * assemblerSize));
         return true;
+    }
+
+    public void clearPatternData() {
+        patterns.clear();
+        possibleOutputs.clear();
+    }
+
+    public void clearRuntimeData() {
+        outputs.clear();
+        inputs.clear();
+        cachedOutputItems = new IAEItemStack[0];
     }
 }

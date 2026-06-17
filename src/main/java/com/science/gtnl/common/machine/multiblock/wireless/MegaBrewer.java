@@ -250,11 +250,6 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
     }
 
     @Override
-    public double getEUtDiscount() {
-        return super.getEUtDiscount();
-    }
-
-    @Override
     public double getDurationModifier() {
         return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
     }

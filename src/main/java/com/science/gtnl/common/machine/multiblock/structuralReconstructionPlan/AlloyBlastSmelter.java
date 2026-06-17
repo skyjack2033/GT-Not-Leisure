@@ -57,57 +57,6 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
     }
 
     @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelterActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelter)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(15);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.alloyBlastSmelterRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("AlloyBlastSmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_05"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<AlloyBlastSmelter> getStructureDefinition() {
         return StructureDefinition.<AlloyBlastSmelter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -206,5 +155,56 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
     @Override
     public int getMaxParallelRecipes() {
         return 16;
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTPPRecipeMaps.alloyBlastSmelterRecipes;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelterActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelter)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(15);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("AlloyBlastSmelterRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_05"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 5, 5, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 }

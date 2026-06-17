@@ -215,11 +215,6 @@ public class GiantElectrochemicalWorkstation extends WirelessEnergyMultiMachineB
     }
 
     @Override
-    public double getEUtDiscount() {
-        return super.getEUtDiscount();
-    }
-
-    @Override
     public double getDurationModifier() {
         return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
     }

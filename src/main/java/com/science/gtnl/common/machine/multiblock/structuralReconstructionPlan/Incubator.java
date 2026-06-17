@@ -200,11 +200,6 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     }
 
     @Override
-    public int fill(FluidStack resource, boolean doFill) {
-        return super.fill(resource, doFill);
-    }
-
-    @Override
     public RecipeMap<?> getRecipeMap() {
         return BartWorksRecipeMaps.bacterialVatRecipes;
     }

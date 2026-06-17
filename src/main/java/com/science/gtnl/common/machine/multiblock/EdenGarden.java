@@ -296,11 +296,6 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     }
 
     @Override
-    public void setupParameters() {
-        super.setupParameters();
-    }
-
-    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         this.buildPiece(
             STRUCTURE_PIECE_MAIN,

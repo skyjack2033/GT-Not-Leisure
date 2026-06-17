@@ -181,59 +181,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     private final CombinationPatternsIInventory inventory = new CombinationPatternsIInventory();
     private final AssemblerMatrixPatternState patternState = new AssemblerMatrixPatternState();
 
-    public AssemblerMatrix(int aID, String aName, String aNameRegional) {
-        super(aID, aName, aNameRegional);
-    }
-
-    public AssemblerMatrix(String aName) {
-        super(aName);
-    }
-
-    public void setPatternMultiply(int patternMultiply) {
-        patternState.setPatternMultiply(patternMultiply);
-    }
-
-    public int getPatternMultiply() {
-        return patternState.getPatternMultiply();
-    }
-
-    public List<IAEItemStack> getCachedPatternOutputsForGui() {
-        IAEItemStack[] cachedOutputItems = patternState.getCachedOutputItems();
-        if (cachedOutputItems == null || cachedOutputItems.length == 0) {
-            return Collections.emptyList();
-        }
-        return ObjectArrayList.wrap(cachedOutputItems);
-    }
-
-    public void setCachedPatternOutputsFromGui(List<IAEItemStack> cachedOutputItems) {
-        patternState.setCachedOutputItems(cachedOutputItems.toArray(new IAEItemStack[0]));
-    }
-
-    public boolean isShowPattern() {
-        return showPattern;
-    }
-
-    public void setShowPattern(boolean showPattern) {
-        this.showPattern = showPattern;
-    }
-
-    public String getGuiCustomName() {
-        return hasCustomName() ? customName : getMachineCraftingIcon().getDisplayName();
-    }
-
-    public CombinationPatternsIInventory getInventory() {
-        return inventory;
-    }
-
-    public Set<IAEItemStack> getPossibleOutputs() {
-        return patternState.getPossibleOutputs();
-    }
-
-    @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new AssemblerMatrix(this.mName);
-    }
-
     // Resolve container items returned after an input is consumed.
     public static ItemStack resolveContainerItem(ItemStack stack) {
         final var item = stack.getItem();
@@ -246,6 +193,51 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         }
 
         return containerItem;
+    }
+
+    private static IAEItemStack loadAEItemStack(PacketBuffer buffer) {
+        try {
+            return AEItemStack.loadItemStackFromPacket(buffer);
+        } catch (IOException e) {
+            return AEItemStack.create(new ItemStack(Blocks.fire));
+        }
+    }
+
+    private static void writeAEItemStack(PacketBuffer buffer, @NotNull IAEItemStack stack) {
+        try {
+            stack.writeToPacket(buffer);
+        } catch (IOException ignored) {
+
+        }
+    }
+
+    public static IAEItemStack loadAEItemStackForGui(PacketBuffer buffer) {
+        return loadAEItemStack(buffer);
+    }
+
+    public static void writeAEItemStackForGui(PacketBuffer buffer, @NotNull IAEItemStack stack) {
+        writeAEItemStack(buffer, stack);
+    }
+
+    private static boolean isBlockedAe2ThingsInfusionPattern(ItemStack stack) {
+        if (ItemUtil.isStackInvalid(stack)) return false;
+        if (!ModList.AE2Thing.isModLoaded()) return false;
+        if (stack.stackTagCompound == null) return false;
+        // AE2Things infusion pattern terminals mimic standard patterns with the tc_crafting flag, so block them here.
+        return stack.stackTagCompound.hasKey("tc_crafting");
+    }
+
+    public AssemblerMatrix(int aID, String aName, String aNameRegional) {
+        super(aID, aName, aNameRegional);
+    }
+
+    public AssemblerMatrix(String aName) {
+        super(aName);
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new AssemblerMatrix(this.mName);
     }
 
     @Override
@@ -286,6 +278,38 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         }
         this.machineMode = (this.machineMode + 1) % 3;
         GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("AssemblerMatrix_Mode_" + this.machineMode));
+    }
+
+    public void setPatternMultiply(int patternMultiply) {
+        patternState.setPatternMultiply(patternMultiply);
+    }
+
+    public int getPatternMultiply() {
+        return patternState.getPatternMultiply();
+    }
+
+    public List<IAEItemStack> getCachedPatternOutputsForGui() {
+        IAEItemStack[] cachedOutputItems = patternState.getCachedOutputItems();
+        if (cachedOutputItems == null || cachedOutputItems.length == 0) {
+            return Collections.emptyList();
+        }
+        return ObjectArrayList.wrap(cachedOutputItems);
+    }
+
+    public void setCachedPatternOutputsFromGui(List<IAEItemStack> cachedOutputItems) {
+        patternState.setCachedOutputItems(cachedOutputItems.toArray(new IAEItemStack[0]));
+    }
+
+    public boolean isShowPattern() {
+        return showPattern;
+    }
+
+    public void setShowPattern(boolean showPattern) {
+        this.showPattern = showPattern;
+    }
+
+    public String getGuiCustomName() {
+        return hasCustomName() ? customName : getMachineCraftingIcon().getDisplayName();
     }
 
     @Override
@@ -459,30 +483,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
                 AssemblerMatrix::writeAEItemStack,
                 AssemblerMatrix::loadAEItemStack));
         screenElements.widget(recipeOutputItemsWidget);
-    }
-
-    private static IAEItemStack loadAEItemStack(PacketBuffer buffer) {
-        try {
-            return AEItemStack.loadItemStackFromPacket(buffer);
-        } catch (IOException e) {
-            return AEItemStack.create(new ItemStack(Blocks.fire));
-        }
-    }
-
-    private static void writeAEItemStack(PacketBuffer buffer, @NotNull IAEItemStack stack) {
-        try {
-            stack.writeToPacket(buffer);
-        } catch (IOException ignored) {
-
-        }
-    }
-
-    public static IAEItemStack loadAEItemStackForGui(PacketBuffer buffer) {
-        return loadAEItemStack(buffer);
-    }
-
-    public static void writeAEItemStackForGui(PacketBuffer buffer, @NotNull IAEItemStack stack) {
-        writeAEItemStack(buffer, stack);
     }
 
     @Override
@@ -1146,14 +1146,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         return CheckRecipeResultRegistry.NO_RECIPE;
     }
 
-    private static boolean isBlockedAe2ThingsInfusionPattern(ItemStack stack) {
-        if (ItemUtil.isStackInvalid(stack)) return false;
-        if (!ModList.AE2Thing.isModLoaded()) return false;
-        if (stack.stackTagCompound == null) return false;
-        // AE2Things infusion pattern terminals mimic standard patterns with the tc_crafting flag, so block them here.
-        return stack.stackTagCompound.hasKey("tc_crafting");
-    }
-
     @Override
     public void outputAfterRecipe() {
         super.outputAfterRecipe();
@@ -1238,14 +1230,6 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         return info.toArray(new String[0]);
     }
 
-    public boolean isPowered() {
-        return getProxy() != null && getProxy().isPowered();
-    }
-
-    public boolean isActive() {
-        return getProxy() != null && getProxy().isActive();
-    }
-
     @Override
     public void getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
@@ -1287,6 +1271,14 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
         tag.setBoolean("wirelessMode", wirelessMode);
         tag.setBoolean("showPattern", showPattern);
         if (wirelessMode) tag.setString("costingEUText", costingEUText);
+    }
+
+    public boolean isPowered() {
+        return getProxy() != null && getProxy().isPowered();
+    }
+
+    public boolean isActive() {
+        return getProxy() != null && getProxy().isActive();
     }
 
     @Override
@@ -1578,6 +1570,14 @@ public class AssemblerMatrix extends MultiMachineBase<AssemblerMatrix>
     @Override
     public ItemStack getDisplayRep() {
         return getSelfRep();
+    }
+
+    public CombinationPatternsIInventory getInventory() {
+        return inventory;
+    }
+
+    public Set<IAEItemStack> getPossibleOutputs() {
+        return patternState.getPossibleOutputs();
     }
 
     public void tryOutputInventory(IInventory inventory) {

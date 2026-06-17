@@ -161,7 +161,7 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     @Override
     @Deprecated
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: 已弃用
+        // TODO: Remove this MUI1 fallback after the upgrade window is fully ported to MUI2.
         super.addUIWidgets(builder, buildContext);
         createUpgradeButton(builder, buildContext);
     }
@@ -286,8 +286,4 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
         return 0.8 - (mParallelTier / 50.0) * Math.pow(0.90, mGlassTier);
     }
 
-    @Override
-    public double getDurationModifier() {
-        return super.getDurationModifier();
-    }
 }
