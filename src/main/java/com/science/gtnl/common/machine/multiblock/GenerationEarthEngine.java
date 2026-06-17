@@ -61,47 +61,6 @@ public class GenerationEarthEngine extends MultiMachineBase<GenerationEarthEngin
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("GenerationEarthEngineRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_01"))
-            .beginStructureBlock(643, 218, 643, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
-            .addSubChannelUsage(GTNLStructureChannels.STRUCTURE_RENDER)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 12);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public boolean isRotationChangeAllowed() {
         return false;
     }
@@ -186,5 +145,46 @@ public class GenerationEarthEngine extends MultiMachineBase<GenerationEarthEngin
     @Override
     public RecipeMap<?> getRecipeMap() {
         return GTNLRecipeMaps.RecombinationFusionReactorRecipes;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 12);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("GenerationEarthEngineRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_01"))
+            .beginStructureBlock(643, 218, 643, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_GenerationEarthEngine_Casing"), 1)
+            .addSubChannelUsage(GTNLStructureChannels.STRUCTURE_RENDER)
+            .toolTipFinisher();
+        return tt;
     }
 }

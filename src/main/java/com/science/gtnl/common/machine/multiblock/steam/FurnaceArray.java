@@ -76,11 +76,6 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
         super(aName);
     }
 
-    @Override
-    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
-        return new FurnaceArrayGui(this);
-    }
-
     public long getFurnaceCountForGui() {
         return furnaceCount;
     }
@@ -100,61 +95,6 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new FurnaceArray(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return CASING_INDEX;
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.furnaceRecipes;
-    }
-
-    @Override
-    public int getTierRecipes() {
-        return 14;
-    }
-
-    @Override
-    public String getMachineType() {
-        return StatCollector.translateToLocal("FurnaceArrayRecipeType");
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FurnaceArrayRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_04"))
-            .beginStructureBlock(3, 3, 3, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_FurnaceArray_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_FurnaceArray_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_FurnaceArray_Casing"))
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -183,52 +123,6 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setLong("furnaceCount", furnaceCount);
-        aNBT.setLong("coalCount", coalCount);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        furnaceCount = aNBT.getLong("furnaceCount");
-        coalCount = aNBT.getLong("coalCount");
-    }
-
-    @Override
-    public void onBlockDestroyed() {
-        super.onBlockDestroyed();
-        IGregTechTileEntity te = getBaseMetaTileEntity();
-        if (te.isClientSide()) return;
-
-        World world = te.getWorld();
-        int x = te.getXCoord();
-        int y = te.getYCoord();
-        int z = te.getZCoord();
-
-        long remainingFurnace = furnaceCount - 1;
-        while (remainingFurnace > 0) {
-            int dropAmount = (int) Math.min(64, remainingFurnace);
-            ItemStack drop = FURNACE_STACK.copy();
-            drop.stackSize = dropAmount;
-            EntityItem ent = new EntityItem(world, x, y, z, drop);
-            world.spawnEntityInWorld(ent);
-            remainingFurnace -= dropAmount;
-        }
-
-        long remainingCoal = coalCount / 2;
-        while (remainingCoal > 0) {
-            int dropAmount = (int) Math.min(64, remainingCoal);
-            ItemStack drop = COAL_STACK.copy();
-            drop.stackSize = dropAmount;
-            EntityItem ent = new EntityItem(world, x, y, z, drop);
-            world.spawnEntityInWorld(ent);
-            remainingCoal -= dropAmount;
-        }
     }
 
     @Override
@@ -354,11 +248,6 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     }
 
     @Override
-    protected boolean supportsCraftingMEBuffer() {
-        return false;
-    }
-
-    @Override
     public boolean onRunningTick(ItemStack aStack) {
         if (++tick % 20 == 0) {
             SubscribeEventUtils.queueServerSleep(time);
@@ -367,24 +256,49 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     }
 
     @Override
-    @Deprecated
-    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        // TODO: Remove this mui1 fallback after the Furnace Array terminal text is fully ported to mui2.
-        super.drawTexts(screenElements, inventorySlot);
-        screenElements
-            .widget(
-                new TextWidget()
-                    .setStringSupplier(
-                        () -> StatCollector.translateToLocalFormatted("Info_FurnaceArray_01", furnaceCount))
-                    .setTextAlignment(Alignment.CenterLeft)
-                    .setDefaultColor(COLOR_TEXT_WHITE.get()))
-            .widget(
-                new TextWidget()
-                    .setStringSupplier(() -> StatCollector.translateToLocalFormatted("Info_FurnaceArray_02", coalCount))
-                    .setTextAlignment(Alignment.CenterLeft)
-                    .setDefaultColor(COLOR_TEXT_WHITE.get()))
-            .widget(new FakeSyncWidget.LongSyncer(() -> furnaceCount, f -> furnaceCount = f))
-            .widget(new FakeSyncWidget.LongSyncer(() -> coalCount, c -> coalCount = c));
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setLong("furnaceCount", furnaceCount);
+        aNBT.setLong("coalCount", coalCount);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        furnaceCount = aNBT.getLong("furnaceCount");
+        coalCount = aNBT.getLong("coalCount");
+    }
+
+    @Override
+    public void onBlockDestroyed() {
+        super.onBlockDestroyed();
+        IGregTechTileEntity te = getBaseMetaTileEntity();
+        if (te.isClientSide()) return;
+
+        World world = te.getWorld();
+        int x = te.getXCoord();
+        int y = te.getYCoord();
+        int z = te.getZCoord();
+
+        long remainingFurnace = furnaceCount - 1;
+        while (remainingFurnace > 0) {
+            int dropAmount = (int) Math.min(64, remainingFurnace);
+            ItemStack drop = FURNACE_STACK.copy();
+            drop.stackSize = dropAmount;
+            EntityItem ent = new EntityItem(world, x, y, z, drop);
+            world.spawnEntityInWorld(ent);
+            remainingFurnace -= dropAmount;
+        }
+
+        long remainingCoal = coalCount / 2;
+        while (remainingCoal > 0) {
+            int dropAmount = (int) Math.min(64, remainingCoal);
+            ItemStack drop = COAL_STACK.copy();
+            drop.stackSize = dropAmount;
+            EntityItem ent = new EntityItem(world, x, y, z, drop);
+            world.spawnEntityInWorld(ent);
+            remainingCoal -= dropAmount;
+        }
     }
 
     @Override
@@ -418,5 +332,91 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     @Override
     public boolean shouldCheckMaintenance() {
         return false;
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.furnaceRecipes;
+    }
+
+    @Override
+    public int getTierRecipes() {
+        return 14;
+    }
+
+    @Override
+    public String getMachineType() {
+        return StatCollector.translateToLocal("FurnaceArrayRecipeType");
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return CASING_INDEX;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("FurnaceArrayRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_FurnaceArray_04"))
+            .beginStructureBlock(3, 3, 3, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_FurnaceArray_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_FurnaceArray_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_FurnaceArray_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new FurnaceArrayGui(this);
+    }
+
+    @Override
+    protected boolean supportsCraftingMEBuffer() {
+        return false;
+    }
+
+    @Override
+    @Deprecated
+    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the Furnace Array terminal text is fully ported to mui2.
+        super.drawTexts(screenElements, inventorySlot);
+        screenElements
+            .widget(
+                new TextWidget()
+                    .setStringSupplier(
+                        () -> StatCollector.translateToLocalFormatted("Info_FurnaceArray_01", furnaceCount))
+                    .setTextAlignment(Alignment.CenterLeft)
+                    .setDefaultColor(COLOR_TEXT_WHITE.get()))
+            .widget(
+                new TextWidget()
+                    .setStringSupplier(() -> StatCollector.translateToLocalFormatted("Info_FurnaceArray_02", coalCount))
+                    .setTextAlignment(Alignment.CenterLeft)
+                    .setDefaultColor(COLOR_TEXT_WHITE.get()))
+            .widget(new FakeSyncWidget.LongSyncer(() -> furnaceCount, f -> furnaceCount = f))
+            .widget(new FakeSyncWidget.LongSyncer(() -> coalCount, c -> coalCount = c));
     }
 }

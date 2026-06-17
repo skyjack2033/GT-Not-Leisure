@@ -57,55 +57,6 @@ public class HeavyRolling extends WirelessEnergyMultiMachineBase<HeavyRolling> {
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("HeavyRollingRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HeavyRolling_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(36, 9, 13, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_HeavyRolling_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_HeavyRolling_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HeavyRolling_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(15);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<HeavyRolling> getStructureDefinition() {
         return StructureDefinition.<HeavyRolling>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -186,13 +137,62 @@ public class HeavyRolling extends WirelessEnergyMultiMachineBase<HeavyRolling> {
     }
 
     @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.benderRecipes;
+    }
+
+    @Override
     public double getDurationModifier() {
         return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
     }
 
     @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.benderRecipes;
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(15);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("HeavyRollingRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HeavyRolling_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(36, 9, 13, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_HeavyRolling_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_HeavyRolling_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HeavyRolling_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 
 }

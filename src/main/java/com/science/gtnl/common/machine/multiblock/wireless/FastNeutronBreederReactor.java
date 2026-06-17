@@ -74,65 +74,6 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FastNeutronBreederReactorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 24, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.getIndexFromPage(0, 10);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<FastNeutronBreederReactor> getStructureDefinition() {
         return StructureDefinition.<FastNeutronBreederReactor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -224,11 +165,6 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
     }
 
     @Override
-    public boolean supportsMachineModeSwitch() {
-        return true;
-    }
-
-    @Override
     public int nextMachineMode() {
         if (machineMode == MACHINEMODE_DECAY) {
             return MACHINEMODE_NEUTRON;
@@ -251,6 +187,70 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
     @Override
     public String getMachineModeName() {
         return StatCollector.translateToLocal("FastNeutronBreederReactor_Mode_" + machineMode);
+    }
+
+    @Override
+    public boolean supportsMachineModeSwitch() {
+        return true;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.getIndexFromPage(0, 10);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_NEUTRON_ACTIVATOR_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("FastNeutronBreederReactorRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(15, 24, 15, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
+            .toolTipFinisher();
+        return tt;
     }
 
     @Override

@@ -69,53 +69,6 @@ public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex
     }
 
     @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(33);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTNLRecipeMaps.FuelRefiningComplexRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FuelRefiningComplexRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(17, 14, 16, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<FuelRefiningComplex> getStructureDefinition() {
         return StructureDefinition.<FuelRefiningComplex>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -232,5 +185,52 @@ public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex
     @Override
     public double getDurationModifier() {
         return 1 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTNLRecipeMaps.FuelRefiningComplexRecipes;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(33);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("FuelRefiningComplexRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(17, 14, 16, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 }

@@ -87,67 +87,6 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("HighwayToHellRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(19, 18, 17, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<HighwayToHell> getStructureDefinition() {
         return StructureDefinition.<HighwayToHell>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -254,74 +193,9 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
     }
 
     @Override
-    public void onRemoval() {
-        boolean isFlipped = this.getFlip()
-            .isHorizontallyFlipped();
-        StructureUtils.setStringBlockXZ(
-            getBaseMetaTileEntity(),
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET,
-            shape,
-            isFlipped,
-            "M",
-            Blocks.air);
-        super.onRemoval();
-    }
-
-    @Override
     public void clearHatches() {
         super.clearHatches();
         mTurbineHatches.clear();
-    }
-
-    @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-        if (aTick % 100 == 0) {
-            if (!getBaseMetaTileEntity().isActive() && !this.mTurbineHatches.isEmpty()) {
-                setTurbineInactive();
-            }
-        }
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        staticAnimations = aNBT.getBoolean("turbineAnimationsStatic");
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setBoolean("turbineAnimationsStatic", staticAnimations);
-    }
-
-    @Override
-    public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
-        ItemStack aTool) {
-        staticAnimations = !staticAnimations;
-        GTUtility.sendChatToPlayer(
-            aPlayer,
-            StatCollector.translateToLocal(staticAnimations ? "Info_HighwayToHell_00" : "Info_HighwayToHell_01"));
-        for (MTEHatchTurbine h : GTUtility.validMTEList(this.mTurbineHatches)) {
-            h.mUsingAnimation = staticAnimations;
-        }
-    }
-
-    public void rotateTurbines() {
-        for (int i = 0; i < mTurbineHatches.size(); i++) {
-            if (mTurbineHatches.get(i) == null) continue;
-            MTEHatchTurbine turbine = mTurbineHatches.get(i);
-            ForgeDirection direction = this.getDirection();
-            IGregTechTileEntity te = turbine.getBaseMetaTileEntity();
-            switch (i) {
-                case 0 -> te.setFrontFacing(direction);
-                case 1 -> te.setFrontFacing(direction.getRotation(ForgeDirection.UP));
-                case 2 -> te.setFrontFacing(direction.getRotation(ForgeDirection.DOWN));
-                case 3 -> te.setFrontFacing(direction.getOpposite());
-            }
-        }
     }
 
     @Override
@@ -485,17 +359,6 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
         return result;
     }
 
-    @NotNull
-    public CheckRecipeResult doCheckRecipe(ItemStack stack) {
-        CheckRecipeResult result = CheckRecipeResultRegistry.NO_RECIPE;
-        processingLogic.setInputItems(stack);
-        CheckRecipeResult foundResult = processingLogic.process();
-        if (foundResult.wasSuccessful()) return foundResult;
-        // Recipe failed in interesting way, so remember that
-        if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
-        return result;
-    }
-
     public static GTRecipe recipeWithTurbine(GTRecipe recipe, int turbineTier) {
         if (recipe == null || turbineTier == 0) {
             return recipe;
@@ -517,16 +380,151 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
         return tRecipe;
     }
 
+    @NotNull
+    public CheckRecipeResult doCheckRecipe(ItemStack stack) {
+        CheckRecipeResult result = CheckRecipeResultRegistry.NO_RECIPE;
+        processingLogic.setInputItems(stack);
+        CheckRecipeResult foundResult = processingLogic.process();
+        if (foundResult.wasSuccessful()) return foundResult;
+        if (foundResult != CheckRecipeResultRegistry.NO_RECIPE) result = foundResult;
+        return result;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("HighwayToHellRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(19, 18, 17, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        super.onPostTick(aBaseMetaTileEntity, aTick);
+        if (aTick % 100 == 0) {
+            if (!getBaseMetaTileEntity().isActive() && !mTurbineHatches.isEmpty()) {
+                setTurbineInactive();
+            }
+        }
+    }
+
+    @Override
+    public void onRemoval() {
+        boolean isFlipped = getFlip().isHorizontallyFlipped();
+        StructureUtils.setStringBlockXZ(
+            getBaseMetaTileEntity(),
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            shape,
+            isFlipped,
+            "M",
+            Blocks.air);
+        super.onRemoval();
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setBoolean("turbineAnimationsStatic", staticAnimations);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        staticAnimations = aNBT.getBoolean("turbineAnimationsStatic");
+    }
+
+    @Override
+    public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
+        ItemStack aTool) {
+        staticAnimations = !staticAnimations;
+        GTUtility.sendChatToPlayer(
+            aPlayer,
+            StatCollector.translateToLocal(staticAnimations ? "Info_HighwayToHell_00" : "Info_HighwayToHell_01"));
+        for (MTEHatchTurbine h : GTUtility.validMTEList(mTurbineHatches)) {
+            h.mUsingAnimation = staticAnimations;
+        }
+    }
+
+    public void rotateTurbines() {
+        for (int i = 0; i < mTurbineHatches.size(); i++) {
+            if (mTurbineHatches.get(i) == null) continue;
+            MTEHatchTurbine turbine = mTurbineHatches.get(i);
+            ForgeDirection direction = getDirection();
+            IGregTechTileEntity te = turbine.getBaseMetaTileEntity();
+            switch (i) {
+                case 0 -> te.setFrontFacing(direction);
+                case 1 -> te.setFrontFacing(direction.getRotation(ForgeDirection.UP));
+                case 2 -> te.setFrontFacing(direction.getRotation(ForgeDirection.DOWN));
+                case 3 -> te.setFrontFacing(direction.getOpposite());
+            }
+        }
+    }
+
     public void setTurbineActive() {
         if (staticAnimations) return;
-        for (MTEHatchTurbine h : GTUtility.validMTEList(this.mTurbineHatches)) {
+        for (MTEHatchTurbine h : GTUtility.validMTEList(mTurbineHatches)) {
             h.setActive(true);
             h.onTextureUpdate();
         }
     }
 
     public void setTurbineInactive() {
-        for (MTEHatchTurbine h : GTUtility.validMTEList(this.mTurbineHatches)) {
+        for (MTEHatchTurbine h : GTUtility.validMTEList(mTurbineHatches)) {
             h.setActive(false);
             h.onTextureUpdate();
         }

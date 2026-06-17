@@ -104,6 +104,11 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
         super(aID, aName, aNameRegional);
     }
 
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new EngravingLaserPlant(this.mName);
+    }
+
     public static List<Pair<Block, Integer>> createComponentCasingVariants() {
         List<Pair<Block, Integer>> casingVariants = new ArrayList<>(13);
         for (int tier = 0; tier < 13; tier++) {
@@ -113,62 +118,15 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new EngravingLaserPlant(this.mName);
+    public void clearHatches() {
+        super.clearHatches();
+        mCasingTier = -2;
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("EngravingLaserPlantRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(21, 12, 22, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    public void onBlockDestroyed() {
+        super.onBlockDestroyed();
+        dropStoredUpgradeItems(getBaseMetaTileEntity());
     }
 
     @Override
@@ -253,18 +211,6 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     }
 
     @Override
-    public void clearHatches() {
-        super.clearHatches();
-        mCasingTier = -2;
-    }
-
-    @Override
-    public void onBlockDestroyed() {
-        super.onBlockDestroyed();
-        dropStoredUpgradeItems(getBaseMetaTileEntity());
-    }
-
-    @Override
     public double getEUtDiscount() {
         return super.getEUtDiscount() * Math.pow(0.95, mGlassTier) * Math.pow(0.95, mCasingTier);
     }
@@ -314,13 +260,6 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     }
 
     @Override
-    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
-        return new GTNLControllerUpgradeGui<>(this).withMachineModeIcons(
-            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
-            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_SLICING);
-    }
-
-    @Override
     public boolean supportsMachineModeSwitch() {
         return true;
     }
@@ -336,6 +275,77 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     @Override
     public String getMachineModeName() {
         return StatCollector.translateToLocal("EngravingLaserPlant_Mode_" + machineMode);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("EngravingLaserPlantRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(21, 12, 22, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public String[] getInfoData() {
+        String[] origin = super.getInfoData();
+        String[] ret = new String[origin.length + 1];
+        System.arraycopy(origin, 0, ret, 0, origin.length);
+        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
+            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
+        return ret;
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new GTNLControllerUpgradeGui<>(this).withMachineModeIcons(
+            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
+            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_SLICING);
     }
 
     @Override
@@ -411,15 +421,4 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
     }
-
-    @Override
-    public String[] getInfoData() {
-        String[] origin = super.getInfoData();
-        String[] ret = new String[origin.length + 1];
-        System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
-        return ret;
-    }
-
 }

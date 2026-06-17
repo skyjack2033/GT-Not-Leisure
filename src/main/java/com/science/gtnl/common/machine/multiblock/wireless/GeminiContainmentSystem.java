@@ -71,67 +71,6 @@ public class GeminiContainmentSystem extends WirelessEnergyMultiMachineBase<Gemi
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("GeminiContainmentSystemRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 29, 31, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
-        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
-        if (sideDirection == facingDirection) {
-            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCAAmazonPackagerActive)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCAAmazonPackagerActiveGlow)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCAAmazonPackager)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCAAmazonPackagerGlow)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<GeminiContainmentSystem> getStructureDefinition() {
         return StructureDefinition.<GeminiContainmentSystem>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -264,6 +203,67 @@ public class GeminiContainmentSystem extends WirelessEnergyMultiMachineBase<Gemi
     @Override
     public double getDurationModifier() {
         return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
+        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
+        if (sideDirection == facingDirection) {
+            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCAAmazonPackagerActive)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCAAmazonPackagerActiveGlow)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCAAmazonPackager)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCAAmazonPackagerGlow)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("GeminiContainmentSystemRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(15, 29, 31, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_GeminiContainmentSystem_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 
 }

@@ -40,7 +40,6 @@ import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase<HandOfJohnDavisonRockefeller>
     implements ISurvivalConstructable {
 
-    public int mSpeedCount = 0;
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String HODR_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":"
         + "multiblock/hand_of_john_davison_rockefeller";
@@ -48,6 +47,8 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
     private static final int HORIZONTAL_OFF_SET = 20;
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 0;
+
+    public int mSpeedCount = 0;
 
     public HandOfJohnDavisonRockefeller(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -60,66 +61,6 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new HandOfJohnDavisonRockefeller(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCAChemicalPlantActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCAChemicalPlant)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.chemicalPlantRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("HandOfJohnDavisonRockefellerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(41, 9, 9, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -195,6 +136,11 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
     }
 
     @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTPPRecipeMaps.chemicalPlantRecipes;
+    }
+
+    @Override
     public double getEUtDiscount() {
         double discount = 1.0;
         for (int i = 0; i < mSpeedCount; i++) {
@@ -214,6 +160,61 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
             }
         }
         return super.getDurationModifier() * speedBoost;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCAChemicalPlantActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCAChemicalPlant)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("HandOfJohnDavisonRockefellerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(41, 9, 9, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .toolTipFinisher();
+        return tt;
     }
 
 }

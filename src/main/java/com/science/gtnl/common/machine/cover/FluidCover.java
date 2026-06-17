@@ -46,21 +46,6 @@ public class FluidCover extends CoverLegacyData {
         }
     }
 
-    public void tryAddFluid(IMachineProgress tileEntity) {
-        if (tileEntity instanceof BaseMetaTileEntity baseTile
-            && baseTile.getMetaTileEntity() instanceof CommonMetaTileEntity commonMetaTile) {
-            if (this.fluid == null) return;
-            FluidStack fluid = commonMetaTile.getFluid();
-            if (fluid != null && fluid.getFluid() != this.fluid) return;
-            int capacity = commonMetaTile.getCapacity();
-            if (capacity <= 0) return;
-            int fluidAmount = fluid != null ? commonMetaTile.getFluidAmount() : 0;
-            int current = Math.max(0, capacity - fluidAmount);
-            if (current == 0) return;
-            commonMetaTile.fill(new FluidStack(this.fluid, current), true);
-        }
-    }
-
     @Override
     public String getDescription() {
         return StatCollector.translateToLocal(this.description);
@@ -105,6 +90,21 @@ public class FluidCover extends CoverLegacyData {
         }
 
         return compound;
+    }
+
+    public void tryAddFluid(IMachineProgress tileEntity) {
+        if (tileEntity instanceof BaseMetaTileEntity baseTile
+            && baseTile.getMetaTileEntity() instanceof CommonMetaTileEntity commonMetaTile) {
+            if (this.fluid == null) return;
+            FluidStack fluid = commonMetaTile.getFluid();
+            if (fluid != null && fluid.getFluid() != this.fluid) return;
+            int capacity = commonMetaTile.getCapacity();
+            if (capacity <= 0) return;
+            int fluidAmount = fluid != null ? commonMetaTile.getFluidAmount() : 0;
+            int current = Math.max(0, capacity - fluidAmount);
+            if (current == 0) return;
+            commonMetaTile.fill(new FluidStack(this.fluid, current), true);
+        }
     }
 
 }

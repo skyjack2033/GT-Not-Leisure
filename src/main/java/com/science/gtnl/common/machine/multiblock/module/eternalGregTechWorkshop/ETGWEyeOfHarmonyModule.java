@@ -61,44 +61,6 @@ import tectech.util.ItemStackLong;
 
 public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
 
-    public BigInteger outputEU_BigInt = BigInteger.ZERO;
-    public long startEU = 0;
-    public long currentCircuitMultiplier = 0;
-    public boolean enableRawStarMatter;
-
-    public List<ItemStackLong> outputItems = new ArrayList<>();
-    public List<FluidStackLong> outputFluids = new ArrayList<>();
-
-    public Object2LongMap<Fluid> validFluidMap = new Object2LongOpenHashMap<>() {
-
-        private static final long serialVersionUID = -8452610443191188130L;
-
-        {
-            put(Materials.Hydrogen.mGas, 0L);
-            put(Materials.Helium.mGas, 0L);
-            put(Materials.RawStarMatter.mFluid, 0L);
-        }
-    };
-
-    private EyeOfHarmonyRecipe currentRecipe;
-
-    // Counter for lag prevention.
-    private long lagPreventer = 0;
-
-    // Check for recipe every recipeCheckInterval ticks.
-    private boolean recipeRunning = false;
-    private long astralArrayAmount = 50000;
-    private long parallelAmount = 65536;
-    private long successfulParallelAmount = 0;
-    private double hydrogenOverflowProbabilityAdjustment;
-    private double heliumOverflowProbabilityAdjustment;
-    private double stellarPlasmaOverflowProbabilityAdjustment;
-    private double yield = 0;
-    private BigInteger usedEU = BigInteger.ZERO;
-    private FluidStackLong stellarPlasma;
-    private FluidStackLong starMatter;
-
-    // NBT save/load strings.
     private static final String EYE_OF_HARMONY = "eyeOfHarmonyOutput";
     private static final String NUMBER_OF_ITEMS_NBT_TAG = EYE_OF_HARMONY + "numberOfItems";
     private static final String NUMBER_OF_FLUIDS_NBT_TAG = EYE_OF_HARMONY + "numberOfFluids";
@@ -126,8 +88,44 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     private static final String FLUID_AMOUNT = "fluidAmount";
     private static final String FLUID_STACK_NBT_TAG = "fluidStack";
 
-    // Tags for pre-setting
     public static final String PLANET_BLOCK = "planetBlock";
+
+    public BigInteger outputEU_BigInt = BigInteger.ZERO;
+    public long startEU = 0;
+    public long currentCircuitMultiplier = 0;
+    public boolean enableRawStarMatter;
+
+    public List<ItemStackLong> outputItems = new ArrayList<>();
+    public List<FluidStackLong> outputFluids = new ArrayList<>();
+
+    public Object2LongMap<Fluid> validFluidMap = new Object2LongOpenHashMap<>() {
+
+        private static final long serialVersionUID = -8452610443191188130L;
+
+        {
+            put(Materials.Hydrogen.mGas, 0L);
+            put(Materials.Helium.mGas, 0L);
+            put(Materials.RawStarMatter.mFluid, 0L);
+        }
+    };
+
+    private EyeOfHarmonyRecipe currentRecipe;
+    private long lagPreventer = 0;
+    private boolean recipeRunning = false;
+    private long astralArrayAmount = 50000;
+    private long parallelAmount = 65536;
+    private long successfulParallelAmount = 0;
+    private double hydrogenOverflowProbabilityAdjustment;
+    private double heliumOverflowProbabilityAdjustment;
+    private double stellarPlasmaOverflowProbabilityAdjustment;
+    private double yield = 0;
+    private BigInteger usedEU = BigInteger.ZERO;
+    private double pityChance;
+    private double successChance;
+    private double previousRecipeChance;
+    private long currentRecipeRocketTier;
+    private FluidStackLong stellarPlasma;
+    private FluidStackLong starMatter;
 
     public ETGWEyeOfHarmonyModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -339,11 +337,6 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     private long getStellarPlasmaStored() {
         return validFluidMap.get(Materials.RawStarMatter.mFluid);
     }
-
-    private double pityChance;
-    private double successChance;
-    private double previousRecipeChance;
-    private long currentRecipeRocketTier;
 
     private void outputFailedChance() {
         long failedParallelAmount = parallelAmount - successfulParallelAmount;

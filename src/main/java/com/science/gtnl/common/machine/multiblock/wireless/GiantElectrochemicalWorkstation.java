@@ -61,69 +61,6 @@ public class GiantElectrochemicalWorkstation extends WirelessEnergyMultiMachineB
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("GiantElectrochemicalWorkstationRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(45, 13, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 7);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
-        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
-        if (sideDirection == facingDirection) {
-            if (active) return new ITexture[] {
-                Textures.BlockIcons.getCasingTextureForId(TileEntitySpaceElevator.CASING_INDEX_BASE),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerActive)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerActiveGlow)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] {
-                Textures.BlockIcons.getCasingTextureForId(TileEntitySpaceElevator.CASING_INDEX_BASE),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzer)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerGlow)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(TileEntitySpaceElevator.CASING_INDEX_BASE) };
-    }
-
-    @Override
     public IStructureDefinition<GiantElectrochemicalWorkstation> getStructureDefinition() {
         return StructureDefinition.<GiantElectrochemicalWorkstation>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -217,6 +154,69 @@ public class GiantElectrochemicalWorkstation extends WirelessEnergyMultiMachineB
     @Override
     public double getDurationModifier() {
         return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 7);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
+        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
+        if (sideDirection == facingDirection) {
+            if (active) return new ITexture[] {
+                Textures.BlockIcons.getCasingTextureForId(TileEntitySpaceElevator.CASING_INDEX_BASE),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerActive)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerActiveGlow)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] {
+                Textures.BlockIcons.getCasingTextureForId(TileEntitySpaceElevator.CASING_INDEX_BASE),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzer)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerGlow)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(TileEntitySpaceElevator.CASING_INDEX_BASE) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("GiantElectrochemicalWorkstationRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(45, 13, 15, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_GiantElectrochemicalWorkstation_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 
 }
