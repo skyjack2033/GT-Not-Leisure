@@ -46,7 +46,6 @@ public abstract class WirelessEnergyMultiMachineBase<T extends WirelessEnergyMul
     @Getter
     @Setter
     public boolean wirelessUpgrade = false;
-
     public int totalOverclockedDuration = 0;
     public int maxParallelStored = -1;
     public boolean isRecipeProcessing = false;

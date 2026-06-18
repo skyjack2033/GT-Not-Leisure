@@ -61,6 +61,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.OutputBusType;
 import gregtech.api.interfaces.IOutputBus;
+import gregtech.api.metatileentity.BaseMetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTLanguageManager;
 import gregtech.api.util.GTUtility;
@@ -119,6 +120,14 @@ public class Utils {
         return type == OutputBusType.MECacheFiltered || type == OutputBusType.MEFiltered
             || type == OutputBusType.MECacheUnfiltered
             || type == OutputBusType.MEUnfiltered;
+    }
+
+    public static UUID getOwner(Object te) {
+        if (te instanceof BaseMetaTileEntity igte) {
+            return igte.getOwnerUuid();
+        } else {
+            return null;
+        }
     }
 
     public static <C extends Collection<E>, E extends MetaTileEntity, T extends E> List<T> filterValidMTEs(
