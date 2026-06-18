@@ -1,4 +1,4 @@
-package com.science.gtnl.common.machine.multiblock;
+package com.science.gtnl.utils.machine;
 
 import java.util.ArrayDeque;
 import java.util.Map;
@@ -8,6 +8,7 @@ import java.util.Set;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 
+import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import com.science.gtnl.utils.DireCraftingPatternDetails;
 import com.science.gtnl.utils.LargeInventoryCrafting;
 

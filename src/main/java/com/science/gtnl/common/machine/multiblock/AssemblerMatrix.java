@@ -75,6 +75,7 @@ import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.ModList;
 import com.science.gtnl.utils.item.ItemUtils;
+import com.science.gtnl.utils.machine.AssemblerMatrixPatternState;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
