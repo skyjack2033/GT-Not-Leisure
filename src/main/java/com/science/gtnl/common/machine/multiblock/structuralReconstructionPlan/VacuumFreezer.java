@@ -50,7 +50,6 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
 
     public VacuumFreezer(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
-
     }
 
     public VacuumFreezer(String aName) {
@@ -58,69 +57,8 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
     }
 
     @Override
-    public boolean getPerfectOC() {
-        return false;
-    }
-
-    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new VacuumFreezer(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 1);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.vacuumFreezerRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("VacuumFreezerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_02"))
-            .beginStructureBlock(11, 7, 6, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -181,6 +119,16 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
     }
 
     @Override
+    public boolean getPerfectOC() {
+        return false;
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.vacuumFreezerRecipes;
+    }
+
+    @Override
     public int getMaxParallelRecipes() {
         return 8 + 2 * GTUtility.getTier(this.getMaxInputVoltage());
     }
@@ -208,5 +156,56 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
         logic.setAvailableVoltage(getMachineVoltageLimit());
         logic.setAvailableAmperage(useSingleAmp ? 1 : getMaxInputAmps());
         logic.setAmperageOC(!useSingleAmp);
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 1);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_VACUUM_FREEZER_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("VacuumFreezerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_02"))
+            .beginStructureBlock(11, 7, 6, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
+            .toolTipFinisher();
+        return tt;
     }
 }

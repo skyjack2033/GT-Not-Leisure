@@ -140,78 +140,6 @@ public class TreeDiagram extends WirelessEnergyMultiMachineBase<TreeDiagram> imp
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("TreeDiagramRecipes"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_TreeDiagram_00"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(194, 71, 184, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
-            .addSubChannelUsage(GTNLStructureChannels.STRUCTURE_RENDER)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
-        int aColorIndex, boolean aActive, boolean aRedstone) {
-        if (side == facing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 2);
-    }
-
-    @Override
-    public void setupProcessingLogic(ProcessingLogic logic) {
-        super.setupProcessingLogic(logic);
-        logic.setMaxTierSkips(maxTierSkip);
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return ((wirelessUpgrade ? 0.5 : 1) - (mParallelTier / 50.0)) * euDiscount;
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return (1.0 / (wirelessUpgrade ? 2 : 1) - (Math.max(0, mParallelTier - 1) / 50.0)) * speedBonus;
-    }
-
-    @Override
-    public int getMaxParallelRecipes() {
-        return Math.min(nanitesParallel, super.getMaxParallelRecipes());
-    }
-
-    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         if (!GTNLStructureChannels.STRUCTURE_RENDER.hasValue(stackSize)) return;
         buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
@@ -250,7 +178,79 @@ public class TreeDiagram extends WirelessEnergyMultiMachineBase<TreeDiagram> imp
     }
 
     @Override
+    public void setupProcessingLogic(ProcessingLogic logic) {
+        super.setupProcessingLogic(logic);
+        logic.setMaxTierSkips(maxTierSkip);
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return ((wirelessUpgrade ? 0.5 : 1) - (mParallelTier / 50.0)) * euDiscount;
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return (1.0 / (wirelessUpgrade ? 2 : 1) - (Math.max(0, mParallelTier - 1) / 50.0)) * speedBonus;
+    }
+
+    @Override
+    public int getMaxParallelRecipes() {
+        return Math.min(nanitesParallel, super.getMaxParallelRecipes());
+    }
+
+    @Override
     public RecipeMap<?> getRecipeMap() {
         return GTNLRecipeMaps.TreeDiagramRecipes;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 2);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
+        int aColorIndex, boolean aActive, boolean aRedstone) {
+        if (side == facing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("TreeDiagramRecipes"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_TreeDiagram_00"))
+            .addPerfectOCInfo()
+            .addTecTechHatchInfo()
+            .beginStructureBlock(194, 71, 184, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_TreeDiagram_Casing_00"))
+            .addSubChannelUsage(GTNLStructureChannels.STRUCTURE_RENDER)
+            .toolTipFinisher();
+        return tt;
     }
 }
