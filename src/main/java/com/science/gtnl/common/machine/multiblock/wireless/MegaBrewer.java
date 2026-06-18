@@ -65,72 +65,6 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new MegaBrewer(this.mName);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaBrewerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBrewer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(28, 22, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(1);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
-        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
-        if (sideDirection == facingDirection) {
-            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<MegaBrewer> getStructureDefinition() {
         return StructureDefinition.<MegaBrewer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -165,6 +99,11 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
             .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
             .addElement('J', GTStructureUtility.ofFrame(Materials.Neutronium))
             .build();
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new MegaBrewer(this.mName);
     }
 
     @Override
@@ -218,6 +157,72 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
     }
 
     @Override
+    public double getDurationModifier() {
+        return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(1);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
+        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
+        if (sideDirection == facingDirection) {
+            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_BREWERY_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("MegaBrewerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBrewer_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(28, 22, 15, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
     protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
         return new GTNLMultiBlockBaseGui<>(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_DEFAULT,
@@ -247,11 +252,6 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
     @Override
     public String getMachineModeName() {
         return StatCollector.translateToLocal("MegaBrewer_Mode_" + machineMode);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
     }
 
 }

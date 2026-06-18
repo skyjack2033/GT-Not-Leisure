@@ -51,67 +51,6 @@ public class LargeBender extends GTMMultiMachineBase<LargeBender> implements ISu
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeBender(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialPlatePressActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialPlatePress)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(33);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.benderRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeBenderRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeBender_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeBender_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 4, 7, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return 0.8 - (mParallelTier / 50.0);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return Math.max(0.05, 1.0 / 6.0 - (Math.max(0, mParallelTier - 1) / 50.0));
-    }
-
-    @Override
     public IStructureDefinition<LargeBender> getStructureDefinition() {
         return StructureDefinition.<LargeBender>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -159,5 +98,66 @@ public class LargeBender extends GTMMultiMachineBase<LargeBender> implements ISu
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.benderRecipes;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.8 - (mParallelTier / 50.0);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return Math.max(0.05, 1.0 / 6.0 - (Math.max(0, mParallelTier - 1) / 50.0));
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialPlatePressActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialPlatePress)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(33);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeBenderRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeBender_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeBender_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 4, 7, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeBender_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeBender(this.mName);
     }
 }

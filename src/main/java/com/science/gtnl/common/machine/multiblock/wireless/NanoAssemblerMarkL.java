@@ -55,8 +55,6 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
     private static final String VMC_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/nano_assembler_mark_l";
     private static final String[][] shape = StructureUtils.readStructureFromFile(VMC_STRUCTURE_FILE_PATH);
 
-    private int mCasingTier;
-
     public static List<Pair<Block, Integer>> createComponentCasingVariants() {
         List<Pair<Block, Integer>> casingVariants = new ArrayList<>(13);
         for (int tier = 0; tier < 13; tier++) {
@@ -64,6 +62,8 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
         }
         return casingVariants;
     }
+
+    private int mCasingTier;
 
     public NanoAssemblerMarkL(String aName) {
         super(aName);
@@ -76,12 +76,6 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new NanoAssemblerMarkL(this.mName);
-    }
-
-    @Override
-    public void clearHatches() {
-        super.clearHatches();
-        mCasingTier = -2;
     }
 
     @Override
@@ -204,16 +198,6 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
     }
 
     @Override
-    public String[] getInfoData() {
-        String[] origin = super.getInfoData();
-        String[] ret = new String[origin.length + 1];
-        System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
-        return ret;
-    }
-
-    @Override
     public MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType(StatCollector.translateToLocal("NanoAssemblerMarkLRecipeType"))
@@ -242,18 +226,6 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
     }
 
     @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setInteger("casingTier", mCasingTier);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        mCasingTier = aNBT.getInteger("casingTier");
-    }
-
-    @Override
     public long getMachineVoltageLimit() {
         if (mCasingTier < 0) return 0;
         if (wirelessMode) {
@@ -276,5 +248,33 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
     @Override
     public double getDurationModifier() {
         return super.getDurationModifier() * Math.pow(0.9, mCasingTier);
+    }
+
+    @Override
+    public void clearHatches() {
+        super.clearHatches();
+        mCasingTier = -2;
+    }
+
+    @Override
+    public String[] getInfoData() {
+        String[] origin = super.getInfoData();
+        String[] ret = new String[origin.length + 1];
+        System.arraycopy(origin, 0, ret, 0, origin.length);
+        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
+            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
+        return ret;
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setInteger("casingTier", mCasingTier);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        mCasingTier = aNBT.getInteger("casingTier");
     }
 }

@@ -56,63 +56,6 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new MagneticEnergyReactionFurnace(this.mName);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MagneticEnergyReactionFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(33, 14, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.getIndexFromPage(3, 3);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<MagneticEnergyReactionFurnace> getStructureDefinition() {
         return StructureDefinition.<MagneticEnergyReactionFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -181,6 +124,11 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
     }
 
     @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new MagneticEnergyReactionFurnace(this.mName);
+    }
+
+    @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
@@ -189,8 +137,8 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
     }
 
     @Override
-    protected boolean requiresCoilStructureCheck() {
-        return true;
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.arcFurnaceRecipes;
     }
 
     @Override
@@ -204,8 +152,59 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
     }
 
     @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.arcFurnaceRecipes;
+    public int getCasingTextureID() {
+        return TAE.getIndexFromPage(3, 3);
     }
 
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("MagneticEnergyReactionFurnaceRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(33, 14, 15, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
+    }
 }

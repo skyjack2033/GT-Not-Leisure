@@ -51,67 +51,6 @@ public class LargeIndustrialLathe extends GTMMultiMachineBase<LargeIndustrialLat
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeIndustrialLathe(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(33);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.latheRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeIndustrialLatheRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 4, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeIndustrialLathe> getStructureDefinition() {
         return StructureDefinition.<LargeIndustrialLathe>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -166,6 +105,62 @@ public class LargeIndustrialLathe extends GTMMultiMachineBase<LargeIndustrialLat
     }
 
     @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.latheRecipes;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_LATHE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(33);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeIndustrialLatheRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(7, 4, 5, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeIndustrialLathe_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
     public double getEUtDiscount() {
         return 0.8 - (mParallelTier / 50.0);
     }
@@ -173,5 +168,10 @@ public class LargeIndustrialLathe extends GTMMultiMachineBase<LargeIndustrialLat
     @Override
     public double getDurationModifier() {
         return 1.0 / 2.25 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeIndustrialLathe(this.mName);
     }
 }

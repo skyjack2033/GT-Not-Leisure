@@ -83,36 +83,6 @@ public class NanitesIntegratedProcessingCenter
         return new NanitesIntegratedProcessingCenter(this.mName);
     }
 
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("NanitesIntegratedProcessingCenterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(31, 22, 46, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public int getCasingTextureID() {
         return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
     }
@@ -346,6 +316,35 @@ public class NanitesIntegratedProcessingCenter
     @Override
     public double getDurationModifier() {
         return Math.pow(0.75, mParallelTier) * Math.pow(0.80, getMCoilLevel().getTier());
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("NanitesIntegratedProcessingCenterRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(31, 22, 46, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 
     public boolean addModuleToMachineList(IGregTechTileEntity tileEntity, int baseCasingIndex) {

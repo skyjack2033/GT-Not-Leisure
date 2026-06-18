@@ -1716,6 +1716,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             8000,
             (int) TierEU.RECIPE_UEV);
 
+        // TODO: Use GTNLMaterials
         TTRecipeAdder.addResearchableAssemblylineRecipe(
             GTNLItemList.FuelRefiningComplex.get(1),
             32768000,
@@ -1723,9 +1724,9 @@ public class AssemblingLineRecipes implements IRecipePool {
             (int) TierEU.RECIPE_UIV,
             16,
             new Object[] { GTNLItemList.FuelRefiningComplex.get(4), ItemList.Neutronium_Active_Casing.get(64),
-                new ItemStack(WerkstoffLoader.BWBlockCasings, 64, 31895),
-                new ItemStack(WerkstoffLoader.BWBlockCasingsAdvanced, 64, 31895), ItemList.Electric_Pump_UEV.get(16),
-                ItemList.Field_Generator_UEV.get(8), ItemRefer.HiC_T5.get(32),
+                new ItemStack(WerkstoffLoader.BWBlockCasings, 64, 31_766 + 129),
+                new ItemStack(WerkstoffLoader.BWBlockCasingsAdvanced, 64, 31_766 + 129),
+                ItemList.Electric_Pump_UEV.get(16), ItemList.Field_Generator_UEV.get(8), ItemRefer.HiC_T5.get(32),
                 new Object[] { OrePrefixes.circuit.get(Materials.UIV), 32 }, GregtechItemList.Laser_Lens_Special.get(4),
                 Mods.EternalSingularity.isModLoaded()
                     ? GTModHandler.getModItem(Mods.EternalSingularity.ID, "eternal_singularity", 2)

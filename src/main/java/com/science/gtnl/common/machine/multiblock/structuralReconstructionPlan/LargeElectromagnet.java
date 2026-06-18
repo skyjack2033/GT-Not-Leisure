@@ -62,74 +62,6 @@ public class LargeElectromagnet extends GTMMultiMachineBase<LargeElectromagnet> 
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeElectromagnet(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(5);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return (machineMode == MACHINEMODE_ELECTROMAGNETIC) ? RecipeMaps.electroMagneticSeparatorRecipes
-            : RecipeMaps.polarizerRecipes;
-    }
-
-    @NotNull
-    @Override
-    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
-        return Arrays.asList(RecipeMaps.electroMagneticSeparatorRecipes, RecipeMaps.polarizerRecipes);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeElectromagnetRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 4, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeElectromagnet> getStructureDefinition() {
         return StructureDefinition.<LargeElectromagnet>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -179,8 +111,66 @@ public class LargeElectromagnet extends GTMMultiMachineBase<LargeElectromagnet> 
     }
 
     @Override
-    public boolean supportsMachineModeSwitch() {
-        return true;
+    public RecipeMap<?> getRecipeMap() {
+        return (machineMode == MACHINEMODE_ELECTROMAGNETIC) ? RecipeMaps.electroMagneticSeparatorRecipes
+            : RecipeMaps.polarizerRecipes;
+    }
+
+    @NotNull
+    @Override
+    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
+        return Arrays.asList(RecipeMaps.electroMagneticSeparatorRecipes, RecipeMaps.polarizerRecipes);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_EMS_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(5);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeElectromagnetRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 3, 4, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeElectromagnet_Casing"))
+            .toolTipFinisher();
+        return tt;
     }
 
     @Override
@@ -211,4 +201,13 @@ public class LargeElectromagnet extends GTMMultiMachineBase<LargeElectromagnet> 
         return StatCollector.translateToLocal("LargeElectromagnet_Mode_" + machineMode);
     }
 
+    @Override
+    public boolean supportsMachineModeSwitch() {
+        return true;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeElectromagnet(this.mName);
+    }
 }

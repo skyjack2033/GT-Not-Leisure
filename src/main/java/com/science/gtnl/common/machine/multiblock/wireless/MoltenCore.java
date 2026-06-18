@@ -60,34 +60,6 @@ public class MoltenCore extends WirelessEnergyMultiMachineBase<MoltenCore> {
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MoltenCoreRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MoltenCore_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(17, 17, 10, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public int getCasingTextureID() {
         return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
     }
@@ -213,6 +185,34 @@ public class MoltenCore extends WirelessEnergyMultiMachineBase<MoltenCore> {
     @Override
     public double getDurationModifier() {
         return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("MoltenCoreRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MoltenCore_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(17, 17, 10, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 
 }

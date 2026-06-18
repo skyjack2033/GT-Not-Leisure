@@ -59,21 +59,6 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     }
 
     @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
-    }
-
-    @Override
-    public VoidingMode getVoidingMode() {
-        return VoidingMode.VOID_FLUID;
-    }
-
-    @Override
-    public boolean supportsVoidProtection() {
-        return false;
-    }
-
-    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new PrimitiveDistillationTower(this.mName);
     }
@@ -122,11 +107,6 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     }
 
     @Override
-    public String getMachineType() {
-        return StatCollector.translateToLocal("PrimitiveDistillationTowerRecipeType");
-    }
-
-    @Override
     public int getMaxParallelRecipes() {
         return 8;
     }
@@ -144,35 +124,6 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     @Override
     public double getDurationModifier() {
         return super.getDurationModifier() / 0.8;
-    }
-
-    public void onCasingFound() {
-        mCountCasing++;
-    }
-
-    public void onTopLayerFound(boolean aIsCasing) {
-        mTopLayerFound = true;
-        if (aIsCasing) onCasingFound();
-    }
-
-    public int getCurrentLayerOutputHatchCount() {
-        return mOutputHatchesByLayer.size() < mHeight || mHeight <= 0 ? 0
-            : mOutputHatchesByLayer.get(mHeight - 1)
-                .size();
-    }
-
-    public boolean addLayerOutputHatch(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
-        if (aTileEntity == null || aTileEntity.isDead()
-            || !(aTileEntity.getMetaTileEntity() instanceof MTEHatchOutput tHatch)) return false;
-        while (mOutputHatchesByLayer.size() < mHeight) mOutputHatchesByLayer.add(new ArrayList<>());
-        tHatch.updateTexture(aBaseCasingIndex);
-        return mOutputHatchesByLayer.get(mHeight - 1)
-            .add(tHatch);
-    }
-
-    @Override
-    public List<? extends IFluidStore> getFluidOutputSlots(FluidStack[] toOutput) {
-        return getFluidOutputSlotsByLayer(toOutput, mOutputHatchesByLayer);
     }
 
     @Override
@@ -278,25 +229,6 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     }
 
     @Override
-    public void clearHatches() {
-        super.clearHatches();
-        mOutputHatchesByLayer.forEach(List::clear);
-        mHeight = 1;
-        mTopLayerFound = false;
-    }
-
-    @Override
-    public void addFluidOutputs(FluidStack[] outputFluids) {
-        for (int i = 0; i < outputFluids.length && i < mOutputHatchesByLayer.size(); i++) {
-            final FluidStack fluidStack = outputFluids[i];
-            if (fluidStack == null) continue;
-            FluidStack tStack = fluidStack.copy();
-            if (!dumpFluid(mOutputHatchesByLayer.get(i), tStack, true))
-                dumpFluid(mOutputHatchesByLayer.get(i), tStack, false);
-        }
-    }
-
-    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         buildPiece(STRUCTURE_PIECE_BASE, stackSize, hintsOnly, 1, 0, 0);
         int tTotalHeight = 7;
@@ -334,5 +266,78 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     @Override
     public SoundResource getProcessStartSound() {
         return SoundResource.GT_MACHINES_DISTILLERY_LOOP;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
+    }
+
+    @Override
+    public VoidingMode getVoidingMode() {
+        return VoidingMode.VOID_FLUID;
+    }
+
+    @Override
+    public boolean supportsVoidProtection() {
+        return false;
+    }
+
+    @Override
+    public String getMachineType() {
+        return StatCollector.translateToLocal("PrimitiveDistillationTowerRecipeType");
+    }
+
+    @Override
+    public List<? extends IFluidStore> getFluidOutputSlots(FluidStack[] toOutput) {
+        return getFluidOutputSlotsByLayer(toOutput, mOutputHatchesByLayer);
+    }
+
+    @Override
+    public void addFluidOutputs(FluidStack[] outputFluids) {
+        for (int i = 0; i < outputFluids.length && i < mOutputHatchesByLayer.size(); i++) {
+            FluidStack fluidStack = outputFluids[i];
+            if (fluidStack == null) continue;
+            FluidStack outputStack = fluidStack.copy();
+            if (!dumpFluid(mOutputHatchesByLayer.get(i), outputStack, true)) {
+                dumpFluid(mOutputHatchesByLayer.get(i), outputStack, false);
+            }
+        }
+    }
+
+    @Override
+    public void clearHatches() {
+        super.clearHatches();
+        mOutputHatchesByLayer.forEach(List::clear);
+        mHeight = 1;
+        mTopLayerFound = false;
+    }
+
+    public void onCasingFound() {
+        mCountCasing++;
+    }
+
+    public void onTopLayerFound(boolean isCasing) {
+        mTopLayerFound = true;
+        if (isCasing) {
+            onCasingFound();
+        }
+    }
+
+    public int getCurrentLayerOutputHatchCount() {
+        return mOutputHatchesByLayer.size() < mHeight || mHeight <= 0 ? 0
+            : mOutputHatchesByLayer.get(mHeight - 1)
+                .size();
+    }
+
+    public boolean addLayerOutputHatch(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
+        if (aTileEntity == null || aTileEntity.isDead()
+            || !(aTileEntity.getMetaTileEntity() instanceof MTEHatchOutput outputHatch)) return false;
+        while (mOutputHatchesByLayer.size() < mHeight) {
+            mOutputHatchesByLayer.add(new ArrayList<>());
+        }
+        outputHatch.updateTexture(aBaseCasingIndex);
+        return mOutputHatchesByLayer.get(mHeight - 1)
+            .add(outputHatch);
     }
 }

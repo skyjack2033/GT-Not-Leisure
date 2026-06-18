@@ -20,6 +20,7 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
@@ -120,11 +121,12 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
             true);
     }
 
+    // TODO: Use GTNLMaterials
     @Override
     public IStructureDefinition<CheatOreProcessingFactory> getStructureDefinition() {
         return StructureDefinition.<CheatOreProcessingFactory>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings, 32066))
+            .addElement('A', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings,31_766 + 300))
             .addElement('B', GTStructureUtility.ofFrame(Materials.Bronze))
             .addElement('C', StructureUtility.ofBlock(blockCasingsMisc, 2))
             .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 2))
@@ -138,7 +140,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
                         .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10))
                         .hint(1)
                         .build(),
-                    StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 32066)))
+                    StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 300)))
             .addElement('H', GTStructureUtility.chainAllGlasses())
             .build();
     }

@@ -66,66 +66,6 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new MegaAlloyBlastSmelter(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelterActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelter)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(15);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.alloyBlastSmelterRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaAlloyBlastSmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_05"))
-            .addPerfectOCInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(11, 18, 11, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<MegaAlloyBlastSmelter> getStructureDefinition() {
         return StructureDefinition.<MegaAlloyBlastSmelter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -160,6 +100,11 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
                             .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasingsMisc, 15))))
             .addElement('J', HatchElement.Muffler.newAny(getCasingTextureID(), 1))
             .build();
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new MegaAlloyBlastSmelter(this.mName);
     }
 
     @Override
@@ -204,6 +149,11 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTPPRecipeMaps.alloyBlastSmelterRecipes;
     }
 
     @Override
@@ -303,5 +253,55 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
         }
 
         return result;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(15);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelterActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDAlloyBlastSmelter)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("MegaAlloyBlastSmelterRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_05"))
+            .addPerfectOCInfo()
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(11, 18, 11, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 }

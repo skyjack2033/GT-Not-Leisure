@@ -42,18 +42,13 @@ public class SteamAssemblerBronze extends MTEBasicMachineBronze {
     }
 
     @Override
-    @Deprecated
-    public void addGregTechLogo(ModularWindow.Builder builder) {
-        // TODO: Remove this mui1 fallback after SteamAssemblerBronze mui2 rollout is complete.
-        builder.widget(
-            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
-                .setSize(18, 18)
-                .setPos(151, 62));
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.assemblerRecipes;
     }
 
     @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.assemblerRecipes;
+    public void startProcess() {
+        sendLoopStart((byte) 1);
     }
 
     @Override
@@ -62,11 +57,6 @@ public class SteamAssemblerBronze extends MTEBasicMachineBronze {
         if (aIndex == 1) {
             GTUtility.doSoundAtClient(SoundResource.GT_MACHINES_MULTI_PRECISE_LOOP, 10, 1.0F, aX, aY, aZ);
         }
-    }
-
-    @Override
-    public void startProcess() {
-        sendLoopStart((byte) 1);
     }
 
     @Override
@@ -149,6 +139,16 @@ public class SteamAssemblerBronze extends MTEBasicMachineBronze {
     @Override
     public GUITextureSet getGUITextureSet() {
         return GUITextureSet.STEAM.apply(getSteamVariant());
+    }
+
+    @Override
+    @Deprecated
+    public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after SteamAssemblerBronze mui2 rollout is complete.
+        builder.widget(
+            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
+                .setSize(18, 18)
+                .setPos(151, 62));
     }
 
     @Override

@@ -5,7 +5,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -64,6 +63,32 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
     }
 
     @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("PlatinumBasedTreatmentRecipes"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_05"))
+            .addPerfectOCInfo()
+            .addTecTechHatchInfo()
+            .beginStructureBlock(15, 17, 18, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
+            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_01"))
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
     public IStructureDefinition<PlatinumBasedTreatment> getStructureDefinition() {
         return StructureDefinition.<PlatinumBasedTreatment>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -111,34 +136,57 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("PlatinumBasedTreatmentRecipes"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_05"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 17, 18, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_01"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
+    public void construct(ItemStack stackSize, boolean hintsOnly) {
+        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }
 
     @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
+    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+        if (mMachine) return -1;
+        return survivalBuildPiece(
+            STRUCTURE_PIECE_MAIN,
+            stackSize,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            elementBudget,
+            env,
+            false,
+            true);
+    }
+
+    @Override
+    public void checkMachine(IGregTechTileEntity iGregTechTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        setupParameters();
+        checkHatch(errors);
+        checkCasingMin(errors, mCountCasing, 30);
+        checkHatchExact(errors, HatchElement.Muffler, 6);
+    }
+
+    @Override
+    protected boolean requiresCoilStructureCheck() {
+        return true;
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTNLRecipeMaps.PlatinumBasedTreatmentRecipes;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 1.0 - getMCoilLevel().getTier() * 0.05;
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1.0 - getMCoilLevel().getTier() * 0.05;
+    }
+
+    @Override
+    public int getMaxParallelRecipes() {
+        return GTUtility.getTier(this.getMaxInputVoltage()) * 4 + 8;
     }
 
     @Override
@@ -177,23 +225,9 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
     @Override
     public void updateHatchTexture() {
         super.updateHatchTexture();
-        for (MTEHatch h : mMufflerHatches)
+        for (MTEHatch h : mMufflerHatches) {
             h.updateTexture(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11));
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return 1.0 - getMCoilLevel().getTier() * 0.05;
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1.0 - getMCoilLevel().getTier() * 0.05;
+        }
     }
 
     @Override
@@ -202,58 +236,8 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
     }
 
     @Override
-    public int getMaxParallelRecipes() {
-        return GTUtility.getTier(this.getMaxInputVoltage()) * 4 + 8;
-    }
-
-    @Override
-    public void construct(ItemStack stackSize, boolean hintsOnly) {
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            hintsOnly,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET);
-    }
-
-    @Override
-    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        if (mMachine) return -1;
-        return survivalBuildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET,
-            elementBudget,
-            env,
-            false,
-            true);
-    }
-
-    @Override
-    public void checkMachine(IGregTechTileEntity iGregTechTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        setupParameters();
-        checkHatch(errors);
-        checkCasingMin(errors, mCountCasing, 30);
-        checkHatchExact(errors, HatchElement.Muffler, 6);
-    }
-
-    @Override
-    protected boolean requiresCoilStructureCheck() {
-        return true;
-    }
-
-    @Override
     protected int getGlassEnergyTierLimit() {
         return VoltageIndex.UHV;
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTNLRecipeMaps.PlatinumBasedTreatmentRecipes;
     }
 
     @Override
@@ -266,5 +250,4 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
     public SoundResource getActivitySoundLoop() {
         return SoundResource.GT_MACHINES_MEGA_BLAST_FURNACE_LOOP;
     }
-
 }

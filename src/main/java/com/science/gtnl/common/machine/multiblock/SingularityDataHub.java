@@ -131,132 +131,6 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new SingularityDataHub(super.mName);
-    }
-
-    @Override
-    public long maxItemCount() {
-        return MAX_DISTINCT_ITEMS;
-    }
-
-    @Override
-    public long maxFluidCount() {
-        return MAX_DISTINCT_FLUIDS;
-    }
-
-    @Override
-    public boolean hasItem() {
-        return true;
-    }
-
-    @Override
-    public boolean hasFluid() {
-        return true;
-    }
-
-    @Override
-    public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
-        if (checkStructure(true, getBaseMetaTileEntity())) {
-            this.mStartUpCheck = -1;
-            this.mUpdate = 200;
-        }
-        this.ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
-        super.onFirstTick(aBaseMetaTileEntity);
-    }
-
-    @Override
-    public void onBlockDestroyed() {
-        if (portHatch != null) {
-            portHatch.unbind();
-        }
-        super.onBlockDestroyed();
-    }
-
-    @Override
-    public @NotNull CheckRecipeResult checkProcessing() {
-        mEfficiency = 10000;
-        mEfficiencyIncrease = 10000;
-        lEUt = GTValues.VP[9] / 20L;
-        mMaxProgresstime = 20;
-
-        ArrayList<ItemStack> inputItems = getStoredInputs();
-        ArrayList<FluidStack> inputFluids = getStoredFluids();
-
-        if (!inputItems.isEmpty()) {
-            for (ItemStack aItem : inputItems) {
-                ItemStack toDeplete = aItem.copy();
-                toDeplete.stackSize = this.injectItems(aItem, true);
-                depleteInput(toDeplete);
-            }
-        }
-
-        if (!inputFluids.isEmpty()) {
-            for (FluidStack aFluid : inputFluids) {
-                FluidStack toDeplete = aFluid.copy();
-                toDeplete.amount = this.injectFluids(aFluid, true);
-                depleteInput(toDeplete, false);
-            }
-        }
-
-        if (wirelessMode && addEUToGlobalEnergyMap(ownerUUID, -TierEU.RECIPE_MAX)) {
-            lEUt = 0;
-        } else if (this.lEUt > 0) this.lEUt = -this.lEUt;
-
-        return CheckRecipeResultRegistry.SUCCESSFUL;
-    }
-
-    @Override
-    public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
-        ArrayList<ItemStack> rList = new ArrayList<>();
-        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
-        for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
-            if (tHatch instanceof MTEHatchCraftingInputME) {
-                continue;
-            }
-            byte busColor = tHatch.getColor();
-            if (color.isPresent() && busColor != -1 && busColor != color.get()) continue;
-            tHatch.mRecipeMap = getRecipeMap();
-            IGregTechTileEntity tileEntity = tHatch.getBaseMetaTileEntity();
-            boolean isMEBus = tHatch instanceof MTEHatchInputBusME;
-            for (int i = tileEntity.getSizeInventory() - 1; i >= 0; i--) {
-                ItemStack itemStack = tileEntity.getStackInSlot(i);
-                if (itemStack != null) {
-                    if (isMEBus) {
-                        // Prevent the same item from different ME buses from being recognized
-                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
-                    } else {
-                        rList.add(itemStack);
-                    }
-                }
-            }
-        }
-
-        if (!inputsFromME.isEmpty()) {
-            rList.addAll(inputsFromME.values());
-        }
-        return rList;
-
-    }
-
-    @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-        if (aBaseMetaTileEntity.isServerSide()) {
-            this.locked = !aBaseMetaTileEntity.isActive();
-        }
-    }
-
-    @Override
-    public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
-        ItemStack aTool) {
-        this.setDoVoidExcess(!doVoidExcess);
-        GTUtility.sendChatToPlayer(
-            aPlayer,
-            StatCollector.translateToLocal("Info_SingularityDataHub_AutoVoiding") + doVoidExcess);
-    }
-
-    @Override
     public IStructureDefinition<SingularityDataHub> getStructureDefinition() {
         return StructureDefinition.<SingularityDataHub>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -288,6 +162,66 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
             .addElement('H', StructureUtility.ofBlock(sBlockCasingsTT, 6))
             .addElement('I', StructureUtility.ofBlock(BlockQuantumGlass.INSTANCE, 0))
             .build();
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new SingularityDataHub(super.mName);
+    }
+
+    @Override
+    public long maxItemCount() {
+        return MAX_DISTINCT_ITEMS;
+    }
+
+    @Override
+    public long maxFluidCount() {
+        return MAX_DISTINCT_FLUIDS;
+    }
+
+    @Override
+    public boolean hasItem() {
+        return true;
+    }
+
+    @Override
+    public boolean hasFluid() {
+        return true;
+    }
+
+    @Override
+    public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
+        if (checkStructure(true, getBaseMetaTileEntity())) {
+            mStartUpCheck = -1;
+            mUpdate = 200;
+        }
+        ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
+        super.onFirstTick(aBaseMetaTileEntity);
+    }
+
+    @Override
+    public void onBlockDestroyed() {
+        if (portHatch != null) {
+            portHatch.unbind();
+        }
+        super.onBlockDestroyed();
+    }
+
+    @Override
+    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        super.onPostTick(aBaseMetaTileEntity, aTick);
+        if (aBaseMetaTileEntity.isServerSide()) {
+            locked = !aBaseMetaTileEntity.isActive();
+        }
+    }
+
+    @Override
+    public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
+        ItemStack aTool) {
+        setDoVoidExcess(!doVoidExcess);
+        GTUtility.sendChatToPlayer(
+            aPlayer,
+            StatCollector.translateToLocal("Info_SingularityDataHub_AutoVoiding") + doVoidExcess);
     }
 
     @Override
@@ -344,6 +278,73 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
             env,
             false,
             true);
+    }
+
+    @Override
+    public @NotNull CheckRecipeResult checkProcessing() {
+        mEfficiency = 10000;
+        mEfficiencyIncrease = 10000;
+        lEUt = GTValues.VP[9] / 20L;
+        mMaxProgresstime = 20;
+
+        ArrayList<ItemStack> inputItems = getStoredInputs();
+        ArrayList<FluidStack> inputFluids = getStoredFluids();
+
+        if (!inputItems.isEmpty()) {
+            for (ItemStack aItem : inputItems) {
+                ItemStack toDeplete = aItem.copy();
+                toDeplete.stackSize = injectItems(aItem, true);
+                depleteInput(toDeplete);
+            }
+        }
+
+        if (!inputFluids.isEmpty()) {
+            for (FluidStack aFluid : inputFluids) {
+                FluidStack toDeplete = aFluid.copy();
+                toDeplete.amount = injectFluids(aFluid, true);
+                depleteInput(toDeplete, false);
+            }
+        }
+
+        if (wirelessMode && addEUToGlobalEnergyMap(ownerUUID, -TierEU.RECIPE_MAX)) {
+            lEUt = 0;
+        } else if (lEUt > 0) {
+            lEUt = -lEUt;
+        }
+
+        return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
+
+    @Override
+    public ArrayList<ItemStack> getStoredInputsForColor(Optional<Byte> color) {
+        ArrayList<ItemStack> rList = new ArrayList<>();
+        Map<ItemId, ItemStack> inputsFromME = new Object2ObjectOpenHashMap<>();
+        for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) {
+            if (tHatch instanceof MTEHatchCraftingInputME) {
+                continue;
+            }
+            byte busColor = tHatch.getColor();
+            if (color.isPresent() && busColor != -1 && busColor != color.get()) continue;
+            tHatch.mRecipeMap = getRecipeMap();
+            IGregTechTileEntity tileEntity = tHatch.getBaseMetaTileEntity();
+            boolean isMEBus = tHatch instanceof MTEHatchInputBusME;
+            for (int i = tileEntity.getSizeInventory() - 1; i >= 0; i--) {
+                ItemStack itemStack = tileEntity.getStackInSlot(i);
+                if (itemStack != null) {
+                    if (isMEBus) {
+                        // Prevent the same item from different ME buses from being recognized
+                        inputsFromME.put(ItemId.createNoCopy(itemStack), itemStack);
+                    } else {
+                        rList.add(itemStack);
+                    }
+                }
+            }
+        }
+
+        if (!inputsFromME.isEmpty()) {
+            rList.addAll(inputsFromME.values());
+        }
+        return rList;
     }
 
     @Override
@@ -785,6 +786,16 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
         return getStoredFluid(aFluid) != null;
     }
 
+    @Override
+    public IItemList<IAEItemStack> getStoreItems() {
+        return STORE_ITEM;
+    }
+
+    @Override
+    public IItemList<IAEFluidStack> getStoreFluids() {
+        return STORE_FLUID;
+    }
+
     public BigInteger getItemStoredAmount() {
         BigInteger amount = BigInteger.ZERO;
         for (IAEItemStack item : STORE_ITEM) {
@@ -799,16 +810,6 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
             amount = amount.add(BigInteger.valueOf(fluid.getStackSize()));
         }
         return amount;
-    }
-
-    @Override
-    public IItemList<IAEItemStack> getStoreItems() {
-        return STORE_ITEM;
-    }
-
-    @Override
-    public IItemList<IAEFluidStack> getStoreFluids() {
-        return STORE_FLUID;
     }
 
     @Override
@@ -834,7 +835,7 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
 
     public boolean addPortBusToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
         if (aTileEntity != null) {
-            final IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
+            IMetaTileEntity aMetaTileEntity = aTileEntity.getMetaTileEntity();
             if (aMetaTileEntity instanceof VaultPortHatch vaultPortHatch) {
                 if (portHatch != null) return false;
                 portHatch = vaultPortHatch;

@@ -50,58 +50,6 @@ public class LargePyrolyseOven extends GTMMultiMachineBase<LargePyrolyseOven> im
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargePyrolyseOven(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_PYROLYSE_OVEN_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_PYROLYSE_OVEN)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 1);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.cokeOvenRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargePyrolyseOvenRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(13, 6, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargePyrolyseOven> getStructureDefinition() {
         return StructureDefinition.<LargePyrolyseOven>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -166,5 +114,57 @@ public class LargePyrolyseOven extends GTMMultiMachineBase<LargePyrolyseOven> im
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTPPRecipeMaps.cokeOvenRecipes;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_PYROLYSE_OVEN_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_PYROLYSE_OVEN)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 1);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargePyrolyseOvenRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(13, 6, 5, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargePyrolyseOven_Casing"))
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargePyrolyseOven(this.mName);
     }
 }

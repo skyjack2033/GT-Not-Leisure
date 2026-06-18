@@ -53,58 +53,6 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeCutter(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialCuttingMachineActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialCuttingMachine)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return (byte) TAE.GTPP_INDEX(29);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.cutterRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeCutterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCutter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCutter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 4, 4, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeCutter> getStructureDefinition() {
         return StructureDefinition.<LargeCutter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -138,16 +86,6 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
     }
 
     @Override
-    public double getEUtDiscount() {
-        return 0.5 - (mParallelTier / 50.0);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1.0 / 3.25 - (Math.max(0, mParallelTier - 1) / 50.0);
-    }
-
-    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }
@@ -165,5 +103,67 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.cutterRecipes;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.5 - (mParallelTier / 50.0);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1.0 / 3.25 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialCuttingMachineActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialCuttingMachine)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return (byte) TAE.GTPP_INDEX(29);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeCutterRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCutter_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCutter_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(7, 4, 4, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeCutter(this.mName);
     }
 }

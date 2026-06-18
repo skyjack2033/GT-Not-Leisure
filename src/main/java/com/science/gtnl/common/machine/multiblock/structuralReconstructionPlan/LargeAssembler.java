@@ -51,71 +51,6 @@ public class LargeAssembler extends GTMMultiMachineBase<LargeAssembler> implemen
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeAssembler(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.getIndexFromPage(0, 10);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.assemblerRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(9, 3, 3, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeAssembler> getStructureDefinition() {
         return StructureDefinition.<LargeAssembler>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -172,7 +107,72 @@ public class LargeAssembler extends GTMMultiMachineBase<LargeAssembler> implemen
     }
 
     @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.assemblerRecipes;
+    }
+
+    @Override
     public double getDurationModifier() {
         return 1 / 3.0 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_DISASSEMBLER_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.getIndexFromPage(0, 10);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeAssemblerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(9, 3, 3, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeAssembler(this.mName);
     }
 }

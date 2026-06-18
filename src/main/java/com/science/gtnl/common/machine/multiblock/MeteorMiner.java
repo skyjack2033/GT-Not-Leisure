@@ -347,28 +347,46 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         this.tierMachine = 0;
     }
 
-    public boolean findLaserRenderer(World w) {
-        this.setStartCoords();
-        if (w.getTileEntity(
-            xStart,
-            getBaseMetaTileEntity().getYCoord() + (this.tierMachine == 1 ? 10 : 15),
-            zStart) instanceof TileEntityLaserBeacon laser) {
-            renderer = laser;
-            renderer.setRotationFields(getExtendedFacing());
-            return true;
-        }
-        return false;
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new MeteorMinerGui(this);
     }
 
-    public int getTierMachine(ItemStack inventory) {
-        if (inventory == null) return 0;
-        return inventory.isItemEqual(GTNLItemList.MeteorMinerSchematic2.get(1)) ? 2
-            : inventory.isItemEqual(GTNLItemList.MeteorMinerSchematic1.get(1)) ? 1 : 0;
+    @Override
+    @Deprecated
+    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this mui1 fallback after the Meteor Miner reset button is fully ported to mui2.
+        super.addUIWidgets(builder, buildContext);
+        builder.widget(
+            new ButtonWidget().setOnClick((clickData, widget) -> this.startReset())
+                .setPlayClickSound(true)
+                .setBackground(
+                    () -> new IDrawable[] { GTUITextures.BUTTON_STANDARD, GTUITextures.OVERLAY_BUTTON_CYCLIC })
+                .setPos(new Pos2d(174, 112))
+                .setSize(16, 16));
     }
 
-    public boolean isSpecificItem(ItemStack stack, String modId, String itemName) {
-        ItemStack specificItem = GTModHandler.getModItem(modId, itemName, 1, 0);
-        return stack.getItem() == specificItem.getItem() && stack.getItemDamage() == specificItem.getItemDamage();
+    @Override
+    public void getWailaNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y,
+        int z) {
+        super.getWailaNBTData(player, tile, tag, world, x, y, z);
+        tag.setInteger("fortuneTier", this.fortuneTier);
+        tag.setInteger("tierMachine", this.tierMachine);
+    }
+
+    @Override
+    public void getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor,
+        IWailaConfigHandler config) {
+        super.getWailaBody(itemStack, currentTip, accessor, config);
+        final NBTTagCompound tag = accessor.getNBTData();
+        currentTip.add(
+            StatCollector.translateToLocal("Info_MeteorMiner_00") + EnumChatFormatting.WHITE
+                + tag.getInteger("tierMachine")
+                + EnumChatFormatting.RESET);
+        currentTip.add(
+            StatCollector.translateToLocal("Info_MeteorMiner_01") + EnumChatFormatting.WHITE
+                + tag.getInteger("fortuneTier")
+                + EnumChatFormatting.RESET);
     }
 
     @Override
@@ -397,22 +415,6 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
         tierMachine = aNBT.getByte("tierMachine");
         fortuneTier = aNBT.getInteger("fortuneTier");
-    }
-
-    public void reset() {
-        this.isResetting = false;
-        this.hasFinished = true;
-        this.isWaiting = false;
-        while (!scanQueue.isEmpty()) BLOCK_POS_POOL.releaseInstance(scanQueue.dequeue());
-        while (!rowQueue.isEmpty()) BLOCK_POS_POOL.releaseInstances(rowQueue.dequeue());
-        this.initializeDrillPos();
-    }
-
-    public void startReset() {
-        this.isResetting = true;
-        stopMachine(ShutDownReasonRegistry.NONE);
-        checkStructure(true, getBaseMetaTileEntity());
-        enableWorking();
     }
 
     @Override
@@ -486,20 +488,58 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             mOutputItems = itemDrop.toArray(new ItemStack[0]);
             itemDrop.clear();
 
-            boolean queueEmpty = (tierMachine == 1 ? scanQueue.isEmpty() : rowQueue.isEmpty());
+            boolean queueEmpty = tierMachine == 1 ? scanQueue.isEmpty() : rowQueue.isEmpty();
             if (queueEmpty) {
                 hasFinished = true;
                 if (renderer != null) renderer.setShouldRender(false);
                 checkStructure(true, getBaseMetaTileEntity());
-            } else {
-                if (renderer != null) {
-                    renderer.setShouldRender(true);
-                    renderer.setRange(150);
-                }
+            } else if (renderer != null) {
+                renderer.setShouldRender(true);
+                renderer.setRange(150);
             }
         }
 
         return SimpleCheckRecipeResult.ofSuccess("meteor_mining");
+    }
+
+    public boolean findLaserRenderer(World w) {
+        this.setStartCoords();
+        if (w.getTileEntity(
+            xStart,
+            getBaseMetaTileEntity().getYCoord() + (this.tierMachine == 1 ? 10 : 15),
+            zStart) instanceof TileEntityLaserBeacon laser) {
+            renderer = laser;
+            renderer.setRotationFields(getExtendedFacing());
+            return true;
+        }
+        return false;
+    }
+
+    public int getTierMachine(ItemStack inventory) {
+        if (inventory == null) return 0;
+        return inventory.isItemEqual(GTNLItemList.MeteorMinerSchematic2.get(1)) ? 2
+            : inventory.isItemEqual(GTNLItemList.MeteorMinerSchematic1.get(1)) ? 1 : 0;
+    }
+
+    public boolean isSpecificItem(ItemStack stack, String modId, String itemName) {
+        ItemStack specificItem = GTModHandler.getModItem(modId, itemName, 1, 0);
+        return stack.getItem() == specificItem.getItem() && stack.getItemDamage() == specificItem.getItemDamage();
+    }
+
+    public void reset() {
+        this.isResetting = false;
+        this.hasFinished = true;
+        this.isWaiting = false;
+        while (!scanQueue.isEmpty()) BLOCK_POS_POOL.releaseInstance(scanQueue.dequeue());
+        while (!rowQueue.isEmpty()) BLOCK_POS_POOL.releaseInstances(rowQueue.dequeue());
+        this.initializeDrillPos();
+    }
+
+    public void startReset() {
+        this.isResetting = true;
+        stopMachine(ShutDownReasonRegistry.NONE);
+        checkStructure(true, getBaseMetaTileEntity());
+        enableWorking();
     }
 
     public void setFortuneTier() {
@@ -551,7 +591,9 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         for (int dy = 0; dy < SCAN_HEIGHT; dy++) {
             for (int dx = 0; dx < SCAN_WIDTH; dx++) {
                 for (int dz = 0; dz < SCAN_DEPTH; dz++) {
-                    int x = x0 + dx, y = y0 + dy, z = z0 + dz;
+                    int x = x0 + dx;
+                    int y = y0 + dy;
+                    int z = z0 + dz;
                     if (!w.isAirBlock(x, y, z)) {
                         scanQueue.enqueue(
                             BLOCK_POS_POOL.getInstance()
@@ -574,7 +616,9 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             for (int dx = 0; dx < SCAN_WIDTH; dx++) {
                 ObjectList<BlockPos> row = new ObjectArrayList<>(SCAN_DEPTH);
                 for (int dz = 0; dz < SCAN_DEPTH; dz++) {
-                    int x = x0 + dx, y = y0 + dy, z = z0 + dz;
+                    int x = x0 + dx;
+                    int y = y0 + dy;
+                    int z = z0 + dz;
                     if (!w.isAirBlock(x, y, z)) {
                         row.add(
                             BLOCK_POS_POOL.getInstance()
@@ -634,8 +678,9 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             }
             for (int i = 0; i < tRecipe.mOutputs.length; i++) {
                 ItemStack recipeOutput = tRecipe.mOutputs[i].copy();
-                if (getBaseMetaTileEntity().getRandomNumber(10000) < tRecipe.getOutputChance(i))
+                if (getBaseMetaTileEntity().getRandomNumber(10000) < tRecipe.getOutputChance(i)) {
                     multiplyStackSize(recipeOutput);
+                }
                 outputItems.add(recipeOutput);
             }
         });
@@ -690,7 +735,6 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
 
     public void setElectricityStats() {
         this.mOutputItems = new ItemStack[0];
-
         this.mEfficiency = 10000;
         this.mEfficiencyIncrease = 10000;
 
@@ -701,8 +745,8 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             .setAmperageOC(true)
             .setExtraDurationModifier(mConfigSpeedBoost);
         calculator.calculate();
-        this.mMaxProgresstime = (isWaiting) ? 200 : calculator.getDuration();
-        this.lEUt = calculator.getConsumption() / ((isWaiting) ? 8 : 1);
+        this.mMaxProgresstime = isWaiting ? 200 : calculator.getDuration();
+        this.lEUt = calculator.getConsumption() / (isWaiting ? 8 : 1);
     }
 
     public boolean isEnergyEnough() {
@@ -716,47 +760,5 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             if (requiredEnergy <= 0) return true;
         }
         return false;
-    }
-
-    @Override
-    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
-        return new MeteorMinerGui(this);
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the Meteor Miner reset button is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        builder.widget(
-            new ButtonWidget().setOnClick((clickData, widget) -> this.startReset())
-                .setPlayClickSound(true)
-                .setBackground(
-                    () -> new IDrawable[] { GTUITextures.BUTTON_STANDARD, GTUITextures.OVERLAY_BUTTON_CYCLIC })
-                .setPos(new Pos2d(174, 112))
-                .setSize(16, 16));
-    }
-
-    @Override
-    public void getWailaNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y,
-        int z) {
-        super.getWailaNBTData(player, tile, tag, world, x, y, z);
-        tag.setInteger("fortuneTier", this.fortuneTier);
-        tag.setInteger("tierMachine", this.tierMachine);
-    }
-
-    @Override
-    public void getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor,
-        IWailaConfigHandler config) {
-        super.getWailaBody(itemStack, currentTip, accessor, config);
-        final NBTTagCompound tag = accessor.getNBTData();
-        currentTip.add(
-            StatCollector.translateToLocal("Info_MeteorMiner_00") + EnumChatFormatting.WHITE
-                + tag.getInteger("tierMachine")
-                + EnumChatFormatting.RESET);
-        currentTip.add(
-            StatCollector.translateToLocal("Info_MeteorMiner_01") + EnumChatFormatting.WHITE
-                + tag.getInteger("fortuneTier")
-                + EnumChatFormatting.RESET);
     }
 }

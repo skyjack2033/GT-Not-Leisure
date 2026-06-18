@@ -51,59 +51,6 @@ public class LargeAutoclave extends GTMMultiMachineBase<LargeAutoclave> implemen
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeAutoclave(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialWireMillActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialWireMill)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(11);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.autoclaveRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeAutoclaveRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(3, 3, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeAutoclave> getStructureDefinition() {
         return StructureDefinition.<LargeAutoclave>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -152,5 +99,58 @@ public class LargeAutoclave extends GTMMultiMachineBase<LargeAutoclave> implemen
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.autoclaveRecipes;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialWireMillActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialWireMill)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(11);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeAutoclaveRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(3, 3, 5, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAutoclave_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeAutoclave(this.mName);
     }
 }

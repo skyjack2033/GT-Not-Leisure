@@ -51,60 +51,6 @@ public class LargeBioLab extends GTMMultiMachineBase<LargeBioLab> implements ISu
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeBioLab(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 12);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTNLRecipeMaps.LargeBioLabRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeBioLabRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeBioLab_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(7, 5, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeBioLab> getStructureDefinition() {
         return StructureDefinition.<LargeBioLab>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -161,5 +107,59 @@ public class LargeBioLab extends GTMMultiMachineBase<LargeBioLab> implements ISu
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTNLRecipeMaps.LargeBioLabRecipes;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 12);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeBioLabRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeBioLab_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(7, 5, 5, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeBioLab(this.mName);
     }
 }

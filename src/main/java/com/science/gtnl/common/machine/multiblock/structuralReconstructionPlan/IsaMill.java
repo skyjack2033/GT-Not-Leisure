@@ -75,24 +75,13 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("IsaMillRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_01"))
-            .addPerfectOCInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 9, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .toolTipFinisher();
-        return tt;
+    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        if (aBaseMetaTileEntity.isServerSide()) {
+            if (this.mUpdate == 1 || this.mStartUpCheck == 1) {
+                this.mMillingBallBuses.clear();
+            }
+        }
+        super.onPostTick(aBaseMetaTileEntity, aTick);
     }
 
     @Override
@@ -164,6 +153,11 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
     }
 
     @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new IsaMill(this.mName);
+    }
+
+    @Override
     protected int getGlassEnergyTierLimit() {
         return VoltageIndex.UHV;
     }
@@ -201,44 +195,6 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
     @Override
     public RecipeMap<?> getRecipeMap() {
         return GTNLRecipeMaps.IsaMillRecipes;
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialMixerActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialMixer)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(2);
-    }
-
-    @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        if (aBaseMetaTileEntity.isServerSide()) {
-            if (this.mUpdate == 1 || this.mStartUpCheck == 1) {
-                this.mMillingBallBuses.clear();
-            }
-        }
-        super.onPostTick(aBaseMetaTileEntity, aTick);
-    }
-
-    @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new IsaMill(this.mName);
     }
 
     @Override
@@ -369,5 +325,49 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
     @Override
     public double getDurationModifier() {
         return 1 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialMixerActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialMixer)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(2);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("IsaMillRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_01"))
+            .addPerfectOCInfo()
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 5, 9, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .toolTipFinisher();
+        return tt;
     }
 }

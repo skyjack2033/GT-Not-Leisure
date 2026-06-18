@@ -51,11 +51,6 @@ public class RareEarthCentrifugal extends MultiMachineBase<RareEarthCentrifugal>
     }
 
     @Override
-    public boolean getPerfectOC() {
-        return false;
-    }
-
-    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new RareEarthCentrifugal(this.mName);
     }
@@ -160,5 +155,10 @@ public class RareEarthCentrifugal extends MultiMachineBase<RareEarthCentrifugal>
     public int getMaxParallelRecipes() {
         int tier = Math.max(0, GTUtility.getTier(this.getMaxInputVoltage() - 6));
         return 4 + 4 * tier;
+    }
+
+    @Override
+    public boolean getPerfectOC() {
+        return false;
     }
 }

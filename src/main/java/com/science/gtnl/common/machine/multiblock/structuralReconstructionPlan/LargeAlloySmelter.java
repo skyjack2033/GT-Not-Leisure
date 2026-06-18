@@ -49,59 +49,6 @@ public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> im
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeAlloySmelter(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_SMELTER_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_SMELTER)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.alloySmelterRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeAlloySmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeAlloySmelter> getStructureDefinition() {
         return StructureDefinition.<LargeAlloySmelter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -145,16 +92,6 @@ public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> im
     }
 
     @Override
-    public double getEUtDiscount() {
-        return 0.8 - (mParallelTier / 50.0) - (getMCoilLevel().getTier() / 50.0);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1 / 1.67 - (Math.max(0, mParallelTier - 1) / 50.0) - (getMCoilLevel().getTier() / 50.0);
-    }
-
-    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }
@@ -172,5 +109,68 @@ public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> im
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.alloySmelterRecipes;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.8 - (mParallelTier / 50.0) - (getMCoilLevel().getTier() / 50.0);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1 / 1.67 - (Math.max(0, mParallelTier - 1) / 50.0) - (getMCoilLevel().getTier() / 50.0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_SMELTER_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_SMELTER)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeAlloySmelterRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 3, 5, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeAlloySmelter(mName);
     }
 }

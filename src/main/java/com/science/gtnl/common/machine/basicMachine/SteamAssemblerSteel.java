@@ -46,18 +46,13 @@ public class SteamAssemblerSteel extends MTEBasicMachineSteel {
     }
 
     @Override
-    @Deprecated
-    public void addGregTechLogo(ModularWindow.Builder builder) {
-        // TODO: Remove this mui1 fallback after SteamAssemblerSteel mui2 rollout is complete.
-        builder.widget(
-            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
-                .setSize(18, 18)
-                .setPos(151, 62));
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.assemblerRecipes;
     }
 
     @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.assemblerRecipes;
+    public void startProcess() {
+        sendLoopStart((byte) 1);
     }
 
     @Override
@@ -69,8 +64,24 @@ public class SteamAssemblerSteel extends MTEBasicMachineSteel {
     }
 
     @Override
-    public void startProcess() {
-        sendLoopStart((byte) 1);
+    public int getCapacity() {
+        return 16000;
+    }
+
+    @Override
+    public int checkRecipe() {
+        GTRecipe tRecipe = getRecipeMap().findRecipeQuery()
+            .items(getAllInputs())
+            .fluids(getFillableStack())
+            .voltage(TierEU.MV)
+            .find();
+        if ((tRecipe != null) && (canOutput(tRecipe.mOutputs))
+            && (tRecipe.isRecipeInputEqual(true, new FluidStack[] { getFillableStack() }, getAllInputs()))) {
+            this.mOutputItems[0] = tRecipe.getOutput(0);
+            calculateCustomOverclock(tRecipe);
+            return FOUND_AND_SUCCESSFULLY_USED_RECIPE;
+        }
+        return DID_NOT_FIND_RECIPE;
     }
 
     @Override
@@ -165,6 +176,16 @@ public class SteamAssemblerSteel extends MTEBasicMachineSteel {
 
     @Override
     @Deprecated
+    public void addGregTechLogo(ModularWindow.Builder builder) {
+        // TODO: Remove this mui1 fallback after SteamAssemblerSteel mui2 rollout is complete.
+        builder.widget(
+            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
+                .setSize(18, 18)
+                .setPos(151, 62));
+    }
+
+    @Override
+    @Deprecated
     public void addProgressBar(ModularWindow.Builder builder, BasicUIProperties uiProperties) {
         // TODO: Remove this mui1 fallback after SteamAssemblerSteel mui2 rollout is complete.
         builder.widget(
@@ -195,26 +216,5 @@ public class SteamAssemblerSteel extends MTEBasicMachineSteel {
                             .getRight()));
         }
 
-    }
-
-    @Override
-    public int getCapacity() {
-        return 16000;
-    }
-
-    @Override
-    public int checkRecipe() {
-        GTRecipe tRecipe = getRecipeMap().findRecipeQuery()
-            .items(getAllInputs())
-            .fluids(getFillableStack())
-            .voltage(TierEU.MV)
-            .find();
-        if ((tRecipe != null) && (canOutput(tRecipe.mOutputs))
-            && (tRecipe.isRecipeInputEqual(true, new FluidStack[] { getFillableStack() }, getAllInputs()))) {
-            this.mOutputItems[0] = tRecipe.getOutput(0);
-            calculateCustomOverclock(tRecipe);
-            return FOUND_AND_SUCCESSFULLY_USED_RECIPE;
-        }
-        return DID_NOT_FIND_RECIPE;
     }
 }

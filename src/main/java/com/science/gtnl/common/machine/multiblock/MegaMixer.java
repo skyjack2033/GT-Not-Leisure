@@ -45,9 +45,10 @@ public class MegaMixer extends GTMMultiMachineBase<MegaMixer> implements ISurviv
     private static final int HORIZONTAL_OFF_SET = 5;
     private static final int VERTICAL_OFF_SET = 7;
     private static final int DEPTH_OFF_SET = 0;
+    private static final String[][] shape = StructureUtils.readStructureFromFile(MM_STRUCTURE_FILE_PATH);
+
     public double runningSpeedBoost;
     public int runningTickCounter = 0;
-    private static final String[][] shape = StructureUtils.readStructureFromFile(MM_STRUCTURE_FILE_PATH);
 
     public MegaMixer(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -55,61 +56,6 @@ public class MegaMixer extends GTMMultiMachineBase<MegaMixer> implements ISurviv
 
     public MegaMixer(String aName) {
         super(aName);
-    }
-
-    @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new MegaMixer(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialMixerActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialMixer)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings8, 7);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.mixerNonCellRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaMixerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(11, 9, 18, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -155,6 +101,11 @@ public class MegaMixer extends GTMMultiMachineBase<MegaMixer> implements ISurviv
             .addElement('G', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
             .addElement('H', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
             .build();
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new MegaMixer(this.mName);
     }
 
     @Override
@@ -245,5 +196,55 @@ public class MegaMixer extends GTMMultiMachineBase<MegaMixer> implements ISurviv
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTPPRecipeMaps.mixerNonCellRecipes;
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(sBlockCasings8, 7);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialMixerActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialMixer)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("MegaMixerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaMixer_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(11, 9, 18, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaMixer_Casing"))
+            .toolTipFinisher();
+        return tt;
     }
 }

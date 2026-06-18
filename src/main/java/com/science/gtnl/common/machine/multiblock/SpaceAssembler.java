@@ -87,54 +87,6 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new SpaceAssembler(this.mName);
-    }
-
-    @Override
-    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
-        return new SpaceAssemblerGui(this);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
-        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
-        if (sideDirection == facingDirection) {
-            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 13);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return IGRecipeMaps.spaceAssemblerRecipes;
-    }
-
-    @Override
-    @NotNull
-    public CheckRecipeResult checkProcessing() {
-        if (RecipeUtil.isValidForSpaceStation(getBaseMetaTileEntity().getWorld().provider.dimensionId)
-            || RecipeUtil.isValidForMothership(getBaseMetaTileEntity().getWorld().provider.dimensionId)) {
-            return super.checkProcessing();
-        }
-        return RecipeUtil.NOT_IN_SPACE_STATION;
-    }
-
-    @Override
     public void setItemNBT(NBTTagCompound aNBT) {
         super.setItemNBT(aNBT);
         saveUpgradeNBTData(aNBT);
@@ -159,14 +111,6 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     }
 
     @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this MUI1 fallback after the upgrade window is fully ported to MUI2.
-        super.addUIWidgets(builder, buildContext);
-        createUpgradeButton(builder, buildContext);
-    }
-
-    @Override
     public ItemStack[] getUpgradeRequiredItems() {
         return REQUIRED_ITEMS;
     }
@@ -174,30 +118,6 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     @Override
     public String getUpgradeButtonTooltip() {
         return StatCollector.translateToLocal("Info_SpaceAssembler_00");
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SpaceAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(11, 11, 11, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -255,6 +175,21 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     }
 
     @Override
+    public RecipeMap<?> getRecipeMap() {
+        return IGRecipeMaps.spaceAssemblerRecipes;
+    }
+
+    @Override
+    @NotNull
+    public CheckRecipeResult checkProcessing() {
+        if (RecipeUtil.isValidForSpaceStation(getBaseMetaTileEntity().getWorld().provider.dimensionId)
+            || RecipeUtil.isValidForMothership(getBaseMetaTileEntity().getWorld().provider.dimensionId)) {
+            return super.checkProcessing();
+        }
+        return RecipeUtil.NOT_IN_SPACE_STATION;
+    }
+
+    @Override
     public ProcessingLogic createProcessingLogic() {
         return new GTNLProcessingLogic() {
 
@@ -284,6 +219,71 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     @Override
     public double getEUtDiscount() {
         return 0.8 - (mParallelTier / 50.0) * Math.pow(0.90, mGlassTier);
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new SpaceAssembler(this.mName);
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 13);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection sideDirection,
+        ForgeDirection facingDirection, int colorIndex, boolean active, boolean redstoneLevel) {
+        if (sideDirection == facingDirection) {
+            if (active) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new SpaceAssemblerGui(this);
+    }
+
+    @Override
+    @Deprecated
+    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        // TODO: Remove this MUI1 fallback after the upgrade window is fully ported to MUI2.
+        super.addUIWidgets(builder, buildContext);
+        createUpgradeButton(builder, buildContext);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("SpaceAssemblerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(11, 11, 11, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
+            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+            .toolTipFinisher();
+        return tt;
     }
 
 }

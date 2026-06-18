@@ -454,6 +454,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             machineTier = 2;
         }
         setupParameters();
+        checkHatch(errors);
     }
 
     @Override
@@ -545,13 +546,13 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
         for (FluidStack fluidStack : getStoredWater()) {
             if (parallel <= 0) break;
-            // 先扣“高级净化水”（tier + 3）
+            // Consume the higher-grade purified water first.
             if (GTUtility.areFluidsEqual(fluidStack, PURIFIED_WATER[tier + 3])) {
                 int deductAmount = 50 / (int) GTUtility.powInt(2, machineTier - tier);
                 deductAmount = Math.max(1, deductAmount);
 
                 int timesToDeduct = fluidStack.amount / deductAmount;
-                timesToDeduct = Math.min(parallel, timesToDeduct); // 严格按本次并行
+                timesToDeduct = Math.min(parallel, timesToDeduct);
 
                 if (timesToDeduct > 0) {
                     fluidStack.amount -= deductAmount * timesToDeduct;
@@ -561,13 +562,13 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
             if (parallel <= 0) break;
 
-            // 再扣“低级净化水”（tier - 1）
+            // Consume the lower-grade purified water only if more parallels remain.
             if (GTUtility.areFluidsEqual(fluidStack, PURIFIED_WATER[tier - 1])) {
                 int deductAmount = 100 / (int) GTUtility.powInt(2, machineTier - tier);
                 deductAmount = Math.max(1, deductAmount);
 
                 int timesToDeduct = fluidStack.amount / deductAmount;
-                timesToDeduct = Math.min(parallel, timesToDeduct); // 严格按本次并行
+                timesToDeduct = Math.min(parallel, timesToDeduct);
 
                 if (timesToDeduct > 0) {
                     fluidStack.amount -= deductAmount * timesToDeduct;

@@ -57,25 +57,14 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 1;
 
+    public String state;
+
     public MegaSolarBoiler(String aName) {
         super(aName);
     }
 
     public MegaSolarBoiler(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
-    }
-
-    @Override
-    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
-        return new MegaSolarBoilerGui(this);
-    }
-
-    public String getStateForGui() {
-        return state;
-    }
-
-    public void setStateFromGui(String state) {
-        this.state = state;
     }
 
     @Override
@@ -115,6 +104,31 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
     }
 
     @Override
+    public void construct(ItemStack stackSize, boolean hintsOnly) {
+        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
+    }
+
+    @Override
+    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+        return survivalBuildPiece(
+            STRUCTURE_PIECE_MAIN,
+            stackSize,
+            HORIZONTAL_OFF_SET,
+            VERTICAL_OFF_SET,
+            DEPTH_OFF_SET,
+            elementBudget,
+            env,
+            false,
+            true);
+    }
+
+    @Override
+    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        checkHatch(errors);
+    }
+
+    @Override
     public int getCasingTextureID() {
         return StructureUtils.getTextureIndex(sBlockCasings1, 10);
     }
@@ -140,32 +154,6 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
     }
 
     @Override
-    public void construct(ItemStack stackSize, boolean hintsOnly) {
-        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
-    }
-
-    @Override
-    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        return survivalBuildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET,
-            elementBudget,
-            env,
-            false,
-            true);
-    }
-
-    @Override
-    public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
-    }
-
-    public String state;
-
-    @Override
     public void runMachine(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.runMachine(aBaseMetaTileEntity, aTick);
 
@@ -181,38 +169,6 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
 
         }
 
-    }
-
-    @Override
-    @Deprecated
-    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        // TODO: Remove this mui1 fallback after the Mega Solar Boiler terminal text is fully ported to mui2.
-        super.drawTexts(screenElements, inventorySlot);
-
-        screenElements.widget(
-            new TextWidget().setStringSupplier(() -> EnumChatFormatting.GREEN + state)
-                .setTextAlignment((Alignment.CenterLeft)))
-            .widget(new FakeSyncWidget.StringSyncer(() -> state, val -> state = val));
-    }
-
-    public void depleteInputReal(FluidStack aLiquid) {
-        depleteInputReal(aLiquid, false);
-    }
-
-    public boolean depleteInputReal(FluidStack aLiquid, boolean simulate) {
-        if (aLiquid == null) return false;
-        for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
-            setHatchRecipeMap(tHatch);
-            FluidStack tLiquid = tHatch.drain(ForgeDirection.UNKNOWN, aLiquid, false);
-            if (tLiquid != null && tLiquid.amount >= aLiquid.amount) {
-                if (simulate) {
-                    return true;
-                }
-                tLiquid = tHatch.drain(ForgeDirection.UNKNOWN, aLiquid, true);
-                return tLiquid != null && tLiquid.amount >= aLiquid.amount;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -243,10 +199,55 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
         return tt;
     }
 
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new MegaSolarBoilerGui(this);
+    }
+
+    public String getStateForGui() {
+        return state;
+    }
+
+    public void setStateFromGui(String state) {
+        this.state = state;
+    }
+
+    @Override
+    @Deprecated
+    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        // TODO: Remove this mui1 fallback after the Mega Solar Boiler terminal text is fully ported to mui2.
+        super.drawTexts(screenElements, inventorySlot);
+
+        screenElements.widget(
+            new TextWidget().setStringSupplier(() -> EnumChatFormatting.GREEN + state)
+                .setTextAlignment((Alignment.CenterLeft)))
+            .widget(new FakeSyncWidget.StringSyncer(() -> state, val -> state = val));
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public SoundResource getActivitySoundLoop() {
         return SoundResource.IC2_MACHINES_MACERATOR_OP;
+    }
+
+    public void depleteInputReal(FluidStack aLiquid) {
+        depleteInputReal(aLiquid, false);
+    }
+
+    public boolean depleteInputReal(FluidStack aLiquid, boolean simulate) {
+        if (aLiquid == null) return false;
+        for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) {
+            setHatchRecipeMap(tHatch);
+            FluidStack tLiquid = tHatch.drain(ForgeDirection.UNKNOWN, aLiquid, false);
+            if (tLiquid != null && tLiquid.amount >= aLiquid.amount) {
+                if (simulate) {
+                    return true;
+                }
+                tLiquid = tHatch.drain(ForgeDirection.UNKNOWN, aLiquid, true);
+                return tLiquid != null && tLiquid.amount >= aLiquid.amount;
+            }
+        }
+        return false;
     }
 
 }

@@ -77,34 +77,9 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new KerrNewmanHomogenizer(this.mName);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("KerrNewmanHomogenizerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(83, 36, 83, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .toolTipFinisher();
-        return tt;
+    public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
+        super.onFirstTick(aBaseMetaTileEntity);
+        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 
     @SideOnly(Side.CLIENT)
@@ -126,12 +101,6 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         if (enableRender) data |= 0x01;
         if (mMachine) data |= 0x02;
         return data;
-    }
-
-    @Override
-    public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
-        super.onFirstTick(aBaseMetaTileEntity);
-        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 
     @Override
@@ -195,84 +164,6 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         }
     }
 
-    public double[] rotateOffset(ForgeDirection facing, Rotation rot) {
-        double d = 5.5d;
-        double x = 0, y = 0, z = 0;
-
-        boolean vertical = facing.offsetY != 0;
-
-        if (!vertical) {
-            if (rot == Rotation.NORMAL || rot == Rotation.UPSIDE_DOWN) {
-                y = d;
-            } else {
-                if (facing.offsetX != 0) z = d;
-                else x = d;
-            }
-        } else {
-            if (rot == Rotation.NORMAL || rot == Rotation.UPSIDE_DOWN) z = d;
-            else x = d;
-        }
-
-        return new double[] { x, y, z };
-    }
-
-    public double getInterpolatedRotation(float partialTicks) {
-        double delta = rotation - prevRotation;
-
-        if (delta < -180.0) delta += 360.0;
-        if (delta > 180.0) delta -= 360.0;
-
-        return (prevRotation + delta * partialTicks) % 360.0;
-    }
-
-    @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setBoolean("enableRender", enableRender);
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
-    }
-
-    @Override
-    public boolean onWireCutterRightClick(ForgeDirection side, ForgeDirection wrenchingSide, EntityPlayer aPlayer,
-        float aX, float aY, float aZ, ItemStack aTool) {
-        if (getBaseMetaTileEntity().isServerSide()) {
-            this.enableRender = !enableRender;
-            GTUtility.sendChatToPlayer(
-                aPlayer,
-                StatCollector.translateToLocal("Info_Render_" + (this.enableRender ? "Enabled" : "Disabled")));
-        }
-        return true;
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
     public IStructureDefinition<KerrNewmanHomogenizer> getStructureDefinition() {
         return StructureDefinition.<KerrNewmanHomogenizer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -417,8 +308,119 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
     }
 
     @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new KerrNewmanHomogenizer(this.mName);
+    }
+
+    @Override
     public RecipeMap<?> getRecipeMap() {
         return GTPPRecipeMaps.mixerNonCellRecipes;
     }
 
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_ON)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_DTPF_OFF)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("KerrNewmanHomogenizerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(83, 36, 83, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public boolean onWireCutterRightClick(ForgeDirection side, ForgeDirection wrenchingSide, EntityPlayer aPlayer,
+        float aX, float aY, float aZ, ItemStack aTool) {
+        if (getBaseMetaTileEntity().isServerSide()) {
+            this.enableRender = !enableRender;
+            GTUtility.sendChatToPlayer(
+                aPlayer,
+                StatCollector.translateToLocal("Info_Render_" + (this.enableRender ? "Enabled" : "Disabled")));
+        }
+        return true;
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setBoolean("enableRender", enableRender);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        if (aNBT.hasKey("enableRender")) enableRender = aNBT.getBoolean("enableRender");
+    }
+
+    public double[] rotateOffset(ForgeDirection facing, Rotation rot) {
+        double d = 5.5d;
+        double x = 0;
+        double y = 0;
+        double z = 0;
+
+        boolean vertical = facing.offsetY != 0;
+
+        if (!vertical) {
+            if (rot == Rotation.NORMAL || rot == Rotation.UPSIDE_DOWN) {
+                y = d;
+            } else if (facing.offsetX != 0) {
+                z = d;
+            } else {
+                x = d;
+            }
+        } else if (rot == Rotation.NORMAL || rot == Rotation.UPSIDE_DOWN) {
+            z = d;
+        } else {
+            x = d;
+        }
+
+        return new double[] { x, y, z };
+    }
+
+    public double getInterpolatedRotation(float partialTicks) {
+        double delta = rotation - prevRotation;
+
+        if (delta < -180.0) delta += 360.0;
+        if (delta > 180.0) delta -= 360.0;
+
+        return (prevRotation + delta * partialTicks) % 360.0;
+    }
 }

@@ -48,6 +48,7 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
 
     public static final int ShapedArcaneCrafting = 0;
     public static final int InfusionCrafting = 1;
+
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String LAA_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":"
         + "multiblock/industrial_arcane_assembler";
@@ -62,79 +63,6 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
 
     public IndustrialArcaneAssembler(String aName) {
         super(aName);
-    }
-
-    @Override
-    public boolean getPerfectOC() {
-        return true;
-    }
-
-    @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new IndustrialArcaneAssembler(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return (machineMode == ShapedArcaneCrafting) ? GTNLRecipeMaps.IndustrialShapedArcaneCraftingRecipes
-            : GTNLRecipeMaps.IndustrialInfusionCraftingRecipes;
-    }
-
-    @NotNull
-    @Override
-    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
-        return Arrays.asList(
-            GTNLRecipeMaps.IndustrialShapedArcaneCraftingRecipes,
-            GTNLRecipeMaps.IndustrialInfusionCraftingRecipes);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("IndustrialArcaneAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_02"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(19, 19, 19, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -171,19 +99,13 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
 
     @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            hintsOnly,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET);
+        buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }
 
     @Override
     public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        if (this.mMachine) return -1;
-        return this.survivalBuildPiece(
+        if (mMachine) return -1;
+        return survivalBuildPiece(
             STRUCTURE_PIECE_MAIN,
             stackSize,
             HORIZONTAL_OFF_SET,
@@ -204,6 +126,30 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
     }
 
     @Override
+    public boolean getPerfectOC() {
+        return true;
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return machineMode == ShapedArcaneCrafting ? GTNLRecipeMaps.IndustrialShapedArcaneCraftingRecipes
+            : GTNLRecipeMaps.IndustrialInfusionCraftingRecipes;
+    }
+
+    @NotNull
+    @Override
+    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
+        return Arrays.asList(
+            GTNLRecipeMaps.IndustrialShapedArcaneCraftingRecipes,
+            GTNLRecipeMaps.IndustrialInfusionCraftingRecipes);
+    }
+
+    @Override
+    public int getMaxParallelRecipes() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
     public void checkHatch(List<StructureError> errors) {
         super.checkHatch(errors);
         if (!GTUtility.areStacksEqual(
@@ -220,8 +166,59 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
     }
 
     @Override
-    public int getMaxParallelRecipes() {
-        return Integer.MAX_VALUE;
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("IndustrialArcaneAssemblerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_02"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(19, 19, 19, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new GTNLMultiBlockBaseGui<>(this).withMachineModeIcons(
+            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID,
+            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
     }
 
     @Override
@@ -230,10 +227,8 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
     }
 
     @Override
-    protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
-        return new GTNLMultiBlockBaseGui<>(this).withMachineModeIcons(
-            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID,
-            GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
+    public String getMachineModeName() {
+        return StatCollector.translateToLocal("IndustrialArcaneAssembler_Mode_" + machineMode);
     }
 
     @Override
@@ -246,8 +241,8 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("IndustrialArcaneAssembler_Mode_" + machineMode);
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new IndustrialArcaneAssembler(mName);
     }
 
     @Override

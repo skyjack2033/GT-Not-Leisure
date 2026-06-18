@@ -58,34 +58,6 @@ public class MegaWiremill extends WirelessEnergyMultiMachineBase<MegaWiremill> {
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaWiremillRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaWiremill_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(61, 10, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public int getCasingTextureID() {
         return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11);
     }
@@ -201,13 +173,36 @@ public class MegaWiremill extends WirelessEnergyMultiMachineBase<MegaWiremill> {
     }
 
     @Override
-    public double getEUtDiscount() {
-        return super.getEUtDiscount();
+    public double getDurationModifier() {
+        return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
     }
 
     @Override
-    public double getDurationModifier() {
-        return super.getDurationModifier() * Math.pow(0.85, getMCoilLevel().getTier());
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("MegaWiremillRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaWiremill_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(61, 10, 15, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaWiremill_Casing"), 1)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 
 }

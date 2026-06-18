@@ -53,67 +53,6 @@ public class LargeExtruder extends GTMMultiMachineBase<LargeExtruder> implements
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeExtruder(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialExtruderActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialExtruder)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(33);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return RecipeMaps.extruderRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeExtruderRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeExtruder_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeExtruder_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 6, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return 0.8 - (mParallelTier / 50.0);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1.0 / 3.75 - (Math.max(0, mParallelTier - 1) / 50.0);
-    }
-
-    @Override
     public IStructureDefinition<LargeExtruder> getStructureDefinition() {
         return StructureDefinition.<LargeExtruder>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -163,5 +102,66 @@ public class LargeExtruder extends GTMMultiMachineBase<LargeExtruder> implements
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return RecipeMaps.extruderRecipes;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.8 - (mParallelTier / 50.0);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1.0 / 3.75 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialExtruderActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialExtruder)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(33);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeExtruderRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeExtruder_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeExtruder_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 3, 6, true)
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeExtruder_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeExtruder(this.mName);
     }
 }

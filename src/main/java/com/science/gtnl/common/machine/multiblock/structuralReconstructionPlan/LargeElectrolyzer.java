@@ -51,59 +51,6 @@ public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> im
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
-        return new LargeElectrolyzer(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerActive)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzer)
-                    .extFacing()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(5);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.electrolyzerNonCellRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeElectrolyzerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 4, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public IStructureDefinition<LargeElectrolyzer> getStructureDefinition() {
         return StructureDefinition.<LargeElectrolyzer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -135,16 +82,6 @@ public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> im
     }
 
     @Override
-    public double getEUtDiscount() {
-        return 0.8 - (mParallelTier / 50.0);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return 1.0 / 3.0 - (Math.max(0, mParallelTier - 1) / 50.0);
-    }
-
-    @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
         buildPiece(STRUCTURE_PIECE_MAIN, stackSize, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
     }
@@ -162,5 +99,68 @@ public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> im
             env,
             false,
             true);
+    }
+
+    @Override
+    public RecipeMap<?> getRecipeMap() {
+        return GTPPRecipeMaps.electrolyzerNonCellRecipes;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.8 - (mParallelTier / 50.0);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1.0 / 3.0 - (Math.max(0, mParallelTier - 1) / 50.0);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzerActive)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(TexturesGtBlock.oMCDIndustrialElectrolyzer)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(5);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("LargeElectrolyzerRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addMultiAmpHatchInfo()
+            .beginStructureBlock(5, 3, 4, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new LargeElectrolyzer(this.mName);
     }
 }

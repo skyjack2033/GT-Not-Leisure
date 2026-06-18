@@ -60,73 +60,8 @@ public class PetrochemicalPlant extends MultiMachineBase<PetrochemicalPlant> imp
     }
 
     @Override
-    public boolean getPerfectOC() {
-        return true;
-    }
-
-    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new PetrochemicalPlant(this.mName);
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return GTNLRecipeMaps.PetrochemicalPlantRecipes;
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("PetrochemicalPlantRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_02"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(28, 60, 65, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Muffler"), 8)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -220,8 +155,8 @@ public class PetrochemicalPlant extends MultiMachineBase<PetrochemicalPlant> imp
     }
 
     @Override
-    public int getMaxParallelRecipes() {
-        return getMCoilLevel().getTier() * 40;
+    public RecipeMap<?> getRecipeMap() {
+        return GTNLRecipeMaps.PetrochemicalPlantRecipes;
     }
 
     @NotNull
@@ -278,5 +213,70 @@ public class PetrochemicalPlant extends MultiMachineBase<PetrochemicalPlant> imp
         }
 
         return result;
+    }
+
+    @Override
+    public int getMaxParallelRecipes() {
+        return getMCoilLevel().getTier() * 40;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_OIL_CRACKER_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("PetrochemicalPlantRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_02"))
+            .addPerfectOCInfo()
+            .addTecTechHatchInfo()
+            .beginStructureBlock(28, 60, 65, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Casing"))
+            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_PetrochemicalPlant_Muffler"), 8)
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public boolean getPerfectOC() {
+        return true;
     }
 }

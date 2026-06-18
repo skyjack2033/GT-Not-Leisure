@@ -74,11 +74,6 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity iGregTechTileEntity) {
-        return new MegaBlastFurnace(this.mName);
-    }
-
-    @Override
     public IStructureDefinition<MegaBlastFurnace> getStructureDefinition() {
         return StructureDefinition.<MegaBlastFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -127,177 +122,8 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("Tooltip_MegaBlastFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(23, 44, 23, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_01"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound aNBT) {
-        super.loadNBTData(aNBT);
-        if (!aNBT.hasKey(INPUT_SEPARATION_NBT_KEY)) {
-            this.inputSeparation = aNBT.getBoolean("isBussesSeparate");
-        }
-        if (!aNBT.hasKey(BATCH_MODE_NBT_KEY)) {
-            this.batchMode = aNBT.getBoolean("mUseMultiparallelMode");
-        }
-    }
-
-    @Override
-    public boolean getPerfectOC() {
-        return mParallelTier >= 10;
-    }
-
-    @Override
-    public boolean onWireCutterRightClick(ForgeDirection side, ForgeDirection wrenchingSide, EntityPlayer aPlayer,
-        float aX, float aY, float aZ, ItemStack aTool) {
-        if (!aPlayer.isSneaking()) {
-            this.inputSeparation = !this.inputSeparation;
-            GTUtility.sendChatToPlayer(
-                aPlayer,
-                StatCollector.translateToLocal("GT5U.machines.separatebus") + " " + this.inputSeparation);
-            return true;
-        }
-        this.batchMode = !this.batchMode;
-        if (this.batchMode) {
-            GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("misc.BatchModeTextOn"));
-        } else {
-            GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("misc.BatchModeTextOff"));
-        }
-        return true;
-    }
-
-    @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
-        int aColorIndex, boolean aActive, boolean aRedstone) {
-        if (side == facing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE_ACTIVE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE_ACTIVE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE)
-                    .extFacing()
-                    .build(),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE_GLOW)
-                    .extFacing()
-                    .glow()
-                    .build() };
-        }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return TAE.GTPP_INDEX(15);
-    }
-
-    @Override
-    public ProcessingLogic createProcessingLogic() {
-        return new GTNLProcessingLogic() {
-
-            @NotNull
-            @Override
-            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
-                return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
-                    .setRecipeHeat(recipe.mSpecialValue)
-                    .setMachineHeat(getMachineHeat())
-                    .setHeatOC(getHeatOC())
-                    .setHeatDiscount(getHeatDiscount())
-                    .setEUtDiscount(getEUtDiscount())
-                    .setDurationModifier(getDurationModifier())
-                    .setPerfectOC(getPerfectOC());
-            }
-
-            @Override
-            public @NotNull CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
-                return recipe.mSpecialValue <= mHeatingCapacity ? CheckRecipeResultRegistry.SUCCESSFUL
-                    : CheckRecipeResultRegistry.insufficientHeat(recipe.mSpecialValue);
-            }
-        }.setMaxParallelSupplier(this::getTrueParallel);
-    }
-
-    @Override
-    public int getMachineHeat() {
-        return mHeatingCapacity;
-    }
-
-    @Override
-    public boolean getHeatOC() {
-        return true;
-    }
-
-    @Override
-    public boolean getHeatDiscount() {
-        return true;
-    }
-
-    @Override
-    public double getEUtDiscount() {
-        return 0.8 - (mParallelTier / 50.0);
-    }
-
-    @Override
-    public double getDurationModifier() {
-        return Math.max(0.005, 1.0 / 5.0 - (Math.max(0, mParallelTier - 1) / 50.0));
-    }
-
-    @Override
-    public int getMaxParallelRecipes() {
-        resetParallelTier();
-
-        ParallelControllerHatch module = getSingleParallelControllerHatch();
-        if (module != null) {
-            mParallelTier = module.mTier;
-            return 4 << (2 * (module.mTier - 2));
-        }
-
-        if (mParallelTier <= 1) {
-            return 8;
-        } else {
-            return 4 << (2 * (mParallelTier - 2));
-        }
-    }
-
-    @Override
-    public void setupProcessingLogic(ProcessingLogic logic) {
-        super.setupProcessingLogic(logic);
-        logic.setUnlimitedTierSkips();
-    }
-
-    @Override
-    public void setProcessingLogicPower(ProcessingLogic logic) {
-        logic.setAvailableVoltage(getMaxInputEu());
-        logic.setAvailableAmperage(1);
-        logic.setAmperageOC(true);
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity iGregTechTileEntity) {
+        return new MegaBlastFurnace(this.mName);
     }
 
     @Override
@@ -356,14 +182,171 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     }
 
     @Override
-    public int getRecipeCatalystPriority() {
-        return -2;
+    public ProcessingLogic createProcessingLogic() {
+        return new GTNLProcessingLogic() {
+
+            @NotNull
+            @Override
+            public GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+                return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
+                    .setRecipeHeat(recipe.mSpecialValue)
+                    .setMachineHeat(getMachineHeat())
+                    .setHeatOC(getHeatOC())
+                    .setHeatDiscount(getHeatDiscount())
+                    .setEUtDiscount(getEUtDiscount())
+                    .setDurationModifier(getDurationModifier())
+                    .setPerfectOC(getPerfectOC());
+            }
+
+            @Override
+            public @NotNull CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
+                return recipe.mSpecialValue <= mHeatingCapacity ? CheckRecipeResultRegistry.SUCCESSFUL
+                    : CheckRecipeResultRegistry.insufficientHeat(recipe.mSpecialValue);
+            }
+        }.setMaxParallelSupplier(this::getTrueParallel);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public SoundResource getActivitySoundLoop() {
-        return SoundResource.GT_MACHINES_MEGA_BLAST_FURNACE_LOOP;
+    public boolean getPerfectOC() {
+        return mParallelTier >= 10;
+    }
+
+    @Override
+    public int getMachineHeat() {
+        return mHeatingCapacity;
+    }
+
+    @Override
+    public boolean getHeatOC() {
+        return true;
+    }
+
+    @Override
+    public boolean getHeatDiscount() {
+        return true;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return 0.8 - (mParallelTier / 50.0);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return Math.max(0.005, 1.0 / 5.0 - (Math.max(0, mParallelTier - 1) / 50.0));
+    }
+
+    @Override
+    public int getMaxParallelRecipes() {
+        resetParallelTier();
+
+        ParallelControllerHatch module = getSingleParallelControllerHatch();
+        if (module != null) {
+            mParallelTier = module.mTier;
+            return 4 << (2 * (module.mTier - 2));
+        }
+
+        if (mParallelTier <= 1) {
+            return 8;
+        } else {
+            return 4 << (2 * (mParallelTier - 2));
+        }
+    }
+
+    @Override
+    public void setupProcessingLogic(ProcessingLogic logic) {
+        super.setupProcessingLogic(logic);
+        logic.setUnlimitedTierSkips();
+    }
+
+    @Override
+    public void setProcessingLogicPower(ProcessingLogic logic) {
+        logic.setAvailableVoltage(getMaxInputEu());
+        logic.setAvailableAmperage(1);
+        logic.setAmperageOC(true);
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return TAE.GTPP_INDEX(15);
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
+        int aColorIndex, boolean aActive, boolean aRedstone) {
+        if (side == facing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE_ACTIVE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE_ACTIVE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE)
+                    .extFacing()
+                    .build(),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAST_FURNACE_GLOW)
+                    .extFacing()
+                    .glow()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("Tooltip_MegaBlastFurnaceRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(23, 44, 23, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
+            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_01"))
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
+    }
+
+    @Override
+    public boolean onWireCutterRightClick(ForgeDirection side, ForgeDirection wrenchingSide, EntityPlayer aPlayer,
+        float aX, float aY, float aZ, ItemStack aTool) {
+        if (!aPlayer.isSneaking()) {
+            this.inputSeparation = !this.inputSeparation;
+            GTUtility.sendChatToPlayer(
+                aPlayer,
+                StatCollector.translateToLocal("GT5U.machines.separatebus") + " " + this.inputSeparation);
+            return true;
+        }
+        this.batchMode = !this.batchMode;
+        if (this.batchMode) {
+            GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("misc.BatchModeTextOn"));
+        } else {
+            GTUtility.sendChatToPlayer(aPlayer, StatCollector.translateToLocal("misc.BatchModeTextOff"));
+        }
+        return true;
+    }
+
+    @Override
+    public int getRecipeCatalystPriority() {
+        return -2;
     }
 
     @Override
@@ -432,5 +415,22 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
                 + getAveragePollutionPercentage()
                 + EnumChatFormatting.RESET
                 + " %" };
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        if (!aNBT.hasKey(INPUT_SEPARATION_NBT_KEY)) {
+            this.inputSeparation = aNBT.getBoolean("isBussesSeparate");
+        }
+        if (!aNBT.hasKey(BATCH_MODE_NBT_KEY)) {
+            this.batchMode = aNBT.getBoolean("mUseMultiparallelMode");
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public SoundResource getActivitySoundLoop() {
+        return SoundResource.GT_MACHINES_MEGA_BLAST_FURNACE_LOOP;
     }
 }

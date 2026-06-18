@@ -75,37 +75,6 @@ public class MegaVacuumDryingFurnace extends WirelessEnergyMultiMachineBase<Mega
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaVacuumDryingFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(19, 14, 27, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public int getCasingTextureID() {
         return BlockGTCasingsTT.textureOffset;
     }
@@ -275,6 +244,37 @@ public class MegaVacuumDryingFurnace extends WirelessEnergyMultiMachineBase<Mega
             case MACHINEMODE_NUCLEAR_SALT -> GTPPRecipeMaps.nuclearSaltProcessingPlantRecipes;
             default -> GTPPRecipeMaps.vacuumFurnaceRecipes;
         };
+    }
+
+    @Override
+    public MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(StatCollector.translateToLocal("MegaVacuumDryingFurnaceRecipeType"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_00"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_01"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
+            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
+            .addTecTechHatchInfo()
+            .beginStructureBlock(19, 14, 27, true)
+            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
+            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
+            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
+            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
+            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
+            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaVacuumDryingFurnace_Casing"))
+            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher();
+        return tt;
     }
 
     @NotNull
