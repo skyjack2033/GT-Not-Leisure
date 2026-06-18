@@ -87,7 +87,7 @@ public class TeleportationArrayToAlfheim extends MultiMachineBase<TeleportationA
     public static final int MANA_MODE = 2;
     public static final int RUNE_MODE = 3;
     public static final ItemStack asgardandelion = ItemUtils
-        .getItemStack(Mods.Botania.ID, "specialFlower", 1, 0, "{type:\\\"asgardandelion\\\"}", null);
+        .getItemStack(Mods.Botania.ID, "specialFlower", 1, 0, "{type:\"asgardandelion\"}", null);
 
     public boolean enableInfinityMana = false;
     public ArrayList<CustomFluidHatch> mFluidManaInputHatch = new ArrayList<>();
