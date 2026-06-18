@@ -3164,7 +3164,7 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTModHandler.getModItem(Mods.Thaumcraft.ID, "ItemBaubleBlanks", 1, 1),
+                GTModHandler.getModItem(Mods.Thaumcraft.ID, "ItemBaubleBlanks", 1, 0),
                 new ItemStack(Items.string, 4),
                 new ItemStack(Items.dye, 4, 5))
             .itemOutputs(GTNLItemList.WyvernProjectionNecklace.get(1))
@@ -3174,7 +3174,7 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                GTModHandler.getModItem(Mods.Thaumcraft.ID, "ItemBaubleBlanks", 1, 1),
+                GTModHandler.getModItem(Mods.Thaumcraft.ID, "ItemBaubleBlanks", 1, 0),
                 new ItemStack(Items.string, 4),
                 new ItemStack(Items.dye, 4, 14))
             .itemOutputs(GTNLItemList.DraconicProjectionNecklace.get(1))
