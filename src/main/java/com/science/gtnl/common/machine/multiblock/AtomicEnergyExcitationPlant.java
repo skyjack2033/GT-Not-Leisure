@@ -24,7 +24,6 @@ import com.gtnewhorizon.structurelib.structure.ITierConverter;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
-import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.render.tile.AtomicEnergyExcitationPlantRenderer;
 import com.science.gtnl.utils.StructureUtils;
@@ -269,12 +268,8 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                             x -> ++x.mCountCasing,
                             StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))))
             .addElement('G', GTStructureUtility.ofFrame(Materials.Neutronium))
-            .addElement(
-                'H',
-                StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 129))
-            .addElement(
-                'I',
-                StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings, 31_766 + 129))
+            .addElement('H', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 129))
+            .addElement('I', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings, 31_766 + 129))
             .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockMetal4, 13))
             .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockMetal4, 14))
             .addElement('L', StructureUtility.isAir())

@@ -30,11 +30,6 @@ import lombok.Setter;
 public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamElevatorModule>
     implements ISurvivalConstructable {
 
-    public int mTier;
-    @Getter
-    @Setter
-    public long steamBufferSize;
-    public boolean isConnected = false;
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String SEM_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/steam_elevator_module";
     private static final String[][] shape = StructureUtils.readStructureFromFile(SEM_STRUCTURE_FILE_PATH);
@@ -42,39 +37,33 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
     private static final int VERTICAL_OFF_SET = 1;
     private static final int DEPTH_OFF_SET = 0;
 
+    public int mTier;
+    @Getter
+    @Setter
+    public long steamBufferSize;
+    public boolean isConnected = false;
+
     public SteamElevatorModule(int aID, String aName, String aNameRegional, int aTier) {
         super(aID, aName, aNameRegional);
         mTier = aTier;
-        steamBufferSize = 640000 * (1L << (aTier));
+        steamBufferSize = 640000 * (1L << aTier);
     }
 
     public SteamElevatorModule(String aName, int aTier) {
         super(aName);
         mTier = aTier;
-        steamBufferSize = 640000 * (1L << (aTier));
+        steamBufferSize = 640000 * (1L << aTier);
     }
 
     @Override
-    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
-        int colorIndex, boolean aActive, boolean redstoneLevel) {
-        if (side == aFacing) {
-            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_COMPRESSOR_ACTIVE)
-                    .extFacing()
-                    .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_COMPRESSOR)
-                    .extFacing()
-                    .build() };
+    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        if (aBaseMetaTileEntity.isServerSide() && isConnected) {
+            super.onPostTick(aBaseMetaTileEntity, aTick);
+            if (mEfficiency < 0) mEfficiency = 0;
+            if (aBaseMetaTileEntity.getStoredEU() <= 0 && mMaxProgresstime > 0) {
+                stopMachine(ShutDownReasonRegistry.POWER_LOSS);
+            }
         }
-        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
-    }
-
-    @Override
-    public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings2, 0);
     }
 
     @Override
@@ -137,20 +126,9 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPieceAndSteamInput(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors))
-            return;
+        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
+        checkHatch(errors);
         updateHatchTexture();
-    }
-
-    @Override
-    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
-        if (aBaseMetaTileEntity.isServerSide() && isConnected) {
-            super.onPostTick(aBaseMetaTileEntity, aTick);
-            if (mEfficiency < 0) mEfficiency = 0;
-            if (aBaseMetaTileEntity.getStoredEU() <= 0 && mMaxProgresstime > 0) {
-                stopMachine(ShutDownReasonRegistry.POWER_LOSS);
-            }
-        }
     }
 
     @Override
@@ -198,6 +176,29 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
     }
 
     @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+        int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_COMPRESSOR_ACTIVE)
+                    .extFacing()
+                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()),
+                TextureFactory.builder()
+                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_MULTI_COMPRESSOR)
+                    .extFacing()
+                    .build() };
+        }
+        return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(getCasingTextureID()) };
+    }
+
+    @Override
+    public int getCasingTextureID() {
+        return StructureUtils.getTextureIndex(sBlockCasings2, 0);
+    }
+
+    @Override
     public long maxEUStore() {
         return steamBufferSize;
     }
@@ -207,6 +208,10 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
         return 14;
     }
 
+    public int getMachineEffectRange() {
+        return 0;
+    }
+
     public void connect() {
         isConnected = true;
     }
@@ -214,9 +219,4 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
     public void disconnect() {
         isConnected = false;
     }
-
-    public int getMachineEffectRange() {
-        return 0;
-    };
-
 }

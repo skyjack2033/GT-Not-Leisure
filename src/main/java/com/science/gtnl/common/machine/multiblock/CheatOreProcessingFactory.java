@@ -20,7 +20,6 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
-import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
@@ -126,7 +125,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
     public IStructureDefinition<CheatOreProcessingFactory> getStructureDefinition() {
         return StructureDefinition.<CheatOreProcessingFactory>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings,31_766 + 300))
+            .addElement('A', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings, 31_766 + 300))
             .addElement('B', GTStructureUtility.ofFrame(Materials.Bronze))
             .addElement('C', StructureUtility.ofBlock(blockCasingsMisc, 2))
             .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 2))

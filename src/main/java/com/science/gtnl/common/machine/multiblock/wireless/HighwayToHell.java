@@ -25,7 +25,6 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.Utils;
@@ -126,9 +125,7 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
                             StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
-            .addElement(
-                'P',
-                StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 129))
+            .addElement('P', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 129))
             .addElement('Q', CustomHatchElement.ROTOR_ASSEMBLY.newAny(getCasingTextureID(), 2))
             .build();
     }

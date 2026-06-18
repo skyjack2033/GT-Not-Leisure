@@ -365,42 +365,15 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
     }
 
-    public boolean checkHatches() {
-        return !mSteamInputFluids.isEmpty() || !mSteamBigInputFluids.isEmpty() || !mSteamWirelessInputFluids.isEmpty();
-    }
-
-    public boolean checkHatch() {
-        return !mSteamInputFluids.isEmpty() || !mSteamBigInputFluids.isEmpty()
-            || !mSteamWirelessInputFluids.isEmpty()
-            || !mSteamInputs.isEmpty()
-            || !mSteamOutputs.isEmpty()
-            || !mInputBusses.isEmpty()
-            || !mOutputBusses.isEmpty()
-            || !mInputHatches.isEmpty()
-            || !mOutputHatches.isEmpty();
-    }
-
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         failStructureCheck(errors);
     }
 
     public void checkHatch(List<StructureError> errors) {
-        int existingErrors = errors.size();
-        checkHasAnySteamInput(errors);
-        if (!checkHatch() && errors.size() == existingErrors) {
-            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
+        if (mSteamInputFluids.isEmpty() && mSteamBigInputFluids.isEmpty() && mSteamWirelessInputFluids.isEmpty()) {
+            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.missing_steam_input"));
         }
-    }
-
-    protected boolean checkPieceAndSteamInput(String piece, int horizontalOffset, int verticalOffset, int depthOffset,
-        List<StructureError> errors) {
-        int existingErrors = errors.size();
-        if (!checkPiece(piece, horizontalOffset, verticalOffset, depthOffset, errors)) {
-            return false;
-        }
-        checkHasAnySteamInput(errors);
-        return errors.size() == existingErrors;
     }
 
     protected boolean checkMachineTier(List<StructureError> errors, int minCasing, boolean tier1Valid,
@@ -1211,12 +1184,6 @@ public abstract class SteamMultiMachineBase<T extends SteamMultiMachineBase<T>> 
         for (MTEHatchInput tHatch : GTUtility.validMTEList(mInputHatches)) tHatch.updateSlots();
         for (MTEHatchInputBus tHatch : GTUtility.validMTEList(mInputBusses)) tHatch.updateSlots();
         super.updateSlots();
-    }
-
-    protected void checkHasAnySteamInput(List<StructureError> errors) {
-        if (mSteamInputFluids.isEmpty() && mSteamBigInputFluids.isEmpty() && mSteamWirelessInputFluids.isEmpty()) {
-            errors.add(StructureErrors.of("GT5U.gui.text.structure_error.missing_steam_input"));
-        }
     }
 
     @Override
