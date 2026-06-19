@@ -13,8 +13,8 @@ import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.tile.misc.TileSecurity;
 import appeng.util.Platform;
 import baubles.api.BaublesApi;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
+import gregtech.api.enums.Mods;
 
 public class MEHandler {
 
@@ -27,7 +27,7 @@ public class MEHandler {
             }
         }
 
-        if (Loader.isModLoaded("Baubles")) {
+        if (Mods.Baubles.isModLoaded()) {
             return readBaubles(player);
         }
         return null;
@@ -42,7 +42,7 @@ public class MEHandler {
             }
         }
 
-        if (Loader.isModLoaded("Baubles")) {
+        if (Mods.Baubles.isModLoaded()) {
             return readBaubles(player.player);
         }
         return null;

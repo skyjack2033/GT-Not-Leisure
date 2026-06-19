@@ -50,11 +50,11 @@ import appeng.tile.misc.TileSecurity;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import baubles.api.BaublesApi;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import gregtech.api.enums.Mods;
 import io.netty.buffer.ByteBuf;
 
 public class KeyBindingHandler implements IMessage, IMessageHandler<KeyBindingHandler, IMessage> {
@@ -156,7 +156,7 @@ public class KeyBindingHandler implements IMessage, IMessageHandler<KeyBindingHa
                     }
                 }
             }
-            if (Loader.isModLoaded("Baubles")) {
+            if (Mods.Baubles.isModLoaded()) {
                 readBaublesR(player, exItem, targetCount);
             }
         } else if (container instanceof AEBaseContainer c && container instanceof IContainerCraftingPacket t) {
@@ -280,7 +280,7 @@ public class KeyBindingHandler implements IMessage, IMessageHandler<KeyBindingHa
                     return;
                 }
             }
-            if (Loader.isModLoaded("Baubles")) {
+            if (Mods.Baubles.isModLoaded()) {
                 readBaublesS(player, exItem);
             }
         } else if (container instanceof ContainerMEMonitorable) {
@@ -312,7 +312,7 @@ public class KeyBindingHandler implements IMessage, IMessageHandler<KeyBindingHa
 
                 var host = aec.getTarget();
                 if (host instanceof IActionHost h) {
-                    if (Loader.isModLoaded("ae2fc")) ae2fcCraft(h, player, aec);
+                    if (Mods.AE2FluidCraft.isModLoaded()) ae2fcCraft(h, player, aec);
                     else Platform.openGUI(
                         player,
                         aec.getOpenContext()

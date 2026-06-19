@@ -21,12 +21,12 @@ import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import baubles.api.BaublesApi;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import gregtech.api.enums.Mods;
 import io.netty.buffer.ByteBuf;
 
 public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPickBlock, IMessage> {
@@ -67,7 +67,7 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
 
         ServerThreadUtil.addScheduledTask(() -> {
             readPlayer(player, needItem, message);
-            if (needItem != null && needItem.stackSize != 0 && Loader.isModLoaded("Baubles")) {
+            if (needItem != null && needItem.stackSize != 0 && Mods.Baubles.isModLoaded()) {
                 readBaubles(player, needItem, message.slot);
             }
         });

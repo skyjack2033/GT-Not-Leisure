@@ -4,6 +4,7 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -22,6 +23,7 @@ import com.science.gtnl.utils.StructureUtils;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -78,7 +80,12 @@ public class BrickedBlastFurnace extends SteamMultiMachineBase<BrickedBlastFurna
                             StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 15))))
             .addElement('C', GTStructureUtility.ofFrame(Materials.Bronze))
             .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10))
-            .addElement('E', StructureUtility.ofBlockAnyMeta(Blocks.stonebrick))
+            .addElement(
+                'E',
+                StructureUtility.ofChain(
+                    StructureUtility.ofBlockAnyMeta(Blocks.stonebrick),
+                    StructureUtility.ofBlockAnyMeta(
+                        Mods.Chisel.isModLoaded() ? Block.getBlockFromName("chisel:stonebricksmooth") : Blocks.stone)))
             .build();
     }
 
