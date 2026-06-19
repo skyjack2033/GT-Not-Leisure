@@ -1546,6 +1546,16 @@ public class GTNLMaterials implements Runnable {
         OFFSET_ID + 119,
         TextureSet.SET_FLUID);
 
+    public static final Werkstoff TwilightSluice = new Werkstoff(
+        new short[] { 98, 19, 158 },
+        "Twilight Sluice",
+        new Werkstoff.Stats(),
+        Werkstoff.Types.ELEMENT,
+        new Werkstoff.GenerationFeatures().disable()
+            .addCells(),
+        OFFSET_ID + 202,
+        TextureSet.SET_FLUID);
+
     public static final Werkstoff EnderAir = new Werkstoff(
         new short[] { 57, 66, 89 },
         "Ender Air",
@@ -1708,6 +1718,17 @@ public class GTNLMaterials implements Runnable {
             .addMetalCraftingSolidifierRecipes(),
         OFFSET_ID + 201,
         TextureSet.SET_SHINY);
+
+    public static void init() {
+        setToolHandleMaterial(Breel.getBridgeMaterial(), Materials.Wood);
+        setToolHandleMaterial(Stronze.getBridgeMaterial(), Materials.Wood);
+        setToolHandleMaterial(CompressedSteam.getBridgeMaterial(), Materials.Wood);
+    }
+
+    private static void setToolHandleMaterial(Materials material, Materials handleMaterial) {
+        if (material == null || handleMaterial == null) return;
+        material.mHandleMaterial = handleMaterial;
+    }
 
     @Override
     public void run() {}
