@@ -17,6 +17,9 @@ public class GTNLMaterials implements Runnable {
         .addPrefix(OrePrefixes.blockCasing)
         .addPrefix(OrePrefixes.blockCasingAdvanced);
 
+    @Override
+    public void run() {}
+
     // TODO: Enable in 2.9.0-beta2
     // public static Werkstoff Bronze = new Werkstoff(
     // Materials.Bronze,
@@ -1546,16 +1549,6 @@ public class GTNLMaterials implements Runnable {
         OFFSET_ID + 119,
         TextureSet.SET_FLUID);
 
-    public static final Werkstoff TwilightSluice = new Werkstoff(
-        new short[] { 98, 19, 158 },
-        "Twilight Sluice",
-        new Werkstoff.Stats(),
-        Werkstoff.Types.ELEMENT,
-        new Werkstoff.GenerationFeatures().disable()
-            .addCells(),
-        OFFSET_ID + 202,
-        TextureSet.SET_FLUID);
-
     public static final Werkstoff EnderAir = new Werkstoff(
         new short[] { 57, 66, 89 },
         "Ender Air",
@@ -1667,6 +1660,16 @@ public class GTNLMaterials implements Runnable {
             .addCells(),
         OFFSET_ID + 130,
         TextureSet.SET_FLUID);
+
+    public static final Werkstoff TwilightSluice = new Werkstoff(
+        new short[] { 98, 19, 158 },
+        "Twilight Sluice",
+        new Werkstoff.Stats(),
+        Werkstoff.Types.ELEMENT,
+        new Werkstoff.GenerationFeatures().disable()
+            .addCells(),
+        OFFSET_ID + 131,
+        TextureSet.SET_FLUID);
     // Special
 
     public static final Werkstoff Periodicium = new Werkstoff(
@@ -1725,14 +1728,8 @@ public class GTNLMaterials implements Runnable {
         setToolHandleMaterial(CompressedSteam.getBridgeMaterial(), Materials.Wood);
     }
 
-    private static void setToolHandleMaterial(Materials material, Materials handleMaterial) {
+    public static void setToolHandleMaterial(Materials material, Materials handleMaterial) {
         if (material == null || handleMaterial == null) return;
         material.mHandleMaterial = handleMaterial;
-    }
-
-    @Override
-    public void run() {}
-
-    private static class CustomTextureSet {
     }
 }
