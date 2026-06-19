@@ -456,12 +456,11 @@ public class SuperSpaceElevator extends TTMultiblockBase
                     STRUCTURE_PIECE_EXTENDED_HOR_OFFSET,
                     STRUCTURE_PIECE_EXTENDED_VERT_OFFSET - mTier * 6,
                     STRUCTURE_PIECE_EXTENDED_DEPTH_OFFSET,
-                    errors)) {
+                    null)) {
                     mTier++;
                 }
             }
         }
-        errors.clear();
 
         if (elevatorCable != null) {
             elevatorCable.setShouldRender(true);
