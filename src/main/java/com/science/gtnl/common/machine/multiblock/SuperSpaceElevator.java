@@ -450,22 +450,18 @@ public class SuperSpaceElevator extends TTMultiblockBase
         }
 
         if (motorTier > 1) {
-            int actualExtensionLayers = 0;
-
-            while (actualExtensionLayers < motorTier) {
-                if (!checkPiece(
+            while (mTier < motorTier) {
+                if (checkPiece(
                     STRUCTURE_PIECE_EXTENDED,
                     STRUCTURE_PIECE_EXTENDED_HOR_OFFSET,
-                    STRUCTURE_PIECE_EXTENDED_VERT_OFFSET - actualExtensionLayers * 6,
+                    STRUCTURE_PIECE_EXTENDED_VERT_OFFSET - mTier * 6,
                     STRUCTURE_PIECE_EXTENDED_DEPTH_OFFSET,
                     errors)) {
-                    break;
+                    mTier++;
                 }
-
-                actualExtensionLayers++;
             }
-            mTier = actualExtensionLayers;
         }
+        errors.clear();
 
         if (elevatorCable != null) {
             elevatorCable.setShouldRender(true);
@@ -473,7 +469,7 @@ public class SuperSpaceElevator extends TTMultiblockBase
 
         if (motorTier > 2 && mExoticEnergyHatches.isEmpty() && mEnergyHatches.isEmpty()) wirelessMode = true;
 
-        checkCasingMin(errors, mCountCasing, 101);
+        checkCasingMin(errors, mCountCasing, 100);
     }
 
     @Override

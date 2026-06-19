@@ -195,17 +195,19 @@ public class WirelessSteamEnergyHatch extends CustomFluidHatch {
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
-        aNBT.setString("OwnerUUID", ownerUUID.toString());
+        if (ownerUUID != null) aNBT.setString("OwnerUUID", ownerUUID.toString());
     }
 
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
-        try {
-            ownerUUID = UUID.fromString(aNBT.getString("OwnerUUID"));
-        } catch (IllegalArgumentException e) {
-            ScienceNotLeisure.LOG
-                .warn("[WirelessSteamEnergyHatch] Invalid OwnerUUID in NBT: {}", aNBT.getString("OwnerUUID"), e);
+        if (aNBT.hasKey("OwnerUUID")) {
+            try {
+                ownerUUID = UUID.fromString(aNBT.getString("OwnerUUID"));
+            } catch (IllegalArgumentException e) {
+                ScienceNotLeisure.LOG
+                    .warn("[WirelessSteamEnergyHatch] Invalid OwnerUUID in NBT: {}", aNBT.getString("OwnerUUID"), e);
+            }
         }
     }
 

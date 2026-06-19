@@ -384,23 +384,20 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
         }
 
         while (checkTier < Integer.MAX_VALUE - 1) {
-            if (!checkPiece(
+            if (checkPiece(
                 STRUCTURE_PIECE_MAIN_UP,
                 HORIZONTAL_OFF_SET_UP,
                 VERTICAL_OFF_SET_UP + checkTier * 22,
                 DEPTH_OFF_SET_UP,
-                null)) {
-                break;
-            }
-            if (!checkPiece(
-                STRUCTURE_PIECE_MAIN_DOWN,
-                HORIZONTAL_OFF_SET_DOWN,
-                VERTICAL_OFF_SET_DOWN - checkTier * 22,
-                DEPTH_OFF_SET_DOWN,
-                null)) {
-                break;
-            }
-            checkTier++;
+                null)
+                && checkPiece(
+                    STRUCTURE_PIECE_MAIN_DOWN,
+                    HORIZONTAL_OFF_SET_DOWN,
+                    VERTICAL_OFF_SET_DOWN - checkTier * 22,
+                    DEPTH_OFF_SET_DOWN,
+                    null)) {
+                checkTier++;
+            } else break;
         }
 
         if (!checkPiece(
@@ -472,6 +469,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
                 mExtraModule = true;
             }
         }
+        errors.clear();
         mMachineTier = checkTier;
 
         if (enableExtraModule && !isRenderActive && enableRender && mTotalRunTime > 0) {

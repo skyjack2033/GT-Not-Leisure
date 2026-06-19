@@ -395,6 +395,16 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
     }
 
     @Override
+    public boolean supportsSteamOC() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsSteamCapacityUI() {
+        return false;
+    }
+
+    @Override
     protected boolean supportsCraftingMEBuffer() {
         return false;
     }

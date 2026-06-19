@@ -6,6 +6,7 @@ import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,6 +27,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HatchElement;
+import gregtech.api.enums.Mods;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -93,7 +95,13 @@ public class SteamInfernalCokeOven extends SteamMultiMachineBase<SteamInfernalCo
                         .buildAndChain(),
                     StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10)))
             .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13))
-            .addElement('C', StructureUtility.ofBlock(Blocks.nether_brick, 0))
+            .addElement(
+                'C',
+                StructureUtility.ofChain(
+                    StructureUtility.ofBlockAnyMeta(Blocks.nether_brick),
+                    StructureUtility.ofBlockAnyMeta(
+                        Mods.Chisel.isModLoaded() ? Block.getBlockFromName("chisel:nether_brick")
+                            : Blocks.nether_brick)))
             .build();
     }
 
