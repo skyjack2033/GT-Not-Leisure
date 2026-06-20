@@ -3,9 +3,14 @@ package com.science.gtnl.common.gui.modularui;
 import static gregtech.api.util.GTUtility.translate;
 
 import java.text.MessageFormat;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.cleanroommc.modularui.api.IPanelHandler;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
@@ -17,10 +22,12 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
+import com.cleanroommc.modularui.utils.item.IItemHandlerModifiable;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.value.sync.IntSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
+import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widget.scroll.VerticalScrollData;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.Dialog;
@@ -35,15 +42,19 @@ import com.science.gtnl.common.gui.GTNLMui2Textures;
 import com.science.gtnl.common.machine.hatch.OredictInputBusME;
 
 import appeng.core.localization.WailaText;
+import appeng.me.GridAccessException;
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.modularui2.GTGuis;
 import gregtech.api.modularui2.GTWidgetThemes;
+import gregtech.api.util.GTDataUtils;
 import gregtech.api.util.GTUtility;
-import gregtech.common.gui.modularui.hatch.base.MTEHatchBaseGui;
+import gregtech.common.gui.modularui.hatch.MTEHatchInputBusMEGui;
 import gregtech.common.gui.modularui.util.StockingSlot;
 import gregtech.common.modularui2.widget.builder.ItemSlotGridBuilder;
+import gregtech.common.tileentities.machines.MTEHatchInputBusME;
+import gregtech.common.tileentities.machines.MTEHatchInputBusME.Slot;
 
-public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
+public class OredictInputBusMEGui extends MTEHatchInputBusMEGui {
 
     protected static final String FILTER_INV_NAME = "gtnl_oredict_filter_inv";
     protected static final String STOCK_INV_NAME = "gtnl_oredict_stock_inv";
@@ -64,18 +75,25 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
     protected static final int FILTER_GRID_X = 7;
     protected static final int FILTER_GRID_Y = 9;
     protected static final int STOCK_GRID_X = 205;
+    protected final OredictInputBusME oredictHatch;
+    protected final Slot[] guiSlots;
 
     public OredictInputBusMEGui(OredictInputBusME hatch) {
-        super(hatch);
+        super(hatch, hatch.getSlotsForGui());
+        this.oredictHatch = hatch;
+        this.guiSlots = hatch.getSlotsForGui();
     }
 
     @Override
     public ModularPanel build(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
+        if (!oredictHatch.isSuper) {
+            return super.build(guiData, syncManager, uiSettings);
+        }
         registerSyncValues(syncManager);
 
         ModularPanel panel = GTGuis.mteTemplatePanelBuilder(machine, guiData, syncManager, uiSettings)
             .setWidth(machine.getGUIWidth())
-            .setHeight(machine.getGUIHeight())
+            .setHeight(getBasePanelHeight())
             .doesAddGregTechLogo(false)
             .build();
 
@@ -92,7 +110,9 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
         return panel;
     }
 
-    protected void registerSyncValues(PanelSyncManager syncManager) {
+    @Override
+    public void registerSyncValues(PanelSyncManager syncManager) {
+        super.registerSyncValues(syncManager);
         syncManager.syncValue(
             AUTO_PULL_SYNC_KEY,
             new BooleanSyncValue(machine::isAutoPullItemList, machine::setAutoPullItemList).allowC2S());
@@ -107,10 +127,25 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
             new BooleanSyncValue(machine::doFastRecipeCheck, machine::setRecipeCheck).allowC2S());
         syncManager.syncValue(
             ORE_DICT_SYNC_KEY,
-            new StringSyncValue(machine::getOreDictForGui, machine::setOreDict).allowC2S());
-        syncManager.syncValue(ACTIVE_SYNC_KEY, new BooleanSyncValue(machine::isActive));
-        syncManager.syncValue(POWERED_SYNC_KEY, new BooleanSyncValue(machine::isPowered));
-        syncManager.syncValue(BOOTING_SYNC_KEY, new BooleanSyncValue(machine::isBooting));
+            new StringSyncValue(oredictHatch::getOreDictForGui, oredictHatch::setOreDict).allowC2S());
+        syncManager.syncValue(ACTIVE_SYNC_KEY, new BooleanSyncValue(oredictHatch::isActive));
+        syncManager.syncValue(POWERED_SYNC_KEY, new BooleanSyncValue(oredictHatch::isPowered));
+        syncManager.syncValue(BOOTING_SYNC_KEY, new BooleanSyncValue(oredictHatch::isBooting));
+    }
+
+    @Override
+    protected ParentWidget<?> createContentSection(ModularPanel panel, PanelSyncManager syncManager) {
+        if (oredictHatch.isSuper) {
+            return super.createContentSection(panel, syncManager);
+        }
+
+        BooleanSyncValue autoPullSyncer = syncManager.findSyncHandler(AUTO_PULL_SYNC_KEY, BooleanSyncValue.class);
+        Flow mainRow = Flow.row()
+            .coverChildren();
+        mainRow.child(createLegacyFilterGrid(syncManager, autoPullSyncer));
+        mainRow.child(createLegacyMiddleColumn(syncManager, panel, autoPullSyncer));
+        mainRow.child(createLegacyStockGrid(syncManager));
+        return getEmptyContent().child(mainRow);
     }
 
     protected Grid createFilterGrid(PanelSyncManager syncManager) {
@@ -118,27 +153,44 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
         return createGridShell(FILTER_GRID_X).child(
             new ItemSlotGridBuilder(machine.inventoryHandler, syncManager).size(SLOT_COLUMNS, getSlotRows())
                 .slotGroupKey(FILTER_INV_NAME)
-                .filter(stack -> !autoPullSyncer.getBoolValue() && !machine.containsFilterStackForGui(stack))
+                .filter(stack -> !autoPullSyncer.getBoolValue() && !oredictHatch.containsFilterStackForGui(stack))
                 .itemSlotSupplier(() -> new StockingSlot(autoPullSyncer))
                 .modularSlotSupplier(
                     (handler, index) -> new ModularSlot(handler, index)
                         .changeListener((newStack, onlyAmountChanged, client, init) -> {
                             if (!client && !init) {
                                 ItemStack stack = newStack == null ? null : GTUtility.copyAmount(1, newStack);
-                                machine.updateInformationSlotForGui(index, stack);
+                                oredictHatch.updateInformationSlotForGui(index, stack);
                             }
                         }))
                 .build());
+    }
+
+    protected Grid createLegacyFilterGrid(PanelSyncManager syncManager, BooleanSyncValue autoPullSyncer) {
+        return new ItemSlotGridBuilder(createConfigItemHandler(), syncManager).size(4, 4)
+            .slotGroupKey(FILTER_INV_NAME)
+            .filter(stack -> doesNotContainStack(stack) && !autoPullSyncer.getBoolValue())
+            .itemSlotSupplier(() -> new StockingSlot(autoPullSyncer))
+            .build();
     }
 
     protected Grid createStockGrid(PanelSyncManager syncManager) {
         return createGridShell(STOCK_GRID_X).child(
             new ItemSlotGridBuilder(machine.inventoryHandler, syncManager).size(SLOT_COLUMNS, getSlotRows())
                 .slotGroupKey(STOCK_INV_NAME)
-                .indexOffset(machine.getStockSlotOffsetForGui())
+                .indexOffset(oredictHatch.getStockSlotOffsetForGui())
                 .accessibility(false, false)
                 .itemSlotSupplier(() -> new ItemSlot().background(GTGuiTextures.SLOT_ITEM_DARK))
                 .build());
+    }
+
+    protected Grid createLegacyStockGrid(PanelSyncManager syncManager) {
+        return new ItemSlotGridBuilder(createConfigItemHandler(), syncManager).size(4, 4)
+            .slotGroupKey(STOCK_INV_NAME)
+            .indexOffset(MTEHatchInputBusME.SLOT_COUNT)
+            .accessibility(false, false)
+            .itemSlotSupplier(() -> new ItemSlot().backgroundOverlay(GTGuiTextures.SLOT_ITEM_DARK))
+            .build();
     }
 
     protected Grid createGridShell(int x) {
@@ -151,7 +203,66 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
     }
 
     protected int getSlotRows() {
-        return machine.getFilterSlotCountForGui() / SLOT_COLUMNS;
+        return oredictHatch.getFilterSlotCountForGui() / SLOT_COLUMNS;
+    }
+
+    protected Flow createLegacyMiddleColumn(PanelSyncManager syncManager, ModularPanel parent,
+        BooleanSyncValue autoPullSyncer) {
+        IPanelHandler configPanel = syncManager.syncedPanel(
+            CONFIG_PANEL_KEY,
+            true,
+            (manager, handler) -> createStackSizeConfigurationPanel(parent, syncManager));
+
+        return Flow.column()
+            .coverChildren()
+            .reverseLayout()
+            .mainAxisAlignment(Alignment.MainAxis.END)
+            .child(createCircuitSlot(syncManager))
+            .child(
+                new ItemSlot()
+                    .slot(new ModularSlot(machine.inventoryHandler, oredictHatch.getManualSlot()).slotGroup("item_inv"))
+                    .tooltip(t -> {
+                        t.addLine(GTUtility.translate("GT5U.machines.stocking_bus.manual_slot.tooltip.1"));
+                        t.addLine(
+                            EnumChatFormatting.GRAY
+                                + GTUtility.translate("GT5U.machines.stocking_bus.manual_slot.tooltip.2")
+                                + EnumChatFormatting.RESET);
+                    }))
+            .child(
+                GTGuiTextures.PICTURE_ARROW_DOUBLE.asWidget()
+                    .size(12)
+                    .margin(3))
+            .child(new ToggleButton() {
+
+                @Override
+                public @NotNull Result onMousePressed(int mouseButton) {
+                    switch (mouseButton) {
+                        case 0:
+                            if (oredictHatch.autoPullAvailable) {
+                                next();
+                                playClickSound();
+                                return Result.SUCCESS;
+                            }
+                            return Result.IGNORE;
+                        case 1:
+                            if (configPanel.isPanelOpen()) {
+                                configPanel.closePanel();
+                            } else {
+                                configPanel.openPanel();
+                            }
+                            playClickSound();
+                            return Result.SUCCESS;
+                        default:
+                            return Result.IGNORE;
+                    }
+                }
+            }.value(autoPullSyncer)
+                .size(16)
+                .margin(1)
+                .overlay(true, GTGuiTextures.OVERLAY_BUTTON_AUTOPULL_ME)
+                .overlay(false, GTGuiTextures.OVERLAY_BUTTON_AUTOPULL_ME_DISABLED)
+                .addTooltipLine(translate("GT5U.machines.stocking_bus.auto_pull.tooltip.1"))
+                .addTooltipLine(translate("GT5U.machines.stocking_bus.auto_pull.tooltip.2")));
     }
 
     protected IWidget createAutoPullButton(ModularPanel parent, PanelSyncManager syncManager) {
@@ -159,12 +270,12 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
         IPanelHandler configPanel = syncManager.syncedPanel(
             CONFIG_PANEL_KEY,
             true,
-            (manager, handler) -> createStackSizeConfigurationPanel(parent, manager));
+            (manager, handler) -> createStackSizeConfigurationPanel(parent, syncManager));
 
         return new ToggleButton() {
 
             @Override
-            public Result onMousePressed(int mouseButton) {
+            public @NotNull Result onMousePressed(int mouseButton) {
                 if (mouseButton == 0) {
                     next();
                     playClickSound();
@@ -188,7 +299,6 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
             .background(false, GTGuiTextures.BUTTON_STANDARD)
             .overlay(true, GTGuiTextures.OVERLAY_BUTTON_AUTOPULL_ME)
             .overlay(false, GTGuiTextures.OVERLAY_BUTTON_AUTOPULL_ME_DISABLED)
-            .setEnabledIf(button -> machine.autoPullAvailable)
             .addTooltipLine(translate("GT5U.machines.stocking_bus.auto_pull.tooltip.1"))
             .addTooltipLine(translate("GT5U.machines.stocking_bus.auto_pull.tooltip.2"));
     }
@@ -227,7 +337,7 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
                 .child(
                     new ItemSlotGridBuilder(machine.inventoryHandler, syncManager).size(9, 9)
                         .slotGroupKey(MANUAL_INV_NAME)
-                        .indexOffset(machine.getManualSlotStartForGui())
+                        .indexOffset(oredictHatch.getManualSlotStartForGui())
                         .build()));
         return panel;
     }
@@ -336,9 +446,67 @@ public class OredictInputBusMEGui extends MTEHatchBaseGui<OredictInputBusME> {
             .widgetTheme(GTWidgetThemes.DISPLAY_TEXT_WHITE);
     }
 
+    protected IItemHandlerModifiable createConfigItemHandler() {
+        return new IItemHandlerModifiable() {
+
+            @Override
+            public int getSlots() {
+                return MTEHatchInputBusME.SLOT_COUNT * 2;
+            }
+
+            @Override
+            public @Nullable ItemStack getStackInSlot(int slotIndex) {
+                boolean configSlot = slotIndex < MTEHatchInputBusME.SLOT_COUNT;
+                int index = slotIndex % MTEHatchInputBusME.SLOT_COUNT;
+                Slot slot = GTDataUtils.getIndexSafe(guiSlots, index);
+                if (slot == null) {
+                    return null;
+                }
+                return configSlot ? slot.config : GTUtility.copyAmountUnsafe(slot.extractedAmount, slot.extracted);
+            }
+
+            @Override
+            public @Nullable ItemStack insertItem(int slot, @Nullable ItemStack stack, boolean simulate) {
+                return null;
+            }
+
+            @Override
+            public @Nullable ItemStack extractItem(int slot, int amount, boolean simulate) {
+                return null;
+            }
+
+            @Override
+            public int getSlotLimit(int slot) {
+                return Integer.MAX_VALUE;
+            }
+
+            @Override
+            public void setStackInSlot(int slotIndex, @Nullable ItemStack stack) {
+                if (slotIndex >= MTEHatchInputBusME.SLOT_COUNT) {
+                    return;
+                }
+                machine.setSlotConfig(slotIndex, GTUtility.copyAmount(1, stack));
+                if (baseMetaTileEntity.isServerSide()) {
+                    try {
+                        machine.updateInformationSlot(slotIndex);
+                    } catch (GridAccessException ignored) {}
+                }
+            }
+        };
+    }
+
+    protected boolean doesNotContainStack(@Nullable ItemStack stack) {
+        return Stream.of(guiSlots)
+            .filter(Objects::nonNull)
+            .noneMatch(slot -> GTUtility.areStacksEqual(slot.config, stack));
+    }
+
     @Override
     protected IDrawable.DrawableWidget createLogo() {
-        return new IDrawable.DrawableWidget(getLogoTexture()).size(SLOT_SIZE);
+        return new IDrawable.DrawableWidget(getLogoTexture()).size(SLOT_SIZE)
+            .pos(
+                STOCK_GRID_X + SLOT_SIZE * SLOT_COLUMNS + 4 - SLOT_SIZE,
+                FILTER_GRID_Y + SLOT_SIZE * VISIBLE_SLOT_ROWS + 2);
     }
 
     @Override

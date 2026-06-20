@@ -31,7 +31,7 @@ public class TypeFilteredInputBusMEGui extends OredictInputBusMEGui {
     }
 
     @Override
-    protected void registerSyncValues(PanelSyncManager syncManager) {
+    public void registerSyncValues(PanelSyncManager syncManager) {
         super.registerSyncValues(syncManager);
         syncManager.syncValue(
             MOD_ID_SYNC_KEY,

@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.cleanroommc.modularui.factory.PosGuiData;
@@ -134,7 +135,7 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
         refreshItemList();
     }
 
-    public void setMetaFilter(@Nullable int meta) {
+    public void setMetaFilter(int meta) {
         this.meta = meta;
         refreshItemList();
     }
@@ -143,7 +144,7 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
         StringBuilder sb = new StringBuilder();
         if (modid != null && !modid.isEmpty()) sb.append(modid);
         if (name != null && !name.isEmpty()) {
-            if (sb.length() > 0) sb.append(":");
+            if (!sb.isEmpty()) sb.append(":");
             sb.append(name);
         }
         if (meta != GTRecipeBuilder.WILDCARD) {
@@ -154,7 +155,7 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
     }
 
     @Override
-    public AENetworkProxy getProxy() {
+    public @NotNull AENetworkProxy getProxy() {
         if (gridProxy == null) {
             if (getBaseMetaTileEntity() instanceof IGridProxyable gridProxyable) {
                 gridProxy = new AENetworkProxy(
@@ -178,9 +179,6 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
 
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
-        if (!isSuper) {
-            return super.buildUI(data, syncManager, uiSettings);
-        }
         return new TypeFilteredInputBusMEGui(this).build(data, syncManager, uiSettings);
     }
 

@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.cleanroommc.modularui.factory.PosGuiData;
@@ -304,7 +305,7 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     }
 
     @Override
-    public AENetworkProxy getProxy() {
+    public @NotNull AENetworkProxy getProxy() {
         if (gridProxy == null) {
             if (getBaseMetaTileEntity() instanceof IGridProxyable gridProxyable) {
                 gridProxy = new AENetworkProxy(
@@ -511,9 +512,6 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
 
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
-        if (!isSuper) {
-            return super.buildUI(data, syncManager, uiSettings);
-        }
         return new OredictInputBusMEGui(this).build(data, syncManager, uiSettings);
     }
 
@@ -536,6 +534,10 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
 
     public ItemStack updateInformationSlotForGui(int index, ItemStack stack) {
         return updateInformationSlot(index, stack);
+    }
+
+    public Slot[] getSlotsForGui() {
+        return slots;
     }
 
     public boolean containsFilterStackForGui(ItemStack stack) {
