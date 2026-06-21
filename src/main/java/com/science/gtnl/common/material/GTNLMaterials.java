@@ -76,6 +76,7 @@ public class GTNLMaterials implements Runnable {
     public static Werkstoff Durene;
     public static Werkstoff Germaniumtungstennitride;
     public static Werkstoff Polyetheretherketone;
+    public static Werkstoff Shimmer;
     public static Werkstoff FluidMana;
     public static Werkstoff ExcitedNaquadahFuel;
     public static Werkstoff RareEarthHydroxides;
@@ -1724,6 +1725,16 @@ public class GTNLMaterials implements Runnable {
                 .addMetalCraftingSolidifierRecipes(),
             OFFSET_ID + 201,
             TextureSet.SET_SHINY);
+        Shimmer = new Werkstoff(
+            new short[] { 255, 182, 193 },
+            "Shimmer",
+            subscriptNumbers("✧"),
+            new Werkstoff.Stats(),
+            Werkstoff.Types.ELEMENT,
+            new Werkstoff.GenerationFeatures().disable()
+                .addCells(),
+            OFFSET_ID + 202,
+            TextureSet.SET_FLUID);
     }
 
     public static void init() {

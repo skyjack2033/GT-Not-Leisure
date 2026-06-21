@@ -3,7 +3,6 @@ package com.science.gtnl.loader;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
@@ -292,8 +291,6 @@ import gregtech.api.metatileentity.implementations.MTEHatchDynamo;
 import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTModHandler;
-import gregtech.api.util.GTOreDictUnificator;
-import gregtech.api.util.GlassTier;
 import gregtech.common.covers.CoverConveyor;
 import gregtech.common.covers.CoverFluidRegulator;
 import gregtech.common.covers.CoverPump;
@@ -5259,48 +5256,6 @@ public class MachineLoader {
         // TextureFactory.of(TexturesGtBlock.Overlay_Water),
         // ctx -> new FluidCover(ctx, Materials.Water.mFluid, "InfinityWaterCover"),
         // CoverRegistry.INTERCEPTS_RIGHT_CLICK_COVER_PLACER);
-    }
-
-    public static void registerGlasses() {
-        GlassTier.addCustomGlass(ItemRegistry.bw_realglas2, 1, 13, 1);
-        GTOreDictUnificator
-            .registerOre("blockGlass" + GTValues.VN[13], GTNLItemList.ShirabonReinforcedBoronSilicateGlass.get(1));
-
-        if (MainConfig.item.player_doll.enableRegisterMAXTierGlass) {
-            GlassTier.addCustomGlass(BlockLoader.playerDoll, 1, 14, 1);
-            GlassTier.addCustomGlass(BlockLoader.playerDoll, 2, 14, 1);
-            GlassTier.addCustomGlass(BlockLoader.playerDoll, 3, 14, 1);
-            GlassTier.addCustomGlass(BlockLoader.playerDoll, 4, 14, 1);
-            GlassTier.addCustomGlass(BlockLoader.playerDoll, 5, 14, 1);
-            GlassTier.addCustomGlass(BlockLoader.playerDoll, 0, 14, 1);
-            GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[14], GTNLItemList.PlayerDoll.get(1));
-        }
-
-        GlassTier.addCustomGlass(ItemRegistry.bw_realglas2, 2, 14, 2);
-        GTOreDictUnificator.registerOre(
-            "blockGlass" + GTValues.VN[14],
-            GTNLItemList.QuarkGluonPlasmaReinforcedBoronSilicateGlass.get(1));
-
-        GlassTier.addCustomGlass(BlockLoader.metaBlockGlass, 0, 10, 2);
-        GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[10], GTNLItemList.GaiaGlass.get(1));
-
-        GlassTier.addCustomGlass(BlockLoader.metaBlockGlass, 1, 8, 2);
-        GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[8], GTNLItemList.TerraGlass.get(1));
-
-        GlassTier.addCustomGlass(BlockLoader.metaBlockGlass, 2, 7, 1);
-        GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[7], GTNLItemList.FusionGlass.get(1));
-
-        for (int lampMeta = 1; lampMeta <= 32; lampMeta++) {
-            GlassTier.addCustomGlass(BlockLoader.metaBlockGlow, lampMeta, 3, 1);
-            GTOreDictUnificator
-                .registerOre("blockGlass" + GTValues.VN[3], new ItemStack(BlockLoader.metaBlockGlow, lampMeta));
-        }
-
-        for (int lampOffMeta = 3; lampOffMeta <= 34; lampOffMeta++) {
-            GlassTier.addCustomGlass(BlockLoader.metaBlock, lampOffMeta, 3, 1);
-            GTOreDictUnificator
-                .registerOre("blockGlass" + GTValues.VN[3], new ItemStack(BlockLoader.metaBlock, lampOffMeta));
-        }
     }
 
     public static void registry() {

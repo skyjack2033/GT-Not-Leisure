@@ -1,44 +1,69 @@
 package com.science.gtnl.common.packet;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.github.bsideup.jabel.Desugar;
-import com.google.common.base.Objects;
+import org.jetbrains.annotations.Nullable;
+
+import com.gtnewhorizon.gtnhlib.util.CoordinatePacker;
 import com.science.gtnl.CommonProxy;
 import com.science.gtnl.utils.detrav.DetravMapTexture;
 import com.science.gtnl.utils.detrav.DetravScannerGUI;
 import com.science.gtnl.utils.enums.GuiType;
 
-import bartworks.system.material.Werkstoff;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import detrav.utils.FluidColors;
-import detrav.utils.GTppHelper;
-import gregtech.api.GregTechAPI;
-import gregtech.api.enums.Materials;
-import gregtech.api.util.GTLanguageManager;
-import gtPlusPlus.core.material.Material;
+import gregtech.api.interfaces.IOreMaterial;
+import gregtech.common.ores.OreInfo;
+import gregtech.common.ores.OreManager;
 import io.netty.buffer.ByteBuf;
-import it.unimi.dsi.fastutil.bytes.Byte2ShortMap;
-import it.unimi.dsi.fastutil.bytes.Byte2ShortOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.longs.Long2LongMap;
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ShortMap;
+import it.unimi.dsi.fastutil.longs.Long2ShortOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIntImmutablePair;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 
 public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingPacket, IMessage> {
 
-    public int chunkX, chunkZ, posX, posZ, size, ptype;
-    public Byte2ShortMap[][] map;
-    public Object2IntMap<String> ores = new Object2IntOpenHashMap<>();
-    public Short2ObjectMap<String> metaMap = new Short2ObjectOpenHashMap<>();
+    public static final int MODE_BIG_ORES = 0;
+    public static final int MODE_ALL_ORES = 1;
+    public static final int MODE_FLUIDS = 2;
+    public static final int MODE_POLLUTION = 3;
+    private static final int DEFAULT_COLOR = 0xFF7D7D7D;
+    public static final int MAX_COMPRESSED_PAYLOAD_SIZE = 2_000_000;
+
+    public int chunkX;
+    public int chunkZ;
+    public int posX;
+    public int posZ;
+    public int size;
+    public int ptype;
+    public final Long2ShortOpenHashMap map = new Long2ShortOpenHashMap();
+    public final Short2ObjectOpenHashMap<ObjectIntPair<String>> objects = new Short2ObjectOpenHashMap<>();
+    private final Object2ShortOpenHashMap<String> nameLookup = new Object2ShortOpenHashMap<>();
+    private final Long2LongOpenHashMap topOreByColumnAndObject = new Long2LongOpenHashMap();
+    private short nextId;
 
     public ProspectingPacket() {}
 
@@ -49,13 +74,55 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
         this.posZ = posZ;
         this.size = size;
         this.ptype = ptype;
-        this.map = new Byte2ShortMap[(size * 2 + 1) * 16][(size * 2 + 1) * 16];
-        this.ores = new Object2IntOpenHashMap<>();
-        this.metaMap = new Short2ObjectOpenHashMap<>();
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
+        int compressedLength = buf.readInt();
+        byte[] compressed = new byte[compressedLength];
+        buf.readBytes(compressed);
+
+        ByteBuf rawBuffer = Unpooled.wrappedBuffer(decompress(compressed));
+        try {
+            readRaw(rawBuffer);
+        } finally {
+            rawBuffer.release();
+        }
+    }
+
+    @Override
+    public void toBytes(ByteBuf buf) {
+        byte[] compressed = compress();
+        buf.writeInt(compressed.length);
+        buf.writeBytes(compressed);
+    }
+
+    public int getPayloadSize() {
+        return Integer.BYTES + compress().length;
+    }
+
+    public boolean trimToPayloadLimit(int maxPayloadSize) {
+        if (getPayloadSize() <= maxPayloadSize) {
+            return true;
+        }
+        if (ptype == MODE_BIG_ORES || ptype == MODE_ALL_ORES) {
+            collapseToTopVisibleLayer();
+            pruneUnusedObjects();
+            if (getPayloadSize() <= maxPayloadSize) {
+                return true;
+            }
+            for (int sampleStep = 2; sampleStep <= 64; sampleStep <<= 1) {
+                downsampleColumns(sampleStep);
+                pruneUnusedObjects();
+                if (getPayloadSize() <= maxPayloadSize) {
+                    return true;
+                }
+            }
+        }
+        return getPayloadSize() <= maxPayloadSize;
+    }
+
+    private void readRaw(ByteBuf buf) {
         chunkX = buf.readInt();
         chunkZ = buf.readInt();
         posX = buf.readInt();
@@ -63,35 +130,63 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
         size = buf.readInt();
         ptype = buf.readInt();
 
-        int len = (size * 2 + 1) * 16;
-        map = new Byte2ShortMap[len][len];
-        int total = 0;
-
-        for (int i = 0; i < len; i++) {
-            for (int j = 0; j < len; j++) {
-                byte count = buf.readByte();
-                if (count == 0) continue;
-                map[i][j] = new Byte2ShortOpenHashMap();
-                for (int k = 0; k < count; k++) {
-                    byte y = buf.readByte();
-                    short meta = buf.readShort();
-                    map[i][j].put(y, meta);
-                    if (ptype != 2 || y == 1) {
-                        addOre(this, y, i, j, meta);
-                    }
-                    total++;
-                }
-            }
+        objects.clear();
+        nameLookup.clear();
+        topOreByColumnAndObject.clear();
+        nextId = 0;
+        int objectCount = buf.readInt();
+        objects.ensureCapacity(objectCount);
+        for (int i = 0; i < objectCount; i++) {
+            short objectId = buf.readShort();
+            String name = ByteBufUtils.readUTF8String(buf);
+            int color = buf.readInt();
+            objects.put(objectId, ObjectIntImmutablePair.of(name, color));
+            nameLookup.put(name, objectId);
+            nextId = (short) Math.max(nextId, objectId + 1);
         }
 
-        int check = buf.readInt();
-        if (check != total) {
-            map = null; // signal error
+        map.clear();
+        int mapCount = buf.readInt();
+        map.ensureCapacity(mapCount);
+        for (int i = 0; i < mapCount; i++) {
+            map.put(buf.readLong(), buf.readShort());
         }
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    private byte[] compress() {
+        ByteBuf rawBuffer = Unpooled.buffer();
+        try {
+            writeRaw(rawBuffer);
+            byte[] raw = new byte[rawBuffer.readableBytes()];
+            rawBuffer.readBytes(raw);
+            ByteArrayOutputStream output = new ByteArrayOutputStream(raw.length);
+            try (GZIPOutputStream gzip = new GZIPOutputStream(output)) {
+                gzip.write(raw);
+            }
+            return output.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to compress prospecting packet", e);
+        } finally {
+            rawBuffer.release();
+        }
+    }
+
+    private static byte[] decompress(byte[] compressed) {
+        try (ByteArrayInputStream input = new ByteArrayInputStream(compressed);
+            GZIPInputStream gzip = new GZIPInputStream(input);
+            ByteArrayOutputStream output = new ByteArrayOutputStream(compressed.length * 2)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = gzip.read(buffer)) >= 0) {
+                output.write(buffer, 0, read);
+            }
+            return output.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to decompress prospecting packet", e);
+        }
+    }
+
+    private void writeRaw(ByteBuf buf) {
         buf.writeInt(chunkX);
         buf.writeInt(chunkZ);
         buf.writeInt(posX);
@@ -99,45 +194,31 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
         buf.writeInt(size);
         buf.writeInt(ptype);
 
-        int len = (size * 2 + 1) * 16;
-        int count = 0;
-
-        for (int i = 0; i < len; i++) {
-            for (int j = 0; j < len; j++) {
-                Byte2ShortMap data = map[i][j];
-                if (data == null) {
-                    buf.writeByte(0);
-                } else {
-                    buf.writeByte(data.size());
-                    for (Byte2ShortMap.Entry s : data.byte2ShortEntrySet()) {
-                        buf.writeByte(s.getByteKey());
-                        buf.writeShort(s.getShortValue());
-                        count++;
-                    }
-                }
-            }
+        buf.writeInt(objects.size());
+        for (Short2ObjectMap.Entry<ObjectIntPair<String>> entry : objects.short2ObjectEntrySet()) {
+            buf.writeShort(entry.getShortKey());
+            ByteBufUtils.writeUTF8String(
+                buf,
+                entry.getValue()
+                    .left());
+            buf.writeInt(
+                entry.getValue()
+                    .rightInt());
         }
 
-        buf.writeInt(count);
+        buf.writeInt(map.size());
+        for (Long2ShortMap.Entry entry : map.long2ShortEntrySet()) {
+            buf.writeLong(entry.getLongKey());
+            buf.writeShort(entry.getShortValue());
+        }
     }
 
     @Override
     public IMessage onMessage(ProspectingPacket message, MessageContext ctx) {
-        if (message.map == null) return null;
-
-        ProspectingWrapper wrapper = new ProspectingWrapper(
-            message.chunkX,
-            message.chunkZ,
-            message.posX,
-            message.posZ,
-            message.size,
-            message.ptype,
-            message.map,
-            message.ores,
-            message.metaMap);
-
-        DetravScannerGUI.newMap(new DetravMapTexture(wrapper));
-        if (ctx.side.isClient()) openProspectorGUI();
+        if (ctx.side.isClient()) {
+            DetravScannerGUI.newMap(new DetravMapTexture(message));
+            message.openProspectorGUI();
+        }
         return null;
     }
 
@@ -154,53 +235,185 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
             (int) player.posZ);
     }
 
-    public static void addOre(ProspectingPacket packet, byte y, int i, int j, short meta) {
-        final short[] rgba;
-        final String name;
-        try {
-            if (packet.ptype == 0 || packet.ptype == 1) {
-                if (meta < 7000 || meta > 7500) {
-                    if (meta > 0) {
-                        Materials mat = GregTechAPI.sGeneratedMaterials[meta % 1000];
-                        rgba = mat.getRGBA();
-                        name = mat.getLocalizedNameForItem(
-                            GTLanguageManager.getTranslation("gt.blockores." + meta + ".name"));
-                    } else {
-                        Werkstoff w = Werkstoff.werkstoffHashMap.get((short) (-meta));
-                        name = GTLanguageManager.getTranslation("bw.blocktype.ore")
-                            .replace("%material", w.getLocalizedName());
-                        rgba = w.getRGBA();
-                    }
-                } else {
-                    Material mat = GTppHelper.getMatFromMeta(meta);
-                    rgba = mat.getRGBA();
-                    name = mat.getLocalizedName() + " Ore";
-                }
-            } else if (packet.ptype == 2) {
-                rgba = FluidColors.getColor(meta);
-                name = Objects.firstNonNull(
-                    FluidRegistry.getFluid(meta)
-                        .getLocalizedName(new FluidStack(FluidRegistry.getFluid(meta), 0)),
-                    StatCollector.translateToLocal("gui.detrav.scanner.unknown_fluid"));
-            } else if (packet.ptype == 3) {
-                name = StatCollector.translateToLocal("gui.detrav.scanner.pollution");
-                rgba = new short[] { 125, 123, 118, 0 };
-            } else return;
-        } catch (Exception e) {
+    public void addBlock(int worldX, int worldY, int worldZ, Block block, int meta) {
+        ItemStack stack = new ItemStack(block, 1, meta);
+        String name = stack.getDisplayName();
+
+        try (OreInfo<IOreMaterial> info = OreManager.getOreInfo(block, meta)) {
+            short[] rgba = info != null && info.material != null ? info.material.getRGBA() : null;
+            addBlock(worldX, worldY, worldZ, name, rgbaToColor(rgba));
+        }
+    }
+
+    public void addBlock(int worldX, int worldY, int worldZ, String name, int color) {
+        int relativeX = worldX - (chunkX - size) * 16;
+        int relativeZ = worldZ - (chunkZ - size) * 16;
+        short objectId = getOrCreateObjectId(name, color);
+        long packedCoordinate = CoordinatePacker.pack(relativeX, worldY, relativeZ);
+        long columnObjectKey = getColumnObjectKey(relativeX, relativeZ, objectId);
+
+        if (topOreByColumnAndObject.containsKey(columnObjectKey)) {
+            long previousCoordinate = topOreByColumnAndObject.get(columnObjectKey);
+            if (CoordinatePacker.unpackY(previousCoordinate) >= worldY) {
+                return;
+            }
+            map.remove(previousCoordinate);
+        }
+
+        topOreByColumnAndObject.put(columnObjectKey, packedCoordinate);
+        map.put(packedCoordinate, objectId);
+    }
+
+    public void addFluid(int chunkX, int chunkZ, @Nullable FluidStack fluid) {
+        if (fluid == null || fluid.getFluid() == null) {
             return;
         }
-        packet.ores.put(name, ((rgba[0] & 0xFF) << 16) + ((rgba[1] & 0xFF) << 8) + ((rgba[2] & 0xFF)));
-        packet.metaMap.put(meta, name);
+        int relativeChunkX = chunkX - (this.chunkX - size);
+        int relativeChunkZ = chunkZ - (this.chunkZ - size);
+        String name = fluid.getLocalizedName();
+        short objectId = getOrCreateObjectId(name, rgbaToColor(FluidColors.getColor(fluid.getFluidID())));
+
+        int lower = fluid.amount & 0xFFFF;
+        int upper = fluid.amount >>> 16;
+        map.put(CoordinatePacker.pack(relativeChunkX, 0, relativeChunkZ), objectId);
+        map.put(CoordinatePacker.pack(relativeChunkX, 1, relativeChunkZ), (short) lower);
+        map.put(CoordinatePacker.pack(relativeChunkX, 2, relativeChunkZ), (short) upper);
     }
 
-    public void addBlock(int x, int y, int z, short metaData) {
-        int aX = x - (chunkX - size) * 16;
-        int aZ = z - (chunkZ - size) * 16;
-        if (map[aX][aZ] == null) map[aX][aZ] = new Byte2ShortOpenHashMap();
-        map[aX][aZ].put((byte) y, metaData);
+    public void addPollution(int chunkX, int chunkZ, int amount) {
+        int relativeChunkX = chunkX - (this.chunkX - size);
+        int relativeChunkZ = chunkZ - (this.chunkZ - size);
+
+        int lower = amount & 0xFFFF;
+        int upper = amount >>> 16;
+        map.put(CoordinatePacker.pack(relativeChunkX, 1, relativeChunkZ), (short) lower);
+        map.put(CoordinatePacker.pack(relativeChunkX, 2, relativeChunkZ), (short) upper);
     }
 
-    @Desugar
-    public record ProspectingWrapper(int chunkX, int chunkZ, int posX, int posZ, int size, int ptype,
-        Byte2ShortMap[][] map, Object2IntMap<String> ores, Short2ObjectMap<String> metaMap) {}
+    public int getAmount(int relativeChunkX, int relativeChunkZ) {
+        int lower = Short.toUnsignedInt(map.get(CoordinatePacker.pack(relativeChunkX, 1, relativeChunkZ)));
+        int upper = Short.toUnsignedInt(map.get(CoordinatePacker.pack(relativeChunkX, 2, relativeChunkZ)));
+        return (upper << 16) | lower;
+    }
+
+    public int getSize() {
+        return (size * 2 + 1) * 16;
+    }
+
+    public String getObjectName(short objectId) {
+        ObjectIntPair<String> object = objects.get(objectId);
+        if (object != null) {
+            return object.left();
+        }
+        if (ptype == MODE_POLLUTION) {
+            return StatCollector.translateToLocal("gui.detrav.scanner.pollution");
+        }
+        if (ptype == MODE_FLUIDS) {
+            var fluid = FluidRegistry.getFluid(objectId);
+            if (fluid != null) {
+                return fluid.getLocalizedName(new FluidStack(fluid, 0));
+            }
+            return StatCollector.translateToLocal("gui.detrav.scanner.unknown_fluid");
+        }
+        return "";
+    }
+
+    public int getObjectColor(short objectId) {
+        ObjectIntPair<String> object = objects.get(objectId);
+        return object != null ? object.rightInt() : DEFAULT_COLOR;
+    }
+
+    private short getOrCreateObjectId(String name, int color) {
+        if (nameLookup.containsKey(name)) {
+            return nameLookup.getShort(name);
+        }
+        short objectId = nextId++;
+        nameLookup.put(name, objectId);
+        objects.put(objectId, ObjectIntImmutablePair.of(name, color));
+        return objectId;
+    }
+
+    private long getColumnObjectKey(int relativeX, int relativeZ, short objectId) {
+        int columnIndex = relativeX + relativeZ * getSize();
+        return (((long) objectId) & 0xFFFFL) << 32 | (columnIndex & 0xFFFFFFFFL);
+    }
+
+    private void collapseToTopVisibleLayer() {
+        Long2ShortOpenHashMap collapsedMap = new Long2ShortOpenHashMap();
+        Long2LongOpenHashMap topByColumn = new Long2LongOpenHashMap();
+
+        for (Long2ShortMap.Entry entry : map.long2ShortEntrySet()) {
+            long coordinate = entry.getLongKey();
+            long columnKey = getColumnKey(CoordinatePacker.unpackX(coordinate), CoordinatePacker.unpackZ(coordinate));
+            if (topByColumn.containsKey(columnKey)) {
+                long previousCoordinate = topByColumn.get(columnKey);
+                if (CoordinatePacker.unpackY(previousCoordinate) >= CoordinatePacker.unpackY(coordinate)) {
+                    continue;
+                }
+            }
+            topByColumn.put(columnKey, coordinate);
+        }
+
+        collapsedMap.ensureCapacity(topByColumn.size());
+        for (Long2LongMap.Entry entry : topByColumn.long2LongEntrySet()) {
+            long coordinate = entry.getLongValue();
+            collapsedMap.put(coordinate, map.get(coordinate));
+        }
+
+        map.clear();
+        map.putAll(collapsedMap);
+        topOreByColumnAndObject.clear();
+    }
+
+    private void pruneUnusedObjects() {
+        Short2ObjectOpenHashMap<ObjectIntPair<String>> usedObjects = new Short2ObjectOpenHashMap<>();
+        Object2ShortOpenHashMap<String> usedLookup = new Object2ShortOpenHashMap<>();
+        short maxObjectId = -1;
+
+        for (Long2ShortMap.Entry entry : map.long2ShortEntrySet()) {
+            short objectId = entry.getShortValue();
+            ObjectIntPair<String> object = objects.get(objectId);
+            if (object == null) {
+                continue;
+            }
+            usedObjects.put(objectId, object);
+            usedLookup.put(object.left(), objectId);
+            maxObjectId = (short) Math.max(maxObjectId, objectId);
+        }
+
+        objects.clear();
+        objects.putAll(usedObjects);
+        nameLookup.clear();
+        nameLookup.putAll(usedLookup);
+        nextId = (short) (maxObjectId + 1);
+    }
+
+    private void downsampleColumns(int sampleStep) {
+        Long2ShortOpenHashMap sampledMap = new Long2ShortOpenHashMap();
+        sampledMap.ensureCapacity(Math.max(1, map.size() / (sampleStep * sampleStep)));
+
+        for (Long2ShortMap.Entry entry : map.long2ShortEntrySet()) {
+            long coordinate = entry.getLongKey();
+            if (CoordinatePacker.unpackX(coordinate) % sampleStep != 0
+                || CoordinatePacker.unpackZ(coordinate) % sampleStep != 0) {
+                continue;
+            }
+            sampledMap.put(coordinate, entry.getShortValue());
+        }
+
+        map.clear();
+        map.putAll(sampledMap);
+        topOreByColumnAndObject.clear();
+    }
+
+    private long getColumnKey(int relativeX, int relativeZ) {
+        return ((long) relativeX & 0xFFFFFFFFL) << 32 | ((long) relativeZ & 0xFFFFFFFFL);
+    }
+
+    private static int rgbaToColor(@Nullable short[] rgba) {
+        if (rgba == null || rgba.length < 3) {
+            return DEFAULT_COLOR;
+        }
+        return (0xFF << 24) | ((rgba[0] & 0xFF) << 16) | ((rgba[1] & 0xFF) << 8) | (rgba[2] & 0xFF);
+    }
 }

@@ -21,16 +21,22 @@ import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAdvancedWorkbench;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableAvaritiaddonsChest;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableChest;
+import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GTNLStructureChannels;
 import com.science.gtnl.utils.enums.ModList;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseBucket;
 
 import bartworks.API.WerkstoffAdderRegistry;
+import bartworks.common.loaders.ItemRegistry;
 import cpw.mods.fml.common.Optional;
 import goodgenerator.loader.Loaders;
+import gregtech.api.enums.GTValues;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GTModHandler;
+import gregtech.api.util.GTOreDictUnificator;
+import gregtech.api.util.GlassTier;
 import gregtech.common.misc.WirelessNetworkManager;
 import micdoodle8.mods.galacticraft.api.recipe.RocketFuels;
 import micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry;
@@ -53,7 +59,6 @@ public class MaterialLoader {
 
     public static void loadInit() {
         GTNLMaterials.init();
-        MachineLoader.registerGlasses();
         WailaLoader.register();
         TickrateAPI.changeTickrate(MainConfig.tickrate.defaultTickrate);
 
@@ -63,6 +68,8 @@ public class MaterialLoader {
             GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING
                 .registerAsIndicator(new ItemStack(Loaders.componentAssemblylineCasing, 1, i), i + 1);
         }
+
+        registryOreDictionary();
     }
 
     public static void loadPostInit() {
@@ -114,6 +121,80 @@ public class MaterialLoader {
         provider.setAlignToGrid(EnumFacing.WEST);
         BogoSortAPI.INSTANCE.addGenericCompat(ContainerPortableChest.class);
         BogoSortAPI.INSTANCE.addGenericCompat(ContainerPortableAvaritiaddonsChest.class);
+    }
+
+    public static void registryOreDictionary() {
+        GlassTier.addCustomGlass(ItemRegistry.bw_realglas2, 1, 13, 1);
+        GTOreDictUnificator
+            .registerOre("blockGlass" + GTValues.VN[13], GTNLItemList.ShirabonReinforcedBoronSilicateGlass.get(1));
+
+        if (MainConfig.item.player_doll.enableRegisterMAXTierGlass) {
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 1, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 2, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 3, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 4, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 5, 14, 1);
+            GlassTier.addCustomGlass(BlockLoader.playerDoll, 0, 14, 1);
+            GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[14], GTNLItemList.PlayerDoll.get(1));
+        }
+
+        GlassTier.addCustomGlass(ItemRegistry.bw_realglas2, 2, 14, 2);
+        GTOreDictUnificator.registerOre(
+            "blockGlass" + GTValues.VN[14],
+            GTNLItemList.QuarkGluonPlasmaReinforcedBoronSilicateGlass.get(1));
+
+        GlassTier.addCustomGlass(BlockLoader.metaBlockGlass, 0, 10, 2);
+        GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[10], GTNLItemList.GaiaGlass.get(1));
+
+        GlassTier.addCustomGlass(BlockLoader.metaBlockGlass, 1, 8, 2);
+        GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[8], GTNLItemList.TerraGlass.get(1));
+
+        GlassTier.addCustomGlass(BlockLoader.metaBlockGlass, 2, 7, 1);
+        GTOreDictUnificator.registerOre("blockGlass" + GTValues.VN[7], GTNLItemList.FusionGlass.get(1));
+
+        for (int lampMeta = 1; lampMeta <= 32; lampMeta++) {
+            GlassTier.addCustomGlass(BlockLoader.metaBlockGlow, lampMeta, 3, 1);
+            GTOreDictUnificator
+                .registerOre("blockGlass" + GTValues.VN[3], new ItemStack(BlockLoader.metaBlockGlow, lampMeta));
+        }
+
+        for (int lampOffMeta = 3; lampOffMeta <= 34; lampOffMeta++) {
+            GlassTier.addCustomGlass(BlockLoader.metaBlock, lampOffMeta, 3, 1);
+            GTOreDictUnificator
+                .registerOre("blockGlass" + GTValues.VN[3], new ItemStack(BlockLoader.metaBlock, lampOffMeta));
+        }
+
+        GTOreDictUnificator
+            .registerOre(OrePrefixes.circuit.get(Materials.ULV), GTNLItemList.CircuitResonaticULV.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.LV), GTNLItemList.CircuitResonaticLV.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.MV), GTNLItemList.CircuitResonaticMV.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.HV), GTNLItemList.CircuitResonaticHV.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.EV), GTNLItemList.CircuitResonaticEV.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.IV), GTNLItemList.CircuitResonaticIV.get(1));
+        GTOreDictUnificator
+            .registerOre(OrePrefixes.circuit.get(Materials.LuV), GTNLItemList.CircuitResonaticLuV.get(1));
+        GTOreDictUnificator
+            .registerOre(OrePrefixes.circuit.get(Materials.ZPM), GTNLItemList.CircuitResonaticZPM.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.UV), GTNLItemList.CircuitResonaticUV.get(1));
+        GTOreDictUnificator
+            .registerOre(OrePrefixes.circuit.get(Materials.UHV), GTNLItemList.CircuitResonaticUHV.get(1));
+        GTOreDictUnificator
+            .registerOre(OrePrefixes.circuit.get(Materials.UEV), GTNLItemList.CircuitResonaticUEV.get(1));
+        GTOreDictUnificator
+            .registerOre(OrePrefixes.circuit.get(Materials.UIV), GTNLItemList.CircuitResonaticUIV.get(1));
+
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.ULV), GTNLItemList.VerySimpleCircuit.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.LV), GTNLItemList.SimpleCircuit.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.MV), GTNLItemList.BasicCircuit.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.HV), GTNLItemList.AdvancedCircuit.get(1));
+        GTOreDictUnificator.registerOre(OrePrefixes.circuit.get(Materials.EV), GTNLItemList.EliteCircuit.get(1));
+
+        GTOreDictUnificator.registerOre("record", GTNLItemList.RecordSus.get(1));
+
+        var shimmerOre = new ItemStack(BlockLoader.shimmerFluidBlock, 1, OreDictionary.WILDCARD_VALUE);
+        var shimmerMaterial = GTNLMaterials.Shimmer.getBridgeMaterial();
+        GTOreDictUnificator.registerOre(OrePrefixes.ore.get(shimmerMaterial), shimmerOre);
+        GTOreDictUnificator.addAssociation(OrePrefixes.ore, shimmerMaterial, shimmerOre, false);
     }
 
     public static void loadCardBoardBoxBlackList() {

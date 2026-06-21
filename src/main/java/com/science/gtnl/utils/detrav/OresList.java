@@ -1,66 +1,88 @@
 package com.science.gtnl.utils.detrav;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.StatCollector;
+
+import com.science.gtnl.common.packet.ProspectingPacket;
 
 import cpw.mods.fml.client.GuiScrollingList;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class OresList extends GuiScrollingList {
 
-    private final Object2IntMap<String> ores;
+    private final Object2IntOpenHashMap<String> colors = new Object2IntOpenHashMap<>();
     private final List<String> keys;
     private final GuiScreen parent;
     private final BiConsumer<String, Boolean> onSelected;
-    private boolean invert = false;
-
-    private int selected;
+    private boolean invert;
+    private int selected = -1;
 
     public OresList(GuiScreen parent, int width, int height, int top, int bottom, int left, int entryHeight,
-        Object2IntMap<String> aOres, BiConsumer<String, Boolean> onSelected) {
+        ProspectingPacket packet, BiConsumer<String, Boolean> onSelected) {
         super(parent.mc, width, height, top, bottom, left, entryHeight);
         this.parent = parent;
         this.onSelected = onSelected;
-        ores = aOres;
-        keys = new ArrayList<>(ores.keySet());
+        keys = packet.objects.short2ObjectEntrySet()
+            .stream()
+            .map(
+                entry -> entry.getValue()
+                    .left())
+            .collect(Collectors.toList());
         Collections.sort(keys);
-        if (keys.size() > 1) keys.add(0, "All");
+        if (packet.ptype == ProspectingPacket.MODE_POLLUTION) {
+            keys.clear();
+            keys.add(StatCollector.translateToLocal("gui.detrav.scanner.pollution"));
+        } else if (keys.size() > 1) {
+            keys.add(0, "All");
+        }
         selected = 0;
+
+        for (var entry : packet.objects.short2ObjectEntrySet()) {
+            colors.put(
+                entry.getValue()
+                    .left(),
+                entry.getValue()
+                    .rightInt());
+        }
     }
 
     @Override
-    public int getSize() {
+    protected int getSize() {
         return keys.size();
     }
 
     @Override
-    public void elementClicked(int index, boolean doubleClick) {
+    protected void elementClicked(int index, boolean doubleClick) {
         selected = index;
-        if (doubleClick) this.invert = !this.invert;
-
-        if (onSelected != null) onSelected.accept(keys.get(index), this.invert);
+        if (doubleClick) {
+            invert = !invert;
+        }
+        if (onSelected != null) {
+            onSelected.accept(keys.get(index), invert);
+        }
     }
 
     @Override
-    public boolean isSelected(int index) {
+    protected boolean isSelected(int index) {
         return selected == index;
     }
 
     @Override
-    public void drawBackground() {}
+    protected void drawBackground() {}
 
     @Override
-    public void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess) {
+    protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess) {
         parent.drawString(
             parent.mc.fontRenderer,
             parent.mc.fontRenderer.trimStringToWidth(keys.get(slotIdx), listWidth - 10),
-            this.left + 3,
+            left + 3,
             slotTop - 1,
-            ores.getOrDefault(keys.get(slotIdx), 0x7d7b76));
+            colors.getOrDefault(keys.get(slotIdx), 0x7d7b76));
     }
 }

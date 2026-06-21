@@ -150,13 +150,15 @@ public class LanguageLoader {
         addWerkstoffLocalization(GTNLMaterials.ToxicMercurySludge, "剧毒水银污泥", false);
         addWerkstoffLocalization(GTNLMaterials.PostProcessBeWaste, "后处理铍废液", false);
         addWerkstoffLocalization(GTNLMaterials.QuantumInfusion, "量子灌输液", false);
-        addWerkstoffLocalization(GTNLMaterials.Periodicium, "錭錤錶", false);
-        addWerkstoffLocalization(GTNLMaterials.Stargate, "星门", false);
         addWerkstoffLocalization(GTNLMaterials.GlowThorium, "荧光钍燃料", false);
         addWerkstoffLocalization(GTNLMaterials.UraniumFuel, "混合铀燃料", false);
         addWerkstoffLocalization(GTNLMaterials.UraniumWaste, "铀废料", false);
         addWerkstoffLocalization(GTNLMaterials.AmmoniumBisulfate, "硫酸氢铵", false);
         addWerkstoffLocalization(GTNLMaterials.AmmoniumPersulfate, "过硫酸铵", false);
+
+        addWerkstoffLocalization(GTNLMaterials.Periodicium, "錭錤錶", false);
+        addWerkstoffLocalization(GTNLMaterials.Stargate, "星门", false);
+        addWerkstoffLocalization(GTNLMaterials.Shimmer, "微光", false);
 
         addGTMaterialLocalization(Materials.BlueAlloy, "蓝色合金", true);
 

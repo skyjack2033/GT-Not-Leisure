@@ -3,10 +3,10 @@ package com.science.gtnl.common.item.items;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.SplittableRandom;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +15,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
@@ -24,54 +23,51 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.google.common.collect.MapMaker;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.item.ItemStaticDataClientOnly;
 import com.science.gtnl.common.packet.ProspectingPacket;
-import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.ItemLoader;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.item.MetaItemStackUtils;
 import com.science.gtnl.utils.item.MetaTooltipUtils;
 import com.sinthoras.visualprospecting.VisualProspecting_API;
 
-import bartworks.system.material.BWMetaGeneratedOres;
-import bartworks.system.material.Werkstoff;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import detrav.utils.GTppHelper;
-import gregtech.api.GregTechAPI;
-import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
+import gregtech.api.interfaces.IOreMaterial;
 import gregtech.api.items.MetaGeneratedTool;
 import gregtech.api.objects.ItemData;
-import gregtech.api.util.GTLanguageManager;
+import gregtech.api.task.CooperativeScheduler;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.common.UndergroundOil;
-import gregtech.common.blocks.BlockOresAbstractLegacy;
-import gregtech.common.blocks.TileEntityOres;
+import gregtech.common.ores.OreInfo;
+import gregtech.common.ores.OreManager;
 import gregtech.common.pollution.Pollution;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntLongPair;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class ElectricProspectorTool extends Item {
 
+    private static final int DEFAULT_SCAN_COLOR = 0xFF7D7D7D;
+    private static final ScannerBlockResult UNSCANNABLE_BLOCK = new ScannerBlockResult(null, 0, false);
+
     public String unlocalizedName = "ElectricProspectorTool";
-    public static final int[] DISTANCE_SQUARE_THRESHOLDS = new int[] { 0, 4, 25, 64 };
-    public Object2IntMap<String> ores = new Object2IntOpenHashMap<>();
-    public int distTextIndex;
     public int mCosts = 1;
     public static final Int2ObjectMap<IntLongPair> RANGE_MAP = new Int2ObjectOpenHashMap<>();
     public static final IntSet META_SET = new IntOpenHashSet();
-
-    public static String CHAT_MSG_SEPARATOR = EnumChatFormatting.STRIKETHROUGH + "--------------------";
+    public final Map<EntityPlayer, Future<?>> pendingScans = new MapMaker().weakValues()
+        .makeMap();
 
     public ElectricProspectorTool() {
         super();
@@ -159,6 +155,11 @@ public class ElectricProspectorTool extends Item {
             IntLongPair rangeMap = RANGE_MAP.get(meta);
             if (rangeMap == null) return aStack;
             ItemUtils.setToolMaxDamage(aStack, rangeMap.rightLong());
+            Future<?> pendingScan = pendingScans.remove(aPlayer);
+            if (pendingScan != null && !pendingScan.isDone()) {
+                pendingScan.cancel(true);
+                aPlayer.addChatMessage(new ChatComponentText("Cancelled pending scan"));
+            }
             int data = getDetravData(aStack);
             if (aPlayer.isSneaking()) {
                 data++;
@@ -171,134 +172,115 @@ public class ElectricProspectorTool extends Item {
                 setDetravData(aStack, data);
                 return aStack;
             }
+            final int scanMode = data;
 
             int cX = ((int) aPlayer.posX) >> 4;
             int cZ = ((int) aPlayer.posZ) >> 4;
-            int size = rangeMap.leftInt();
-            int chunkCapacity = Math.max(0, (size * 2 - 1) * (size * 2 - 1));
+            int radius = Math.max(0, rangeMap.leftInt() - 1);
+            int chunkCapacity = Math.max(0, (radius * 2 + 1) * (radius * 2 + 1));
             List<Chunk> chunks = new ArrayList<>(chunkCapacity);
             aPlayer.addChatMessage(new ChatComponentText("Scanning..."));
 
-            for (int i = -size; i <= size; i++)
-                for (int j = -size; j <= size; j++) if (i != -size && i != size && j != -size && j != size)
-                    chunks.add(aWorld.getChunkFromChunkCoords(cX + i, cZ + j));
-            size = size - 1;
+            int scanRadius = radius + 1;
+            for (int i = -scanRadius; i <= scanRadius; i++) {
+                for (int j = -scanRadius; j <= scanRadius; j++) {
+                    if (i != -scanRadius && i != scanRadius && j != -scanRadius && j != scanRadius) {
+                        chunks.add(aWorld.getChunkFromChunkCoords(cX + i, cZ + j));
+                    }
+                }
+            }
 
             ProspectingPacket packet = new ProspectingPacket(
                 cX,
                 cZ,
                 (int) aPlayer.posX,
                 (int) aPlayer.posZ,
-                size,
-                data);
-            String small_ore_keyword = StatCollector.translateToLocal("detrav.scanner.small_ore.keyword");
-            for (Chunk c : chunks) {
-                for (int x = 0; x < 16; x++) for (int z = 0; z < 16; z++) {
-                    int ySize = c.getHeightValue(x, z);
-                    for (int y = 1; y < ySize; y++) {
-                        switch (data) {
-                            case 0, 1 -> {
-                                Block tBlock = c.getBlock(x, y, z);
-                                short tMetaID = (short) c.getBlockMetadata(x, y, z);
-                                if (tBlock instanceof BlockOresAbstractLegacy) {
-                                    TileEntity tTileEntity = c.getTileEntityUnsafe(x, y, z);
-                                    if ((tTileEntity instanceof TileEntityOres)
-                                        && ((TileEntityOres) tTileEntity).mNatural) {
-                                        tMetaID = ((TileEntityOres) tTileEntity).mMetaData;
-                                        try {
-                                            String name = GTLanguageManager
-                                                .getTranslation(tBlock.getUnlocalizedName() + "." + tMetaID + ".name");
-                                            if (data != 1 && name.startsWith(small_ore_keyword)) continue;
-                                            packet.addBlock(c.xPosition * 16 + x, y, c.zPosition * 16 + z, tMetaID);
-                                        } catch (Exception e) {
-                                            String name = tBlock.getUnlocalizedName() + ".";
-                                            if (data != 1 && name.contains(".small.")) continue;
-                                            packet.addBlock(c.xPosition * 16 + x, y, c.zPosition * 16 + z, tMetaID);
+                radius,
+                scanMode);
+            if (!aPlayer.capabilities.isCreativeMode) {
+                ItemUtils.setToolDamage(
+                    aStack,
+                    MetaGeneratedTool.getToolDamage(aStack) + (long) this.mCosts * chunks.size());
+            }
+            Future<?> task = CooperativeScheduler.INSTANCE.schedule(ctx -> {
+                Long2ObjectOpenHashMap<ScannerBlockResult> displayCache = new Long2ObjectOpenHashMap<>();
+                while (!ctx.shouldYield()) {
+                    if (chunks.isEmpty()) {
+                        ctx.stop(null);
+                        break;
+                    }
+                    Chunk c = chunks.remove(chunks.size() - 1);
+                    switch (scanMode) {
+                        case ProspectingPacket.MODE_BIG_ORES, ProspectingPacket.MODE_ALL_ORES -> {
+                            for (int x = 0; x < 16; x++) {
+                                for (int z = 0; z < 16; z++) {
+                                    int height = c.getHeightValue(x, z);
+                                    LongOpenHashSet seenDisplayKeys = new LongOpenHashSet(8);
+                                    for (int y = height - 1; y >= 1; y--) {
+                                        Block block = c.getBlock(x, y, z);
+                                        int blockMeta = c.getBlockMetadata(x, y, z);
+                                        long displayKey = getDisplayKey(block, blockMeta);
+                                        if (!seenDisplayKeys.add(displayKey)) {
+                                            continue;
                                         }
-                                    }
-                                } else if (GTppHelper.isGTppBlock(tBlock)) {
-                                    packet.addBlock(
-                                        c.xPosition * 16 + x,
-                                        y,
-                                        c.zPosition * 16 + z,
-                                        GTppHelper.getMetaFromBlock(tBlock));
-                                } else if (tBlock instanceof BWMetaGeneratedOres bwOre) {
-                                    if (data != 1 && bwOre.isSmall) continue;
-                                    packet.addBlock(c.xPosition * 16 + x, y, c.zPosition * 16 + z, (short) tMetaID);
-                                } else if (data == 1) {
-                                    ItemData tAssotiation = GTOreDictUnificator
-                                        .getAssociation(new ItemStack(tBlock, 1, tMetaID));
-                                    if ((tAssotiation != null) && (tAssotiation.mPrefix.toString()
-                                        .startsWith("ore"))) {
+                                        ScannerBlockResult displayData = resolveScannerBlock(
+                                            displayCache,
+                                            block,
+                                            blockMeta,
+                                            scanMode);
+                                        if (!displayData.scannable()) {
+                                            continue;
+                                        }
                                         packet.addBlock(
                                             c.xPosition * 16 + x,
                                             y,
                                             c.zPosition * 16 + z,
-                                            (short) tAssotiation.mMaterial.mMaterial.mMetaItemSubID);
+                                            displayData.displayName(),
+                                            displayData.color());
                                     }
                                 }
                             }
-                            case 2 -> {
-                                if ((x == 0) || (z == 0)) { // Skip doing the locations with the grid on them.
-                                    break;
-                                }
-                                FluidStack fStack = UndergroundOil.undergroundOil(
-                                    aWorld.getChunkFromBlockCoords(c.xPosition * 16 + x, c.zPosition * 16 + z),
-                                    -1);
-                                if (fStack != null && fStack.amount > 0) {
-                                    packet.addBlock(
-                                        c.xPosition * 16 + x,
-                                        1,
-                                        c.zPosition * 16 + z,
-                                        (short) fStack.getFluidID());
-                                    packet
-                                        .addBlock(c.xPosition * 16 + x, 2, c.zPosition * 16 + z, (short) fStack.amount);
-                                }
-                            }
-                            case 3 -> {
-                                float polution = (float) getPollution(
-                                    aWorld,
-                                    c.xPosition * 16 + x,
-                                    c.zPosition * 16 + z);
-                                polution /= 2000000;
-                                polution *= -0xFF;
-                                if (polution > 0xFF) polution = 0xFF;
-                                polution = 0xFF - polution;
-                                packet.addBlock(c.xPosition * 16 + x, 1, c.zPosition * 16 + z, (short) polution);
-                            }
                         }
-                        if (data > 1) break;
+                        case ProspectingPacket.MODE_FLUIDS -> packet
+                            .addFluid(c.xPosition, c.zPosition, UndergroundOil.undergroundOil(c, -1));
+                        case ProspectingPacket.MODE_POLLUTION -> packet
+                            .addPollution(c.xPosition, c.zPosition, Pollution.getPollution(c));
+                        default -> {}
                     }
                 }
-            }
-            ScienceNotLeisure.network.sendTo(packet, (EntityPlayerMP) aPlayer);
-            if (!aPlayer.capabilities.isCreativeMode) {
-                ItemUtils.setToolDamage(
-                    aStack,
-                    MetaGeneratedTool.getToolDamage(aStack) + (long) this.mCosts * chunks.size() / 4);
-            }
-
-            if (Mods.VisualProspecting.isModLoaded()) {
-                if (data == 0 || data == 1) {
-                    sendVisualProspectingOreResults(
-                        aWorld,
-                        (EntityPlayerMP) aPlayer,
-                        (int) aPlayer.posX,
-                        (int) aPlayer.posZ,
-                        size * 16);
-                } else if (data == 2) {
-                    sendVisualProspectingFluidResults(
-                        aWorld,
-                        (EntityPlayerMP) aPlayer,
-                        (int) aPlayer.posX,
-                        (int) aPlayer.posZ,
-                        size * 16);
-                }
-            }
-
-            if (MetaGeneratedTool.getToolDamage(aStack) >= MetaGeneratedTool.getToolMaxDamage(aStack)) {
-                if (aStack.stackSize > 0) aStack.stackSize--;
-            }
+            })
+                .onFinished(ignored -> {
+                    pendingScans.remove(aPlayer);
+                    if (!packet.trimToPayloadLimit(ProspectingPacket.MAX_COMPRESSED_PAYLOAD_SIZE)) {
+                        aPlayer.addChatMessage(
+                            new ChatComponentText("Scan result was too large to send. Reduce range or use filtering."));
+                        return;
+                    }
+                    ScienceNotLeisure.network.sendTo(packet, (EntityPlayerMP) aPlayer);
+                    if (Mods.VisualProspecting.isModLoaded()) {
+                        if (scanMode == ProspectingPacket.MODE_BIG_ORES
+                            || scanMode == ProspectingPacket.MODE_ALL_ORES) {
+                            sendVisualProspectingOreResults(
+                                aWorld,
+                                (EntityPlayerMP) aPlayer,
+                                (int) aPlayer.posX,
+                                (int) aPlayer.posZ,
+                                radius * 16);
+                        } else if (scanMode == ProspectingPacket.MODE_FLUIDS) {
+                            sendVisualProspectingFluidResults(
+                                aWorld,
+                                (EntityPlayerMP) aPlayer,
+                                (int) aPlayer.posX,
+                                (int) aPlayer.posZ,
+                                radius * 16);
+                        }
+                    }
+                    if (MetaGeneratedTool.getToolDamage(aStack) >= MetaGeneratedTool.getToolMaxDamage(aStack)
+                        && aStack.stackSize > 0) {
+                        aStack.stackSize--;
+                    }
+                });
+            pendingScans.put(aPlayer, task);
         }
 
         return aStack;
@@ -318,182 +300,57 @@ public class ElectricProspectorTool extends Item {
     @Override
     public boolean onItemUse(ItemStack aStack, EntityPlayer aPlayer, World aWorld, int aX, int aY, int aZ, int aSide,
         float hitX, float hitY, float hitZ) {
-        int data = getDetravData(aStack);
-        if (data < 2) {
-            if (aWorld.getBlock(aX, aY, aZ) == Blocks.bedrock) {
-                if (!aWorld.isRemote) {
-                    FluidStack fStack = UndergroundOil.undergroundOil(aWorld.getChunkFromBlockCoords(aX, aZ), -1);
-                    if (fStack != null) {
-                        addChatMassageByValue(aPlayer, fStack.amount, fStack.getLocalizedName());
-                        if (!aPlayer.capabilities.isCreativeMode) {
-                            ItemUtils.setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts);
-                        }
-                    }
-                }
-            } else {
-                if (!aWorld.isRemote) {
-                    prospectSingleChunk(aStack, aPlayer, aWorld, aX, aY, aZ);
-                }
-            }
-            if (aWorld.getBlock(aX, aY, aZ)
-                .getMaterial() == Material.rock
-                || aWorld.getBlock(aX, aY, aZ)
-                    .getMaterial() == Material.ground
-                || aWorld.getBlock(aX, aY, aZ) == GregTechAPI.sBlockOres1) {
-                if (!aWorld.isRemote) {
-                    prospectChunks(aStack, aPlayer, aWorld, aX, aY, aZ, new SplittableRandom(), 50);
-                }
-                return true;
-            }
+        if (aWorld.isRemote) {
             return true;
         }
-        if (data < 3) if (!aWorld.isRemote) {
-            FluidStack fStack = UndergroundOil.undergroundOil(aWorld.getChunkFromBlockCoords(aX, aZ), -1);
-            addChatMassageByValue(aPlayer, fStack.amount, fStack.getLocalizedName());
-            if (!aPlayer.capabilities.isCreativeMode) {
-                ItemUtils.setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts);
-            }
-            return true;
+
+        if (!aStack.hasTagCompound()) {
+            aStack.setTagCompound(new NBTTagCompound());
         }
-        if (!aWorld.isRemote) {
-            if (!aStack.hasTagCompound()) aStack.setTagCompound(new NBTTagCompound());
-            int meta = aStack.stackTagCompound.getInteger("toolMeta");
-            IntLongPair rangeMap = RANGE_MAP.get(meta);
-            if (rangeMap == null) return true;
-            ItemUtils.setToolMaxDamage(aStack, rangeMap.rightLong());
-            int polution = getPollution(aWorld, aX, aZ);
-            addChatMassageByValue(aPlayer, polution, "Pollution");
-            if (MetaGeneratedTool.getToolDamage(aStack) >= MetaGeneratedTool.getToolMaxDamage(aStack)) {
-                if (aStack.stackSize > 0) aStack.stackSize--;
-            }
-        }
-        return true;
-    }
-
-    public void prospectChunks(ItemStack aStack, EntityPlayer aPlayer, World aWorld, int aX, int aY, int aZ,
-        SplittableRandom aRandom, int chance) {
-        int bX = aX;
-        int bZ = aZ;
-
-        ores.clear();
-
-        if (!aStack.hasTagCompound()) aStack.setTagCompound(new NBTTagCompound());
         int meta = aStack.stackTagCompound.getInteger("toolMeta");
         IntLongPair rangeMap = RANGE_MAP.get(meta);
-        if (rangeMap == null) return;
-
-        int range = rangeMap.leftInt();
-        if ((range % 2) == 0) {
-            range += 1; // kinda not needed here, divide takes it out, but we put it back in with the range+1 in the
-            // loop
+        if (rangeMap == null) {
+            return true;
         }
-        range = range / 2; // Convert range from diameter to radius
+        ItemUtils.setToolMaxDamage(aStack, rangeMap.rightLong());
 
-        aPlayer.addChatMessage(
-            new ChatComponentText(
-                EnumChatFormatting.GOLD + GTLanguageManager.sEnglishFile
-                    .get("LanguageFile", "gt.scanner.prospecting", "Prospecting at ")
-                    .getString() + EnumChatFormatting.BLUE + "(" + bX + ", " + bZ + ")"));
-        for (int x = -(range); x < (range + 1); ++x) {
-            aX = bX + (x * 16);
-            for (int z = -(range); z < (range + 1); ++z) {
-
-                aZ = bZ + (z * 16);
-                int dist = x * x + z * z;
-
-                for (distTextIndex = 0; distTextIndex < DISTANCE_SQUARE_THRESHOLDS.length; distTextIndex++) {
-                    if (dist <= DISTANCE_SQUARE_THRESHOLDS[distTextIndex]) {
-                        break;
-                    }
-                }
-                if (MainConfig.debug.enableDebugMode) aPlayer.addChatMessage(
-                    new ChatComponentText(
-                        EnumChatFormatting.YELLOW + "Chunk at "
-                            + aX
-                            + "|"
-                            + aZ
-                            + " to "
-                            + (aX + 16)
-                            + "|"
-                            + (aZ + 16)
-                            + StatCollector.translateToLocal("detrav.scanner.distance.texts." + distTextIndex)));
-                processOreProspecting(
-                    aStack,
+        int data = getDetravData(aStack);
+        if (data < ProspectingPacket.MODE_FLUIDS) {
+            if (aWorld.getBlock(aX, aY, aZ) == Blocks.bedrock) {
+                FluidStack fluidStack = UndergroundOil.undergroundOil(aWorld.getChunkFromBlockCoords(aX, aZ), -1);
+                addChatMassageByValue(
                     aPlayer,
-                    aWorld.getChunkFromBlockCoords(aX, aZ),
-                    aWorld.getTileEntity(aX, aY, aZ),
-                    GTOreDictUnificator.getAssociation(
-                        new ItemStack(aWorld.getBlock(aX, aY, aZ), 1, aWorld.getBlockMetadata(aX, aY, aZ))),
-                    aRandom,
-                    chance);
+                    fluidStack == null ? 0 : fluidStack.amount,
+                    getFluidDisplayName(fluidStack));
+                damageTool(aStack, aPlayer, mCosts);
+            } else {
+                prospectSingleChunk(aStack, aPlayer, aWorld, aX, aY, aZ);
             }
+            return true;
         }
 
-        // List to hold unsorted scanner messages
-        List<ChatComponentText> oreMessages = new ArrayList<>(ores.size());
-
-        for (Object2IntMap.Entry<String> entry : ores.object2IntEntrySet()) {
-            appendChatMessageByValue(oreMessages, aPlayer, entry.getIntValue(), entry.getKey());
+        if (data < ProspectingPacket.MODE_POLLUTION) {
+            FluidStack fluidStack = UndergroundOil.undergroundOil(aWorld.getChunkFromBlockCoords(aX, aZ), -1);
+            addChatMassageByValue(aPlayer, fluidStack == null ? 0 : fluidStack.amount, getFluidDisplayName(fluidStack));
+            damageTool(aStack, aPlayer, mCosts);
+            return true;
         }
 
-        // Define sort order by distance
-        String[] sortOrder = new String[] { StatCollector.translateToLocal("detrav.scanner.distance.texts.4"),
-            StatCollector.translateToLocal("detrav.scanner.distance.texts.3"),
-            StatCollector.translateToLocal("detrav.scanner.distance.texts.2"),
-            StatCollector.translateToLocal("detrav.scanner.distance.texts.1"),
-            StatCollector.translateToLocal("detrav.scanner.distance.texts.0") };
-
-        List<ChatComponentText> oreMessagesSorted = new ArrayList<>(oreMessages.size() + sortOrder.length + 2);
-        oreMessagesSorted.add(new ChatComponentText(CHAT_MSG_SEPARATOR));
-
-        // Sort ore messages by distance, separated by -----
-        for (String oreFrequency : sortOrder) {
-            for (ChatComponentText msg : oreMessages) {
-                if (msg.getChatComponentText_TextValue()
-                    .contains(oreFrequency)) {
-                    oreMessagesSorted.add(msg);
-                }
-            }
-
-            // Only append ----- separator if text has been added
-            if (!oreMessagesSorted.get(oreMessagesSorted.size() - 1)
-                .getChatComponentText_TextValue()
-                .contains(CHAT_MSG_SEPARATOR)) {
-                oreMessagesSorted.add(new ChatComponentText(CHAT_MSG_SEPARATOR));
-            }
-        }
-
-        oreMessagesSorted.add(
-            new ChatComponentText(EnumChatFormatting.WHITE + StatCollector.translateToLocal("detrav.scanner.success")));
-
-        // Print the sorted messages
-        for (ChatComponentText msg : oreMessagesSorted) {
-            aPlayer.addChatMessage(msg);
-        }
-
-        if (Mods.VisualProspecting.isModLoaded()) {
-            sendVisualProspectingOreResults(aWorld, (EntityPlayerMP) aPlayer, bX, bZ, range * 16);
-        }
+        int pollution = getPollution(aWorld, aX, aZ);
+        addChatMassageByValue(aPlayer, pollution, "Pollution");
+        return true;
     }
 
     // Used by Electric scanner when scanning the chunk whacked by the scanner. 100% chance find rate
     public void prospectSingleChunk(ItemStack aStack, EntityPlayer aPlayer, World aWorld, int aX, int aY, int aZ) {
-        ores.clear();
+        Object2IntOpenHashMap<String> oreCounts = new Object2IntOpenHashMap<>();
         aPlayer.addChatMessage(
             new ChatComponentText(
                 EnumChatFormatting.GOLD + StatCollector.translateToLocal(
                     "detrav.scanner.prospecting") + EnumChatFormatting.BLUE + "(" + aX + ", " + aZ + ")"));
-        processOreProspecting(
-            aStack,
-            aPlayer,
-            aWorld.getChunkFromBlockCoords(aX, aZ),
-            aWorld.getTileEntity(aX, aY, aZ),
-            GTOreDictUnificator
-                .getAssociation(new ItemStack(aWorld.getBlock(aX, aY, aZ), 1, aWorld.getBlockMetadata(aX, aY, aZ))),
-            new SplittableRandom(),
-            1000);
+        processOreProspecting(aStack, aPlayer, aWorld, aX, aY, aZ, oreCounts);
 
-        for (Object2IntMap.Entry<String> entry : ores.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<String> entry : oreCounts.object2IntEntrySet()) {
             addChatMassageByValue(aPlayer, entry.getIntValue(), entry.getKey());
         }
 
@@ -520,127 +377,121 @@ public class ElectricProspectorTool extends Item {
                 .prospectUndergroundFluidsWithingRadius(world, blockX, blockZ, blockRadius));
     }
 
-    public void processOreProspecting(ItemStack aStack, EntityPlayer aPlayer, Chunk aChunk, TileEntity aTileEntity,
-        ItemData tAssotiation, SplittableRandom aRandom, int chance) {
-        if (aTileEntity != null) {
-            if (aTileEntity instanceof TileEntityOres gt_entity) {
-                short meta = gt_entity.mMetaData;
-                String format = LanguageRegistry.instance()
-                    .getStringLocalization("gt.blockores." + meta + ".name");
-                String name = Materials.getLocalizedNameForItem(format, meta % 1000);
-                addOreToHashMap(name, aPlayer);
-                if (!aPlayer.capabilities.isCreativeMode) {
-                    ItemUtils.setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts);
-                }
-            }
-        } else if (tAssotiation != null) {
+    public void processOreProspecting(ItemStack aStack, EntityPlayer aPlayer, World world, int x, int y, int z,
+        Object2IntOpenHashMap<String> oreCounts) {
+        Block block = world.getBlock(x, y, z);
+        int meta = world.getBlockMetadata(x, y, z);
+        ItemStack blockStack = new ItemStack(block, 1, meta);
+        int scanMode = getDetravData(aStack);
+        Long2ObjectOpenHashMap<ScannerBlockResult> displayCache = new Long2ObjectOpenHashMap<>();
+
+        ScannerBlockResult targetDisplay = resolveScannerBlock(displayCache, block, meta, scanMode);
+        if (targetDisplay.scannable()) {
+            incrementOreCount(oreCounts, targetDisplay.displayName());
+            damageTool(aStack, aPlayer, mCosts);
+            return;
+        }
+
+        ItemData itemData = GTOreDictUnificator.getAssociation(blockStack);
+        if (itemData != null) {
             try {
-                String name = tAssotiation.toString();
-                addChatMassageByValue(aPlayer, -1, name);
-                if (!aPlayer.capabilities.isCreativeMode) {
-                    ItemUtils.setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts);
-                }
+                addChatMassageByValue(aPlayer, -1, itemData.toString());
+                damageTool(aStack, aPlayer, mCosts);
             } catch (Exception e) {
                 addChatMassageByValue(aPlayer, -1, "ERROR, lol ^_^");
             }
-        } else if (aRandom.nextInt(100) < chance) {
-            int data = getDetravData(aStack);
-            String small_ore_keyword = StatCollector.translateToLocal("detrav.scanner.small_ore.keyword");
-            for (int x = 0; x < 16; x++) for (int z = 0; z < 16; z++) {
-                int ySize = aChunk.getHeightValue(x, z);
-                for (int y = 1; y < ySize; y++) {
+            return;
+        }
 
-                    Block tBlock = aChunk.getBlock(x, y, z);
-                    short tMetaID = (short) aChunk.getBlockMetadata(x, y, z);
-                    if (tBlock instanceof BlockOresAbstractLegacy) {
-                        TileEntity tTileEntity = aChunk.getTileEntityUnsafe(x, y, z);
-                        if ((tTileEntity instanceof TileEntityOres) && ((TileEntityOres) tTileEntity).mNatural) {
-                            tMetaID = ((TileEntityOres) tTileEntity).mMetaData;
-                            try {
-                                String format = LanguageRegistry.instance()
-                                    .getStringLocalization(tBlock.getUnlocalizedName() + "." + tMetaID + ".name");
-                                String name = Materials.getLocalizedNameForItem(format, tMetaID % 1000);
-                                if (data != 1 && name.startsWith(small_ore_keyword)) continue;
-                                addOreToHashMap(name, aPlayer);
-                            } catch (Exception e) {
-                                String name = tBlock.getUnlocalizedName() + ".";
-                                if (data != 1 && name.contains(".small.")) continue;
-                                addOreToHashMap(name, aPlayer);
-                            }
-                        }
-                    } else if (GTppHelper.isGTppBlock(tBlock)) {
-                        String name = GTppHelper.getGTppVeinName(tBlock);
-                        if (!name.isEmpty()) addOreToHashMap(name, aPlayer);
-                    } else if (tBlock instanceof BWMetaGeneratedOres bwOre) {
-                        if (data != 1 && bwOre.isSmall) continue;
-                        Werkstoff werkstoff = Werkstoff.werkstoffHashMap.getOrDefault((short) tMetaID, null);
-                        if (werkstoff == null) continue;
-                        String type = bwOre.isSmall ? "oreSmall" : "ore";
-                        String translated = GTLanguageManager.getTranslation("bw.blocktype." + type);
-                        addOreToHashMap(translated.replace("%material", werkstoff.getLocalizedName()), aPlayer);
-                    } else if (data == 1) {
-                        tAssotiation = GTOreDictUnificator.getAssociation(new ItemStack(tBlock, 1, tMetaID));
-                        if ((tAssotiation != null) && (tAssotiation.mPrefix.toString()
-                            .startsWith("ore"))) {
-                            try {
-                                try {
-                                    tMetaID = (short) tAssotiation.mMaterial.mMaterial.mMetaItemSubID;
-                                    String format = LanguageRegistry.instance()
-                                        .getStringLocalization("gt.blockores." + tMetaID + ".name");
-                                    String name = Materials.getLocalizedNameForItem(format, tMetaID % 1000);
-                                    addOreToHashMap(name, aPlayer);
-                                } catch (Exception e1) {
-                                    String name = tAssotiation.toString();
-                                    addOreToHashMap(name, aPlayer);
-                                }
-                            } catch (Exception ignored) {}
-                        }
+        if (scanMode >= ProspectingPacket.MODE_FLUIDS) {
+            return;
+        }
+
+        Chunk chunk = world.getChunkFromBlockCoords(x, z);
+        for (int chunkX = 0; chunkX < 16; chunkX++) {
+            for (int chunkZ = 0; chunkZ < 16; chunkZ++) {
+                int maxY = chunk.getHeightValue(chunkX, chunkZ);
+                LongOpenHashSet seenDisplayKeys = new LongOpenHashSet(8);
+                for (int chunkY = maxY - 1; chunkY >= 1; chunkY--) {
+                    Block chunkBlock = chunk.getBlock(chunkX, chunkY, chunkZ);
+                    int chunkMeta = chunk.getBlockMetadata(chunkX, chunkY, chunkZ);
+                    long displayKey = getDisplayKey(chunkBlock, chunkMeta);
+                    if (!seenDisplayKeys.add(displayKey)) {
+                        continue;
                     }
 
+                    ScannerBlockResult chunkDisplay = resolveScannerBlock(
+                        displayCache,
+                        chunkBlock,
+                        chunkMeta,
+                        scanMode);
+                    if (chunkDisplay.scannable()) {
+                        incrementOreCount(oreCounts, chunkDisplay.displayName());
+                        continue;
+                    }
+
+                    ItemData chunkItemData = GTOreDictUnificator
+                        .getAssociation(new ItemStack(chunkBlock, 1, chunkMeta));
+                    if (chunkItemData != null && chunkItemData.mPrefix.toString()
+                        .startsWith("ore")) {
+                        incrementOreCount(oreCounts, new ItemStack(chunkBlock, 1, chunkMeta).getDisplayName());
+                    }
                 }
             }
-
-            if (!aPlayer.capabilities.isCreativeMode) {
-                ItemUtils.setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts);
-            }
-
-        } else {
-            if (MainConfig.debug.enableDebugMode)
-                aPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + " Failed on this chunk"));
-            if (!aPlayer.capabilities.isCreativeMode) {
-                ItemUtils.setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + this.mCosts / 4);
-            }
         }
+        damageTool(aStack, aPlayer, mCosts);
     }
 
-    public void addOreToHashMap(String orename, EntityPlayer aPlayer) {
-        String oreDistance = orename + StatCollector.translateToLocal("detrav.scanner.distance.texts." + distTextIndex); // orename
-        if (!ores.containsKey(oreDistance)) {
-            if (MainConfig.debug.enableDebugMode) aPlayer
-                .addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + " Adding to oremap " + oreDistance));
-            ores.put(oreDistance, 1);
-        } else {
-            ores.compute(oreDistance, (k, val) -> val + 1);
-        }
+    public void incrementOreCount(Object2IntOpenHashMap<String> oreCounts, String oreName) {
+        oreCounts.addTo(oreName, 1);
     }
 
-    public void appendChatMessageByValue(List<ChatComponentText> chatMessageList, EntityPlayer aPlayer, int value,
-        String name) {
-        if (value < 0) {
-            chatMessageList
-                .add(new ChatComponentText(StatCollector.translateToLocal("detrav.scanner.found.texts.6") + name));
-        } else if (value < 1) {
-            chatMessageList.add(new ChatComponentText(StatCollector.translateToLocal("detrav.scanner.found.texts.0")));
-        } else if (value < 10) chatMessageList
-            .add(new ChatComponentText(name + StatCollector.translateToLocal("detrav.scanner.found.texts.1")));
-        else if (value < 30) chatMessageList
-            .add(new ChatComponentText(name + StatCollector.translateToLocal("detrav.scanner.found.texts.2")));
-        else if (value < 60) chatMessageList
-            .add(new ChatComponentText(name + StatCollector.translateToLocal("detrav.scanner.found.texts.3")));
-        else if (value < 100) chatMessageList
-            .add(new ChatComponentText(name + StatCollector.translateToLocal("detrav.scanner.found.texts.4")));
-        else chatMessageList
-            .add(new ChatComponentText(name + StatCollector.translateToLocal("detrav.scanner.found.texts.5")));
+    public String getFluidDisplayName(FluidStack fluidStack) {
+        return fluidStack == null ? StatCollector.translateToLocal("gui.detrav.scanner.unknown_fluid")
+            : fluidStack.getLocalizedName();
+    }
+
+    public int rgbaToColor(short[] rgba) {
+        if (rgba == null || rgba.length < 3) {
+            return DEFAULT_SCAN_COLOR;
+        }
+        return (0xFF << 24) | ((rgba[0] & 0xFF) << 16) | ((rgba[1] & 0xFF) << 8) | (rgba[2] & 0xFF);
+    }
+
+    private ScannerBlockResult resolveScannerBlock(Long2ObjectOpenHashMap<ScannerBlockResult> displayCache, Block block,
+        int meta, int scanMode) {
+        long displayKey = getDisplayKey(block, meta);
+        ScannerBlockResult cached = displayCache.get(displayKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        ScannerBlockResult result = UNSCANNABLE_BLOCK;
+        try (OreInfo<IOreMaterial> info = OreManager.getOreInfo(block, meta)) {
+            if (info != null && info.isNatural && (scanMode == ProspectingPacket.MODE_ALL_ORES || !info.isSmall)) {
+                result = new ScannerBlockResult(
+                    new ItemStack(block, 1, meta).getDisplayName(),
+                    info.material == null ? DEFAULT_SCAN_COLOR : rgbaToColor(info.material.getRGBA()),
+                    true);
+            }
+        }
+
+        displayCache.put(displayKey, result);
+        return result;
+    }
+
+    private long getDisplayKey(Block block, int meta) {
+        return (((long) Block.getIdFromBlock(block)) << 32) | (meta & 0xFFFFFFFFL);
+    }
+
+    public void damageTool(ItemStack aStack, EntityPlayer aPlayer, int amount) {
+        if (!aPlayer.capabilities.isCreativeMode) {
+            ItemUtils.setToolDamage(aStack, MetaGeneratedTool.getToolDamage(aStack) + amount);
+            if (MetaGeneratedTool.getToolDamage(aStack) >= MetaGeneratedTool.getToolMaxDamage(aStack)
+                && aStack.stackSize > 0) {
+                aStack.stackSize--;
+            }
+        }
     }
 
     public static int getPollution(World aWorld, int aX, int aZ) {
@@ -664,4 +515,5 @@ public class ElectricProspectorTool extends Item {
         nbt.setInteger("DetravData", data);
     }
 
+    private record ScannerBlockResult(String displayName, int color, boolean scannable) {}
 }
