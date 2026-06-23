@@ -126,18 +126,21 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
     }
 
     public void setModid(@Nullable String modid) {
-        this.modid = modid;
+        this.modid = normalizeFilterValue(modid);
         refreshItemList();
+        updateAllInformationSlots();
     }
 
     public void setNameFilter(@Nullable String name) {
-        this.name = name;
+        this.name = normalizeFilterValue(name);
         refreshItemList();
+        updateAllInformationSlots();
     }
 
     public void setMetaFilter(int meta) {
         this.meta = meta;
         refreshItemList();
+        updateAllInformationSlots();
     }
 
     public String buildFilterString() {
@@ -161,7 +164,8 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
                 gridProxy = new AENetworkProxy(
                     gridProxyable,
                     "proxy",
-                    GTNLItemList.TypeFilteredInputBusME.get(1),
+                    isSuper ? GTNLItemList.SuperTypeFilteredInputBusME.get(1)
+                        : GTNLItemList.TypeFilteredInputBusME.get(1),
                     true);
                 gridProxy.setFlags(GridFlags.REQUIRE_CHANNEL);
                 updateValidGridProxySides();
@@ -302,5 +306,13 @@ public class TypeFilteredInputBusME extends OredictInputBusME {
         if (aNBT.hasKey("modid")) modid = aNBT.getString("modid");
         if (aNBT.hasKey("name")) name = aNBT.getString("name");
         if (aNBT.hasKey("meta")) meta = aNBT.getInteger("meta");
+    }
+
+    private String normalizeFilterValue(@Nullable String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

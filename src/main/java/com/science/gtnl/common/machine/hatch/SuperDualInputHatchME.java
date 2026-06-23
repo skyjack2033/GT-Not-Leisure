@@ -439,6 +439,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
 
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        refreshGuiStateOnOpen();
         return new SuperDualInputHatchMEGui(this).build(data, syncManager, uiSettings);
     }
 
@@ -1268,7 +1269,10 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
     }
 
     public void refreshItemList() {
-        if (!isActive()) return;
+        if (!isActive()) {
+            clearItemDisplayData();
+            return;
+        }
         AENetworkProxy proxy = getProxy();
         try {
             IMEMonitor<IAEItemStack> sg = proxy.getStorage()
@@ -1295,13 +1299,18 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             }
             for (int i = index; i < SLOT_COUNT; i++) {
                 i_mark[i] = null;
+                i_display[i] = null;
+                i_client[i] = 0;
             }
 
         } catch (GridAccessException ignored) {}
     }
 
     public void refreshItemListF() {
-        if (!isActive()) return;
+        if (!isActive()) {
+            clearFluidDisplayData();
+            return;
+        }
         AENetworkProxy proxy = getProxy();
         try {
             IMEMonitor<IAEFluidStack> sg = proxy.getStorage()
@@ -1329,6 +1338,8 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
 
             for (int i = index; i < SLOT_COUNT; i++) {
                 f_mark[i] = null;
+                f_display[i] = null;
+                f_client[i] = 0;
             }
         } catch (GridAccessException ignored) {}
     }
@@ -1338,6 +1349,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
             if (aTimer % autoPullRefreshTime == 0 && autoPullItemList) {
                 refreshItemList();
                 refreshItemListF();
+                updateAllInformationSlots();
             }
             if (aTimer % 20 == 0) {
                 getBaseMetaTileEntity().setActive(isActive());
@@ -1644,7 +1656,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         NBTTagList storedList = new NBTTagList();
         for (int i = 0; i < SLOT_COUNT; i++) {
             long size = f_stored[i];
-            if (size != Long.MAX_VALUE) continue;
+            if (size == Long.MAX_VALUE) continue;
             NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("slot", i);
             tag.setLong("size", size);
@@ -1668,7 +1680,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         storedList = new NBTTagList();
         for (int i = 0; i < SLOT_COUNT; i++) {
             long size = i_stored[i];
-            if (size != Long.MAX_VALUE) continue;
+            if (size == Long.MAX_VALUE) continue;
             NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("slot", i);
             tag.setLong("size", size);
@@ -1796,7 +1808,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
 
         if (aNBT.hasKey("sizes")) {
             int[] size = aNBT.getIntArray("sizes");
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < SLOT_COUNT && i < size.length; i++) {
                 if (i_mark[i] != null) {
                     i_display[i] = i_mark[i].copy();
                     i_display[i].stackSize = size[i];
@@ -1821,6 +1833,57 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         autoPullRefreshTime = aNBT.getInteger("interval");
         intmaxs = aNBT.getInteger("intmaxs");
         autoPullItemList = aNBT.getBoolean("autoPull");
+    }
+
+    protected void refreshGuiStateOnOpen() {
+        if (!getBaseMetaTileEntity().isServerSide()) {
+            return;
+        }
+        if (autoPullItemList) {
+            refreshItemList();
+            refreshItemListF();
+        }
+        updateAllInformationSlots();
+    }
+
+    protected void clearItemDisplayData() {
+        Arrays.fill(i_display, null);
+        Arrays.fill(i_client, 0L);
+    }
+
+    protected void clearFluidDisplayData() {
+        Arrays.fill(f_display, null);
+        Arrays.fill(f_client, 0L);
+    }
+
+    public long[] getInformationItemAmountsForGui() {
+        return i_client.clone();
+    }
+
+    public void setInformationItemAmountsForGui(long[] amounts) {
+        if (amounts == null) {
+            Arrays.fill(i_client, 0L);
+            return;
+        }
+        System.arraycopy(amounts, 0, i_client, 0, Math.min(i_client.length, amounts.length));
+        if (amounts.length < i_client.length) {
+            Arrays.fill(i_client, amounts.length, i_client.length, 0L);
+        }
+    }
+
+    public long[] getInformationFluidAmountsForGui() {
+        return f_client.clone();
+    }
+
+    public void setInformationFluidAmountsForGui(long[] amounts) {
+        if (amounts == null) {
+            Arrays.fill(f_client, 0L);
+            return;
+        }
+        System.arraycopy(amounts, 0, f_client, 0, Math.min(f_client.length, amounts.length));
+        if (amounts.length < f_client.length) {
+            Arrays.fill(f_client, amounts.length, f_client.length, 0L);
+        }
     }
 
     public static class Mui2ArrayItemHandler implements IItemHandlerModifiable {
@@ -2059,8 +2122,8 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
 
         if (allowAuto) {
             setAutoPullItemList(aNBT.getBoolean("autoPull"));
-            minAutoPullItemAmount = aNBT.getInteger("itemMinStackSize");;
-            minAutoPullFluidAmount = aNBT.getInteger("fluidMinStackSize");
+            minAutoPullItemAmount = aNBT.getLong("itemMinStackSize");
+            minAutoPullFluidAmount = aNBT.getLong("fluidMinStackSize");
             // Data sticks created before refreshTime was implemented should not cause stocking buses to
             // spam divide by zero errors
             if (aNBT.hasKey("refreshTime")) {
@@ -2105,7 +2168,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         NBTTagList storedList = new NBTTagList();
         for (int i = 0; i < SLOT_COUNT; i++) {
             long size = f_stored[i];
-            if (size != Long.MAX_VALUE) continue;
+            if (size == Long.MAX_VALUE) continue;
             NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("slot", i);
             tag.setLong("size", size);
@@ -2116,7 +2179,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         storedList = new NBTTagList();
         for (int i = 0; i < SLOT_COUNT; i++) {
             long size = i_stored[i];
-            if (size != Long.MAX_VALUE) continue;
+            if (size == Long.MAX_VALUE) continue;
             NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("slot", i);
             tag.setLong("size", size);

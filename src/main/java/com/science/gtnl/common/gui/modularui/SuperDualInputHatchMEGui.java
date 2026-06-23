@@ -19,6 +19,7 @@ import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
+import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.drawable.ItemDrawable;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.factory.PosGuiData;
@@ -32,6 +33,7 @@ import com.cleanroommc.modularui.utils.fluid.FluidInteractions;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.value.sync.FluidSlotSyncHandler;
 import com.cleanroommc.modularui.value.sync.IntSyncValue;
+import com.cleanroommc.modularui.value.sync.LongArraySyncValue;
 import com.cleanroommc.modularui.value.sync.LongSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widget.ParentWidget;
@@ -81,6 +83,8 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
     public static final String ACTIVE_SYNC_KEY = "isActive";
     public static final String POWERED_SYNC_KEY = "isPowered";
     public static final String BOOTING_SYNC_KEY = "isBooting";
+    public static final String ITEM_AMOUNTS_SYNC_KEY = "informationItemAmounts";
+    public static final String FLUID_AMOUNTS_SYNC_KEY = "informationFluidAmounts";
     public static final int SLOT_SIZE = 18;
     public static final int SLOT_COLUMNS = 10;
     public static final int VISIBLE_SLOT_ROWS = 4;
@@ -149,6 +153,14 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
         syncManager.syncValue(ACTIVE_SYNC_KEY, new BooleanSyncValue(machine::isActive));
         syncManager.syncValue(POWERED_SYNC_KEY, new BooleanSyncValue(machine::isPowered));
         syncManager.syncValue(BOOTING_SYNC_KEY, new BooleanSyncValue(machine::isBooting));
+        syncManager.syncValue(
+            ITEM_AMOUNTS_SYNC_KEY,
+            new LongArraySyncValue(machine::getInformationItemAmountsForGui, machine::setInformationItemAmountsForGui));
+        syncManager.syncValue(
+            FLUID_AMOUNTS_SYNC_KEY,
+            new LongArraySyncValue(
+                machine::getInformationFluidAmountsForGui,
+                machine::setInformationFluidAmountsForGui));
     }
 
     public PagedWidget<?> createPages(ModularPanel panel, PanelSyncManager syncManager,
@@ -250,6 +262,14 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
                             tooltip
                                 .addLine(IKey.str(DOUBLE_FORMAT.format(amount * 1d / Integer.MAX_VALUE) + "*int.max"));
                         }
+                    }
+
+                    @Override
+                    protected void drawSlotAmountText(int amount, String format) {
+                        GuiDraw.drawStandardSlotAmountText(
+                            machine.getInformationItemAmountForGui(index),
+                            format,
+                            getArea());
                     }
                 }.background(GTGuiTextures.SLOT_ITEM_DARK)
                     .slot(
@@ -366,6 +386,21 @@ public class SuperDualInputHatchMEGui extends MTEHatchBaseGui<SuperDualInputHatc
                     @Override
                     public boolean onMouseScroll(UpOrDown scrollDirection, int amount) {
                         return false;
+                    }
+
+                    @Override
+                    protected boolean displayAmountText() {
+                        return false;
+                    }
+
+                    @Override
+                    public void drawOverlay(com.cleanroommc.modularui.screen.viewport.ModularGuiContext context,
+                        com.cleanroommc.modularui.theme.WidgetThemeEntry<?> widgetTheme) {
+                        super.drawOverlay(context, widgetTheme);
+                        long amount = machine.getInformationFluidAmountForGui(index);
+                        if (amount > 1) {
+                            GuiDraw.drawStandardSlotAmountText(amount, null, getArea());
+                        }
                     }
                 }.syncHandler(new FluidSlotSyncHandler(new InformationFluidTank(index)) {
 

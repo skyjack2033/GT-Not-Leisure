@@ -142,6 +142,7 @@ public class SuperInputHatchME extends MTEHatchInputME implements IConfiguration
         if (aBaseMetaTileEntity.isServerSide()) {
             if (aTimer % autoPullRefreshTime == 0 && autoPullFluidList) {
                 refreshFluidList();
+                updateAllInformationSlots();
             }
             if (aTimer % 20 == 0) {
                 aBaseMetaTileEntity.setActive(isActive());
@@ -153,6 +154,7 @@ public class SuperInputHatchME extends MTEHatchInputME implements IConfiguration
     public void refreshFluidList() {
         AENetworkProxy proxy = getProxy();
         if (proxy == null || !proxy.isActive()) {
+            clearInformationFluids();
             return;
         }
 
@@ -182,6 +184,7 @@ public class SuperInputHatchME extends MTEHatchInputME implements IConfiguration
 
             for (int i = index; i < SLOT_COUNT; i++) {
                 storedFluids[i] = null;
+                storedInformationFluids[i] = null;
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -733,6 +736,7 @@ public class SuperInputHatchME extends MTEHatchInputME implements IConfiguration
 
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        refreshGuiStateOnOpen();
         return new SuperInputHatchMEGui(this).build(data, syncManager, uiSettings);
     }
 
@@ -799,6 +803,20 @@ public class SuperInputHatchME extends MTEHatchInputME implements IConfiguration
         }
         storedStackSizes[slot] = Math.max(1, stackSize);
         updateInformationSlot(slot);
+    }
+
+    protected void refreshGuiStateOnOpen() {
+        if (!getBaseMetaTileEntity().isServerSide()) {
+            return;
+        }
+        if (autoPullFluidList) {
+            refreshFluidList();
+        }
+        updateAllInformationSlots();
+    }
+
+    protected void clearInformationFluids() {
+        Arrays.fill(storedInformationFluids, null);
     }
 
     @Override

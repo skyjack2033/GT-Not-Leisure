@@ -158,7 +158,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         NBTTagList stackSizeList = new NBTTagList();
         for (int i = 0; i < SIDE_SLOT_COUNT; i++) {
             int size = storedStackSizes[i];
-            if (size != Integer.MAX_VALUE) continue;
+            if (size == Integer.MAX_VALUE) continue;
             NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("slot", i);
             tag.setInteger("size", size);
@@ -372,7 +372,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
 
     @Override
     public void refreshItemList() {
-        if (!isActive()) return;
+        if (!isActive()) {
+            return;
+        }
         AENetworkProxy proxy = getProxy();
         try {
             IMEMonitor<IAEItemStack> sg = proxy.getStorage()
@@ -550,6 +552,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
 
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        refreshGuiStateOnOpen();
         return new SuperInputBusMEGui(this).build(data, syncManager, uiSettings);
     }
 
@@ -589,6 +592,34 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         }
         storedStackSizes[slot] = Math.max(1, stackSize);
         updateInformationSlot(slot);
+    }
+
+    protected void refreshGuiStateOnOpen() {
+        if (!getBaseMetaTileEntity().isServerSide()) {
+            return;
+        }
+        if (autoPullItemList) {
+            refreshItemList();
+            return;
+        }
+        updateAllInformationSlots();
+    }
+
+    protected void clearInformationSlots() {
+        for (int i = 0; i < SIDE_SLOT_COUNT; i++) {
+            mInventory[i + SIDE_SLOT_COUNT] = null;
+        }
+    }
+
+    protected ItemStack createDisplayStack(IAEItemStack stack, int slot) {
+        ItemStack displayStack = stack == null ? null : stack.getItemStack();
+        if (displayStack == null) {
+            return null;
+        }
+        long requestedSize = storedStackSizes[slot];
+        long availableSize = stack.getStackSize();
+        displayStack.stackSize = (int) Math.min(Integer.MAX_VALUE, Math.min(availableSize, requestedSize));
+        return displayStack.stackSize > 0 ? displayStack : null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.science.gtnl.common.machine.hatch;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -159,13 +160,15 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
 
     public void setOreDict(@Nullable String oreDict) {
         this.oreDict = oreDict;
-        if (hasFilter()) {
+        if (autoPullItemList) {
+            refreshItemList();
+        } else if (isSuper) {
             int filterSlotCount = Math.min(getConfiguredFilterSlotCount(), mInventory.length);
             for (int i = 0; i < filterSlotCount; i++) {
                 mInventory[i] = null;
             }
         } else {
-            refreshItemList();
+            clearSlotConfigs();
         }
         updateAllInformationSlots();
     }
@@ -176,7 +179,12 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
 
     @Override
     public void refreshItemList() {
-        if (!isActive()) return;
+        if (!isActive()) {
+            if (isSuper) {
+                clearSuperInformationSlots();
+            }
+            return;
+        }
         AENetworkProxy proxy = getProxy();
         try {
             Predicate<IAEItemStack> oreFilterList = createFilter();
@@ -187,24 +195,45 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
                 .iterator();
 
             int index = 0;
-            while (iterator.hasNext() && index < (isSuper ? SIDE_SLOT_COUNT : SLOT_COUNT)) {
+            int slotLimit = isSuper ? SIDE_SLOT_COUNT : SLOT_COUNT;
+            while (iterator.hasNext() && index < slotLimit) {
                 IAEItemStack currItem = iterator.next();
                 if (currItem == null || oreFilterList == null || !oreFilterList.test(currItem)) continue;
 
                 if (currItem.getStackSize() >= minAutoPullStackSize) {
                     ItemStack itemstack = GTUtility.copyAmount(1, currItem.getItemStack());
-                    if (expediteRecipeCheck) {
-                        ItemStack previous = this.mInventory[index];
-                        if (itemstack != null) {
+                    if (isSuper) {
+                        if (expediteRecipeCheck) {
+                            ItemStack previous = this.mInventory[index];
+                            if (itemstack != null) {
+                                justHadNewItems = !ItemStack.areItemStacksEqual(itemstack, previous);
+                            }
+                        }
+                        this.mInventory[index] = itemstack;
+                        this.mInventory[index + SIDE_SLOT_COUNT] = copyInformationStack(currItem);
+                    } else {
+                        Slot previousSlot = slots[index];
+                        ItemStack previous = previousSlot == null ? null : previousSlot.extracted;
+                        setSlotConfig(index, itemstack);
+                        Slot newSlot = slots[index];
+                        if (newSlot != null) {
+                            newSlot.extracted = currItem.getItemStack();
+                            newSlot.extractedAmount = newSlot.extracted == null ? 0 : newSlot.extracted.stackSize;
+                        }
+                        if (expediteRecipeCheck && itemstack != null) {
                             justHadNewItems = !ItemStack.areItemStacksEqual(itemstack, previous);
                         }
                     }
-                    this.mInventory[index] = itemstack;
                     index++;
                 }
             }
-            for (int i = index; i < (isSuper ? SIDE_SLOT_COUNT : SLOT_COUNT); i++) {
-                mInventory[i] = null;
+            if (isSuper) {
+                for (int i = index; i < slotLimit; i++) {
+                    mInventory[i] = null;
+                    mInventory[i + SIDE_SLOT_COUNT] = null;
+                }
+            } else {
+                Arrays.fill(slots, index, slotLimit, null);
             }
 
         } catch (final GridAccessException ignored) {}
@@ -411,7 +440,9 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     @Override
     public NBTTagCompound getCopiedData(EntityPlayer player) {
         NBTTagCompound nbt = super.getCopiedData(player);
-        nbt.setString("oreDict", oreDict);
+        if (hasFilter()) {
+            nbt.setString("oreDict", oreDict);
+        }
 
         NBTTagList stockingItems = new NBTTagList();
 
@@ -513,6 +544,7 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
 
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        refreshSuperGuiStateOnOpen();
         return new OredictInputBusMEGui(this).build(data, syncManager, uiSettings);
     }
 
@@ -546,10 +578,37 @@ public class OredictInputBusME extends MTEHatchInputBusME implements IRecipeProc
     }
 
     public boolean containsFilterStackForGui(ItemStack stack) {
-        for (int i = 0; i < getFilterSlotCountForGui(); ++i) {
-            if (GTUtility.areStacksEqual(mInventory[i], stack, false)) return true;
+        if (isSuper) {
+            for (int i = 0; i < getFilterSlotCountForGui(); ++i) {
+                if (GTUtility.areStacksEqual(mInventory[i], stack, false)) return true;
+            }
+            return false;
+        }
+        for (Slot slot : slots) {
+            if (slot != null && GTUtility.areStacksEqual(slot.config, stack, false)) return true;
         }
         return false;
+    }
+
+    protected void refreshSuperGuiStateOnOpen() {
+        if (!isSuper || !getBaseMetaTileEntity().isServerSide()) {
+            return;
+        }
+        if (autoPullItemList) {
+            refreshItemList();
+            return;
+        }
+        updateAllInformationSlots();
+    }
+
+    protected void clearSuperInformationSlots() {
+        for (int i = 0; i < SIDE_SLOT_COUNT; i++) {
+            mInventory[i + SIDE_SLOT_COUNT] = null;
+        }
+    }
+
+    protected ItemStack copyInformationStack(IAEItemStack stack) {
+        return stack == null ? null : stack.getItemStack();
     }
 
     @Override

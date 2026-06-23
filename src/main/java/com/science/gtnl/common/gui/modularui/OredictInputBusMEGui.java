@@ -145,7 +145,7 @@ public class OredictInputBusMEGui extends MTEHatchInputBusMEGui {
         mainRow.child(createLegacyFilterGrid(syncManager, autoPullSyncer));
         mainRow.child(createLegacyMiddleColumn(syncManager, panel, autoPullSyncer));
         mainRow.child(createLegacyStockGrid(syncManager));
-        return getEmptyContent().child(mainRow);
+        return super.createContentSection(panel, syncManager).child(mainRow);
     }
 
     protected Grid createFilterGrid(PanelSyncManager syncManager) {
