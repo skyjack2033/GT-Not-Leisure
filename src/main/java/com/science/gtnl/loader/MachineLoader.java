@@ -1791,7 +1791,7 @@ public class MachineLoader {
                 GTNLMachineID.LARGE_STEAM_WIREMILL.ID,
                 "LargeSteamWiremill",
                 StatCollector.translateToLocal("NameLargeSteamWiremill")));
-        AnimatedTooltipHandler.addItemTooltip(GTNLItemList.LargeSteamWiremill.get(1), AnimatedText.SNL_QYZG);
+        AnimatedTooltipHandler.addItemTooltip(GTNLItemList.LargeSteamWiremill.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
         GTNLItemList.ChemicalComplex.set(
             new ChemicalComplex(
