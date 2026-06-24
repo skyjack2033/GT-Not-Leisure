@@ -3747,8 +3747,9 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 ItemList.Hull_ZPM.get(1),
                 ItemList.Machine_HV_LightningRod.get(1),
-                GregtechItemList.Transformer_HA_LuV_IV.get(2),
-                GregtechItemList.Hatch_Buffer_Dynamo_IV.get(2),
+                GregtechItemList.Transformer_HA_ZPM_LuV.get(1),
+                ItemList.Hatch_Dynamo_LuV.get(2),
+                ItemList.BatteryHull_LuV.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.VanadiumGallium, 2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Naquadah, 4),
                 ItemList.Energy_LapotronicOrb2.get(2))
@@ -3760,10 +3761,11 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                ItemList.Hull_ZPM.get(2),
+                ItemList.Hull_UV.get(1),
                 ItemList.Machine_EV_LightningRod.get(1),
-                GregtechItemList.Transformer_HA_ZPM_LuV.get(2),
-                GregtechItemList.Hatch_Buffer_Dynamo_LuV.get(2),
+                GregtechItemList.Transformer_HA_UV_ZPM.get(1),
+                ItemList.Hatch_Dynamo_ZPM.get(2),
+                ItemList.BatteryHull_ZPM.get(1),
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.Naquadah, 2),
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Osmium, 4),
                 ItemList.Energy_Module.get(1))
