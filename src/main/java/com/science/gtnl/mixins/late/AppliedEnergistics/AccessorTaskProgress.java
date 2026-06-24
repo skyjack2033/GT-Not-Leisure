@@ -16,5 +16,5 @@ public interface AccessorTaskProgress {
     void setValue(long value);
 
     @Invoker("consumeCraftSession")
-    CraftingDiagnosticSessionId consumeCraftSession();
+    CraftingDiagnosticSessionId invokeConsumeCraftSession();
 }

@@ -330,7 +330,7 @@ public abstract class MixinCraftingCPUCluster {
             long extraCrafts = craftingFrequency.get() - 1;
             value.setValue(value.getValue() - extraCrafts);
             for (long i = 0; i < extraCrafts; i++) {
-                value.consumeCraftSession();
+                value.invokeConsumeCraftSession();
             }
             return value;
         }
