@@ -7,7 +7,6 @@ import net.minecraftforge.fluids.FluidStack;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.utils.FluidStackLookup;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.system.material.WerkstoffLoader;
@@ -849,7 +848,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.TranscendentMetal.getMolten(144 * 2160),
                 Materials.Tartarite.getMolten(144 * 2160),
                 Materials.Infinity.getMolten(144 * 1080),
-                FluidStackLookup.getFluidStack("dimensionallytranscendentresidue", 1080000))
+                Materials.DTR.getFluid(1080000))
             .fluidOutputs(Materials.MoltenProtoHalkoniteBase.getFluid(1152 * 1080))
             .duration(1200 * 1080)
             .eut(TierEU.RECIPE_UEV)
@@ -1616,7 +1615,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Ardite.getMolten(144 * 16),
                 Materials.Plutonium.getMolten(144 * 63),
                 GGMaterial.atomicSeparationCatalyst.getMolten(144 * 13),
-                FluidStackLookup.getFluidStack("dimensionallytranscendentresidue", 5000))
+                Materials.DTR.getFluid(5000))
             .fluidOutputs(Materials.Mellion.getMolten(144 * 63))
             .duration(1142)
             .eut(TierEU.RECIPE_UXV)
@@ -1734,7 +1733,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Thorium.getPlasma(1000),
                 new FluidStack(MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getPlasma(), 1000),
                 Materials.Calcium.getPlasma(1000),
-                FluidStackLookup.getFluidStack("dimensionallytranscendentresidue", 1000))
+                Materials.DTR.getFluid(1000))
             .fluidOutputs(Materials.Creon.getPlasma(5000))
             .duration(400)
             .eut(TierEU.RECIPE_UXV)
@@ -1747,7 +1746,7 @@ public class SmeltingMixingFurnaceRecipes implements IRecipePool {
                 Materials.Thorium.getPlasma(1000),
                 new FluidStack(MaterialsElements.STANDALONE.CELESTIAL_TUNGSTEN.getPlasma(), 1000),
                 Materials.Calcium.getPlasma(1000),
-                FluidStackLookup.getFluidStack("dimensionallytranscendentresidue", 1000))
+                Materials.DTR.getFluid(1000))
             .fluidOutputs(Materials.Creon.getMolten(5000))
             .duration(400)
             .eut(TierEU.RECIPE_UXV)

@@ -5,7 +5,6 @@ import static gregtech.api.GregTechAPI.sBlockCasings2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -18,7 +17,6 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
-import com.science.gtnl.utils.FluidStackLookup;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -101,9 +99,7 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
                 int baseAmount = 10 * GTUtility.getTier(-lEUt) * GTUtility.getTier(-lEUt);
                 if (!this.depleteInputFromRestrictedHatches(this.mFluidIceInputHatch, baseAmount)) {
                     this.causeMaintenanceIssue();
-                    this.stopMachine(
-                        ShutDownReasonRegistry
-                            .outOfFluid(Objects.requireNonNull(FluidStackLookup.getFluidStack("ice", baseAmount))));
+                    this.stopMachine(ShutDownReasonRegistry.outOfFluid(Materials.Ice.getFluid(baseAmount)));
                 }
             }
             endRecipeProcessing();

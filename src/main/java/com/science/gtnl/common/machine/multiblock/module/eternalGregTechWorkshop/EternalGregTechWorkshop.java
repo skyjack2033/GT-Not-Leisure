@@ -70,7 +70,6 @@ import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.config.MainConfig;
 import com.science.gtnl.loader.BlockLoader;
-import com.science.gtnl.utils.FluidStackLookup;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
@@ -108,7 +107,9 @@ import tectech.thing.gui.TecTechUITextures;
 
 public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWorkshop> implements INEIPreviewModifier {
 
-    private static final String DIMENSIONALLY_TRANSCENDENT_RESIDUE = "dimensionallytranscendentresidue";
+    private static final int DEFAULT_PREVIEW_HEIGHT = 4;
+    private static final int MAX_PREVIEW_HEIGHT = 64;
+    private static final String OBSERVER_WORLD_CLASS_NAME = "blockrenderer6343.client.world.ObserverWorld";
 
     // 75 x 19 x 75
     private static final String STRUCTURE_PIECE_MAIN_TOP = "main_top";
@@ -167,6 +168,68 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
     private static final String[][] shapeBottom = StructureUtils.readStructureFromFile(EGTWB_STRUCTURE_FILE_PATH);
     public static final String[][] shapeExtra = StructureUtils.readStructureFromFile(EGTWE_STRUCTURE_FILE_PATH);
     private static final String[][] shapeExtraAir = StructureUtils.replaceLetters(shapeExtra, "a");
+    private static final IStructureDefinition<EternalGregTechWorkshop> STRUCTURE_DEFINITION = StructureDefinition
+        .<EternalGregTechWorkshop>builder()
+        .addShape(STRUCTURE_PIECE_MAIN_TOP, StructureUtility.transpose(shapeTop))
+        .addShape(STRUCTURE_PIECE_MAIN_UP, StructureUtility.transpose(shapeUp))
+        .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
+        .addShape(STRUCTURE_PIECE_MAIN_DOWN, StructureUtility.transpose(shapeDown))
+        .addShape(STRUCTURE_PIECE_MAIN_BOTTOM, StructureUtility.transpose(shapeBottom))
+        .addShape(STRUCTURE_PIECE_MAIN_EXTRA, StructureUtility.transpose(shapeExtra))
+        .addShape(STRUCTURE_PIECE_MAIN_EXTRA_AIR, StructureUtility.transpose(shapeExtraAir))
+        .addElement('A', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 0))
+        .addElement('B', StructureUtility.ofBlock(Loaders.componentAssemblylineCasing, 12))
+        .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
+        .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSEMotor, 4))
+        .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
+        .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
+        .addElement('G', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 1))
+        .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
+        .addElement('I', StructureUtility.ofBlock(ModBlocks.blockCasings5Misc, 14))
+        .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 14))
+        .addElement('K', GTStructureUtility.ofFrame(Materials.NaquadahAlloy))
+        .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 2))
+        .addElement('M', StructureUtility.ofBlock(ItemRegistry.bw_realglas2, 0))
+        .addElement(
+            'N',
+            GTStructureUtility.buildHatchAdder(EternalGregTechWorkshop.class)
+                .atLeast(
+                    HatchElement.Maintenance,
+                    HatchElement.InputBus,
+                    HatchElement.OutputBus,
+                    HatchElement.InputHatch,
+                    HatchElement.OutputHatch)
+                .casingIndex(961)
+                .hint(1)
+                .buildAndChain(
+                    StructureUtility.onElementPass(
+                        x -> ++x.mCountCasing,
+                        StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 1))))
+        .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 2))
+        .addElement('P', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsBA0, 10))
+        .addElement('Q', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 7))
+        .addElement('R', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 4))
+        .addElement('S', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 8))
+        .addElement('T', StructureUtility.ofBlock(Loaders.gravityStabilizationCasing, 0))
+        .addElement('U', StructureUtility.ofBlock(TTCasingsContainer.SpacetimeCompressionFieldGenerators, 8))
+        .addElement('V', StructureUtility.ofBlock(TTCasingsContainer.TimeAccelerationFieldGenerator, 8))
+        .addElement('W', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsBA0, 11))
+        .addElement('X', StructureUtility.ofBlock(TTCasingsContainer.StabilisationFieldGenerators, 8))
+        .addElement(
+            'Y',
+            HatchElementBuilder.<EternalGregTechWorkshop>builder()
+                .atLeast(EternalGregTechWorkshop.moduleElement.Module)
+                .casingIndex(960)
+                .hint(1)
+                .hint(1)
+                .buildAndChain(TTCasingsContainer.GodforgeCasings, 0))
+        .addElement(
+            'Z',
+            StructureUtility.ofChain(
+                StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14),
+                StructureUtility.ofBlock(BlockLoader.eternalGregTechWorkshopRender, 0)))
+        .addElement('a', StructureUtility.isAir())
+        .build();
 
     public int mHeatingCapacity = 0;
     public int mMachineTier = 0;
@@ -234,7 +297,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
     public final ArrayList<FluidStack> validFuelList = new ArrayList<>() {
 
         {
-            add(FluidStackLookup.getFluidStack(DIMENSIONALLY_TRANSCENDENT_RESIDUE, 1));
+            add(Materials.DTR.getFluid(1));
             add(Materials.RawStarMatter.getFluid(1));
             add(Materials.MHDCSM.getMolten(1));
         }
@@ -307,67 +370,7 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
 
     @Override
     public IStructureDefinition<EternalGregTechWorkshop> getStructureDefinition() {
-        return StructureDefinition.<EternalGregTechWorkshop>builder()
-            .addShape(STRUCTURE_PIECE_MAIN_TOP, StructureUtility.transpose(shapeTop))
-            .addShape(STRUCTURE_PIECE_MAIN_UP, StructureUtility.transpose(shapeUp))
-            .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addShape(STRUCTURE_PIECE_MAIN_DOWN, StructureUtility.transpose(shapeDown))
-            .addShape(STRUCTURE_PIECE_MAIN_BOTTOM, StructureUtility.transpose(shapeBottom))
-            .addShape(STRUCTURE_PIECE_MAIN_EXTRA, StructureUtility.transpose(shapeExtra))
-            .addShape(STRUCTURE_PIECE_MAIN_EXTRA_AIR, StructureUtility.transpose(shapeExtraAir))
-            .addElement('A', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 0))
-            .addElement('B', StructureUtility.ofBlock(Loaders.componentAssemblylineCasing, 12))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSEMotor, 4))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
-            .addElement('G', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 1))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
-            .addElement('I', StructureUtility.ofBlock(ModBlocks.blockCasings5Misc, 14))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 14))
-            .addElement('K', GTStructureUtility.ofFrame(Materials.NaquadahAlloy))
-            .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 2))
-            .addElement('M', StructureUtility.ofBlock(ItemRegistry.bw_realglas2, 0))
-            .addElement(
-                'N',
-                GTStructureUtility.buildHatchAdder(EternalGregTechWorkshop.class)
-                    .atLeast(
-                        HatchElement.Maintenance,
-                        HatchElement.InputBus,
-                        HatchElement.OutputBus,
-                        HatchElement.InputHatch,
-                        HatchElement.OutputHatch)
-                    .casingIndex(getCasingTextureID() + 1)
-                    .hint(1)
-                    .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 1))))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 2))
-            .addElement('P', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsBA0, 10))
-            .addElement('Q', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 7))
-            .addElement('R', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 4))
-            .addElement('S', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 8))
-            .addElement('T', StructureUtility.ofBlock(Loaders.gravityStabilizationCasing, 0))
-            .addElement('U', StructureUtility.ofBlock(TTCasingsContainer.SpacetimeCompressionFieldGenerators, 8))
-            .addElement('V', StructureUtility.ofBlock(TTCasingsContainer.TimeAccelerationFieldGenerator, 8))
-            .addElement('W', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsBA0, 11))
-            .addElement('X', StructureUtility.ofBlock(TTCasingsContainer.StabilisationFieldGenerators, 8))
-            .addElement(
-                'Y',
-                HatchElementBuilder.<EternalGregTechWorkshop>builder()
-                    .atLeast(EternalGregTechWorkshop.moduleElement.Module)
-                    .casingIndex(getCasingTextureID())
-                    .hint(1)
-                    .hint(1)
-                    .buildAndChain(TTCasingsContainer.GodforgeCasings, 0))
-            .addElement(
-                'Z',
-                StructureUtility.ofChain(
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14),
-                    StructureUtility.ofBlock(BlockLoader.eternalGregTechWorkshopRender, 0)))
-            .addElement('a', StructureUtility.isAir())
-            .build();
+        return STRUCTURE_DEFINITION;
     }
 
     @Override
@@ -483,133 +486,17 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
 
     @Override
     public void onPreviewConstruct(@NotNull ItemStack trigger) {
-        this.buildPiece(STRUCTURE_PIECE_MAIN, trigger, false, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
-
-        int count = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(trigger, 1, 64);
-
-        for (int i = 0; i < count; i++) {
-
-            this.buildPiece(
-                STRUCTURE_PIECE_MAIN_UP,
-                trigger,
-                false,
-                HORIZONTAL_OFF_SET_UP,
-                VERTICAL_OFF_SET_UP + i * 22,
-                DEPTH_OFF_SET_UP);
-
-            this.buildPiece(
-                STRUCTURE_PIECE_MAIN_DOWN,
-                trigger,
-                false,
-                HORIZONTAL_OFF_SET_DOWN,
-                VERTICAL_OFF_SET_DOWN - i * 22,
-                DEPTH_OFF_SET_DOWN);
-
-            if (count > 1) {
-                this.buildPiece(
-                    STRUCTURE_PIECE_MAIN_EXTRA,
-                    trigger,
-                    false,
-                    HORIZONTAL_OFF_SET_EXTRA,
-                    VERTICAL_OFF_SET_EXTRA_UP + i * 22,
-                    DEPTH_OFF_SET_EXTRA);
-
-                this.buildPiece(
-                    STRUCTURE_PIECE_MAIN_EXTRA,
-                    trigger,
-                    false,
-                    HORIZONTAL_OFF_SET_EXTRA,
-                    VERTICAL_OFF_SET_EXTRA_DOWN - i * 22,
-                    DEPTH_OFF_SET_EXTRA);
-            }
-        }
-
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN_TOP,
-            trigger,
-            false,
-            HORIZONTAL_OFF_SET_TOP,
-            VERTICAL_OFF_SET_TOP + (count - 1) * 22,
-            DEPTH_OFF_SET_TOP);
-
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN_BOTTOM,
-            trigger,
-            false,
-            HORIZONTAL_OFF_SET_BOTTOM,
-            VERTICAL_OFF_SET_BOTTOM - (count - 1) * 22,
-            DEPTH_OFF_SET_BOTTOM);
+        buildPreviewStructure(trigger, false);
     }
 
     @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
-        int count = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(stackSize, 1, 64);
-
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN,
-            stackSize,
-            hintsOnly,
-            HORIZONTAL_OFF_SET,
-            VERTICAL_OFF_SET,
-            DEPTH_OFF_SET);
-
-        for (int i = 0; i < count; i++) {
-
-            this.buildPiece(
-                STRUCTURE_PIECE_MAIN_UP,
-                stackSize,
-                hintsOnly,
-                HORIZONTAL_OFF_SET_UP,
-                VERTICAL_OFF_SET_UP + i * 22,
-                DEPTH_OFF_SET_UP);
-
-            this.buildPiece(
-                STRUCTURE_PIECE_MAIN_DOWN,
-                stackSize,
-                hintsOnly,
-                HORIZONTAL_OFF_SET_DOWN,
-                VERTICAL_OFF_SET_DOWN - i * 22,
-                DEPTH_OFF_SET_DOWN);
-
-            if (count > 1) {
-                this.buildPiece(
-                    STRUCTURE_PIECE_MAIN_EXTRA,
-                    stackSize,
-                    hintsOnly,
-                    HORIZONTAL_OFF_SET_EXTRA,
-                    VERTICAL_OFF_SET_EXTRA_UP + i * 22,
-                    DEPTH_OFF_SET_EXTRA);
-
-                this.buildPiece(
-                    STRUCTURE_PIECE_MAIN_EXTRA,
-                    stackSize,
-                    hintsOnly,
-                    HORIZONTAL_OFF_SET_EXTRA,
-                    VERTICAL_OFF_SET_EXTRA_DOWN - i * 22,
-                    DEPTH_OFF_SET_EXTRA);
-            }
-        }
-
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN_TOP,
-            stackSize,
-            hintsOnly,
-            HORIZONTAL_OFF_SET_TOP,
-            VERTICAL_OFF_SET_TOP + (count - 1) * 22,
-            DEPTH_OFF_SET_TOP);
-
-        this.buildPiece(
-            STRUCTURE_PIECE_MAIN_BOTTOM,
-            stackSize,
-            hintsOnly,
-            HORIZONTAL_OFF_SET_BOTTOM,
-            VERTICAL_OFF_SET_BOTTOM - (count - 1) * 22,
-            DEPTH_OFF_SET_BOTTOM);
+        buildPreviewStructure(stackSize, hintsOnly);
     }
 
     @Override
     public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
-        int count = GTStructureChannels.STRUCTURE_HEIGHT.getValueClamped(stackSize, 1, 64);
+        int count = resolvePreviewHeight(stackSize);
         int built;
 
         built = this.survivalBuildPiece(
@@ -706,6 +593,87 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             true);
 
         return built;
+    }
+
+    private void buildPreviewStructure(ItemStack trigger, boolean hintsOnly) {
+        int count = resolvePreviewHeight(trigger);
+
+        buildPiece(STRUCTURE_PIECE_MAIN, trigger, hintsOnly, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
+
+        for (int i = 0; i < count; i++) {
+            buildPiece(
+                STRUCTURE_PIECE_MAIN_UP,
+                trigger,
+                hintsOnly,
+                HORIZONTAL_OFF_SET_UP,
+                VERTICAL_OFF_SET_UP + i * 22,
+                DEPTH_OFF_SET_UP);
+
+            buildPiece(
+                STRUCTURE_PIECE_MAIN_DOWN,
+                trigger,
+                hintsOnly,
+                HORIZONTAL_OFF_SET_DOWN,
+                VERTICAL_OFF_SET_DOWN - i * 22,
+                DEPTH_OFF_SET_DOWN);
+
+            if (count > 1) {
+                buildPiece(
+                    STRUCTURE_PIECE_MAIN_EXTRA,
+                    trigger,
+                    hintsOnly,
+                    HORIZONTAL_OFF_SET_EXTRA,
+                    VERTICAL_OFF_SET_EXTRA_UP + i * 22,
+                    DEPTH_OFF_SET_EXTRA);
+
+                buildPiece(
+                    STRUCTURE_PIECE_MAIN_EXTRA,
+                    trigger,
+                    hintsOnly,
+                    HORIZONTAL_OFF_SET_EXTRA,
+                    VERTICAL_OFF_SET_EXTRA_DOWN - i * 22,
+                    DEPTH_OFF_SET_EXTRA);
+            }
+        }
+
+        buildPiece(
+            STRUCTURE_PIECE_MAIN_TOP,
+            trigger,
+            hintsOnly,
+            HORIZONTAL_OFF_SET_TOP,
+            VERTICAL_OFF_SET_TOP + (count - 1) * 22,
+            DEPTH_OFF_SET_TOP);
+
+        buildPiece(
+            STRUCTURE_PIECE_MAIN_BOTTOM,
+            trigger,
+            hintsOnly,
+            HORIZONTAL_OFF_SET_BOTTOM,
+            VERTICAL_OFF_SET_BOTTOM - (count - 1) * 22,
+            DEPTH_OFF_SET_BOTTOM);
+    }
+
+    private int resolvePreviewHeight(ItemStack trigger) {
+        if (trigger == null) {
+            return DEFAULT_PREVIEW_HEIGHT;
+        }
+        if (GTStructureChannels.STRUCTURE_HEIGHT.hasValue(trigger)) {
+            return GTStructureChannels.STRUCTURE_HEIGHT
+                .getValueClamped(trigger, DEFAULT_PREVIEW_HEIGHT, MAX_PREVIEW_HEIGHT);
+        }
+        if (isBlockRendererObserverWorld()) {
+            return DEFAULT_PREVIEW_HEIGHT;
+        }
+        return GTStructureChannels.STRUCTURE_HEIGHT
+            .getValueClamped(trigger, DEFAULT_PREVIEW_HEIGHT, MAX_PREVIEW_HEIGHT);
+    }
+
+    private boolean isBlockRendererObserverWorld() {
+        IGregTechTileEntity baseMetaTileEntity = getBaseMetaTileEntity();
+        World world = baseMetaTileEntity == null ? null : baseMetaTileEntity.getWorld();
+        return world != null && OBSERVER_WORLD_CLASS_NAME.equals(
+            world.getClass()
+                .getName());
     }
 
     @Override
@@ -1449,11 +1417,9 @@ public class EternalGregTechWorkshop extends MultiMachineBase<EternalGregTechWor
             .widget(
                 new MultiChildWidget().addChild(
                     new FluidNameHolderWidget(
-                        () -> FluidStackLookup.getFluidStack(DIMENSIONALLY_TRANSCENDENT_RESIDUE, 1)
-                            .getUnlocalizedName()
+                        () -> Materials.DTR.mFluid.getUnlocalizedName()
                             .substring(6),
-                        (String) -> FluidStackLookup.getFluidStack(DIMENSIONALLY_TRANSCENDENT_RESIDUE, 1)
-                            .getUnlocalizedName()) {
+                        (String) -> Materials.DTR.mFluid.getUnlocalizedName()) {
 
                         @Override
                         public void buildTooltip(List<Text> tooltip) {

@@ -6,6 +6,7 @@ import java.util.Set;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import com.Nxer.TwistSpaceTechnology.common.GTCMItemList;
 import com.google.common.collect.ImmutableSet;
@@ -271,7 +272,6 @@ import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.material.MaterialUtils;
 import com.science.gtnl.config.MainConfig;
-import com.science.gtnl.utils.FluidStackLookup;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GTNLMachineID;
 import com.science.gtnl.utils.enums.ModList;
@@ -1930,9 +1930,7 @@ public class MachineLoader {
                 .getFluid());
 
         if (ModList.TwistSpaceTechnology.isModLoaded()) {
-            acceptedFluids.add(
-                FluidStackLookup.getFluidStack("liquid mana", 1)
-                    .getFluid());
+            acceptedFluids.add(FluidRegistry.getFluid("liquid mana"));
         }
 
         GTNLItemList.FluidManaInputHatch.set(
@@ -1948,9 +1946,7 @@ public class MachineLoader {
 
         GTNLItemList.FluidIceInputHatch.set(
             new CustomFluidHatch(
-                ImmutableSet.of(
-                    FluidStackLookup.getFluidStack("ice", 1)
-                        .getFluid()),
+                ImmutableSet.of(Materials.Ice.mFluid),
                 256000,
                 GTNLMachineID.FLUID_ICE_INPUT_HATCH.ID,
                 "FluidIceInputHatch",
@@ -1960,9 +1956,7 @@ public class MachineLoader {
 
         GTNLItemList.FluidBlazeInputHatch.set(
             new CustomFluidHatch(
-                ImmutableSet.of(
-                    FluidStackLookup.getFluidStack("molten.blaze", 1)
-                        .getFluid()),
+                ImmutableSet.of(Materials.Blaze.mStandardMoltenFluid),
                 256000,
                 GTNLMachineID.FLUID_BLAZE_INPUT_HATCH.ID,
                 "FluidBlazeInputHatch",

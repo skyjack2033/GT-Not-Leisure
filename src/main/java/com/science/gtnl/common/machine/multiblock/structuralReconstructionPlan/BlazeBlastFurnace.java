@@ -6,7 +6,6 @@ import static gregtech.api.GregTechAPI.sBlockCasings2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -23,7 +22,6 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
-import com.science.gtnl.utils.FluidStackLookup;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
@@ -35,6 +33,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.HeatingCoilLevel;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -258,9 +257,7 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
                 int baseAmount = 10 * GTUtility.getTier(-lEUt) * GTUtility.getTier(-lEUt) * mMultiTier;
                 if (!this.depleteInputFromRestrictedHatches(this.mFluidBlazeInputHatch, baseAmount)) {
                     this.causeMaintenanceIssue();
-                    this.stopMachine(
-                        ShutDownReasonRegistry.outOfFluid(
-                            Objects.requireNonNull(FluidStackLookup.getFluidStack("molten.blaze", baseAmount))));
+                    this.stopMachine(ShutDownReasonRegistry.outOfFluid(Materials.Blaze.getMolten(baseAmount)));
                 }
             }
             endRecipeProcessing();

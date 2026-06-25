@@ -77,6 +77,36 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
     private static final int VERTICAL_OFF_SET = 3;
     private static final int DEPTH_OFF_SET = 0;
     private static final int GENERAL_INFO_WINDOW_ID = 10;
+    private static final IStructureDefinition<EternalGregTechWorkshopModule> STRUCTURE_DEFINITION = StructureDefinition
+        .<EternalGregTechWorkshopModule>builder()
+        .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
+        .addElement('A', StructureUtility.ofBlock(ItemRegistry.bw_realglas2, 0))
+        .addElement('B', StructureUtility.ofBlock(Loaders.componentAssemblylineCasing, 12))
+        .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
+        .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
+        .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
+        .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 14))
+        .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSEMotor, 4))
+        .addElement('H', GTStructureUtility.ofFrame(Materials.NaquadahAlloy))
+        .addElement('I', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 0))
+        .addElement('J', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 1))
+        .addElement(
+            'K',
+            StructureUtility.ofChain(
+                StructureUtility.isAir(),
+                GTStructureUtility.buildHatchAdder(EternalGregTechWorkshopModule.class)
+                    .atLeast(
+                        HatchElement.InputBus,
+                        HatchElement.OutputBus,
+                        HatchElement.InputHatch,
+                        HatchElement.OutputHatch)
+                    .casingIndex(960)
+                    .hint(1)
+                    .buildAndChain(
+                        StructureUtility.onElementPass(
+                            x -> ++x.mCountCasing,
+                            StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 0)))))
+        .build();
 
     public UUID ownerUUID;
     public boolean isConnected = false;
@@ -119,35 +149,7 @@ public abstract class EternalGregTechWorkshopModule extends MultiMachineBase<Ete
 
     @Override
     public IStructureDefinition<EternalGregTechWorkshopModule> getStructureDefinition() {
-        return StructureDefinition.<EternalGregTechWorkshopModule>builder()
-            .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(ItemRegistry.bw_realglas2, 0))
-            .addElement('B', StructureUtility.ofBlock(Loaders.componentAssemblylineCasing, 12))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 14))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSEMotor, 4))
-            .addElement('H', GTStructureUtility.ofFrame(Materials.NaquadahAlloy))
-            .addElement('I', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 0))
-            .addElement('J', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 1))
-            .addElement(
-                'K',
-                StructureUtility.ofChain(
-                    StructureUtility.isAir(),
-                    GTStructureUtility.buildHatchAdder(EternalGregTechWorkshopModule.class)
-                        .atLeast(
-                            HatchElement.InputBus,
-                            HatchElement.OutputBus,
-                            HatchElement.InputHatch,
-                            HatchElement.OutputHatch)
-                        .casingIndex(getCasingTextureID())
-                        .hint(1)
-                        .buildAndChain(
-                            StructureUtility.onElementPass(
-                                x -> ++x.mCountCasing,
-                                StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 0)))))
-            .build();
+        return STRUCTURE_DEFINITION;
     }
 
     @Override
