@@ -780,10 +780,10 @@ public class AssemblingLineRecipes implements IRecipePool {
             (int) TierEU.RECIPE_UV);
 
         RecipeBuilder.builder()
-            .metadata(GTRecipeConstants.RESEARCH_ITEM, GregtechItemList.Controller_Flotation_Cell.get(1))
+            .metadata(GTRecipeConstants.RESEARCH_ITEM, ItemList.FlotationCell.get(1))
             .metadata(GTRecipeConstants.SCANNING, new Scanning(30 * GTRecipeBuilder.MINUTES, TierEU.RECIPE_IV))
             .itemInputs(
-                GregtechItemList.Controller_Flotation_Cell.get(1),
+                ItemList.FlotationCell.get(1),
                 new Object[] { OrePrefixes.circuit.get(Materials.LuV), 4 },
                 ItemList.Electric_Motor_LuV.get(8),
                 ItemList.Electric_Piston_LuV.get(8),
@@ -1476,7 +1476,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             40000,
             (int) TierEU.RECIPE_UHV,
             1,
-            new Object[] { GregtechItemList.Industrial_Centrifuge.get(64), GTNLItemList.LargeCentrifuge.get(64),
+            new Object[] { ItemList.IndustrialCentrifuge.get(64), GTNLItemList.LargeCentrifuge.get(64),
                 ItemList.Casing_Dim_Injector.get(64),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.EnrichedHolmium, 32),
                 CustomItemList.eM_Containment_Field.get(32), ItemList.Electric_Motor_UHV.get(16),
@@ -1972,12 +1972,12 @@ public class AssemblingLineRecipes implements IRecipePool {
             (int) TierEU.RECIPE_UMV);
 
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GregtechItemList.Industrial_TreeFarm.get(1),
+            ItemList.TreeGrowSimulator.get(1),
             14600000,
             18000,
             (int) TierEU.RECIPE_UHV,
             1,
-            new Object[] { GregtechItemList.Industrial_TreeFarm.get(64), ItemList.BlockUltraVioletLaserEmitter.get(64),
+            new Object[] { ItemList.TreeGrowSimulator.get(64), ItemList.BlockUltraVioletLaserEmitter.get(64),
                 ItemList.BlockFlocculationCasing.get(64),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.RadoxPolymer, 64),
                 ItemList.Electric_Pump_UHV.get(64), ItemList.Robot_Arm_UHV.get(32),
@@ -2200,7 +2200,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             (int) TierEU.RECIPE_UHV,
             1,
             new Object[] { GTNLItemList.LargeCutter.get(64),
-                GregtechItemList.Industrial_CuttingFactoryController.get(64), ItemList.Neutronium_Active_Casing.get(64),
+                ItemList.IndustrialWireFactory.get(64), ItemList.Neutronium_Active_Casing.get(64),
                 GregtechItemList.Casing_Autocrafter.get(12), ItemList.Electric_Motor_UHV.get(32),
                 ItemList.Electric_Piston_UHV.get(32), ItemList.Conveyor_Module_UHV.get(32),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UEV, 12),
@@ -2222,7 +2222,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             20000,
             (int) TierEU.RECIPE_UV,
             1,
-            new Object[] { GTNLItemList.LargeMixer.get(64), GregtechItemList.Industrial_Mixer.get(64),
+            new Object[] { GTNLItemList.LargeMixer.get(64), ItemList.IndustrialMixer.get(64),
                 CustomItemList.eM_Power.get(32), GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UHV, 16),
                 ItemList.Electric_Motor_UV.get(48), ItemList.Field_Generator_UV.get(12),
                 ItemList.Electric_Pump_UHV.get(32),

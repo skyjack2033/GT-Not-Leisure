@@ -356,7 +356,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_CuttingFactoryController.get(1L),
+                ItemList.IndustrialCuttingMachine.get(1L),
                 GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockAlloyGlass", 4, 0),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 2L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt04, Materials.Platinum, 4L),
@@ -373,7 +373,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_MacerationStack.get(1L),
+                ItemList.MacerationStack.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 2L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt04, Materials.Platinum, 4L),
                 GTOreDictUnificator.get(OrePrefixes.plateDouble, Materials.TungstenSteel, 4L),
@@ -389,7 +389,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_Arc_Furnace.get(1L),
+                ItemList.IndustrialArcFurnace.get(1L),
                 GregtechItemList.Energy_Core_IV.get(2),
                 ItemList.Field_Generator_IV.get(1L),
                 ItemList.Emitter_IV.get(2L),
@@ -405,7 +405,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_Sifter.get(1L),
+                ItemList.LargeSifter.get(1L),
                 MaterialsAlloy.INCONEL_792.getFrameBox(4),
                 GregtechItemList.Casing_SifterGrate.get(4),
                 ItemList.Electric_Piston_IV.get(2L),
@@ -421,7 +421,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Casing_CokeOven.get(4L),
+                ItemList.CokeOvenController.get(4L),
                 ItemList.Machine_IV_Brewery.get(1L),
                 ItemList.Machine_IV_Fermenter.get(1L),
                 ItemList.Machine_IV_FluidHeater.get(1L),
@@ -471,7 +471,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_WireFactory.get(1L),
+                ItemList.IndustrialWireFactory.get(1L),
                 MaterialsAlloy.MARAGING350.getFrameBox(4),
                 ItemList.Electric_Motor_IV.get(4L),
                 ItemList.Electric_Piston_IV.get(4L),
@@ -487,7 +487,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_PlatePress.get(1L),
+                ItemList.IndustrialFormingPress.get(1L),
                 MaterialsAlloy.MARAGING300.getFrameBox(4),
                 ItemList.Electric_Motor_IV.get(4L),
                 ItemList.Electric_Piston_IV.get(4L),
@@ -504,7 +504,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_PlatePress.get(1L),
+                ItemList.IndustrialFormingPress.get(1L),
                 MaterialsAlloy.MARAGING250.getFrameBox(4),
                 ItemList.Electric_Motor_IV.get(4L),
                 ItemList.Electric_Piston_IV.get(4L),
@@ -521,7 +521,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_Electrolyzer.get(1L),
+                ItemList.IndustrialElectrolyzer.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.TungstenSteel, 4L),
                 GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockAlloyGlass", 4, 0),
                 ItemList.Electric_Pump_IV.get(2L),
@@ -573,7 +573,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_Mixer.get(1L),
+                ItemList.IndustrialMixer.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Naquadah, 4L),
                 GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockAlloyGlass", 4, 0),
                 ItemList.Electric_Motor_IV.get(4L),
@@ -590,8 +590,8 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_Centrifuge.get(1L),
-                GregtechItemList.Industrial_ThermalCentrifuge.get(1L),
+                ItemList.IndustrialCentrifuge.get(1L),
+                ItemList.LargeThermalRefinery.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Tungsten, 4L),
                 GTOreDictUnificator.get(OrePrefixes.pipeHuge, Materials.Platinum, 2L),
                 ItemList.Electric_Motor_IV.get(4L),
@@ -1286,7 +1286,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_WashPlant.get(1),
+                ItemList.OreWashingPlant.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.Osmium, 4L),
                 ItemList.Conveyor_Module_IV.get(4),
@@ -1316,7 +1316,7 @@ public class AssemblerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                ItemList.Machine_IV_FluidSolidifier.get(2),
+                ItemList.Machine_Mass_Solidifier.get(2),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 4L),
                 GTOreDictUnificator.get(OrePrefixes.cableGt04, Materials.TungstenSteel, 4L),
                 GTOreDictUnificator.get(OrePrefixes.plateDouble, Materials.TungstenSteel, 4L),
@@ -1396,7 +1396,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Controller_IndustrialForgeHammer.get(1),
+                ItemList.IndustrialForgeHammer.get(1),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 4L),
                 ItemList.Electric_Piston_IV.get(4),
                 MaterialsAlloy.INCOLOY_DS.getFrameBox(4),
@@ -1424,7 +1424,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Machine_Adv_DistillationTower.get(1),
+                ItemList.Distillation_Tower.get(1),
                 GregtechItemList.GTPP_Casing_LuV.get(4),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.LuV, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.SuperconductorLuV, 8L),
@@ -1623,8 +1623,8 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.AlgaeFarm_Controller.get(1),
-                GregtechItemList.Industrial_FishingPond.get(1),
+                ItemList.AlgaeFarm.get(1),
+                ItemList.FishingPort.get(1),
                 ItemList.Field_Generator_IV.get(2),
                 GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.SuperconductorIV, 4L),
