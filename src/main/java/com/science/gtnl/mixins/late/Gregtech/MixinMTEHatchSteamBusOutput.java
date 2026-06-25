@@ -3,6 +3,7 @@ package com.science.gtnl.mixins.late.Gregtech;
 import org.spongepowered.asm.mixin.Mixin;
 
 import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
+import gregtech.api.util.GTUtility;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusOutput;
 
 @Mixin(value = MTEHatchSteamBusOutput.class)
@@ -15,5 +16,17 @@ public abstract class MixinMTEHatchSteamBusOutput extends MTEHatchOutputBus {
     @Override
     public boolean pushOutputInventory() {
         return true;
+    }
+
+    @Override
+    public boolean isFiltered() {
+        return isLocked();
+    }
+
+    @Override
+    public boolean isFilteredToItem(GTUtility.ItemId id) {
+        if (lockedItem == null) return false;
+
+        return id.matches(lockedItem);
     }
 }
