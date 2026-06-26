@@ -837,7 +837,8 @@ public class AssemblerRecipes implements IRecipePool {
                     .getItemStack(GTNLItemList.OutputBusMEProxy.get(1L), "{baseCapacity:9223372036854775807L}", null))
             .duration(300)
             .eut(480)
-            .addTo(As);
+            .addTo(As)
+            .addTo(HOR);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -850,7 +851,8 @@ public class AssemblerRecipes implements IRecipePool {
                 ItemUtils.getItemStack(ItemList.Hatch_Output_ME.get(1L), "{baseCapacity:9223372036854775807L}", null))
             .duration(300)
             .eut(480)
-            .addTo(As);
+            .addTo(As)
+            .addTo(HOR);
 
         RecipeBuilder.builder()
             .itemInputs(
