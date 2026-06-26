@@ -12,7 +12,7 @@ public class ContainerCustomPriority extends ContainerPriority {
     }
 
     @Override
-    public IPriorityHost getTarget() {
-        return (IPriorityHost) this.getInventoryPlayer().player.openContainer;
+    public Object getTarget() {
+        return this.getInventoryPlayer().player.openContainer;
     }
 }
