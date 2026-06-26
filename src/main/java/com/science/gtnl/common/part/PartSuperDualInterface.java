@@ -119,6 +119,16 @@ public class PartSuperDualInterface extends PartInterface implements ICustomGui,
     }
 
     @Override
+    public ItemStack getSelfRep() {
+        return getOriginGuiIcon();
+    }
+
+    @Override
+    public ItemStack getPrimaryGuiIcon() {
+        return getOriginGuiIcon();
+    }
+
+    @Override
     public DualityFluidInterface getDualityFluid() {
         return dualHostSupport.getDualityFluid();
     }

@@ -113,6 +113,16 @@ public class TileEntitySuperDualInterface extends TileInterface implements ICust
     }
 
     @Override
+    public ItemStack getSelfRep() {
+        return getOriginGuiIcon();
+    }
+
+    @Override
+    public ItemStack getPrimaryGuiIcon() {
+        return getOriginGuiIcon();
+    }
+
+    @Override
     public DualityFluidInterface getDualityFluid() {
         return dualHostSupport.getDualityFluid();
     }

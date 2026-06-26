@@ -69,4 +69,14 @@ public class PartSuperInterface extends PartInterface implements ICustomGui {
     public ItemStack getOriginGuiIcon() {
         return GTNLItemList.PartSuperInterface.get(1);
     }
+
+    @Override
+    public ItemStack getSelfRep() {
+        return getOriginGuiIcon();
+    }
+
+    @Override
+    public ItemStack getPrimaryGuiIcon() {
+        return getOriginGuiIcon();
+    }
 }

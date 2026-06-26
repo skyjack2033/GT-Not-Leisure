@@ -48,4 +48,14 @@ public class TileEntitySuperInterface extends TileInterface implements ICustomGu
     public ItemStack getOriginGuiIcon() {
         return GTNLItemList.SuperInterface.get(1);
     }
+
+    @Override
+    public ItemStack getSelfRep() {
+        return getOriginGuiIcon();
+    }
+
+    @Override
+    public ItemStack getPrimaryGuiIcon() {
+        return getOriginGuiIcon();
+    }
 }
