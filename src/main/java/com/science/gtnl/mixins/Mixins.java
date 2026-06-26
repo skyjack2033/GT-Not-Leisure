@@ -21,8 +21,7 @@ public enum Mixins implements IMixins {
         "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch", "Gregtech.AccessorProcessingLogic",
         "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine", "Gregtech.MixinBaseMetaTileEntity",
         "Gregtech.AssLineRemover.MixinGTMod", "Gregtech.AssLineRemover.MixinGTRecipeBuilder",
-        "Gregtech.AssLineRemover.MixinTTRecipeAdder",
-        "energymonitor.MixinBaseMetaTileEntityEnergyMonitor",
+        "Gregtech.AssLineRemover.MixinTTRecipeAdder", "energymonitor.MixinBaseMetaTileEntityEnergyMonitor",
         "energymonitor.MixinCommonMetaTileEntityEnergyMonitor"),
 
     GREGTECH_CLIENT_EARLY(

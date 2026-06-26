@@ -318,7 +318,7 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
             ceoOutput = 5.0D;
         } else if (depleteInput(GTModHandler.getIC2Coolant(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.5D;
-        } else if (depleteInput(Materials.Ice.getSolid(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(Materials.Water.getSolid(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.2D;
         } else if (depleteInput(GTModHandler.getDistilledWater(GTUtility.safeInt(ceoInput * amount, 0)))) {
             ceoOutput = 1.0D;

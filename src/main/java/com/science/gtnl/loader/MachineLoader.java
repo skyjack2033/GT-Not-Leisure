@@ -1946,7 +1946,7 @@ public class MachineLoader {
 
         GTNLItemList.FluidIceInputHatch.set(
             new CustomFluidHatch(
-                ImmutableSet.of(Materials.Ice.mFluid),
+                ImmutableSet.of(Materials.Water.mSolid),
                 256000,
                 GTNLMachineID.FLUID_ICE_INPUT_HATCH.ID,
                 "FluidIceInputHatch",

@@ -99,7 +99,7 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
                 int baseAmount = 10 * GTUtility.getTier(-lEUt) * GTUtility.getTier(-lEUt);
                 if (!this.depleteInputFromRestrictedHatches(this.mFluidIceInputHatch, baseAmount)) {
                     this.causeMaintenanceIssue();
-                    this.stopMachine(ShutDownReasonRegistry.outOfFluid(Materials.Ice.getFluid(baseAmount)));
+                    this.stopMachine(ShutDownReasonRegistry.outOfFluid(Materials.Water.getSolid(baseAmount)));
                 }
             }
             endRecipeProcessing();
