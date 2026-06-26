@@ -40,6 +40,7 @@ public class QuestLoader {
             Chapters.imported("GTNotLeisureQuestsLine")
                 .resourceFolder(RESOURCE_MOD_ID, RESOURCE_ROOT)
                 .lineDirectory("GTNotLeisure-GTNotLeisureQuestsLine==")
+                .orderAfter(UuidConverter.decodeUuid("GTNotLeisure75SteamAge=="))
                 .uuidFromResource()
                 .build());
     }

@@ -21,7 +21,9 @@ public enum Mixins implements IMixins {
         "Gregtech.AccessorMetaTileEntity", "Gregtech.AccessorMTEHatch", "Gregtech.AccessorProcessingLogic",
         "Gregtech.AccessorRecipeDisplayInfo", "Gregtech.MixinMTEBasicMachine", "Gregtech.MixinBaseMetaTileEntity",
         "Gregtech.AssLineRemover.MixinGTMod", "Gregtech.AssLineRemover.MixinGTRecipeBuilder",
-        "Gregtech.AssLineRemover.MixinTTRecipeAdder"),
+        "Gregtech.AssLineRemover.MixinTTRecipeAdder",
+        "energymonitor.MixinBaseMetaTileEntityEnergyMonitor",
+        "energymonitor.MixinCommonMetaTileEntityEnergyMonitor"),
 
     GREGTECH_CLIENT_EARLY(
         new MixinBuilder("Gregtech early client safety mixins").addClientMixins("Gregtech.MixinGTLanguageManager")
@@ -151,8 +153,6 @@ public enum Mixins implements IMixins {
             "Gregtech.MixinProcessingDust",
             "Gregtech.MixinTTMultiblockBase",
             "energymonitor.AccessorMTELapotronicSuperCapacitorEnergyMonitor",
-            "energymonitor.MixinBaseMetaTileEntityEnergyMonitor",
-            "energymonitor.MixinCommonMetaTileEntityEnergyMonitor",
             "energymonitormodule.AccessorETGWEyeOfHarmonyModuleEnergyMonitor",
             "energymonitormodule.AccessorEternalGregTechWorkshopModuleEnergyMonitor",
             "energymonitormodule.AccessorFOGAlloyBlastSmelterModuleEnergyMonitor",

@@ -1,4 +1,4 @@
-package com.science.gtnl.mixins.late.energymonitor;
+package com.science.gtnl.mixins.early.energymonitor;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
