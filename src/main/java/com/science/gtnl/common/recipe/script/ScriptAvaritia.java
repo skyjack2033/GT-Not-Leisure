@@ -1516,7 +1516,7 @@ public class ScriptAvaritia implements IScriptLoader {
                 'U',
                 ItemList.CryogenicFreezer.get(1),
                 'V',
-                ItemRegistry.megaMachines[1],
+                ItemList.MegaVacuumFreezer.get(1),
                 'W',
                 ItemList.ThermalBoiler.get(1),
                 'X',
