@@ -57,7 +57,8 @@ public enum Mixins implements IMixins {
             .setApplyIf(() -> MainConfig.minecraft.enableKillEnhance)),
 
     MINECRAFT_CLIENT(Side.CLIENT, "Minecraft.AccessorEntityRenderer", "Minecraft.AccessorGuiChat",
-        "Minecraft.MixinMinecraft", "Minecraft.MixinWorldClient", "Minecraft.MixinSimpleReloadableResourceManager",
+        "Minecraft.MixinMinecraft", "Minecraft.MixinWorldClient",
+        // "Minecraft.MixinSimpleReloadableResourceManager",
         "Minecraft.MixinGuiContainer", "Minecraft.MixinGuiFlatPresets"),
 
     SUPER_CREEPER(new MixinBuilder("Mixins for Super Creeper logic")

@@ -1,7 +1,6 @@
 package com.science.gtnl.mixins.early.Minecraft;
 
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
 
@@ -12,6 +11,8 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+import com.google.common.collect.Sets;
 
 @Mixin(value = SimpleReloadableResourceManager.class, remap = true)
 public class MixinSimpleReloadableResourceManager {
@@ -28,6 +29,6 @@ public class MixinSimpleReloadableResourceManager {
             target = "Lnet/minecraft/client/resources/SimpleReloadableResourceManager;setResourceDomains:Ljava/util/Set;",
             opcode = Opcodes.PUTFIELD))
     private void redirectSetResourceDomains(SimpleReloadableResourceManager instance, Set<String> value) {
-        this.setResourceDomains = new ConcurrentSkipListSet<>();
+        this.setResourceDomains = Sets.newLinkedHashSet();
     }
 }
