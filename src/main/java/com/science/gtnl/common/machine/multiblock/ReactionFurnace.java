@@ -4,6 +4,7 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
+import com.science.gtnl.common.machine.monitor.EnergyMonitorCustomWirelessEutProvider;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
@@ -43,7 +45,8 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.WirelessNetworkManager;
 
-public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurnace> implements ISurvivalConstructable {
+public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurnace>
+    implements ISurvivalConstructable, EnergyMonitorCustomWirelessEutProvider {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String RF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/reaction_furnace";
@@ -134,6 +137,8 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
     @Override
     @NotNull
     public CheckRecipeResult checkProcessing() {
+        costingEU = BigInteger.ZERO;
+        costingEUText = Utils.ZERO_STRING;
         List<ItemStack> tInput = getAllStoredInputs();
 
         if (tInput.isEmpty()) {
@@ -198,10 +203,8 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
         long finalParallel = currentParallel;
 
         int progressTime = 128;
-        long usedEU;
 
         if (!wirelessMode) {
-
             GTNLOverclockCalculator calculator = new GTNLOverclockCalculator().setEUt(availableEUt)
                 .setRecipeEUt(4)
                 .setDuration(64)
@@ -216,8 +219,9 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
             this.lEUt = -GTValues.VP[GTUtility.getTier(calculator.getConsumption())];
 
         } else {
-            usedEU = finalParallel * 4L;
-            WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, -usedEU);
+            costingEU = BigInteger.valueOf(finalParallel)
+                .multiply(BigInteger.valueOf(4L));
+            WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, costingEU.multiply(Utils.NEGATIVE_ONE));
             this.lEUt = 0;
         }
 
@@ -268,6 +272,15 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
         this.updateSlots();
 
         return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
+
+    @Override
+    public BigInteger getEnergyMonitorWirelessEut() {
+        IGregTechTileEntity baseMetaTileEntity = getBaseMetaTileEntity();
+        if (!wirelessMode || baseMetaTileEntity == null || !baseMetaTileEntity.isActive()) {
+            return BigInteger.ZERO;
+        }
+        return costingEU;
     }
 
     @Override

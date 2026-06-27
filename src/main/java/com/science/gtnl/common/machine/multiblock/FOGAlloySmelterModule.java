@@ -27,7 +27,7 @@ import tectech.thing.metaTileEntity.multi.godforge.MTEBaseModule;
 
 public class FOGAlloySmelterModule extends MTEBaseModule {
 
-    private long EUt = 0;
+    public long EUt = 0;
     private int currentParallel = 0;
     private long wirelessEUt = 0;
 

@@ -34,12 +34,6 @@ import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop
 import com.science.gtnl.common.machine.multiblock.module.eternalGregTechWorkshop.EternalGregTechWorkshopModule;
 import com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan.EnergyInfuser;
 import com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan.KuangBiaoOneGiantNuclearFusionReactor.UEVTier;
-import com.science.gtnl.mixins.late.energymonitormodule.AccessorETGWEyeOfHarmonyModuleEnergyMonitor;
-import com.science.gtnl.mixins.late.energymonitormodule.AccessorEternalGregTechWorkshopModuleEnergyMonitor;
-import com.science.gtnl.mixins.late.energymonitormodule.AccessorFOGAlloyBlastSmelterModuleEnergyMonitor;
-import com.science.gtnl.mixins.late.energymonitormodule.AccessorFOGAlloySmelterModuleEnergyMonitor;
-import com.science.gtnl.mixins.late.energymonitormodule.AccessorFOGExtractorModuleEnergyMonitor;
-import com.science.gtnl.mixins.late.energymonitormodule.AccessorFOGSolarMuonCatalystModuleEnergyMonitor;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.interfaces.tileentity.ICoverable;
@@ -473,18 +467,16 @@ public class EnergyMonitorCollector {
             return resolveEternalGregTechWorkshopModuleEut(eternalGregTechWorkshopModule);
         }
         if (multiblock instanceof FOGAlloySmelterModule alloySmelterModule) {
-            return BigInteger.valueOf(-((AccessorFOGAlloySmelterModuleEnergyMonitor) alloySmelterModule).gtnl$getEut());
+            return BigInteger.valueOf(-alloySmelterModule.EUt);
         }
         if (multiblock instanceof FOGAlloyBlastSmelterModule alloyBlastSmelterModule) {
-            return BigInteger
-                .valueOf(-((AccessorFOGAlloyBlastSmelterModuleEnergyMonitor) alloyBlastSmelterModule).gtnl$getEut());
+            return BigInteger.valueOf(-alloyBlastSmelterModule.EUt);
         }
         if (multiblock instanceof FOGExtractorModule extractorModule) {
-            return BigInteger.valueOf(-((AccessorFOGExtractorModuleEnergyMonitor) extractorModule).gtnl$getEut());
+            return BigInteger.valueOf(-extractorModule.EUt);
         }
         if (multiblock instanceof FOGSolarMuonCatalystModule solarMuonCatalystModule) {
-            return BigInteger
-                .valueOf(-((AccessorFOGSolarMuonCatalystModuleEnergyMonitor) solarMuonCatalystModule).gtnl$getEut());
+            return BigInteger.valueOf(-solarMuonCatalystModule.EUt);
         }
         if (multiblock instanceof SingularityDataHub singularityDataHub && singularityDataHub.wirelessMode) {
             return BigInteger.valueOf(-singularityDataHub.getActualEnergyUsage());
@@ -570,16 +562,14 @@ public class EnergyMonitorCollector {
 
     private static BigInteger resolveEternalGregTechWorkshopModuleEut(
         EternalGregTechWorkshopModule eternalGregTechWorkshopModule) {
-        return BigInteger.valueOf(
-            -((AccessorEternalGregTechWorkshopModuleEnergyMonitor) eternalGregTechWorkshopModule).gtnl$getEut());
+        return BigInteger.valueOf(-eternalGregTechWorkshopModule.EUt);
     }
 
     private static BigInteger resolveEyeOfHarmonyModuleEut(ETGWEyeOfHarmonyModule eyeOfHarmonyModule) {
         if (eyeOfHarmonyModule.mMaxProgresstime <= 0) {
             return BigInteger.ZERO;
         }
-        BigInteger usedEu = ((AccessorETGWEyeOfHarmonyModuleEnergyMonitor) eyeOfHarmonyModule).gtnl$getUsedEU();
-        return eyeOfHarmonyModule.outputEU_BigInt.subtract(usedEu.abs())
+        return eyeOfHarmonyModule.outputEU_BigInt.subtract(eyeOfHarmonyModule.usedEU.abs())
             .divide(BigInteger.valueOf(eyeOfHarmonyModule.mMaxProgresstime));
     }
 

@@ -44,10 +44,10 @@ import tectech.thing.metaTileEntity.multi.godforge.MTEBaseModule;
 
 public class FOGExtractorModule extends MTEBaseModule {
 
-    private long EUt = 0;
-    private int currentParallel = 0;
-    private boolean fluidMode = false;
-    private long wirelessEUt = 0;
+    public long EUt = 0;
+    public int currentParallel = 0;
+    public boolean fluidMode = false;
+    public long wirelessEUt = 0;
 
     public FOGExtractorModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);

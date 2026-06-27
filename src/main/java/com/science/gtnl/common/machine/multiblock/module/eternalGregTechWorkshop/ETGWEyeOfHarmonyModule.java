@@ -109,23 +109,23 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         }
     };
 
-    private EyeOfHarmonyRecipe currentRecipe;
-    private long lagPreventer = 0;
-    private boolean recipeRunning = false;
-    private long astralArrayAmount = 50000;
-    private long parallelAmount = 65536;
-    private long successfulParallelAmount = 0;
-    private double hydrogenOverflowProbabilityAdjustment;
-    private double heliumOverflowProbabilityAdjustment;
-    private double stellarPlasmaOverflowProbabilityAdjustment;
-    private double yield = 0;
-    private BigInteger usedEU = BigInteger.ZERO;
-    private double pityChance;
-    private double successChance;
-    private double previousRecipeChance;
-    private long currentRecipeRocketTier;
-    private FluidStackLong stellarPlasma;
-    private FluidStackLong starMatter;
+    public EyeOfHarmonyRecipe currentRecipe;
+    public long lagPreventer = 0;
+    public boolean recipeRunning = false;
+    public long astralArrayAmount = 50000;
+    public long parallelAmount = 65536;
+    public long successfulParallelAmount = 0;
+    public double hydrogenOverflowProbabilityAdjustment;
+    public double heliumOverflowProbabilityAdjustment;
+    public double stellarPlasmaOverflowProbabilityAdjustment;
+    public double yield = 0;
+    public BigInteger usedEU = BigInteger.ZERO;
+    public double pityChance;
+    public double successChance;
+    public double previousRecipeChance;
+    public long currentRecipeRocketTier;
+    public FluidStackLong stellarPlasma;
+    public FluidStackLong starMatter;
 
     public ETGWEyeOfHarmonyModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);

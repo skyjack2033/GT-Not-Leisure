@@ -35,9 +35,9 @@ import tectech.thing.metaTileEntity.multi.godforge.util.ForgeOfGodsData;
 
 public class FOGSolarMuonCatalystModule extends MTEBaseModule implements IFOGModule {
 
-    private long EUt = 0;
-    private int currentParallel = 0;
-    private long wirelessEUt = 0;
+    public long EUt = 0;
+    public int currentParallel = 0;
+    public long wirelessEUt = 0;
     @Getter
     @Setter
     public MTEForgeOfGods master;

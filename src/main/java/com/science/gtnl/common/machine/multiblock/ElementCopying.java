@@ -50,6 +50,7 @@ import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
 import com.gtnewhorizons.modularui.common.widget.DynamicTextWidget;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.gui.modularui.ElementCopyingGui;
+import com.science.gtnl.common.machine.monitor.EnergyMonitorCustomWirelessEutProvider;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.common.recipe.gtnl.ElementCopyingRecipes;
 import com.science.gtnl.loader.BlockLoader;
@@ -82,7 +83,8 @@ import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtnhlanth.common.register.LanthItemList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopying> implements ISurvivalConstructable {
+public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopying>
+    implements ISurvivalConstructable, EnergyMonitorCustomWirelessEutProvider {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String EC_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/element_copying";
@@ -228,12 +230,23 @@ public class ElementCopying extends WirelessEnergyMultiMachineBase<ElementCopyin
 
         if (wirelessMode) {
             addEUToGlobalEnergyMap(ownerUUID, -needEUtPerUnit);
+            costingEU = BigInteger.valueOf(needEUtPerUnit);
+            costingEUText = NumberFormatUtil.formatNumber(costingEU);
             lEUt = 0;
         } else {
             lEUt = -needEUtPerUnit;
         }
 
         return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
+
+    @Override
+    public BigInteger getEnergyMonitorWirelessEut() {
+        IGregTechTileEntity baseMetaTileEntity = getBaseMetaTileEntity();
+        if (!wirelessMode || baseMetaTileEntity == null || !baseMetaTileEntity.isActive()) {
+            return BigInteger.ZERO;
+        }
+        return costingEU;
     }
 
     @Override
