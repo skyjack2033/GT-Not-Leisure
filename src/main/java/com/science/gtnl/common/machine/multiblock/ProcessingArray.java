@@ -74,7 +74,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
 
     public RecipeMap<?> mLastRecipeMap;
     public ItemStack lastControllerStack;
-    public int tTier = 0;
+    public int mTier = 0;
     public boolean controllerStateDirty = true;
     public boolean hatchRecipeMapDirty = true;
 
@@ -128,7 +128,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
         checkHatch(errors);
-        if (GTUtility.getTier(this.getMaxInputVoltage()) <= tTier + 4) {
+        if (GTUtility.getTier(this.getMaxInputVoltage()) <= mTier + 4) {
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
         }
         checkCasingMin(errors, mCountCasing, 40);
@@ -247,7 +247,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
         boolean useSingleAmp = mEnergyHatches.size() == 1 && getMaxInputAmps() <= 4;
-        logic.setAvailableVoltage(GTValues.V[tTier] * (mLastRecipeMap != null ? mLastRecipeMap.getAmperage() : 1));
+        logic.setAvailableVoltage(GTValues.V[mTier] * (mLastRecipeMap != null ? mLastRecipeMap.getAmperage() : 1));
         logic.setAvailableAmperage(getControllerSlot().stackSize);
         logic.setAmperageOC(!useSingleAmp);
     }
@@ -342,10 +342,10 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     public void refreshMachineTier(ItemStack controllerSlot) {
         IMetaTileEntity aMachine = ItemMachines.getMetaTileEntity(controllerSlot);
         if (aMachine instanceof MTETieredMachineBlock tieredMachineBlock) {
-            tTier = tieredMachineBlock.mTier;
+            mTier = tieredMachineBlock.mTier;
             return;
         }
-        tTier = 0;
+        mTier = 0;
     }
 
     public void refreshControllerStateIfNeeded() {
@@ -428,7 +428,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
     @Override
     public void clearHatches() {
         super.clearHatches();
-        tTier = 0;
+        mTier = 0;
         mLastRecipeMap = null;
         lastControllerStack = null;
         invalidateControllerState();
@@ -503,7 +503,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
                 + " %",
             StatCollector.translateToLocal("GT5U.PA.machinetier") + ": "
                 + EnumChatFormatting.GREEN
-                + tTier
+                + mTier
                 + EnumChatFormatting.RESET
                 + " "
                 + StatCollector.translateToLocal("GT5U.PA.discount")
