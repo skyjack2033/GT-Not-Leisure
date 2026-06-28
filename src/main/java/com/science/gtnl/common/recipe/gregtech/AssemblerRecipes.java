@@ -339,7 +339,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                GregtechItemList.Industrial_Extruder.get(1L),
+                ItemList.IndustrialExtruder.get(1L),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.TungstenSteel, 4L),
                 GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.TPV, 4L),
                 GTOreDictUnificator.get(OrePrefixes.plateDouble, Materials.Polytetrafluoroethylene, 4L),
