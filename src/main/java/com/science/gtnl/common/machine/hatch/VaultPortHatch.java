@@ -16,6 +16,8 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.science.gtnl.api.IStackVault;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
@@ -52,7 +54,6 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatch;
 import gregtech.api.render.TextureFactory;
-import org.jetbrains.annotations.NotNull;
 
 public class VaultPortHatch extends MTEHatch
     implements ICellContainer, IGridProxyable, IActionHost, IPowerChannelState, IMEConnectable {

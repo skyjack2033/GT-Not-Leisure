@@ -199,9 +199,10 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
         super.drawTexts(screenElements, inventorySlot);
         screenElements
             .widget(
-                new TextWidget().setStringSupplier(
-                    () -> VaultTypeCountFormatter
-                        .createTypeCountText(typeCountPayloadForGui, "Info_SingularityDataHub_TypeCount"))
+                new TextWidget()
+                    .setStringSupplier(
+                        () -> VaultTypeCountFormatter
+                            .createTypeCountText(typeCountPayloadForGui, "Info_SingularityDataHub_TypeCount"))
                     .setDefaultColor(COLOR_TEXT_WHITE.get())
                     .setEnabled(true))
             .widget(new FakeSyncWidget.StringSyncer(this::getTypeCountPayloadForGui, this::setTypeCountPayloadFromGui));
@@ -278,9 +279,7 @@ public class SingularityDataHub extends MultiMachineBase<SingularityDataHub>
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         setDoVoidExcess(!doVoidExcess);
-        GTUtility.sendChatToPlayer(
-            aPlayer,
-            StatCollector.translateToLocal("Info_SingularityDataHub_AutoVoiding") + doVoidExcess);
+        GTUtility.sendChatTrans(aPlayer, "Info_SingularityDataHub_AutoVoiding", doVoidExcess);
     }
 
     @Override

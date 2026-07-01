@@ -425,9 +425,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
 
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ) {
         this.setDoVoidExcess(!doVoidExcess);
-        GTUtility.sendChatToPlayer(
-            aPlayer,
-            StatCollector.translateToLocal("Info_SteamItemVault_AutoVoiding") + doVoidExcess);
+        GTUtility.sendChatTrans(aPlayer, "Info_SteamItemVault_AutoVoiding", doVoidExcess);
     }
 
     @Override
