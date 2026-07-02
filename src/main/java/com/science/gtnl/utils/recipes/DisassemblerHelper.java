@@ -656,13 +656,48 @@ public class DisassemblerHelper {
     }
 
     private static void addShimmerFakeRecipe(RecipeBuilder builder) {
-        if (MainConfig.recipe.enableShimmerFakeRecipeInNEI) {
-            builder.addTo(GTNLRecipeMaps.ShimmerRecipes);
+        if (!MainConfig.recipe.enableShimmerFakeRecipeInNEI) {
+            return;
         }
+
+        ItemStack input = getFirstValidStack(builder.inputItems);
+        ItemStack[] outputs = getValidStacks(builder.outputItems);
+        if (input == null || outputs.length == 0) {
+            return;
+        }
+
+        builder.itemInputs(input)
+            .itemOutputs(outputs)
+            .addTo(GTNLRecipeMaps.ShimmerRecipes);
     }
 
     private static boolean shouldBuildShimmerFakeRecipe() {
         return MainConfig.recipe.enableShimmerFakeRecipeInNEI || debugRecipeToRecipe != null;
+    }
+
+    private static ItemStack getFirstValidStack(ItemStack[] stacks) {
+        if (stacks == null) {
+            return null;
+        }
+        for (ItemStack stack : stacks) {
+            if (GTUtility.isStackValid(stack) && stack.stackSize > 0) {
+                return stack;
+            }
+        }
+        return null;
+    }
+
+    private static ItemStack[] getValidStacks(ItemStack[] stacks) {
+        if (stacks == null || stacks.length == 0) {
+            return new ItemStack[0];
+        }
+        ObjectArrayList<ItemStack> validStacks = new ObjectArrayList<>(stacks.length);
+        for (ItemStack stack : stacks) {
+            if (GTUtility.isStackValid(stack) && stack.stackSize > 0) {
+                validStacks.add(stack);
+            }
+        }
+        return validStacks.toArray(new ItemStack[0]);
     }
 
     private static void addFluidPacketOutput(ObjectArrayList<ItemStack> outputs, FluidStack fluid, String source) {
