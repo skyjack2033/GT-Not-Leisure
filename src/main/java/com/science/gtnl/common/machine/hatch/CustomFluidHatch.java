@@ -6,7 +6,6 @@ import java.util.Set;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -20,7 +19,7 @@ import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
 import com.science.gtnl.common.gui.modularui.CustomFluidHatchGui;
-import com.science.gtnl.mixins.early.Gregtech.AccessorMTEHatch;
+import com.science.gtnl.mixins.early.gregtech.AccessorMTEHatch;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import gregtech.GTMod;

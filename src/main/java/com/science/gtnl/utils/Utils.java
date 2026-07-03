@@ -49,8 +49,8 @@ import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
 import com.mojang.authlib.GameProfile;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.config.MainConfig;
-import com.science.gtnl.mixins.early.Gregtech.AccessorGTLanguageManager;
-import com.science.gtnl.mixins.early.Minecraft.AccessorStringTranslate;
+import com.science.gtnl.mixins.early.gregtech.AccessorGTLanguageManager;
+import com.science.gtnl.mixins.early.minecraft.AccessorStringTranslate;
 import com.science.gtnl.utils.machine.FluidTankG;
 import com.science.gtnl.utils.machine.ItemStackG;
 

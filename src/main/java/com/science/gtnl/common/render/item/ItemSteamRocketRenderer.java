@@ -135,9 +135,7 @@ public class ItemSteamRocketRenderer implements IItemRenderer {
      */
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-        return switch (type) {
-            case ENTITY, INVENTORY, EQUIPPED_FIRST_PERSON, EQUIPPED, default, default -> true;
-        };
+        return true;
     }
 
     @Override

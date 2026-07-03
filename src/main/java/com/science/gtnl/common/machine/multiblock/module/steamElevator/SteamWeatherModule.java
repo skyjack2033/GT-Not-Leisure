@@ -5,7 +5,7 @@ import net.minecraft.util.StatCollector;
 import org.jetbrains.annotations.NotNull;
 
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.mixins.early.Gregtech.AccessorProcessingLogic;
+import com.science.gtnl.mixins.early.gregtech.AccessorProcessingLogic;
 
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;

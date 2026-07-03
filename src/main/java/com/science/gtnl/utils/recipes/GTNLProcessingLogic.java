@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.IConfigurationMaintenance;
-import com.science.gtnl.mixins.early.Gregtech.AccessorProcessingLogic;
+import com.science.gtnl.mixins.early.gregtech.AccessorProcessingLogic;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.interfaces.tileentity.IRecipeLockable;
