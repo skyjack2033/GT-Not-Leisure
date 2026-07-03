@@ -64,7 +64,8 @@ public class GreenHouseNormalMode extends GreenHouseMode {
     @Override
     public MultiblockTooltipBuilder addTooltipInfo(MultiblockTooltipBuilder builder) {
         String minVoltageTier = GTUtility.getColoredTierNameFromTier((byte) this.EIG_BALANCE_REGULAR_MODE_MIN_TIER);
-        String minVoltageTierMinus1 = GTUtility.getColoredTierNameFromTier((byte) (this.EIG_BALANCE_REGULAR_MODE_MIN_TIER - 1));
+        String minVoltageTierMinus1 = GTUtility
+            .getColoredTierNameFromTier((byte) (this.EIG_BALANCE_REGULAR_MODE_MIN_TIER - 1));
 
         double fertilizerBonusMultiplier = this.getFertilizerBoost() * 100;
         String fertilizerBonus = String.format("%.0f%%", fertilizerBonusMultiplier);

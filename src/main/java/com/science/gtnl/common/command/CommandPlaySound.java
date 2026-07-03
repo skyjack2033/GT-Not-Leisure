@@ -2,7 +2,6 @@ package com.science.gtnl.common.command;
 
 import static com.science.gtnl.ScienceNotLeisure.network;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.command.CommandBase;

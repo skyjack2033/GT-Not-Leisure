@@ -404,7 +404,7 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
         SeedStats bestStats = new SeedStats(
             Constants.MAX_SEED_STAT,
             Constants.MAX_SEED_STAT,
-                Constants.MAX_SEED_STAT,
+            Constants.MAX_SEED_STAT,
             true);
         runtimeSeed.setTagCompound(bestStats.writeToNBT(new NBTTagCompound()));
         return new SeedData(seedData.getCrop(), bestStats, runtimeSeed);

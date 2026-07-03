@@ -1,6 +1,5 @@
 package com.reavaritia.client.gui;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;

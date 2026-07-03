@@ -1,7 +1,6 @@
 package com.science.gtnl.loader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.dreammaster.scripts.IScriptLoader;

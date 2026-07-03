@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.hatch;
 
 import java.util.Arrays;
 
-import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,6 +28,7 @@ import gregtech.api.interfaces.modularui.IAddGregtechLogo;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchVoidBus;
+import lombok.Getter;
 
 public class SuperVoidBus extends MTEHatchVoidBus implements IAddGregtechLogo {
 

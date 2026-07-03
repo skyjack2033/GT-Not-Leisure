@@ -3,9 +3,9 @@ package com.science.gtnl.common.recipe.thaumcraft;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Getter;
 import net.minecraft.item.ItemStack;
 
+import lombok.Getter;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.crafting.InfusionRecipe;
 import thaumcraft.api.crafting.ShapedArcaneRecipe;

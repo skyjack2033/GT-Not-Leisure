@@ -1,11 +1,12 @@
 package com.science.gtnl.common.block.blocks.tile;
 
-import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+
+import lombok.Getter;
 
 @Getter
 public class TileEntityDimensionRespawnAnchor extends TileEntity {

@@ -3,10 +3,11 @@ package com.science.gtnl.common.machine.monitor;
 import java.math.BigInteger;
 import java.util.Objects;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class EnergyMonitorRowSnapshot {
 

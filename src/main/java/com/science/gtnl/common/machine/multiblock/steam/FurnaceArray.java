@@ -358,11 +358,10 @@ public class FurnaceArray extends SteamMultiMachineBase<FurnaceArray> implements
                     .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE_ACTIVE)
                     .extFacing()
                     .build() };
-            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(CASING_INDEX),
-                TextureFactory.builder()
-                    .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE)
-                    .extFacing()
-                    .build() };
+            return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(CASING_INDEX), TextureFactory.builder()
+                .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE)
+                .extFacing()
+                .build() };
         }
         return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(CASING_INDEX) };
     }

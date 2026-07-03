@@ -446,8 +446,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
     public void reCalculateHeight() {
         int fluidAmount = reCalculateFluidAmmount();
         int capacity = getCapacity();
-        if (fluidAmount > capacity / 4 - 1) {
-        }
+        if (fluidAmount > capacity / 4 - 1) {}
     }
 
     public MTERadioHatch getPrimaryRadiationHatch() {

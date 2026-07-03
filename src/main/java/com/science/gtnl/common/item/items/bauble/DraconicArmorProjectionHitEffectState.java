@@ -3,10 +3,10 @@ package com.science.gtnl.common.item.items.bauble;
 import java.util.Map;
 import java.util.UUID;
 
-import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 
 public class DraconicArmorProjectionHitEffectState {
 

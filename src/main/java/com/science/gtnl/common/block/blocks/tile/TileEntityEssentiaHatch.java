@@ -1,9 +1,9 @@
 package com.science.gtnl.common.block.blocks.tile;
 
-import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
+import lombok.Getter;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaTransport;

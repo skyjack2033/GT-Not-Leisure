@@ -4,8 +4,6 @@ import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 
 import javax.annotation.Nullable;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -13,6 +11,8 @@ import com.gtnewhorizon.cropsnh.api.ISeedData;
 import com.gtnewhorizon.cropsnh.utility.CropsNHUtils;
 
 import gregtech.api.util.GTUtility;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter

@@ -15,7 +15,6 @@ import com.gtnewhorizons.modularui.common.widget.ProgressBar;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import gregtech.api.enums.SoundResource;
-import gregtech.api.enums.SteamVariant;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.TierEU;
 import gregtech.api.gui.modularui.GUITextureSet;

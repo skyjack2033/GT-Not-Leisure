@@ -6,11 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
 import com.cleanroommc.modularui.utils.item.INBTSerializable;
+
+import lombok.Getter;
 
 @Getter
 public class EnergyMonitorSnapshot implements INBTSerializable<NBTTagCompound> {

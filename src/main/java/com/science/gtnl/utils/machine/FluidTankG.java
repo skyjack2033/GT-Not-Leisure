@@ -1,7 +1,6 @@
 package com.science.gtnl.utils.machine;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;

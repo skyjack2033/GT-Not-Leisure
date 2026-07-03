@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -30,6 +29,7 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEBasicTank;
 import gregtech.api.render.TextureFactory;
+import lombok.Getter;
 
 public class EnergyMonitor extends MTEBasicTank {
 

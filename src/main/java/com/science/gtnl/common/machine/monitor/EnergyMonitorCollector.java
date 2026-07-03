@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -48,6 +47,7 @@ import gregtech.api.metatileentity.implementations.MTEWirelessEnergy;
 import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.multi.purification.MTEPurificationPlant;
 import kekztech.common.tileentities.MTELapotronicSuperCapacitor;
+import lombok.Getter;
 import tectech.thing.metaTileEntity.hatch.MTEHatchWirelessDynamoMulti;
 import tectech.thing.metaTileEntity.hatch.MTEHatchWirelessMulti;
 import tectech.thing.metaTileEntity.multi.godforge.MTEBaseModule;

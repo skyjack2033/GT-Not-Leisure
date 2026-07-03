@@ -1,6 +1,5 @@
 package com.science.gtnl.common.item;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -146,8 +145,7 @@ public abstract class BaubleItem extends Item implements IBauble {
     }
 
     public static void removePlayerEntries(Map<UUID, UUID> itemToPlayerMap, UUID playerUUID) {
-        itemToPlayerMap.entrySet().removeIf(uuiduuidEntry -> playerUUID.equals(
-            uuiduuidEntry
-                .getValue()));
+        itemToPlayerMap.entrySet()
+            .removeIf(uuiduuidEntry -> playerUUID.equals(uuiduuidEntry.getValue()));
     }
 }
