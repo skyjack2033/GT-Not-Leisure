@@ -73,7 +73,7 @@ public class GreenHouseInfusedSeedBucket extends GreenHouseBucket {
 
         HashMap<ItemStack, Integer> aspectDrops = AccessorAspectCropLootManager.getLootMap()
             .get(aspect);
-        if (aspectDrops == null || aspectDrops.size() == 0) return; // no drops
+        if (aspectDrops == null || aspectDrops.isEmpty()) return; // no drops
 
         int totalDrop = this.seedCount;
         int ordoTendency = ItemInfusedSeeds.getAspectTendencies(this.seed)

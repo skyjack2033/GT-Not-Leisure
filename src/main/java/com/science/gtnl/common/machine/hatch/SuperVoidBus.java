@@ -2,6 +2,7 @@ package com.science.gtnl.common.machine.hatch;
 
 import java.util.Arrays;
 
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,6 +35,7 @@ public class SuperVoidBus extends MTEHatchVoidBus implements IAddGregtechLogo {
     public static String DATA_STICK_DATA_TYPE = "superVoidBusFilter";
     public static String LOCKED_ITEMS_NBT_KEY = "lockedItems";
 
+    @Getter
     public ItemStack[] lockedItems = new ItemStack[100];
     public ItemStackHandler lockedInventoryHandler = new ItemStackHandler(lockedItems);
 
@@ -100,10 +102,6 @@ public class SuperVoidBus extends MTEHatchVoidBus implements IAddGregtechLogo {
             }
         }
         return false;
-    }
-
-    public ItemStack[] getLockedItems() {
-        return lockedItems;
     }
 
     @Override

@@ -99,11 +99,6 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
     }
 
     @Override
-    protected boolean useMui2() {
-        return true;
-    }
-
-    @Override
     public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
         return new WirelessSteamDynamoHatchGui(this).build(guiData, syncManager, uiSettings);
     }

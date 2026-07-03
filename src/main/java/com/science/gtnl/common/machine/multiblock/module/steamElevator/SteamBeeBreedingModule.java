@@ -77,11 +77,6 @@ public class SteamBeeBreedingModule extends SteamElevatorModule {
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
-    @Override
-    public int getMachineEffectRange() {
-        return 0;
-    }
-
     public ItemStack createIgnobleCopy(ItemStack queenStack) {
         IBee princess = beeRoot.getMember(queenStack);
         princess.setIsNatural(false);

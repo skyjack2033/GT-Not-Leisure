@@ -28,7 +28,7 @@ public class CommandPlaySound extends CommandBase {
 
     @Override
     public List<String> getCommandAliases() {
-        return Arrays.asList("gtnlps");
+        return List.of("gtnlps");
     }
 
     @Override

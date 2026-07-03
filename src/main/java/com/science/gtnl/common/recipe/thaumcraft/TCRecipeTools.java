@@ -3,6 +3,7 @@ package com.science.gtnl.common.recipe.thaumcraft;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import net.minecraft.item.ItemStack;
 
 import thaumcraft.api.ThaumcraftApi;
@@ -73,16 +74,13 @@ public class TCRecipeTools {
 
     public static class ShapedArcaneCraftingRecipe {
 
+        @Getter
         private final Object[] InputItems;
         private final ItemStack OutputItem;
 
         public ShapedArcaneCraftingRecipe(Object[] InputItems, ItemStack OutputItem) {
             this.InputItems = InputItems;
             this.OutputItem = OutputItem;
-        }
-
-        public Object[] getInputItems() {
-            return InputItems;
         }
 
         public ItemStack getOutput() {
@@ -92,16 +90,13 @@ public class TCRecipeTools {
 
     public static class ShapelessArcaneCraftingRecipe {
 
+        @Getter
         private final ArrayList<ItemStack> InputItems;
         private final ItemStack OutputItem;
 
         public ShapelessArcaneCraftingRecipe(ArrayList<ItemStack> InputItems, ItemStack OutputItem) {
             this.InputItems = InputItems;
             this.OutputItem = OutputItem;
-        }
-
-        public ArrayList<ItemStack> getInputItems() {
-            return InputItems;
         }
 
         public ItemStack getOutput() {
@@ -113,16 +108,13 @@ public class TCRecipeTools {
 
         private final ItemStack InputItem;
         private final ItemStack OutputItem;
+        @Getter
         private final ItemStack[] Components;
 
         public InfusionCraftingRecipe(ItemStack InputItem, Object OutputItem, ItemStack[] Components) {
             this.InputItem = InputItem;
             this.OutputItem = (ItemStack) OutputItem;
             this.Components = Components;
-        }
-
-        public ItemStack[] getComponents() {
-            return Components;
         }
 
         public ItemStack[] getInputItem() {

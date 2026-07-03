@@ -157,11 +157,6 @@ public class SteamAssemblerSteel extends MTEBasicMachineSteel {
     }
 
     @Override
-    public SteamVariant getSteamVariant() {
-        return SteamVariant.STEEL;
-    }
-
-    @Override
     public GUITextureSet getGUITextureSet() {
         return GUITextureSet.STEAM.apply(getSteamVariant());
     }

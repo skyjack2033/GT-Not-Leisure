@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.Setter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
@@ -46,6 +47,7 @@ public class FOGExtractorModule extends MTEBaseModule {
 
     public long EUt = 0;
     public int currentParallel = 0;
+    @Setter
     public boolean fluidMode = false;
     public long wirelessEUt = 0;
 
@@ -236,7 +238,7 @@ public class FOGExtractorModule extends MTEBaseModule {
             .setBackground(() -> {
                 List<UITexture> ret = new ArrayList<>();
                 ret.add(EternalGregTechWorkshopTextures.BUTTON_CELESTIAL_32x32);
-                if (isFluidModeOn()) {
+                if (fluidMode) {
                     ret.add(EternalGregTechWorkshopTextures.OVERLAY_BUTTON_FURNACE_MODE);
                 } else {
                     ret.add(EternalGregTechWorkshopTextures.OVERLAY_BUTTON_FURNACE_MODE_OFF);
@@ -256,10 +258,6 @@ public class FOGExtractorModule extends MTEBaseModule {
 
     public boolean isFluidModeOn() {
         return fluidMode;
-    }
-
-    public void setFluidMode(boolean enabled) {
-        fluidMode = enabled;
     }
 
     @Override

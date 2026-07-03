@@ -29,7 +29,7 @@ public abstract class MixinGuiFlatPresets {
             "The Void",
             Items.glass_bottle,
             BiomeGenBase.plains,
-            Arrays.asList("decoration"),
+            List.of("decoration"),
             new FlatLayerInfo(1, Blocks.air));
     }
 }

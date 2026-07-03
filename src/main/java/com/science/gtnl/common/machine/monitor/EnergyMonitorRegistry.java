@@ -37,13 +37,7 @@ public class EnergyMonitorRegistry {
     }
 
     public static void cleanupInvalidEntries() {
-        Iterator<MetaTileEntity> iterator = TRACKED.iterator();
-        while (iterator.hasNext()) {
-            MetaTileEntity metaTileEntity = iterator.next();
-            if (!shouldTrack(metaTileEntity) || !metaTileEntity.isValid()) {
-                iterator.remove();
-            }
-        }
+        TRACKED.removeIf(metaTileEntity -> !shouldTrack(metaTileEntity) || !metaTileEntity.isValid());
     }
 
     public static boolean isInvalid(MetaTileEntity metaTileEntity) {

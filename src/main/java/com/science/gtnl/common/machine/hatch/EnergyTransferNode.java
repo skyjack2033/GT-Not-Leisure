@@ -327,11 +327,6 @@ public class EnergyTransferNode extends MTETieredMachineBlock implements IConnec
     }
 
     @Override
-    public boolean isAccessAllowed(EntityPlayer aPlayer) {
-        return true;
-    }
-
-    @Override
     public boolean isFacingValid(ForgeDirection facing) {
         return true;
     }

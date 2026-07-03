@@ -645,18 +645,6 @@ public class Utils {
         return maxValue;
     }
 
-    public static double calculatePowerTier(double voltage) {
-        return 1 + Math.max(0, (Math.log(voltage) / LOG2) - 5) / 2;
-    }
-
-    public static String repeatExclamation(int count) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            sb.append('!');
-        }
-        return sb.toString();
-    }
-
     public static synchronized String storeTranslation(String trimmedKey, String text) {
         return storeTranslation(trimmedKey, text, "en_US");
     }

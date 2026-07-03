@@ -187,7 +187,7 @@ public class GreenHouseSeedBucket extends GreenHouseBucket {
             .getRecipeList()
             .parallelStream()
             .filter(r -> GTUtility.areStacksEqual(r.getRecipeOutput(), seed))
-            .collect(Collectors.toList());
+            .toList();
 
         if (recipes.isEmpty()) return false;
 

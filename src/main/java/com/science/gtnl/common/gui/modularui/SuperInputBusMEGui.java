@@ -179,7 +179,7 @@ public class SuperInputBusMEGui extends MTEHatchBaseGui<SuperInputBusME> {
                         return false;
                     }
                 }.backgroundOverlay(GTGuiTextures.SLOT_ITEM_DARK))
-                .modularSlotSupplier((handler, index) -> new ModularSlot(handler, index))
+                .modularSlotSupplier(ModularSlot::new)
                 .build());
     }
 
@@ -417,11 +417,6 @@ public class SuperInputBusMEGui extends MTEHatchBaseGui<SuperInputBusME> {
                 return Interactable.Result.SUCCESS;
             }
             return super.onMousePressed(mouseButton);
-        }
-
-        @Override
-        public boolean onMouseScroll(UpOrDown scrollDirection, int amount) {
-            return false;
         }
 
     }

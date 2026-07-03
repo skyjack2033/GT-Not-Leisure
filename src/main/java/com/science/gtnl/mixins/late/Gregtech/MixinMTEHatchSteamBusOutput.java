@@ -14,16 +14,6 @@ public abstract class MixinMTEHatchSteamBusOutput extends MTEHatchOutputBus {
     }
 
     @Override
-    public boolean pushOutputInventory() {
-        return true;
-    }
-
-    @Override
-    public boolean isFiltered() {
-        return isLocked();
-    }
-
-    @Override
     public boolean isFilteredToItem(GTUtility.ItemId id) {
         if (lockedItem == null) return false;
 

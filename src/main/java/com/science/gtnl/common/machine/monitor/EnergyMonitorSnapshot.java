@@ -6,11 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
 import com.cleanroommc.modularui.utils.item.INBTSerializable;
 
+@Getter
 public class EnergyMonitorSnapshot implements INBTSerializable<NBTTagCompound> {
 
     private List<EnergyMonitorRowSnapshot> rows;
@@ -57,10 +59,6 @@ public class EnergyMonitorSnapshot implements INBTSerializable<NBTTagCompound> {
         return true;
     }
 
-    public List<EnergyMonitorRowSnapshot> getRows() {
-        return rows;
-    }
-
     public void setRows(List<EnergyMonitorRowSnapshot> rows) {
         this.rows = rows == null ? Collections.emptyList()
             : rows.stream()
@@ -68,24 +66,12 @@ public class EnergyMonitorSnapshot implements INBTSerializable<NBTTagCompound> {
                 .collect(Collectors.toList());
     }
 
-    public BigInteger getWiredStored() {
-        return wiredStored;
-    }
-
     public void setWiredStored(BigInteger wiredStored) {
         this.wiredStored = wiredStored == null ? BigInteger.ZERO : wiredStored;
     }
 
-    public BigInteger getWiredCapacity() {
-        return wiredCapacity;
-    }
-
     public void setWiredCapacity(BigInteger wiredCapacity) {
         this.wiredCapacity = wiredCapacity == null ? BigInteger.ZERO : wiredCapacity;
-    }
-
-    public BigInteger getWirelessStored() {
-        return wirelessStored;
     }
 
     public void setWirelessStored(BigInteger wirelessStored) {

@@ -59,8 +59,8 @@ public abstract class MixinCommandTeleport {
 
                 ci.cancel();
             }
-        } catch (Exception ignored) {
-            ScienceNotLeisure.LOG.warn("[MixinCommandTeleport] Failed to execute custom teleport", ignored);
+        } catch (Exception e) {
+            ScienceNotLeisure.LOG.warn("[MixinCommandTeleport] Failed to execute custom teleport", e);
         }
     }
 

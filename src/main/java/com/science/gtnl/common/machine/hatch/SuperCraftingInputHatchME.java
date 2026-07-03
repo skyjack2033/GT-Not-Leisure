@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.Setter;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -144,6 +145,7 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
     public BaseActionSource requestSource = null;
     public @Nullable AENetworkProxy gridProxy = null;
     public List<ProcessingLogic> processingLogics = new ArrayList<>();
+    @Setter
     public boolean showPattern = true;
 
     // holds all internal inventories
@@ -647,10 +649,6 @@ public class SuperCraftingInputHatchME extends MTEHatchInputBus implements IConf
 
     public boolean isShowPatternForGui() {
         return showPattern;
-    }
-
-    public void setShowPattern(boolean showPattern) {
-        this.showPattern = showPattern;
     }
 
     @Override

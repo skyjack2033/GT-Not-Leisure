@@ -305,11 +305,6 @@ public class ItemInfinityCell extends ItemCreativeStorageCell {
     }
 
     @Override
-    public IInventory getUpgradesInventory(ItemStack is) {
-        return new CellUpgrades(is, 0);
-    }
-
-    @Override
     public boolean isEditable(final ItemStack is) {
         return false;
     }
@@ -372,21 +367,6 @@ public class ItemInfinityCell extends ItemCreativeStorageCell {
     }
 
     @Override
-    public int getBytes(ItemStack cellItem) {
-        return 0;
-    }
-
-    @Override
-    public int getBytesPerType(ItemStack cellItem) {
-        return 0;
-    }
-
-    @Override
-    public long getBytesLong(ItemStack cellItem) {
-        return 0;
-    }
-
-    @Override
     public boolean isBlackListed(IAEStack<?> requestedAddition) {
         if (!(requestedAddition instanceof IAEFluidStack fluidStack)) {
             return false;
@@ -395,16 +375,6 @@ public class ItemInfinityCell extends ItemCreativeStorageCell {
             .isBlacklistedInStorage(
                 fluidStack.getFluid()
                     .getClass());
-    }
-
-    @Override
-    public boolean storableInStorageCell() {
-        return false;
-    }
-
-    @Override
-    public boolean isStorageCell(ItemStack i) {
-        return true;
     }
 
     @Override

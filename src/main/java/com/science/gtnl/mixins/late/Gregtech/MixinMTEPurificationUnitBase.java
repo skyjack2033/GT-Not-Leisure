@@ -448,7 +448,7 @@ public abstract class MixinMTEPurificationUnitBase extends MTEExtendedPowerMulti
     private List<MTEHatch> gtnl$getAllInputHatches() {
         List<MTEHatch> dualHatches = mDualInputHatches.stream()
             .map(h -> (MTEHatch) h)
-            .collect(Collectors.toList());
+            .toList();
 
         List<MTEHatch> allHatches = new ArrayList<>(mInputHatches);
         allHatches.addAll(dualHatches);

@@ -573,7 +573,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     public boolean containsFilterStackForGui(ItemStack stack) {
-        for (int i = 0; i < getFilterSlotCountForGui(); ++i) {
+        for (int i = 0; i < SIDE_SLOT_COUNT; ++i) {
             if (GTUtility.areStacksEqual(mInventory[i], stack, false)) return true;
         }
         return false;

@@ -3,6 +3,7 @@ package com.science.gtnl.common.item.items.bauble;
 import java.util.Map;
 import java.util.UUID;
 
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -72,6 +73,7 @@ public class DraconicArmorProjectionHitEffectState {
         STATES.clear();
     }
 
+    @Getter
     public static class HitEffectState {
 
         private final float shieldPower;
@@ -82,12 +84,5 @@ public class DraconicArmorProjectionHitEffectState {
             this.remainingTicks = remainingTicks;
         }
 
-        public float getShieldPower() {
-            return shieldPower;
-        }
-
-        public int getRemainingTicks() {
-            return remainingTicks;
-        }
     }
 }

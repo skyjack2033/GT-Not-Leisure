@@ -1,18 +1,16 @@
 package com.science.gtnl.common.block.blocks.tile;
 
+import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+@Getter
 public class TileEntityDimensionRespawnAnchor extends TileEntity {
 
     private int energyLevel = 0;
-
-    public int getEnergyLevel() {
-        return energyLevel;
-    }
 
     public void addEnergy(int amount) {
         energyLevel = Math.min(4, energyLevel + amount);

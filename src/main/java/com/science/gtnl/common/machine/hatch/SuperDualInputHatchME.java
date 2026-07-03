@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import lombok.Getter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -205,7 +206,9 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
 
     public ItemStackHandler inventoryHandlerMark = new ItemStackHandler(i_mark);
     public ItemStackHandler inventoryHandlerDisplay = new ItemStackHandler(i_display);
+    @Getter
     private final Mui2ArrayItemHandler mui2FilterItemHandler = new Mui2ArrayItemHandler(i_mark);
+    @Getter
     private final Mui2ArrayItemHandler mui2InformationItemHandler = new Mui2ArrayItemHandler(i_display);
 
     {
@@ -1186,7 +1189,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
     }
 
     public boolean containsFilterItemForGui(ItemStack stack) {
-        for (int i = 0; i < getDualSlotCountForGui(); ++i) {
+        for (int i = 0; i < SLOT_COUNT; ++i) {
             if (GTUtility.areStacksEqual(i_mark[i], stack, false)) return true;
         }
         return false;
@@ -1237,7 +1240,7 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
     }
 
     public boolean containsFilterFluidForGui(FluidStack fluid) {
-        for (int i = 0; i < getDualSlotCountForGui(); ++i) {
+        for (int i = 0; i < SLOT_COUNT; ++i) {
             if (GTUtility.areFluidsEqual(f_mark[i], fluid, false)) {
                 return true;
             }
@@ -1258,14 +1261,6 @@ public class SuperDualInputHatchME extends MTEHatchInputBus
         }
         f_stored[slot] = Math.max(1L, stackSize);
         updateInformationSlotF(slot);
-    }
-
-    public Mui2ArrayItemHandler getMui2FilterItemHandler() {
-        return mui2FilterItemHandler;
-    }
-
-    public Mui2ArrayItemHandler getMui2InformationItemHandler() {
-        return mui2InformationItemHandler;
     }
 
     public void refreshItemList() {

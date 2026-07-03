@@ -44,11 +44,6 @@ public class SuperDataAccessHatch extends MTEHatchDataAccess implements IAddGreg
     }
 
     @Override
-    protected boolean useMui2() {
-        return true;
-    }
-
-    @Override
     public int getGUIWidth() {
         return super.getGUIWidth() + 72;
     }

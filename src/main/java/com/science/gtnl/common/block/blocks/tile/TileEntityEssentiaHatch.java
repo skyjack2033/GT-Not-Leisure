@@ -1,5 +1,6 @@
 package com.science.gtnl.common.block.blocks.tile;
 
+import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
@@ -15,7 +16,9 @@ public class TileEntityEssentiaHatch extends TileEntity implements IEssentiaTran
 
     public int mState = 1;
 
+    @Getter
     private Aspect lockedAspect;
+    @Getter
     private final AspectList aspects = new AspectList();
 
     public void setLockedAspect(Aspect aspect) {
@@ -31,14 +34,6 @@ public class TileEntityEssentiaHatch extends TileEntity implements IEssentiaTran
             aspects.add(aspect, amount);
         }
         markDirty();
-    }
-
-    public Aspect getLockedAspect() {
-        return lockedAspect;
-    }
-
-    public AspectList getAspects() {
-        return aspects;
     }
 
     @Override

@@ -157,10 +157,8 @@ public class EGTWUpgradeStorage {
     }
 
     public int getTotalActiveUpgrades() {
-        return (int) unlockedUpgrades.values()
-            .stream()
-            .map(UpgradeData::isActive)
-            .count();
+        return unlockedUpgrades
+            .size();
     }
 
     public Collection<EternalGregTechWorkshopUpgrade> getAllUpgrades() {

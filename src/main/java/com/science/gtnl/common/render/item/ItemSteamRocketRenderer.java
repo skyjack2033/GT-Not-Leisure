@@ -136,11 +136,7 @@ public class ItemSteamRocketRenderer implements IItemRenderer {
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return switch (type) {
-            case ENTITY -> true;
-            case EQUIPPED -> true;
-            case EQUIPPED_FIRST_PERSON -> true;
-            case INVENTORY -> true;
-            default -> false;
+            case ENTITY, INVENTORY, EQUIPPED_FIRST_PERSON, EQUIPPED, default, default -> true;
         };
     }
 
@@ -152,16 +148,7 @@ public class ItemSteamRocketRenderer implements IItemRenderer {
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         switch (type) {
-            case EQUIPPED:
-                this.renderSpaceship(type, (RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
-                break;
-            case EQUIPPED_FIRST_PERSON:
-                this.renderSpaceship(type, (RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
-                break;
-            case INVENTORY:
-                this.renderSpaceship(type, (RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
-                break;
-            case ENTITY:
+            case EQUIPPED, ENTITY, INVENTORY, EQUIPPED_FIRST_PERSON:
                 this.renderSpaceship(type, (RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
                 break;
             default:

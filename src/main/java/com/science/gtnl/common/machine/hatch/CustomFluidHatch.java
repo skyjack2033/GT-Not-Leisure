@@ -190,11 +190,6 @@ public class CustomFluidHatch extends MTEHatch implements IAddGregtechLogo {
     }
 
     @Override
-    public boolean doesFillContainers() {
-        return false;
-    }
-
-    @Override
     public boolean doesEmptyContainers() {
         return true;
     }
@@ -225,7 +220,7 @@ public class CustomFluidHatch extends MTEHatch implements IAddGregtechLogo {
 
         ArrayList<String> desc = new ArrayList<>();
         desc.add(StatCollector.translateToLocal("HatchCustomFluid_00"));
-        desc.add(StatCollector.translateToLocal("HatchCustomFluid_01") + getCapacity() + "L");
+        desc.add(StatCollector.translateToLocal("HatchCustomFluid_01") + mFluidCapacity + "L");
         desc.add(StatCollector.translateToLocal("HatchCustomFluid_02"));
 
         for (Fluid allowed : mLockedFluids) {

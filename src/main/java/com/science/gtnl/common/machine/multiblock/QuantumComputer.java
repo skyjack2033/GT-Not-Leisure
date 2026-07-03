@@ -1260,7 +1260,7 @@ public class QuantumComputer extends MTETooltipMultiBlockBase
                 IItemList<IAEItemStack> itemList = AEApi.instance()
                     .storage()
                     .createItemList();
-                ((MECraftingInventory) cpu.getInventory()).getAvailableItems(itemList);
+                cpu.getInventory().getAvailableItems(itemList);
                 for (var stack : itemList) {
                     itemInventory.injectItems(stack, Actionable.MODULATE, s);
                 }

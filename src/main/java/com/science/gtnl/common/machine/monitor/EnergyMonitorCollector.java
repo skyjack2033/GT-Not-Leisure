@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -118,9 +119,7 @@ public class EnergyMonitorCollector {
                 rows.add(machineRow);
             }
 
-            for (EnergyMonitorRowSnapshot coverRow : createCoverRows(metaTileEntity, base)) {
-                rows.add(coverRow);
-            }
+            rows.addAll(createCoverRows(metaTileEntity, base));
         }
 
         BigInteger wirelessEnergy = WirelessNetworkManager.getUserEU(leader);
@@ -645,16 +644,13 @@ public class EnergyMonitorCollector {
 
     public static class VisibleRowsResult {
 
+        @Getter
         private final List<EnergyMonitorRowSnapshot> rows;
         private final boolean hasMoreRows;
 
         public VisibleRowsResult(List<EnergyMonitorRowSnapshot> rows, boolean hasMoreRows) {
             this.rows = rows == null ? Collections.emptyList() : rows;
             this.hasMoreRows = hasMoreRows;
-        }
-
-        public List<EnergyMonitorRowSnapshot> getRows() {
-            return rows;
         }
 
         public boolean hasMoreRows() {

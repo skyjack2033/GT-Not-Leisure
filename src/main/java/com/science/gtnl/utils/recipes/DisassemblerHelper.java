@@ -640,7 +640,7 @@ public class DisassemblerHelper {
         if (debugRecipeToRecipe == null) return builder;
 
         Optional<GTRecipe> generated = builder.build();
-        if (!generated.isPresent()) return builder;
+        if (generated.isEmpty()) return builder;
 
         GTRecipe result = generated.get();
         int index = debugIndexBumper.getAndIncrement();
@@ -761,7 +761,7 @@ public class DisassemblerHelper {
         if (debugRecipeToRecipe == null) return;
 
         Optional<GTRecipe> generated = builder.build();
-        if (!generated.isPresent()) return;
+        if (generated.isEmpty()) return;
 
         GTRecipe result = generated.get();
         int index = debugIndexBumper.getAndIncrement();

@@ -33,11 +33,6 @@ public abstract class MixinTST_OreProcessingFactory extends GTCM_MultiMachineBas
     }
 
     @Override
-    protected boolean supportsCraftingMEBuffer() {
-        return true;
-    }
-
-    @Override
     public ArrayList<FluidStack> getStoredFluidsForColor(Optional<Byte> color) {
         ArrayList<FluidStack> rList = new ArrayList<>();
         Map<Fluid, FluidStack> inputsFromME = new Object2ObjectOpenHashMap<>();
