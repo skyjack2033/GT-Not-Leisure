@@ -18,7 +18,7 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
-public class SteamEntityCrusherModule extends SteamElevatorModule {
+public class SteamEntityCrusherModule extends SteamElevatorModuleBase {
 
     public static Random random = new Random();
 

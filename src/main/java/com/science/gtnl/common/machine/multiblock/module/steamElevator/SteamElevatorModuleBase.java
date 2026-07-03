@@ -27,7 +27,7 @@ import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamElevatorModule>
+public abstract class SteamElevatorModuleBase extends SteamMultiMachineBase<SteamElevatorModuleBase>
     implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -43,13 +43,13 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
     public long steamBufferSize;
     public boolean isConnected = false;
 
-    public SteamElevatorModule(int aID, String aName, String aNameRegional, int aTier) {
+    public SteamElevatorModuleBase(int aID, String aName, String aNameRegional, int aTier) {
         super(aID, aName, aNameRegional);
         mTier = aTier;
         steamBufferSize = 640000 * (1L << aTier);
     }
 
-    public SteamElevatorModule(String aName, int aTier) {
+    public SteamElevatorModuleBase(String aName, int aTier) {
         super(aName);
         mTier = aTier;
         steamBufferSize = 640000 * (1L << aTier);
@@ -67,22 +67,22 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
     }
 
     @Override
-    public IStructureDefinition<SteamElevatorModule> getStructureDefinition() {
-        return StructureDefinition.<SteamElevatorModule>builder()
+    public IStructureDefinition<SteamElevatorModuleBase> getStructureDefinition() {
+        return StructureDefinition.<SteamElevatorModuleBase>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement(
                 'A',
                 StructureUtility.ofChain(
-                    buildSteamWirelessInput(SteamElevatorModule.class).casingIndex(getCasingTextureID())
+                    buildSteamWirelessInput(SteamElevatorModuleBase.class).casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    buildSteamBigInput(SteamElevatorModule.class).casingIndex(getCasingTextureID())
+                    buildSteamBigInput(SteamElevatorModuleBase.class).casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    buildSteamInput(SteamElevatorModule.class).casingIndex(getCasingTextureID())
+                    buildSteamInput(SteamElevatorModuleBase.class).casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    buildHatchAdder(SteamElevatorModule.class).casingIndex(getCasingTextureID())
+                    buildHatchAdder(SteamElevatorModuleBase.class).casingIndex(getCasingTextureID())
                         .hint(1)
                         .atLeast(
                             SteamHatchElement.InputBus_Steam,
@@ -127,7 +127,6 @@ public abstract class SteamElevatorModule extends SteamMultiMachineBase<SteamEle
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        checkHatch(errors);
         updateHatchTexture();
     }
 
