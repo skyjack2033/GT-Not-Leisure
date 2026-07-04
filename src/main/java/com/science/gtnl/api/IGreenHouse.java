@@ -171,8 +171,21 @@ public interface IGreenHouse extends IVoidable {
 
     default int getUsedBlockUnderCount() {
         return getStoredCrops().stream()
-            .mapToInt(crop -> crop.hasBlockUnder() ? crop.getSeedCount() : 0)
+            .mapToInt(
+                crop -> CropsNHUtils.isStackValid(crop.getBlockUnderStack()) ? crop.getBlockUnderStack().stackSize : 0)
             .sum();
+    }
+
+    default int getMissingBlockUnderCount() {
+        int missing = 0;
+        for (GreenHouseStoredCrop crop : getStoredCrops()) {
+            ISeedData seedData = CropsNHUtils.getAnalyzedSeedData(crop.getSeedStack());
+            if (seedData == null || !needsBlockUnder(seedData)) continue;
+            int blockCount = CropsNHUtils.isStackValid(crop.getBlockUnderStack()) ? crop.getBlockUnderStack().stackSize
+                : 0;
+            missing += Math.max(0, crop.getSeedCount() - blockCount);
+        }
+        return missing;
     }
 
     default CheckRecipeResult processIndustrialFarmMode() {
@@ -198,6 +211,7 @@ public interface IGreenHouse extends IVoidable {
 
     default CheckRecipeResult checkProcessingInputMode() {
         if (getMaxSeedCount() <= 0) return CheckRecipeResultRegistry.NO_RECIPE;
+        CheckRecipeResult firstFailure = CheckRecipeResultRegistry.NO_RECIPE;
         for (ItemStack input : getStoredInputs()) {
             if (CropsNHUtils.isStackInvalid(input)) continue;
             CheckRecipeResult result = tryAddCropStack(input, false);
@@ -207,9 +221,22 @@ public interface IGreenHouse extends IVoidable {
                 updateSlots();
                 return result;
             }
-            if (result != CheckRecipeResultRegistry.NO_RECIPE) return result;
+            if (result != CheckRecipeResultRegistry.NO_RECIPE && firstFailure == CheckRecipeResultRegistry.NO_RECIPE) {
+                firstFailure = result;
+            }
+
+            result = tryAddBlockUnderStack(input, false);
+            if (result.wasSuccessful()) {
+                setMaxProgressTime(5);
+                setLEUt(0);
+                updateSlots();
+                return result;
+            }
+            if (result != CheckRecipeResultRegistry.NO_RECIPE && firstFailure == CheckRecipeResultRegistry.NO_RECIPE) {
+                firstFailure = result;
+            }
         }
-        return CheckRecipeResultRegistry.NO_RECIPE;
+        return firstFailure;
     }
 
     default CheckRecipeResult tryAddCropStack(ItemStack input, boolean simulate) {
@@ -241,7 +268,6 @@ public interface IGreenHouse extends IVoidable {
         if (getStoredCrops().size() >= getMaxSeedTypes()) return SEED_TYPES_FULL;
 
         ItemStack blockUnder = findRequiredBlockUnder(seedData);
-        if (blockUnder == null && needsBlockUnder(seedData)) return BLOCK_UNDER_NOT_FOUND;
         int consume = Math.min(input.stackSize, getMaxSeedCount() - getTotalStoredCropCount());
         if (blockUnder != null) {
             int availableBlockUnders = countMatchingStacks(blockUnder, getStoredInputs());
@@ -263,6 +289,41 @@ public interface IGreenHouse extends IVoidable {
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
+    default CheckRecipeResult tryAddBlockUnderStack(ItemStack input, boolean simulate) {
+        if (CropsNHUtils.isStackInvalid(input)) return CheckRecipeResultRegistry.NO_RECIPE;
+
+        int remaining = input.stackSize;
+        boolean inserted = false;
+        for (GreenHouseStoredCrop crop : getStoredCrops()) {
+            if (remaining <= 0) break;
+            ISeedData seedData = CropsNHUtils.getAnalyzedSeedData(crop.getSeedStack());
+            if (seedData == null || !needsBlockUnder(seedData)) continue;
+            int missing = getMissingBlockUnderCount(crop);
+            if (missing <= 0) continue;
+
+            ItemStack blockUnder = crop.getBlockUnderStack();
+            if (CropsNHUtils.isStackValid(blockUnder)) {
+                if (!GTUtility.areStacksEqual(blockUnder, input, false)) continue;
+            } else {
+                if (seedData == null || !isValidBlockUnder(seedData, input)) continue;
+                if (!simulate) {
+                    blockUnder = CropsNHUtils.copyStackWithSize(input, 0);
+                    crop.setBlockUnderStack(blockUnder);
+                }
+            }
+
+            int toInsert = Math.min(remaining, missing);
+            remaining -= toInsert;
+            inserted = true;
+            if (!simulate) {
+                input.stackSize -= toInsert;
+                blockUnder.stackSize += toInsert;
+            }
+        }
+
+        return inserted ? CheckRecipeResultRegistry.SUCCESSFUL : BLOCK_UNDER_NOT_FOUND;
+    }
+
     default GreenHouseStoredCrop findStoredCrop(ItemStack input) {
         for (GreenHouseStoredCrop crop : getStoredCrops()) {
             if (crop.canStackSeeds(input)) return crop;
@@ -275,6 +336,24 @@ public interface IGreenHouse extends IVoidable {
             .getGrowthRequirements()
             .stream()
             .anyMatch(BlockUnderRequirement.class::isInstance);
+    }
+
+    default int getMissingBlockUnderCount(GreenHouseStoredCrop crop) {
+        ItemStack blockUnder = crop.getBlockUnderStack();
+        int blockCount = CropsNHUtils.isStackValid(blockUnder) ? blockUnder.stackSize : 0;
+        return Math.max(0, crop.getSeedCount() - blockCount);
+    }
+
+    default boolean isValidBlockUnder(ISeedData seedData, ItemStack blockUnder) {
+        if (CropsNHUtils.isStackInvalid(blockUnder)) return false;
+        for (IGrowthRequirement requirement : seedData.getCrop()
+            .getGrowthRequirements()) {
+            if (requirement instanceof BlockUnderRequirement blockUnderRequirement
+                && blockUnderRequirement.isValidBlockUnder(blockUnder)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     default ItemStack findRequiredBlockUnder(ISeedData seedData) {
@@ -646,9 +725,7 @@ public interface IGreenHouse extends IVoidable {
         return builder.build();
     }
 
-    @Deprecated
     default void tryChangeMode(EntityPlayer aPlayer) {
-        // TODO: Remove this legacy greenhouse mode toggle after the MUI2 machine mode path replaces it.
         if (this.getMaxProgressTime() > 0) {
             GTUtility.sendChatTrans(aPlayer, "Info_EdenGarden_Mode_Working");
             return;
@@ -666,9 +743,7 @@ public interface IGreenHouse extends IVoidable {
                 .getName());
     }
 
-    @Deprecated
     default void tryChangeSetupPhase(EntityPlayer aPlayer) {
-        // TODO: Remove this legacy setup phase toggle after greenhouse setup is fully owned by MUI2 machine modes.
         if (this.getMaxProgressTime() > 0) {
             GTUtility.sendChatTrans(aPlayer, "Info_EdenGarden_SetupPhase_Working");
             return;

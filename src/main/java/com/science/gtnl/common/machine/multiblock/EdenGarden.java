@@ -121,7 +121,7 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     public GreenHouseMode mode = GreenHouseModes.Normal;
     @Getter
     @Setter
-    public GreenHouseViewMode greenHouseViewMode = GreenHouseViewMode.SEEDS;
+    public GreenHouseViewMode greenHouseViewMode = GreenHouseViewMode.STATUS;
     @Getter
     @Setter
     public boolean useNoHumidity = false;
@@ -280,6 +280,11 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     @Override
     public boolean getPerfectOC() {
         return true;
+    }
+
+    @Override
+    public boolean supportsPowerPanel() {
+        return false;
     }
 
     @Override
@@ -678,7 +683,9 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
-        this.greenHouseViewMode = GreenHouseViewMode.fromOrdinal(aNBT.getInteger("greenHouseViewMode"));
+        this.greenHouseViewMode = aNBT.hasKey("greenHouseViewMode")
+            ? GreenHouseViewMode.fromOrdinal(aNBT.getInteger("greenHouseViewMode"))
+            : GreenHouseViewMode.STATUS;
         this.industrialFarmDropTracker = new IFDropTable(aNBT, "industrialFarmProgress");
         this.storedCrops.clear();
         NBTTagList cropListNBT = aNBT.getTagList("industrialFarmCrops", 10);
