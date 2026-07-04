@@ -36,6 +36,7 @@ import com.cleanroommc.modularui.widget.EmptyWidget;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.DynamicSyncedWidget;
+import com.cleanroommc.modularui.widgets.ListWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.gtnewhorizon.cropsnh.utility.CropsNHUtils;
 import com.gtnewhorizon.cropsnh.utility.IFDropTable;
@@ -48,6 +49,7 @@ import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseViewMode;
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.modularui2.GTWidgetThemes;
 import gregtech.api.util.GTUtility;
+import gregtech.common.modularui2.sync.Predicates;
 import gregtech.common.modularui2.widget.SlotLikeButtonWidget;
 
 public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
@@ -75,7 +77,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
     private static final int VIEW_BUTTON_WIDTH = 54;
     private static final int VIEW_BUTTON_HEIGHT = 18;
 
-    private final SteamGreenhouseModule steamGreenhouse;
+    private final SteamGreenhouseModule multiblock;
     private DynamicSyncHandler cropInventoryWidgetSyncer;
     private GenericListSyncHandler<CropSlot> cropSlotSyncer;
     private IntSyncValue usedSeedCountSyncer;
@@ -85,14 +87,14 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
     public SteamGreenhouseModuleGui(SteamGreenhouseModule multiblock) {
         super(multiblock);
-        this.steamGreenhouse = multiblock;
+        this.multiblock = multiblock;
     }
 
     @Override
     public ModularPanel build(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
         uiSettings.customContainer(
             () -> new GreenHouseModularContainer(
-                steamGreenhouse,
+                multiblock,
                 VIEW_MODE_SYNC_KEY,
                 CROP_SLOT_LIST_SYNC_KEY,
                 CROP_SLOT_WIDGET_SYNC_KEY,
@@ -118,13 +120,12 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         super.registerSyncValues(syncManager);
 
         IntSyncValue viewModeSyncer = new IntSyncValue(
-            () -> steamGreenhouse.getGreenHouseViewMode()
+            () -> multiblock.getGreenHouseViewMode()
                 .ordinal(),
-            value -> steamGreenhouse.setGreenHouseViewMode(GreenHouseViewMode.fromOrdinalWithoutBlocks(value)))
-                .allowC2S();
+            value -> multiblock.setGreenHouseViewMode(GreenHouseViewMode.fromOrdinalWithoutBlocks(value))).allowC2S();
         syncManager.syncValue(VIEW_MODE_SYNC_KEY, viewModeSyncer);
-        syncManager.syncValue(MAX_SEED_COUNT_SYNC_KEY, new IntSyncValue(steamGreenhouse::getMaxSeedCount));
-        usedSeedCountSyncer = new IntSyncValue(steamGreenhouse::getTotalStoredCropCount);
+        syncManager.syncValue(MAX_SEED_COUNT_SYNC_KEY, new IntSyncValue(multiblock::getMaxSeedCount));
+        usedSeedCountSyncer = new IntSyncValue(multiblock::getTotalStoredCropCount);
         syncManager.syncValue(USED_SEED_COUNT_SYNC_KEY, usedSeedCountSyncer);
         cropClickSyncer = new IntSyncValue(() -> 0, this::handleCropSlotClick).allowC2S();
         syncManager.syncValue(CROP_SLOT_CLICK_SYNC_KEY, cropClickSyncer);
@@ -169,10 +170,10 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
                 createTerminalTextWidget(syncManager, panel).size(TERMINAL_TEXT_WIDTH, TERMINAL_TEXT_HEIGHT)
                     .collapseDisabledChild())
             .childIf(
-                steamGreenhouse.supportsTerminalRightCornerColumn(),
+                multiblock.supportsTerminalRightCornerColumn(),
                 () -> createTerminalRightCornerColumn(panel, syncManager))
             .childIf(
-                steamGreenhouse.supportsTerminalLeftCornerColumn(),
+                multiblock.supportsTerminalLeftCornerColumn(),
                 () -> createTerminalLeftCornerColumn(panel, syncManager))
             .setEnabledIf(
                 widget -> GreenHouseViewMode.fromOrdinalWithoutBlocks(viewModeSyncer.getIntValue())
@@ -209,6 +210,11 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
                     .coverChildrenWidth()
                     .fullHeight()
                     .child(createBlockInsertionSlotButton(syncManager)));
+    }
+
+    @Override
+    protected ListWidget<IWidget, ?> createTerminalTextWidget(PanelSyncManager syncManager, ModularPanel parent) {
+        return super.createTerminalTextWidget(syncManager, parent).child(createProgressTextWidget(syncManager));
     }
 
     private Flow createMachineModeRow(PanelSyncManager syncManager) {
@@ -267,7 +273,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
             storedSeedCount += cropSlot.seedStack().stackSize;
             buttons.add(createCropSlotButton(cropSlot.index(), cropSlot.seedStack(), syncManager));
         }
-        if (viewMode == GreenHouseViewMode.SEEDS && storedSeedCount < steamGreenhouse.getMaxSeedCount()) {
+        if (viewMode == GreenHouseViewMode.SEEDS && storedSeedCount < multiblock.getMaxSeedCount()) {
             buttons.add(createInsertionSlotButton(syncManager));
         }
 
@@ -309,6 +315,9 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
                     SLOT_SIZE,
                     SLOT_SIZE,
                     Alignment.BottomRight);
+                if (!multiblock.isGreenHouseStorageEditable()) {
+                    GuiDraw.drawRect(0, 0, SLOT_SIZE, SLOT_SIZE, 0x80000000);
+                }
             }
         }.size(SLOT_SIZE, SLOT_SIZE);
     }
@@ -350,11 +359,12 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
                     blockClickSyncer.setIntValue(encodeBlockInsertionClick(mouseButton), true, true);
                     return true;
                 })
-                .tooltipBuilder(
-                    tooltip -> tooltip
-                        .addLine(IKey.str(EnumChatFormatting.DARK_GREEN + getBlockInsertionTooltip(syncManager))))
+                .tooltipBuilder(tooltip -> {
+                    tooltip.setAutoUpdate(true);
+                    tooltip.addLine(IKey.str(EnumChatFormatting.DARK_GREEN + getBlockInsertionTooltip(syncManager)));
+                })
                 .tooltipShowUpTimer(TOOLTIP_DELAY)
-                .marginRight(2);
+                .marginRight(0);
     }
 
     private int encodeCropSlotClick(int cropIndex, int mouseButton) {
@@ -371,8 +381,8 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
     private void handleCropSlotClick(int encoded) {
         if (encoded == 0 || mainSyncManager == null || mainSyncManager.isClient()) return;
-        if (!steamGreenhouse.isGreenHouseStorageEditable()) return;
-        if (steamGreenhouse.getGreenHouseViewMode() != GreenHouseViewMode.SEEDS) return;
+        if (!multiblock.isGreenHouseStorageEditable()) return;
+        if (multiblock.getGreenHouseViewMode() != GreenHouseViewMode.SEEDS) return;
 
         int mouseButton = (encoded >>> 1) & 0x3;
         boolean shift = (encoded & 1) != 0;
@@ -382,9 +392,9 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         }
 
         int cropIndex = (encoded >>> 3) - 1;
-        if (cropIndex < 0 || cropIndex >= steamGreenhouse.getStoredCrops()
+        if (cropIndex < 0 || cropIndex >= multiblock.getStoredCrops()
             .size()) return;
-        GreenHouseStoredCrop crop = steamGreenhouse.getStoredCrops()
+        GreenHouseStoredCrop crop = multiblock.getStoredCrops()
             .get(cropIndex);
         if (crop == null || CropsNHUtils.isStackInvalid(crop.getSeedStack())) return;
         if (mouseButton == 2) {
@@ -405,7 +415,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
     private void handleBlockSlotClick(int encoded) {
         if (encoded == 0 || mainSyncManager == null || mainSyncManager.isClient()) return;
-        if (!steamGreenhouse.isGreenHouseStorageEditable()) return;
+        if (!multiblock.isGreenHouseStorageEditable()) return;
 
         int mouseButton = (encoded >>> 1) & 0x3;
         boolean shift = (encoded & 1) != 0;
@@ -425,7 +435,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         ItemStack stackToInsert = singleItem ? cursorStack.copy() : cursorStack;
         if (singleItem) stackToInsert.stackSize = 1;
         int before = stackToInsert.stackSize;
-        steamGreenhouse.tryAddBlockUnderStack(stackToInsert, false);
+        multiblock.tryAddBlockUnderStack(stackToInsert, false);
         int inserted = before - stackToInsert.stackSize;
         if (inserted <= 0) return;
         if (singleItem) {
@@ -495,22 +505,32 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
     }
 
     private ItemStack removeSeedStack(int cropIndex) {
-        if (cropIndex < 0 || cropIndex >= steamGreenhouse.getStoredCrops()
+        if (cropIndex < 0 || cropIndex >= multiblock.getStoredCrops()
             .size()) return null;
-        GreenHouseStoredCrop crop = steamGreenhouse.getStoredCrops()
+        GreenHouseStoredCrop crop = multiblock.getStoredCrops()
             .get(cropIndex);
-        ItemStack removed = crop.removeSeeds(
-            crop.getSeedStack()
-                .getMaxStackSize());
+        int removable = getRemovableSeedCount(crop);
+        if (removable <= 0) return null;
+        ItemStack removed = crop.removeSeeds(removable);
         if (crop.getSeedCount() <= 0) {
-            steamGreenhouse.getStoredCrops()
+            multiblock.getStoredCrops()
                 .remove(cropIndex);
         }
         return removed;
     }
 
+    private int getRemovableSeedCount(GreenHouseStoredCrop crop) {
+        if (crop == null || CropsNHUtils.isStackInvalid(crop.getSeedStack())) return 0;
+        int removable = crop.getSeedStack()
+            .getMaxStackSize();
+        if (CropsNHUtils.isStackInvalid(crop.getBlockUnderStack())) return removable;
+        int pairedSeedCount = Math.min(crop.getSeedCount(), crop.getBlockUnderStack().stackSize);
+        removable = Math.min(removable, crop.getSeedCount() - pairedSeedCount);
+        return Math.max(0, removable);
+    }
+
     private ItemStack removeFirstBlockStack() {
-        for (GreenHouseStoredCrop crop : steamGreenhouse.getStoredCrops()) {
+        for (GreenHouseStoredCrop crop : multiblock.getStoredCrops()) {
             if (CropsNHUtils.isStackInvalid(crop.getBlockUnderStack())) continue;
             return crop.removeBlockUnders(
                 crop.getBlockUnderStack()
@@ -523,7 +543,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         ItemStack stackToInsert = singleItem ? cursorStack.copy() : cursorStack;
         if (singleItem) stackToInsert.stackSize = 1;
         int before = stackToInsert.stackSize;
-        steamGreenhouse.tryAddCropStack(stackToInsert, false);
+        multiblock.tryAddCropStack(stackToInsert, false);
         int inserted = before - stackToInsert.stackSize;
         if (inserted <= 0) return;
         if (singleItem) {
@@ -601,13 +621,25 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
     private String getBlockInsertionTooltip(PanelSyncManager syncManager) {
         ItemStack stack = getBlockInsertionStack(syncManager);
         if (CropsNHUtils.isStackInvalid(stack)) {
-            return "Missing block-under capacity: " + getMissingBlockUnderCount(syncManager);
+            return "Missing block-under capacity: " + getBlockInsertionCount(syncManager);
         }
         return "Stored block-under: " + getBlockInsertionCount(syncManager);
     }
 
+    private IWidget createProgressTextWidget(PanelSyncManager syncManager) {
+        IntSyncValue progressTimeSyncer = syncManager.findSyncHandler("progressTime", IntSyncValue.class);
+        return IKey.dynamic(multiblock::generateCurrentRecipeInfoString)
+            .asWidget()
+            .fullWidth()
+            .marginBottom(2)
+            .setEnabledIf(
+                widget -> progressTimeSyncer.getIntValue() > 0
+                    && !Predicates.isNonEmptyList(syncManager.getSyncHandlerFromMapKey("itemOutput:0"))
+                    && !Predicates.isNonEmptyList(syncManager.getSyncHandlerFromMapKey("fluidOutput:0")));
+    }
+
     private void writeCropInventoryWidgetState(PacketBuffer buffer) throws IOException {
-        GreenHouseViewMode viewMode = steamGreenhouse.getGreenHouseViewMode()
+        GreenHouseViewMode viewMode = multiblock.getGreenHouseViewMode()
             .withoutBlocks();
         List<CropSlot> cropSlots = createCropSlots();
         buffer.writeVarIntToBuffer(viewMode.ordinal());
@@ -643,9 +675,9 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
     private List<CropSlot> createCropSlots() {
         List<CropSlot> slots = new ArrayList<>();
-        for (int i = 0; i < steamGreenhouse.getStoredCrops()
+        for (int i = 0; i < multiblock.getStoredCrops()
             .size(); i++) {
-            GreenHouseStoredCrop crop = steamGreenhouse.getStoredCrops()
+            GreenHouseStoredCrop crop = multiblock.getStoredCrops()
                 .get(i);
             if (crop == null || CropsNHUtils.isStackInvalid(crop.getSeedStack())) continue;
             ItemStack seed = crop.getSeedStack()
@@ -653,7 +685,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
             boolean needsBlockUnder = false;
             var seedData = CropsNHUtils.getAnalyzedSeedData(crop.getSeedStack());
             if (seedData != null) {
-                needsBlockUnder = steamGreenhouse.needsBlockUnder(seedData);
+                needsBlockUnder = multiblock.needsBlockUnder(seedData);
             }
             ItemStack blockUnder = CropsNHUtils.isStackValid(crop.getBlockUnderStack()) ? crop.getBlockUnderStack()
                 .copy() : null;
@@ -664,7 +696,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
 
     private List<DropEntry> createDropEntries() {
         List<DropEntry> entries = new ArrayList<>();
-        IFDropTable tracker = steamGreenhouse.getIndustrialFarmGuiDropTracker();
+        IFDropTable tracker = multiblock.getIndustrialFarmGuiDropTracker();
         for (Map.Entry<ItemStack, Double> drop : tracker.entrySet()) {
             entries.add(
                 new DropEntry(
@@ -685,7 +717,7 @@ public class SteamGreenhouseModuleGui extends GTNLSteamMultiBlockBaseGui {
         for (DropEntry entry : entries) {
             tracker.addDrop(entry.stack(), entry.chance());
         }
-        steamGreenhouse.setIndustrialFarmGuiDropTracker(tracker);
+        multiblock.setIndustrialFarmGuiDropTracker(tracker);
     }
 
     @SuppressWarnings("unchecked")

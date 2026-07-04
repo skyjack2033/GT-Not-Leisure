@@ -36,6 +36,7 @@ import com.cleanroommc.modularui.widget.EmptyWidget;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.DynamicSyncedWidget;
+import com.cleanroommc.modularui.widgets.ListWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.gtnewhorizon.cropsnh.utility.CropsNHUtils;
 import com.gtnewhorizon.cropsnh.utility.IFDropTable;
@@ -47,6 +48,7 @@ import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseViewMode;
 
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.modularui2.GTWidgetThemes;
+import gregtech.common.modularui2.sync.Predicates;
 import gregtech.common.modularui2.widget.SlotLikeButtonWidget;
 
 public class EdenGardenGui extends GTNLMultiBlockBaseGui<EdenGarden> {
@@ -197,6 +199,11 @@ public class EdenGardenGui extends GTNLMultiBlockBaseGui<EdenGarden> {
             .child(createMachineModeRow(syncManager));
     }
 
+    @Override
+    protected ListWidget<IWidget, ?> createTerminalTextWidget(PanelSyncManager syncManager, ModularPanel parent) {
+        return super.createTerminalTextWidget(syncManager, parent).child(createProgressTextWidget(syncManager));
+    }
+
     private Flow createMachineModeRow(PanelSyncManager syncManager) {
         return Flow.row()
             .coverChildrenWidth()
@@ -318,6 +325,9 @@ public class EdenGardenGui extends GTNLMultiBlockBaseGui<EdenGarden> {
                     SLOT_SIZE,
                     SLOT_SIZE,
                     Alignment.BottomRight);
+                if (!multiblock.isGreenHouseStorageEditable()) {
+                    GuiDraw.drawRect(0, 0, SLOT_SIZE, SLOT_SIZE, 0x80000000);
+                }
             }
         }.size(SLOT_SIZE, SLOT_SIZE);
     }
@@ -357,11 +367,13 @@ public class EdenGardenGui extends GTNLMultiBlockBaseGui<EdenGarden> {
                 blockClickSyncer.setIntValue(encodeBlockInsertionClick(mouseButton), true, true);
                 return true;
             })
-            .tooltipBuilder(
-                tooltip -> tooltip.addLine(
+            .tooltipBuilder(tooltip -> {
+                tooltip.setAutoUpdate(true);
+                tooltip.addLine(
                     IKey.str(
                         EnumChatFormatting.DARK_GREEN + "Missing block-under capacity: "
-                            + getMissingBlockUnderCount(syncManager))))
+                            + getMissingBlockUnderCount(syncManager)));
+            })
             .tooltipShowUpTimer(TOOLTIP_DELAY);
     }
 
@@ -518,14 +530,24 @@ public class EdenGardenGui extends GTNLMultiBlockBaseGui<EdenGarden> {
             .size()) return null;
         GreenHouseStoredCrop crop = multiblock.getStoredCrops()
             .get(cropIndex);
-        ItemStack removed = crop.removeSeeds(
-            crop.getSeedStack()
-                .getMaxStackSize());
+        int removable = getRemovableSeedCount(crop);
+        if (removable <= 0) return null;
+        ItemStack removed = crop.removeSeeds(removable);
         if (crop.getSeedCount() <= 0) {
             multiblock.getStoredCrops()
                 .remove(cropIndex);
         }
         return removed;
+    }
+
+    private int getRemovableSeedCount(GreenHouseStoredCrop crop) {
+        if (crop == null || CropsNHUtils.isStackInvalid(crop.getSeedStack())) return 0;
+        int removable = crop.getSeedStack()
+            .getMaxStackSize();
+        if (CropsNHUtils.isStackInvalid(crop.getBlockUnderStack())) return removable;
+        int pairedSeedCount = Math.min(crop.getSeedCount(), crop.getBlockUnderStack().stackSize);
+        removable = Math.min(removable, crop.getSeedCount() - pairedSeedCount);
+        return Math.max(0, removable);
     }
 
     private ItemStack removeBlockStack(int cropIndex) {
@@ -613,6 +635,18 @@ public class EdenGardenGui extends GTNLMultiBlockBaseGui<EdenGarden> {
             .stream()
             .mapToInt(CropSlot::missingBlockUnderCount)
             .sum();
+    }
+
+    private IWidget createProgressTextWidget(PanelSyncManager syncManager) {
+        IntSyncValue progressTimeSyncer = syncManager.findSyncHandler("progressTime", IntSyncValue.class);
+        return IKey.dynamic(multiblock::generateCurrentRecipeInfoString)
+            .asWidget()
+            .fullWidth()
+            .marginBottom(2)
+            .setEnabledIf(
+                widget -> progressTimeSyncer.getIntValue() > 0
+                    && !Predicates.isNonEmptyList(syncManager.getSyncHandlerFromMapKey("itemOutput:0"))
+                    && !Predicates.isNonEmptyList(syncManager.getSyncHandlerFromMapKey("fluidOutput:0")));
     }
 
     private void writeCropInventoryWidgetState(PacketBuffer buffer) throws IOException {

@@ -147,6 +147,26 @@ public interface IGreenHouse extends IVoidable {
 
     double getGreenHouseOutputMultiplier();
 
+    default int getSimulatedWaterStorage(ISeedData seedData) {
+        return SIMULATED_WATER_STORAGE;
+    }
+
+    default int getSimulatedFertilizerStorage(ISeedData seedData) {
+        return SIMULATED_FERTILIZER_STORAGE_WHEN_FERTILIZER_PROVIDED;
+    }
+
+    default boolean canSimulateSkyAccess(ISeedData seedData) {
+        return SIMULATED_CAN_SEE_SKY;
+    }
+
+    default double getCropDropChanceMultiplier(ISeedData seedData) {
+        return 1.0d;
+    }
+
+    default double getDropTableChance(ISeedData seedData, ItemStack stack, int baseChance) {
+        return baseChance / 10_000d;
+    }
+
     default boolean supportsGreenHouseConfigurationPanel() {
         return false;
     }
@@ -535,9 +555,9 @@ public interface IGreenHouse extends IVoidable {
         return TileEntityCropSticks.getNutrientsPerCycle(
             likedBiomes,
             biome.rainfall,
-            SIMULATED_CAN_SEE_SKY,
-            SIMULATED_WATER_STORAGE,
-            SIMULATED_FERTILIZER_STORAGE_WHEN_FERTILIZER_PROVIDED);
+            canSimulateSkyAccess(seedData),
+            getSimulatedWaterStorage(seedData),
+            getSimulatedFertilizerStorage(seedData));
     }
 
     default int getGrowthSpeedUnscaled(ISeedData seedData) {
@@ -582,6 +602,7 @@ public interface IGreenHouse extends IVoidable {
             seedData.getCrop(),
             seedData.getStats()
                 .getGain());
+        avgDropCount *= getCropDropChanceMultiplier(seedData);
         avgDropCount *= getHarvestRoundMultiplier();
 
         IFDropTable drops = new IFDropTable();
@@ -589,7 +610,7 @@ public interface IGreenHouse extends IVoidable {
             .getDropTable()
             .entrySet()) {
             ItemStack stack = entry.getKey();
-            double chance = entry.getValue() / 10_000d;
+            double chance = getDropTableChance(seedData, stack, entry.getValue());
             double unscaled = (stack.stackSize + avgDropIncrease) * chance * avgDropCount;
             drops.addDrop(stack, unscaled * progressPerCycle);
         }

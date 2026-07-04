@@ -593,7 +593,12 @@ public class SteamGreenhouseModule extends SteamElevatorModuleBase implements IG
 
     @Override
     public double getGreenHouseOutputMultiplier() {
-        return 1.0d;
+        return 1.5d;
+    }
+
+    @Override
+    public double getCropDropChanceMultiplier(ISeedData seedData) {
+        return 1.5d;
     }
 
     @Override

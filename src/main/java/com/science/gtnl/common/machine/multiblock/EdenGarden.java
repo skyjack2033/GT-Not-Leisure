@@ -95,6 +95,7 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
     private static final int HORIZONTAL_OFF_SET = 6;
     private static final int VERTICAL_OFF_SET = 43;
     private static final int DEPTH_OFF_SET = 10;
+    private static final int WATER_PER_SEED = 1000;
     private static final UITexture[] MODE_ICONS = { GTGuiTextures.OVERLAY_BUTTON_ALLOW_INPUT,
         GTGuiTextures.OVERLAY_BUTTON_CYCLIC, GTGuiTextures.OVERLAY_BUTTON_ALLOW_OUTPUT };
 
@@ -317,7 +318,8 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
 
     @Override
     public int getWaterUsage() {
-        return 2000;
+        long waterUsage = (long) getTotalStoredCropCount() * WATER_PER_SEED;
+        return waterUsage > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) waterUsage;
     }
 
     @Override
@@ -383,7 +385,20 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
 
     @Override
     public double getGreenHouseOutputMultiplier() {
-        return 5.0d;
+        return 20.0d;
+    }
+
+    @Override
+    public double getCropDropChanceMultiplier(ISeedData seedData) {
+        return 1.0d + 6.0d / Math.max(
+            1,
+            seedData.getCrop()
+                .getTier());
+    }
+
+    @Override
+    public double getDropTableChance(ISeedData seedData, ItemStack stack, int baseChance) {
+        return 1.0d;
     }
 
     @Override
