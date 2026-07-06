@@ -107,6 +107,7 @@ import com.science.gtnl.common.machine.multiblock.QuantumComputer;
 import com.science.gtnl.common.machine.multiblock.RareEarthCentrifugal;
 import com.science.gtnl.common.machine.multiblock.ReactionFurnace;
 import com.science.gtnl.common.machine.multiblock.RealArtificialStar;
+import com.science.gtnl.common.machine.multiblock.ResearchCenter;
 import com.science.gtnl.common.machine.multiblock.ResourceCollectionModule;
 import com.science.gtnl.common.machine.multiblock.ShallowChemicalCoupling;
 import com.science.gtnl.common.machine.multiblock.SingularityDataHub;
@@ -2477,6 +2478,16 @@ public class MachineLoader {
                 14));
         AnimatedTooltipHandler
             .addItemTooltip(GTNLItemList.DebugResearchStation.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
+
+        GTNLItemList.ResearchCenter.set(
+            new ResearchCenter(
+                GTNLMachineID.RESEARCH_CENTER.ID,
+                "ResearchCenter",
+                StatCollector.translateToLocal("NameResearchCenter")));
+        AnimatedTooltipHandler.addItemTooltip(
+            GTNLItemList.ResearchCenter.get(1),
+            () -> StatCollector.translateToLocal("Tooltip_ResearchStation_00"));
+        AnimatedTooltipHandler.addItemTooltip(GTNLItemList.ResearchCenter.get(1), AnimatedText.SCIENCE_NOT_LEISURE);
 
         GTNLItemList.SuperInputBusME.set(
             new SuperInputBusME(

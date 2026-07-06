@@ -946,6 +946,19 @@ Tooltip_DieselGenerator_02=Fluid capacity: %sL
 
 DebugResearchStation=Debug Research Station
 Tooltip_DebugResearchStation_00=Immediately scans Research Station recipes, requires no energy
+NameResearchCenter=Research center
+ResearchCenterRecipeType=Research Station / Scanner
+Tooltip_ResearchCenter_00=Has 4 parallels
+Tooltip_ResearchCenter_01=Research Station mode is not limited by minimum computation input; each parallel can use the full computation
+Tooltip_ResearchCenter_02=Has 4 research target filter slots, each slot corresponds to one parallel
+Tooltip_ResearchCenter_03=Scanner mode is equivalent to a Debug Scanner
+Tooltip_ResearchCenter_Casing=Any Radiant Naquadah Alloy Machine Casing
+Tooltip_ResearchCenter_Structure_00=113x Any Tier Glass
+Tooltip_ResearchCenter_Structure_01=682x Advanced Iridium Plated Machine Casing
+Tooltip_ResearchCenter_Structure_02=232x Radiant Naquadah Alloy Machine Casing
+Tooltip_ResearchCenter_Structure_03=335x Stabilized Naquadah Water Plant Machine Casing
+Tooltip_ResearchCenter_Structure_04=4x Steel Bars
+Tooltip_ResearchCenter_Structure_05=36x Neonite
 
 Replicator=Replicator
 Enchanting=Enchanting
