@@ -26,6 +26,7 @@ import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.cleanroommc.modularui.widgets.slot.ModularSlot;
+import com.cleanroommc.modularui.widgets.slot.SlotGroup;
 import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
 import com.science.gtnl.api.IControllerUpgrade;
 import com.science.gtnl.common.gui.GTNLMui2Textures;
@@ -47,6 +48,7 @@ public class GTNLControllerUpgradePanels {
     private static final int COST_CELL_WIDTH = 36;
     private static final int BUTTON_SIZE = 18;
     private static final int PANEL_MARGIN = 5;
+    private static final int UPGRADE_INPUT_SHIFT_CLICK_PRIORITY = SlotGroup.STORAGE_SLOT_PRIO - 1;
 
     private final MTEMultiBlockBase multiblock;
     private final IControllerUpgrade controllerUpgrade;
@@ -65,8 +67,7 @@ public class GTNLControllerUpgradePanels {
             syncManager.syncedPanel(
                 UPGRADE_CURRENT_PANEL_KEY,
                 true,
-                (panelSyncManager,
-                    panelHandler) -> createUpgradePanel(parent, syncManager, panelSyncManager, panelHandler, 0)));
+                (panelSyncManager, panelHandler) -> createUpgradePanel(parent, syncManager, panelSyncManager, 0)));
 
         int maxPreviewLevel = controllerUpgrade.getMaxPreviewUpgradeLevel();
         for (int level = 1; level <= maxPreviewLevel; level++) {
@@ -77,12 +78,8 @@ public class GTNLControllerUpgradePanels {
                 syncManager.syncedPanel(
                     panelKey,
                     true,
-                    (panelSyncManager, panelHandler) -> createUpgradePanel(
-                        parent,
-                        syncManager,
-                        panelSyncManager,
-                        panelHandler,
-                        previewLevel)));
+                    (panelSyncManager,
+                        panelHandler) -> createUpgradePanel(parent, syncManager, panelSyncManager, previewLevel)));
         }
     }
 
@@ -122,7 +119,7 @@ public class GTNLControllerUpgradePanels {
     }
 
     protected ModularPanel createUpgradePanel(ModularPanel parent, PanelSyncManager rootSyncManager,
-        PanelSyncManager panelSyncManager, IPanelHandler panelHandler, int previewLevel) {
+        PanelSyncManager panelSyncManager, int previewLevel) {
         boolean previewMode = previewLevel > 0;
         ItemStack[] upgradeItems = getUpgradeItems(previewLevel);
         int costColumns = Math.max(1, Math.min(upgradeItems.length, controllerUpgrade.getUpgradeCostItemsPerRow()));
@@ -155,7 +152,7 @@ public class GTNLControllerUpgradePanels {
             panel.child(
                 createInputGrid(panelSyncManager, inputColumns, inputRows)
                     .pos(PANEL_MARGIN + costColumns * COST_CELL_WIDTH, 6));
-            panel.child(createConsumeButton(panelHandler, rootSyncManager, width).pos(10, height - 26));
+            panel.child(createConsumeButton(rootSyncManager, width).pos(10, height - 26));
         }
 
         int costGridWidth = costColumns * COST_CELL_WIDTH;
@@ -224,7 +221,7 @@ public class GTNLControllerUpgradePanels {
     private Grid createInputGrid(PanelSyncManager syncManager, int columns, int rows) {
         ItemStackHandler inputHandler = controllerUpgrade.getUpgradeInputSlotHandler();
         GTNLMui2ItemHandlerAdapter adapter = new GTNLMui2ItemHandlerAdapter(inputHandler);
-        syncManager.registerSlotGroup("gtnl_upgrade_input", rows);
+        syncManager.registerSlotGroup("gtnl_upgrade_input", rows, UPGRADE_INPUT_SHIFT_CLICK_PRIORITY);
 
         return new Grid().coverChildren()
             .gridOfWidthHeight(columns, rows, (x, y, index) -> {
@@ -235,8 +232,7 @@ public class GTNLControllerUpgradePanels {
             });
     }
 
-    private ButtonWidget<?> createConsumeButton(IPanelHandler panelHandler, PanelSyncManager rootSyncManager,
-        int panelWidth) {
+    private ButtonWidget<?> createConsumeButton(PanelSyncManager rootSyncManager, int panelWidth) {
         BooleanSyncValue upgradeConsumedSyncer = rootSyncManager
             .findSyncHandler(UPGRADE_CONSUMED_SYNC_KEY, BooleanSyncValue.class);
         NBTTagSyncHandler paidCostsSyncer = getPaidCostsSyncer(rootSyncManager, 0);
@@ -250,7 +246,6 @@ public class GTNLControllerUpgradePanels {
                 if (baseMetaTileEntity == null || !baseMetaTileEntity.isServerSide()) return;
                 if (controllerUpgrade.tryConsumeItems()) {
                     controllerUpgrade.setUpgradeConsumed(true);
-                    panelHandler.closePanel();
                 }
                 paidCostsSyncer.notifyUpdate();
                 upgradeConsumedSyncer.setBoolValue(controllerUpgrade.isUpgradeConsumed(), false, true);
