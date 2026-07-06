@@ -10,7 +10,6 @@ import com.google.common.collect.HashBiMap;
 import com.science.gtnl.ScienceNotLeisure;
 
 import bartworks.common.configs.Configuration;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import galacticgreg.api.ModDimensionDef;
 import galacticgreg.registry.GalacticGregRegistry;
@@ -25,8 +24,7 @@ public class VMTweakHelper {
     public static final BiMap<Integer, String> DIM_MAPPING = HashBiMap.create();
     public static final Int2ObjectOpenHashMap<String> CACHE = new Int2ObjectOpenHashMap<>();
 
-    @SubscribeEvent
-    public void onModLoadingComplete(FMLLoadCompleteEvent event) {
+    public static void initializeDimensionMappings() {
         DIM_MAPPING.forcePut(0, "Ow");
         DIM_MAPPING.forcePut(-1, "Ne");
         DIM_MAPPING.forcePut(1, "ED");
