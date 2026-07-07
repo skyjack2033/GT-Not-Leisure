@@ -79,25 +79,27 @@ public class OutputBusMEProxy extends MTEHatchOutputBusME {
         IWailaConfigHandler config) {
         int originalSize = currenttip.size();
         super.getWailaBody(itemStack, currenttip, accessor, config);
-        replacePowerStateWithLinkState(currenttip, originalSize);
+        replacePowerStateWithLinkState(currenttip, originalSize, accessor);
         String linkedTarget = getWailaLinkedTarget(accessor);
         if (linkedTarget != null) {
             currenttip.add(Math.min(originalSize + 2, currenttip.size()), linkedTarget);
         }
     }
 
-    private void replacePowerStateWithLinkState(List<String> currenttip, int originalSize) {
+    private void replacePowerStateWithLinkState(List<String> currenttip, int originalSize,
+        IWailaDataAccessor accessor) {
         int powerStateIndex = Math.min(originalSize + 1, currenttip.size());
         if (currenttip.size() > powerStateIndex) {
             currenttip.remove(powerStateIndex);
         }
 
-        currenttip.add(powerStateIndex, getWailaLinkState());
+        currenttip.add(powerStateIndex, getWailaLinkState(accessor));
     }
 
-    private String getWailaLinkState() {
-        return StatCollector
-            .translateToLocal(masterSet ? "Waila_OutputMEProxy_Linked" : "Waila_OutputMEProxy_Unlinked");
+    private String getWailaLinkState(IWailaDataAccessor accessor) {
+        boolean linked = accessor.getNBTData()
+            .hasKey("master");
+        return StatCollector.translateToLocal(linked ? "Waila_OutputMEProxy_Linked" : "Waila_OutputMEProxy_Unlinked");
     }
 
     private String getWailaLinkedTarget(IWailaDataAccessor accessor) {
