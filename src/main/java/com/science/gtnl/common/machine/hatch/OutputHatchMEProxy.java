@@ -11,8 +11,10 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.science.gtnl.api.mixinHelper.IOutputME;
+import com.science.gtnl.api.mixinHelper.IOutputMEProviderTransfer;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.storage.data.IAEFluidStack;
@@ -21,6 +23,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTUtil;
 import gregtech.common.tileentities.machines.outputme.MTEHatchOutputME;
+import gregtech.common.tileentities.machines.outputme.filter.MEFilterFluid;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -59,22 +62,15 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
     }
 
     public void flushCachedStack() {
-        IOutputME output = (IOutputME) this;
         MTEHatchOutputME outputHatch = getMaster();
         if (outputHatch == null) {
             return;
         }
-        if (outputHatch.canAcceptFluid()) {
-            List<IAEFluidStack> fluidCache = output.getFluidCache();
-
-            for (IAEFluidStack stack : fluidCache) {
-                if (stack != null && stack.getStackSize() > 0) {
-                    outputHatch.getProvider()
-                        .storeToCache(stack.copy());
-                }
-            }
-
-            fluidCache.forEach(stack -> stack.setStackSize(0));
+        @SuppressWarnings("unchecked")
+        IOutputMEProviderTransfer<IAEFluidStack, MEFilterFluid, FluidStack> transferProvider = (IOutputMEProviderTransfer<IAEFluidStack, MEFilterFluid, FluidStack>) getProvider();
+        if (transferProvider.gtnl$transferCacheTo(outputHatch.getProvider())) {
+            markDirty();
+            outputHatch.markDirty();
         }
     }
 

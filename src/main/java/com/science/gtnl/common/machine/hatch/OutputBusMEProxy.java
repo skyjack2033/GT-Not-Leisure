@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import com.science.gtnl.api.mixinHelper.IOutputME;
+import com.science.gtnl.api.mixinHelper.IOutputMEProviderTransfer;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.storage.data.IAEItemStack;
@@ -21,6 +22,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTUtil;
 import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
+import gregtech.common.tileentities.machines.outputme.filter.MEFilterItem;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -172,17 +174,15 @@ public class OutputBusMEProxy extends MTEHatchOutputBusME {
 
     public void flushCachedStack() {
         MTEHatchOutputBusME outputBus = getMaster();
-        if (outputBus == null || !outputBus.canAcceptAnyItem()) {
+        if (outputBus == null) {
             return;
         }
-        for (IAEItemStack stack : getProvider().getCacheList()) {
-            if (stack != null && stack.getStackSize() > 0) {
-                outputBus.getProvider()
-                    .storeToCache(stack.copy());
-            }
+        @SuppressWarnings("unchecked")
+        IOutputMEProviderTransfer<IAEItemStack, MEFilterItem, ItemStack> transferProvider = (IOutputMEProviderTransfer<IAEItemStack, MEFilterItem, ItemStack>) getProvider();
+        if (transferProvider.gtnl$transferCacheTo(outputBus.getProvider())) {
+            markDirty();
+            outputBus.markDirty();
         }
-        getProvider().getCacheList()
-            .forEach(cachedStack -> cachedStack.setStackSize(0));
     }
 
     public MTEHatchOutputBusME getMaster() {

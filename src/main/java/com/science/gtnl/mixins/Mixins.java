@@ -131,6 +131,7 @@ public enum Mixins implements IMixins {
             "gregtech.MixinMTEBetterJukebox",
             "gregtech.MixinMTEForgeOfGods",
             "gregtech.MixinMTEHatch",
+            "gregtech.MixinMTEHatchOutputMEBase",
             "gregtech.MixinMTEHatchOutputBusME",
             "gregtech.MixinMTEHatchOutputME",
             "gregtech.MixinMTEHatchAirIntake",
