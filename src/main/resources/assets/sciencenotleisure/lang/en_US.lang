@@ -771,6 +771,10 @@ Tooltip_OutputBusMEProxy_04=Change ME connection behavior by right-clicking with
 Tooltip_OutputBusMEProxy_05=Partition the inserted Storage Cell to filter accepted outputs
 Tooltip_OutputBusMEProxy_06=Use data stick to link target Output Bus (ME)
 
+Waila_OutputMEProxy_Linked=§aThe device is linked§r
+Waila_OutputMEProxy_Unlinked=§cThe device is unlinked§r
+Waila_OutputMEProxy_Target=Linked to Output at 
+
 OutputHatchMEProxy=Output Hatch Proxy (ME)
 Tooltip_OutputHatchMEProxy_00=Fluid Output for Multiblocks
 Tooltip_OutputHatchMEProxy_01=Stores directly into ME

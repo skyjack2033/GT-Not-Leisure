@@ -93,26 +93,47 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
     @Override
     public void getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
+        int originalSize = currenttip.size();
+        super.getWailaBody(itemStack, currenttip, accessor, config);
+        replacePowerStateWithLinkState(currenttip, originalSize);
+        String linkedTarget = getWailaLinkedTarget(accessor);
+        if (linkedTarget != null) {
+            currenttip.add(Math.min(originalSize + 2, currenttip.size()), linkedTarget);
+        }
+    }
+
+    private void replacePowerStateWithLinkState(List<String> currenttip, int originalSize) {
+        int powerStateIndex = Math.min(originalSize + 1, currenttip.size());
+        if (currenttip.size() > powerStateIndex) {
+            currenttip.remove(powerStateIndex);
+        }
+
+        currenttip.add(powerStateIndex, getWailaLinkState());
+    }
+
+    private String getWailaLinkState() {
+        return StatCollector
+            .translateToLocal(masterSet ? "Waila_OutputMEProxy_Linked" : "Waila_OutputMEProxy_Unlinked");
+    }
+
+    private String getWailaLinkedTarget(IWailaDataAccessor accessor) {
         NBTTagCompound tag = accessor.getNBTData();
         if (tag.hasKey("master")) {
             NBTTagCompound masterNBT = tag.getCompoundTag("master");
-            currenttip.add(
-                EnumChatFormatting.AQUA + "Linked to Output at "
-                    + EnumChatFormatting.WHITE
-                    + "[Dim "
-                    + masterNBT.getInteger("masterDim")
-                    + "] "
-                    + masterNBT.getInteger("masterX")
-                    + ", "
-                    + masterNBT.getInteger("masterY")
-                    + ", "
-                    + masterNBT.getInteger("masterZ")
-                    + EnumChatFormatting.RESET);
-        } else {
-            currenttip.add(EnumChatFormatting.AQUA + "Unlinked");
+            return EnumChatFormatting.AQUA + StatCollector.translateToLocal("Waila_OutputMEProxy_Target")
+                + EnumChatFormatting.WHITE
+                + "[Dim "
+                + masterNBT.getInteger("masterDim")
+                + "] "
+                + masterNBT.getInteger("masterX")
+                + ", "
+                + masterNBT.getInteger("masterY")
+                + ", "
+                + masterNBT.getInteger("masterZ")
+                + EnumChatFormatting.RESET;
         }
 
-        super.getWailaBody(itemStack, currenttip, accessor, config);
+        return null;
     }
 
     @Override

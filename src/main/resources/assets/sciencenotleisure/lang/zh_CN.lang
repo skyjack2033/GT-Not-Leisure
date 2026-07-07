@@ -771,6 +771,10 @@ Tooltip_OutputBusMEProxy_04=手持剪线钳右键以改变仓室与ME网络的�
 Tooltip_OutputBusMEProxy_05=对插入的存储元件进行分区以对可接受的输出进行过滤
 Tooltip_OutputBusMEProxy_06=使用闪存链接到目标输出总线(ME)
 
+Waila_OutputMEProxy_Linked=§a设备已链接§r
+Waila_OutputMEProxy_Unlinked=§c设备未链接§r
+Waila_OutputMEProxy_Target=链接到输出仓位置 
+
 OutputHatchMEProxy=输出仓镜像(ME)
 Tooltip_OutputHatchMEProxy_00=从多方块机器输出流体
 Tooltip_OutputHatchMEProxy_01=直接存储到ME系统
