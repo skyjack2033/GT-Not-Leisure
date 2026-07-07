@@ -35,6 +35,8 @@ import tectech.thing.metaTileEntity.multi.godforge.util.ForgeOfGodsData;
 
 public class FOGSolarMuonCatalystModule extends MTEBaseModule implements IFOGModule {
 
+    public static final BigInteger BIG_LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
+
     public long EUt = 0;
     public int currentParallel = 0;
     public long wirelessEUt = 0;
@@ -68,9 +70,14 @@ public class FOGSolarMuonCatalystModule extends MTEBaseModule implements IFOGMod
                 }
 
                 wirelessEUt = (long) recipe.mEUt * getActualParallel();
-                if (WirelessNetworkManager.getUserEU(userUUID)
-                    .compareTo(BigInteger.valueOf(wirelessEUt * recipe.mDuration)) < 0) {
-                    return CheckRecipeResultRegistry.insufficientPower(wirelessEUt * recipe.mDuration);
+                var totalEU = BigInteger.valueOf(wirelessEUt)
+                    .multiply(BigInteger.valueOf(recipe.mDuration));
+                if (WirelessNetworkManager.getUserEU(userUUID).compareTo(totalEU) < 0) {
+                    return CheckRecipeResultRegistry.insufficientPower(
+                        totalEU.compareTo(BIG_LONG_MAX) > 0
+                            ? Long.MAX_VALUE
+                            : totalEU.longValue()
+                    );
                 }
 
                 if (recipe.getMetadataOrDefault(SolorMuonCatalystMetadata.INSTANCE, false) && !isAllUpgrade()) {
