@@ -72,12 +72,10 @@ public class FOGSolarMuonCatalystModule extends MTEBaseModule implements IFOGMod
                 wirelessEUt = (long) recipe.mEUt * getActualParallel();
                 var totalEU = BigInteger.valueOf(wirelessEUt)
                     .multiply(BigInteger.valueOf(recipe.mDuration));
-                if (WirelessNetworkManager.getUserEU(userUUID).compareTo(totalEU) < 0) {
-                    return CheckRecipeResultRegistry.insufficientPower(
-                        totalEU.compareTo(BIG_LONG_MAX) > 0
-                            ? Long.MAX_VALUE
-                            : totalEU.longValue()
-                    );
+                if (WirelessNetworkManager.getUserEU(userUUID)
+                    .compareTo(totalEU) < 0) {
+                    return CheckRecipeResultRegistry
+                        .insufficientPower(totalEU.compareTo(BIG_LONG_MAX) > 0 ? Long.MAX_VALUE : totalEU.longValue());
                 }
 
                 if (recipe.getMetadataOrDefault(SolorMuonCatalystMetadata.INSTANCE, false) && !isAllUpgrade()) {
