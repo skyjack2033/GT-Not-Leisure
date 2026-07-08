@@ -826,7 +826,7 @@ public class AssemblingLineRecipes implements IRecipePool {
             51200,
             (int) TierEU.RECIPE_UV,
             1,
-            new Object[] { ItemRegistry.voidminer[2].copy(), ItemList.OilDrillInfinite.get(1),
+            new Object[] { ItemRegistry.voidminer[2].copy(), ItemList.InfiniteFluidDrillingRig.get(1),
                 ItemList.Robot_Arm_UV.get(4), MaterialsAlloy.STELLITE.getGear(16), ItemList.Conveyor_Module_UV.get(4),
                 new Object[] { OrePrefixes.circuit.get(Materials.UHV), 4 },
                 GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUV, 4),
@@ -1809,12 +1809,12 @@ public class AssemblingLineRecipes implements IRecipePool {
             .addTo(AL);
 
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            ItemList.OilDrillInfinite.get(1),
+            ItemList.InfiniteFluidDrillingRig.get(1),
             2560000,
             4096,
             (int) TierEU.RECIPE_UIV,
             1,
-            new Object[] { ItemList.OilDrillInfinite.get(64), ItemList.PlanetaryGasSiphonController.get(64),
+            new Object[] { ItemList.InfiniteFluidDrillingRig.get(64), ItemList.PlanetaryGasSiphonController.get(64),
                 ItemRefer.HiC_T5.get(16), ItemList.Electric_Pump_UEV.get(32),
                 CustomItemList.enderLinkFluidCover.get(32),
                 GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.Infinity, 32),

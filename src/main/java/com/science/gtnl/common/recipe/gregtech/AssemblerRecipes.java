@@ -1100,7 +1100,7 @@ public class AssemblerRecipes implements IRecipePool {
         RecipeBuilder.builder()
             .itemInputs(
                 GTUtility.getIntegratedCircuit(17),
-                ItemList.PyrolyseOven.get(1),
+                ItemList.PyrolyzeOven.get(1),
                 ItemList.Field_Generator_HV.get(2L),
                 GTOreDictUnificator.get(OrePrefixes.pipeHuge, Materials.StainlessSteel, 2L),
                 GTOreDictUnificator.get(OrePrefixes.plateDouble, Materials.StainlessSteel, 4L))

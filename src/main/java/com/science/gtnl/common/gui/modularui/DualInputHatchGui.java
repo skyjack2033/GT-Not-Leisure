@@ -1,12 +1,11 @@
 package com.science.gtnl.common.gui.modularui;
 
-import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.drawable.UITexture;
-import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
-import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.value.sync.FluidSlotSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widget.ParentWidget;
+import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import com.cleanroommc.modularui.widgets.slot.FluidSlot;
 import com.cleanroommc.modularui.widgets.slot.ItemSlot;
@@ -14,7 +13,6 @@ import com.science.gtnl.common.gui.GTNLMui2Textures;
 import com.science.gtnl.common.machine.hatch.DualInputHatch;
 
 import gregtech.api.modularui2.GTGuiTextures;
-import gregtech.api.modularui2.GTGuis;
 import gregtech.common.gui.modularui.hatch.base.MTEHatchBaseGui;
 import gregtech.common.modularui2.widget.builder.ItemSlotGridBuilder;
 
@@ -27,43 +25,50 @@ public class DualInputHatchGui extends MTEHatchBaseGui<DualInputHatch> {
     }
 
     @Override
-    public ModularPanel build(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
-        registerSyncValues(syncManager);
-        ModularPanel panel = GTGuis.mteTemplatePanelBuilder(machine, guiData, syncManager, uiSettings)
-            .setWidth(machine.getGUIWidth())
-            .setHeight(machine.getGUIHeight())
-            .doesAddGregTechLogo(false)
-            .build();
-
+    protected int getBasePanelWidth() {
         SlotLayout layout = SlotLayout.of(machine);
-        addItemSlots(panel, syncManager, layout);
-        addFluidSlots(panel, layout);
-        panel.child(createLogo());
-        return panel;
-    }
-
-    public void addItemSlots(ModularPanel panel, PanelSyncManager syncManager, SlotLayout layout) {
-        Grid itemSlots = new ItemSlotGridBuilder(machine.inventoryHandler, syncManager)
-            .size(layout.itemColumns, layout.itemRows)
-            .slotGroupKey(ITEM_SLOT_GROUP)
-            .itemSlotSupplier(() -> new ItemSlot().background(GTGuiTextures.SLOT_ITEM_STANDARD))
-            .build();
-
-        panel.child(itemSlots.pos(layout.centerX + 5, layout.centerY));
-    }
-
-    public void addFluidSlots(ModularPanel panel, SlotLayout layout) {
-        for (int i = 0; i < machine.getFluidTanksForGui().length; i++) {
-            panel.child(
-                new FluidSlot().syncHandler(new FluidSlotSyncHandler(machine.getFluidTanksForGui()[i]))
-                    .pos(layout.centerX + 18 * layout.itemColumns + 5, layout.centerY + i * 18));
-        }
+        return super.getBasePanelWidth() + Math.max(0, SLOT_SIZE * (layout.totalColumns() - 9));
     }
 
     @Override
-    protected IDrawable.DrawableWidget createLogo() {
-        return new IDrawable.DrawableWidget(getLogoTexture()).size(SLOT_SIZE)
-            .pos(machine.getCircuitSlotX() - 1, machine.getCircuitSlotY() + SLOT_SIZE);
+    protected int getBasePanelHeight() {
+        SlotLayout layout = SlotLayout.of(machine);
+        return super.getBasePanelHeight() + (layout.visibleRows() > 4 ? (layout.visibleRows() - 3) * SLOT_SIZE : 0);
+    }
+
+    @Override
+    protected ParentWidget<?> createContentSection(ModularPanel panel, PanelSyncManager syncManager) {
+        SlotLayout layout = SlotLayout.of(machine);
+        return super.createContentSection(panel, syncManager).child(createSlotGroup(syncManager, layout).center());
+    }
+
+    public Flow createSlotGroup(PanelSyncManager syncManager, SlotLayout layout) {
+        return Flow.row()
+            .coverChildren()
+            .child(createItemSlots(syncManager, layout))
+            .child(createFluidSlots(layout));
+    }
+
+    public Grid createItemSlots(PanelSyncManager syncManager, SlotLayout layout) {
+        return new ItemSlotGridBuilder(machine.inventoryHandler, syncManager).size(layout.itemColumns, layout.itemRows)
+            .slotGroupKey(ITEM_SLOT_GROUP)
+            .itemSlotSupplier(() -> new ItemSlot().background(GTGuiTextures.SLOT_ITEM_STANDARD))
+            .build();
+    }
+
+    public Grid createFluidSlots(SlotLayout layout) {
+        return new Grid().coverChildren()
+            .gridOfWidthHeight(
+                1,
+                layout.fluidRows,
+                ($x, $y, index) -> new FluidSlot()
+                    .syncHandler(new FluidSlotSyncHandler(machine.getFluidTanksForGui()[index])));
+    }
+
+    @Override
+    protected boolean supportsBottomRowOverlap() {
+        return SlotLayout.of(machine)
+            .visibleRows() <= 4;
     }
 
     @Override
@@ -71,14 +76,21 @@ public class DualInputHatchGui extends MTEHatchBaseGui<DualInputHatch> {
         return GTNLMui2Textures.PICTURE_GTNL_LOGO;
     }
 
-    public record SlotLayout(int itemColumns, int itemRows, int centerX, int centerY) {
+    public record SlotLayout(int itemColumns, int itemRows, int fluidRows) {
 
         public static SlotLayout of(DualInputHatch hatch) {
             int itemColumns = Math.max(1, hatch.mTier);
             int itemRows = Math.max(1, hatch.mTier);
-            int totalWidth = 9 * itemColumns + 36;
-            int totalHeight = 5 * itemRows + 81;
-            return new SlotLayout(itemColumns, itemRows, (176 - totalWidth) / 2, (166 - totalHeight) / 2);
+            int fluidRows = hatch.getFluidTanksForGui().length;
+            return new SlotLayout(itemColumns, itemRows, fluidRows);
+        }
+
+        public int totalColumns() {
+            return itemColumns + (fluidRows > 0 ? 1 : 0);
+        }
+
+        public int visibleRows() {
+            return Math.max(itemRows, fluidRows);
         }
     }
 }
