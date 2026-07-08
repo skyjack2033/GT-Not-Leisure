@@ -109,15 +109,15 @@ public class MixerRecipes implements IRecipePool {
 
         RecipeBuilder.builder()
             .itemInputs(
-                ItemList.Machine_Multi_BlastFurnace.get(6),
-                GregtechItemList.Industrial_Sifter.get(3),
-                ItemList.Distillation_Tower.get(2),
+                ItemList.Machine_Multi_BlastFurnace.get(8),
+                ItemList.LargeSifter.get(3),
+                ItemList.Distillation_Tower.get(4),
                 ItemList.LargeFluidExtractor.get(1),
-                ItemList.Machine_Mass_Solidifier.get(2),
+                ItemList.Machine_Mass_Solidifier.get(1),
                 GregtechItemList.Controller_IndustrialFluidHeater.get(1),
-                GregtechItemList.Industrial_Electrolyzer.get(4),
-                GregtechItemList.Industrial_Mixer.get(3),
-                ItemList.Machine_Multi_LargeChemicalReactor.get(25))
+                ItemList.IndustrialElectrolyzer.get(4),
+                GregtechItemList.Industrial_Mixer.get(2),
+                ItemList.Machine_Multi_LargeChemicalReactor.get(15))
             .itemOutputs(GTNLItemList.PlatinumBasedTreatment.get(1))
             .fluidInputs(
                 MaterialsAlloy.MARAGING250.getFluidStack(288),
