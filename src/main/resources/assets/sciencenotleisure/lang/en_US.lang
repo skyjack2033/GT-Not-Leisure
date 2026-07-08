@@ -160,6 +160,8 @@ gtnl.gui.config.general.recipe.enableshowdelrecipetitle=Show Recipe Deletion Tit
 gtnl.gui.config.general.recipe.enableshowdelrecipetitle.tooltip=Display a large on-screen title notification regarding deleted recipes when the player joins.
 gtnl.gui.config.general.recipe.enablesomethingrecipe=Add Extra Recipes
 gtnl.gui.config.general.recipe.enablesomethingrecipe.tooltip=Enable various "cheap" convenience recipes.
+gtnl.gui.config.general.recipe.enableshimmerdisassemblyrecipes=Enable Shimmer Disassembly Recipes
+gtnl.gui.config.general.recipe.enableshimmerdisassemblyrecipes.tooltip=Generate Shimmer conversions from reversible disassembly recipes.
 gtnl.gui.config.general.recipe.enableshimmerfakerecipeinnei=Register Shimmer Fake Recipes in NEI
 gtnl.gui.config.general.recipe.enableshimmerfakerecipeinnei.tooltip=Register generated Shimmer fake recipes in NEI while keeping actual Shimmer conversions active.
 
@@ -240,6 +242,9 @@ Info_SteamNetwork_02=User §9%s§7 is currently in the network of §9%s§7.
 Info_VoltageChanceBonus_00=Voltage Chance Bonus: §3%s%% §7(Voltage Tier: %s, Recipe Voltage Tier: %s)
 
 Info_Dimension_Override=Dimension Override: 
+vmtweak.gui.override.error=Dimension override has no void miner ore data.
+vmtweak.gui.override.failed=Dimension override failed; using this machine's current dimension.
+vmtweak.gui.filter.no_ores=No void miner ores are available for this dimension.
 
 CleanroomMetadata.0=Requires Cleanroom Environment
 CleanroomMetadata.1=Requires Sterile Environment
@@ -766,6 +771,10 @@ Tooltip_OutputBusMEProxy_04=Change ME connection behavior by right-clicking with
 Tooltip_OutputBusMEProxy_05=Partition the inserted Storage Cell to filter accepted outputs
 Tooltip_OutputBusMEProxy_06=Use data stick to link target Output Bus (ME)
 
+Waila_OutputMEProxy_Linked=§aThe device is linked§r
+Waila_OutputMEProxy_Unlinked=§cThe device is unlinked§r
+Waila_OutputMEProxy_Target=Linked to Output at 
+
 OutputHatchMEProxy=Output Hatch Proxy (ME)
 Tooltip_OutputHatchMEProxy_00=Fluid Output for Multiblocks
 Tooltip_OutputHatchMEProxy_01=Stores directly into ME
@@ -941,6 +950,19 @@ Tooltip_DieselGenerator_02=Fluid capacity: %sL
 
 DebugResearchStation=Debug Research Station
 Tooltip_DebugResearchStation_00=Immediately scans Research Station recipes, requires no energy
+NameResearchCenter=Research center
+ResearchCenterRecipeType=Research Station / Scanner
+Tooltip_ResearchCenter_00=Has 4 parallels
+Tooltip_ResearchCenter_01=Research Station mode is not limited by minimum computation input; each parallel can use the full computation
+Tooltip_ResearchCenter_02=Has 4 research target filter slots, each slot corresponds to one parallel
+Tooltip_ResearchCenter_03=Scanner mode is equivalent to a Debug Scanner
+Tooltip_ResearchCenter_Casing=Any Radiant Naquadah Alloy Machine Casing
+Tooltip_ResearchCenter_Structure_00=113x Any Tier Glass
+Tooltip_ResearchCenter_Structure_01=682x Advanced Iridium Plated Machine Casing
+Tooltip_ResearchCenter_Structure_02=232x Radiant Naquadah Alloy Machine Casing
+Tooltip_ResearchCenter_Structure_03=335x Stabilized Naquadah Water Plant Machine Casing
+Tooltip_ResearchCenter_Structure_04=4x Steel Bars
+Tooltip_ResearchCenter_Structure_05=36x Neonite
 
 Replicator=Replicator
 Enchanting=Enchanting

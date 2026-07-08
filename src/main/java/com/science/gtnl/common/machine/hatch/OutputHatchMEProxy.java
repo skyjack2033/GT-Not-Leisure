@@ -11,8 +11,10 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.science.gtnl.api.mixinHelper.IOutputME;
+import com.science.gtnl.api.mixinHelper.IOutputMEProviderTransfer;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.storage.data.IAEFluidStack;
@@ -21,6 +23,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTUtil;
 import gregtech.common.tileentities.machines.outputme.MTEHatchOutputME;
+import gregtech.common.tileentities.machines.outputme.filter.MEFilterFluid;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -59,22 +62,15 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
     }
 
     public void flushCachedStack() {
-        IOutputME output = (IOutputME) this;
         MTEHatchOutputME outputHatch = getMaster();
         if (outputHatch == null) {
             return;
         }
-        if (outputHatch.canAcceptFluid()) {
-            List<IAEFluidStack> fluidCache = output.getFluidCache();
-
-            for (IAEFluidStack stack : fluidCache) {
-                if (stack != null && stack.getStackSize() > 0) {
-                    outputHatch.getProvider()
-                        .storeToCache(stack.copy());
-                }
-            }
-
-            fluidCache.forEach(stack -> stack.setStackSize(0));
+        @SuppressWarnings("unchecked")
+        IOutputMEProviderTransfer<IAEFluidStack, MEFilterFluid, FluidStack> transferProvider = (IOutputMEProviderTransfer<IAEFluidStack, MEFilterFluid, FluidStack>) getProvider();
+        if (transferProvider.gtnl$transferCacheTo(outputHatch.getProvider())) {
+            markDirty();
+            outputHatch.markDirty();
         }
     }
 
@@ -97,26 +93,49 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
     @Override
     public void getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
+        int originalSize = currenttip.size();
+        super.getWailaBody(itemStack, currenttip, accessor, config);
+        replacePowerStateWithLinkState(currenttip, originalSize, accessor);
+        String linkedTarget = getWailaLinkedTarget(accessor);
+        if (linkedTarget != null) {
+            currenttip.add(Math.min(originalSize + 2, currenttip.size()), linkedTarget);
+        }
+    }
+
+    private void replacePowerStateWithLinkState(List<String> currenttip, int originalSize,
+        IWailaDataAccessor accessor) {
+        int powerStateIndex = Math.min(originalSize + 1, currenttip.size());
+        if (currenttip.size() > powerStateIndex) {
+            currenttip.remove(powerStateIndex);
+        }
+
+        currenttip.add(powerStateIndex, getWailaLinkState(accessor));
+    }
+
+    private String getWailaLinkState(IWailaDataAccessor accessor) {
+        boolean linked = accessor.getNBTData()
+            .hasKey("master");
+        return StatCollector.translateToLocal(linked ? "Waila_OutputMEProxy_Linked" : "Waila_OutputMEProxy_Unlinked");
+    }
+
+    private String getWailaLinkedTarget(IWailaDataAccessor accessor) {
         NBTTagCompound tag = accessor.getNBTData();
         if (tag.hasKey("master")) {
             NBTTagCompound masterNBT = tag.getCompoundTag("master");
-            currenttip.add(
-                EnumChatFormatting.AQUA + "Linked to Output at "
-                    + EnumChatFormatting.WHITE
-                    + "[Dim "
-                    + masterNBT.getInteger("masterDim")
-                    + "] "
-                    + masterNBT.getInteger("masterX")
-                    + ", "
-                    + masterNBT.getInteger("masterY")
-                    + ", "
-                    + masterNBT.getInteger("masterZ")
-                    + EnumChatFormatting.RESET);
-        } else {
-            currenttip.add(EnumChatFormatting.AQUA + "Unlinked");
+            return EnumChatFormatting.AQUA + StatCollector.translateToLocal("Waila_OutputMEProxy_Target")
+                + EnumChatFormatting.WHITE
+                + "[Dim "
+                + masterNBT.getInteger("masterDim")
+                + "] "
+                + masterNBT.getInteger("masterX")
+                + ", "
+                + masterNBT.getInteger("masterY")
+                + ", "
+                + masterNBT.getInteger("masterZ")
+                + EnumChatFormatting.RESET;
         }
 
-        super.getWailaBody(itemStack, currenttip, accessor, config);
+        return null;
     }
 
     @Override

@@ -101,7 +101,7 @@ public class EyeOfHarmonyInjectorStatusPanel {
             syncManager.syncedPanel(
                 STATUS_PANEL_KEY,
                 true,
-                (panelSyncManager, panelHandler) -> createStatusPanel(parent, panelSyncManager, panelHandler)));
+                (panelSyncManager, panelHandler) -> createStatusPanel(parent, syncManager, panelHandler)));
     }
 
     public IWidget createStatusPanelButton(IPanelHandler statusPanel) {
@@ -124,7 +124,7 @@ public class EyeOfHarmonyInjectorStatusPanel {
             .tooltipShowUpTimer(TOOLTIP_DELAY);
     }
 
-    private ModularPanel createStatusPanel(ModularPanel parent, PanelSyncManager syncManager,
+    private ModularPanel createStatusPanel(ModularPanel parent, PanelSyncManager rootSyncManager,
         IPanelHandler panelHandler) {
         statusPanelHandler = panelHandler;
         Dialog<?> panel = new Dialog<>(STATUS_PANEL_KEY, null);
@@ -143,7 +143,7 @@ public class EyeOfHarmonyInjectorStatusPanel {
                 .textAlign(Alignment.Center)
                 .pos(5, 10)
                 .size(PANEL_WIDTH - 10, 8));
-        panel.child(createDynamicLinkedUnitsWidget(syncManager, panelHandler));
+        panel.child(createDynamicLinkedUnitsWidget(rootSyncManager, panelHandler));
         return panel;
     }
 

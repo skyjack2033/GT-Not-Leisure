@@ -1182,6 +1182,7 @@ public enum GTNLItemList implements IItemContainer {
     SuperInputBusME,
     AdvancedSuperInputBusME,
     DebugResearchStation,
+    ResearchCenter,
     ExplosionDynamoHatch,
     AutoConfigurationMaintenanceHatch,
     SterileConfigurationMaintenanceHatch,

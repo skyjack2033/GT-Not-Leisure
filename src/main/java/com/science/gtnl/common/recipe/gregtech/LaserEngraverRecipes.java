@@ -141,7 +141,7 @@ public class LaserEngraverRecipes implements IRecipePool {
             TierEU.RECIPE_IV);
 
         oreRecipeWithPurifiedWater(
-            new Object[] { new OreDictItemStack("craftingLensBlack", 0), GTNLItemList.HighlyAdvancedSocWafer.get(1) },
+            new Object[] { new OreDictItemStack("craftingLensBlack", 0), GTNLItemList.NeutroniumWafer.get(1) },
             new ItemStack[] { GTNLItemList.HighlyAdvancedSocWafer.get(1) },
             Materials.Grade5PurifiedWater,
             Materials.Grade6PurifiedWater,

@@ -131,6 +131,7 @@ public enum Mixins implements IMixins {
             "gregtech.MixinMTEBetterJukebox",
             "gregtech.MixinMTEForgeOfGods",
             "gregtech.MixinMTEHatch",
+            "gregtech.MixinMTEHatchOutputMEBase",
             "gregtech.MixinMTEHatchOutputBusME",
             "gregtech.MixinMTEHatchOutputME",
             "gregtech.MixinMTEHatchAirIntake",
@@ -146,8 +147,6 @@ public enum Mixins implements IMixins {
             "gregtech.MixinMTEMultiBlockBase",
             "gregtech.MixinMTEMultiBlockBaseRecipeProcessing",
             "gregtech.MixinMTETreeFarm",
-            "gregtech.MixinMTEVoidMinerBase",
-            "gregtech.MixinMTEVoidMiners",
             "gregtech.MixinProcessingLogic",
             "gregtech.MixinRecipeGenFluids",
             "gregtech.MixinProcessingDust",
@@ -167,6 +166,15 @@ public enum Mixins implements IMixins {
             "appliedEnergistics.assembler.MixinGuiMEMonitorable",
             "appliedEnergistics.assembler.MixinGuiPatternTerm")
         .setPhase(Phase.LATE)),
+
+    VOID_MINER_TWEAK(new MixinBuilder("Void Miner Tweak compatibility mixins")
+        .addCommonMixins(
+            "gregtech.MixinMTEVoidMinerBase",
+            "gregtech.MixinMTEVoidMinerBaseGui",
+            "gregtech.MixinMTEVoidMiners")
+        .setPhase(Phase.LATE)
+        .setApplyIf(() -> MainConfig.machine.enableVoidMinerTweak)
+        .addExcludedMod(ModList.VMTweak)),
 
     GREGTECH_MAIN_FACING(new MixinBuilder().addCommonMixins("gregtech.MixinMTEBasicMachineFacing")
         .setPhase(Phase.LATE)

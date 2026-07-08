@@ -6,11 +6,21 @@ import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
 import gregtech.api.util.GTUtility;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusOutput;
 
-@Mixin(value = MTEHatchSteamBusOutput.class)
+@Mixin(value = MTEHatchSteamBusOutput.class, remap = false)
 public abstract class MixinMTEHatchSteamBusOutput extends MTEHatchOutputBus {
 
     public MixinMTEHatchSteamBusOutput(int aID, String aName, String aNameRegional, int aTier) {
         super(aID, aName, aNameRegional, aTier);
+    }
+
+    @Override
+    public boolean pushOutputInventory() {
+        return true;
+    }
+
+    @Override
+    public boolean isFiltered() {
+        return isLocked();
     }
 
     @Override
