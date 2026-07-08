@@ -14,12 +14,14 @@ import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.utils.Alignment;
+import com.cleanroommc.modularui.value.sync.IntSyncValue;
 import com.cleanroommc.modularui.value.sync.LongSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import com.science.gtnl.api.mixinHelper.IPurificationUnitLongParallel;
+import com.science.gtnl.api.mixinHelper.IWirelessMode;
 import com.science.gtnl.config.MainConfig;
 
 import gregtech.api.modularui2.GTGuiTextures;
@@ -34,6 +36,9 @@ public abstract class MixinMTEPurificationUnitBaseGui extends MTEMultiBlockBaseG
     private static final String GTNL_LONG_PARALLEL_SYNC_KEY = "gtnlMaximumParallelsLong";
 
     @Unique
+    private static final String GTNL_PARALLEL_SYNC_KEY = "maximumParallels";
+
+    @Unique
     private static final int GTNL_LONG_PARALLEL_PANEL_WIDTH = 158;
 
     @Unique
@@ -41,6 +46,15 @@ public abstract class MixinMTEPurificationUnitBaseGui extends MTEMultiBlockBaseG
 
     @Unique
     private static final int GTNL_LONG_PARALLEL_PANEL_PADDING = 4;
+
+    @Unique
+    private static final int GTNL_PARALLEL_PANEL_WIDTH = 120;
+
+    @Unique
+    private static final int GTNL_PARALLEL_PANEL_HEIGHT = 50;
+
+    @Unique
+    private static final int GTNL_PARALLEL_PANEL_PADDING = 4;
 
     @Unique
     private long gtnl$fallbackMaxParallelLong = 1;
@@ -62,6 +76,25 @@ public abstract class MixinMTEPurificationUnitBaseGui extends MTEMultiBlockBaseG
         CallbackInfoReturnable<IWidget> cir) {
         if (!MainConfig.machine.enablePurificationPlantBuff) return;
 
+        if (!gtnl$isWirelessMode()) {
+            IPanelHandler parallelSelectPanel = syncManager.syncedPanel(
+                "parallelSelectPanel",
+                true,
+                (panelSyncManager, syncHandler) -> gtnl$openStandardParallelSelectPanel(syncManager, parent));
+
+            cir.setReturnValue(
+                new ButtonWidget<>().overlay(GTGuiTextures.OVERLAY_BUTTON_BATCH_MODE_ON)
+                    .tooltip(t -> {
+                        t.addLine(translateToLocal("GT5U.tpm.parallelwindow"));
+                        t.addLine(translateToLocal("Tooltip_PurificationUnit_NotWirelessMode"));
+                    })
+                    .onMousePressed(mouseButton -> {
+                        parallelSelectPanel.togglePanel();
+                        return true;
+                    }));
+            return;
+        }
+
         IPanelHandler parallelSelectPanel = syncManager.syncedPanel(
             "parallelSelectPanel",
             true,
@@ -74,6 +107,33 @@ public abstract class MixinMTEPurificationUnitBaseGui extends MTEMultiBlockBaseG
                     parallelSelectPanel.togglePanel();
                     return true;
                 }));
+    }
+
+    @Unique
+    private ModularPanel gtnl$openStandardParallelSelectPanel(PanelSyncManager syncManager, ModularPanel parent) {
+        ModularPanel panel = new ModularPanel("parallelSelectPanel")
+            .size(GTNL_PARALLEL_PANEL_WIDTH, GTNL_PARALLEL_PANEL_HEIGHT)
+            .relative(parent)
+            .leftRel(1)
+            .topRel(0.8f);
+
+        IntSyncValue parallelSyncer = syncManager.findSyncHandler(GTNL_PARALLEL_SYNC_KEY, IntSyncValue.class);
+        Flow column = Flow.column()
+            .full()
+            .paddingTop(4);
+        column.child(
+            IKey.lang("GTPP.CC.parallel")
+                .asWidget()
+                .marginBottom(4));
+        column.child(
+            new TextFieldWidget().formatAsInteger(true)
+                .numbersInt(1, Integer.MAX_VALUE)
+                .setTextAlignment(Alignment.CENTER)
+                .defaultNumber(1)
+                .value(parallelSyncer)
+                .size(GTNL_PARALLEL_PANEL_WIDTH - GTNL_PARALLEL_PANEL_PADDING * 2, 18));
+
+        return panel.child(column);
     }
 
     @Unique
@@ -103,6 +163,11 @@ public abstract class MixinMTEPurificationUnitBaseGui extends MTEMultiBlockBaseG
                 .size(GTNL_LONG_PARALLEL_PANEL_WIDTH - GTNL_LONG_PARALLEL_PANEL_PADDING * 2, 18));
 
         return panel.child(column);
+    }
+
+    @Unique
+    private boolean gtnl$isWirelessMode() {
+        return multiblock instanceof IWirelessMode wirelessMode && wirelessMode.isGtnl$wirelessMode();
     }
 
     @Unique
