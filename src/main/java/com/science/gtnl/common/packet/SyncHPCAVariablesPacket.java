@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
@@ -8,15 +10,12 @@ import net.minecraft.world.World;
 
 import com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan.HighPerformanceComputationArray;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import io.netty.buffer.ByteBuf;
 
-public class SyncHPCAVariablesPacket implements IMessage, IMessageHandler<SyncHPCAVariablesPacket, IMessage> {
+public class SyncHPCAVariablesPacket extends ClientboundPacket {
 
     private UUID uuid;
     private int totalLens;
@@ -35,7 +34,7 @@ public class SyncHPCAVariablesPacket implements IMessage, IMessageHandler<SyncHP
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeLong(uuid.getMostSignificantBits());
         buf.writeLong(uuid.getLeastSignificantBits());
         buf.writeInt(totalLens);
@@ -46,7 +45,7 @@ public class SyncHPCAVariablesPacket implements IMessage, IMessageHandler<SyncHP
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         long most = buf.readLong();
         long least = buf.readLong();
         uuid = new UUID(most, least);
@@ -58,10 +57,8 @@ public class SyncHPCAVariablesPacket implements IMessage, IMessageHandler<SyncHP
     }
 
     @Override
-    public IMessage onMessage(SyncHPCAVariablesPacket message, MessageContext ctx) {
-        if (ctx.side.isServer()) return null;
-        apply(message.x, message.y, message.z, message.uuid, message.totalLens, message.mMachine);
-        return null;
+    public void handleClient(Minecraft minecraft) {
+        apply(x, y, z, uuid, totalLens, mMachine);
     }
 
     @SideOnly(Side.CLIENT)

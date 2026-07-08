@@ -1,6 +1,8 @@
 package com.science.gtnl.common.packet;
 
-import net.minecraft.entity.player.EntityPlayer;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -9,29 +11,15 @@ import net.minecraft.nbt.NBTTagList;
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
 import com.reavaritia.common.items.InfinityElytra;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import ganymedes01.etfuturum.api.elytra.IElytraPlayer;
 import ganymedes01.etfuturum.entities.EntityBoostingFireworkRocket;
-import io.netty.buffer.ByteBuf;
 
-public class ElytraBoostPacket implements IMessage, IMessageHandler<ElytraBoostPacket, IMessage> {
+public class ElytraBoostPacket extends ServerboundPacket {
 
     private static final int COOLDOWN_TICKS = 20;
 
-    public ElytraBoostPacket() {}
-
     @Override
-    public void fromBytes(ByteBuf buf) {}
-
-    @Override
-    public void toBytes(ByteBuf buf) {}
-
-    @Override
-    public IMessage onMessage(ElytraBoostPacket message, MessageContext ctx) {
-        EntityPlayer player = ctx.getServerHandler().playerEntity;
-        if (player == null) return null;
+    public void handleServer(EntityPlayerMP player) {
         ServerThreadUtil.addScheduledTask(() -> {
             if (!InfinityElytra.isWearingInfinityElytra(player)) return;
             if (!(player instanceof IElytraPlayer)) return;
@@ -53,6 +41,5 @@ public class ElytraBoostPacket implements IMessage, IMessageHandler<ElytraBoostP
             EntityBoostingFireworkRocket rocket = new EntityBoostingFireworkRocket(player.worldObj, firework, player);
             player.worldObj.spawnEntityInWorld(rocket);
         });
-        return null;
     }
 }

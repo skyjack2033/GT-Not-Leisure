@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -8,12 +10,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class NBTUpdatePacket implements IMessage, IMessageHandler<NBTUpdatePacket, IMessage> {
+public class NBTUpdatePacket extends ServerboundPacket {
 
     private int slot;
     private String itemId;
@@ -32,7 +31,7 @@ public class NBTUpdatePacket implements IMessage, IMessageHandler<NBTUpdatePacke
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         this.slot = buf.readInt();
         this.itemId = ByteBufUtils.readUTF8String(buf);
         this.damage = buf.readInt();
@@ -40,7 +39,7 @@ public class NBTUpdatePacket implements IMessage, IMessageHandler<NBTUpdatePacke
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeInt(this.slot);
         ByteBufUtils.writeUTF8String(buf, this.itemId == null ? "" : this.itemId);
         buf.writeInt(this.damage);
@@ -48,21 +47,19 @@ public class NBTUpdatePacket implements IMessage, IMessageHandler<NBTUpdatePacke
     }
 
     @Override
-    public IMessage onMessage(NBTUpdatePacket message, MessageContext ctx) {
-        EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+    public void handleServer(EntityPlayerMP player) {
         ServerThreadUtil.addScheduledTask(() -> {
-            if (message.slot < 0 || message.slot >= player.inventory.getSizeInventory()) return;
+            if (slot < 0 || slot >= player.inventory.getSizeInventory()) return;
 
-            ItemStack stack = player.inventory.getStackInSlot(message.slot);
+            ItemStack stack = player.inventory.getStackInSlot(slot);
             if (stack == null) return;
 
             String actualId = Item.itemRegistry.getNameForObject(stack.getItem());
             int actualDamage = stack.getItemDamage();
 
-            if (!actualId.equals(message.itemId) || actualDamage != message.damage) return;
+            if (!actualId.equals(itemId) || actualDamage != damage) return;
 
-            stack.setTagCompound(message.tag);
+            stack.setTagCompound(tag);
         });
-        return null;
     }
 }

@@ -1,15 +1,14 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import static com.science.gtnl.utils.event.SubscribeEventUtils.CIRCUIT_NANITES_DATA_LOAD;
 
 import com.science.gtnl.loader.RecipeLoader;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class SyncCircuitNanitesPacket implements IMessage, IMessageHandler<SyncCircuitNanitesPacket, IMessage> {
+public class SyncCircuitNanitesPacket extends ClientboundPacket {
 
     public long worldSeed;
 
@@ -20,22 +19,21 @@ public class SyncCircuitNanitesPacket implements IMessage, IMessageHandler<SyncC
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         worldSeed = buf.readLong();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeLong(worldSeed);
     }
 
     @Override
-    public IMessage onMessage(SyncCircuitNanitesPacket message, MessageContext ctx) {
+    public void handleClient(net.minecraft.client.Minecraft minecraft) {
         if (!CIRCUIT_NANITES_DATA_LOAD) {
-            RecipeLoader.loadCircuitNanitesData(message.worldSeed);
+            RecipeLoader.loadCircuitNanitesData(worldSeed);
         }
         CIRCUIT_NANITES_DATA_LOAD = true;
-        return null;
     }
 
 }

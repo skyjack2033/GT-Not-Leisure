@@ -1,19 +1,17 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.api.TickrateAPI;
 import com.science.gtnl.config.MainConfig;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 
 @Getter
-public class TickratePacket implements IMessage, IMessageHandler<TickratePacket, IMessage> {
+public class TickratePacket extends ClientboundPacket {
 
     private float tickrate;
 
@@ -24,18 +22,18 @@ public class TickratePacket implements IMessage, IMessageHandler<TickratePacket,
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         tickrate = buf.readFloat();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeFloat(tickrate);
     }
 
     @Override
-    public IMessage onMessage(TickratePacket msg, MessageContext context) {
-        float tickrate = msg.tickrate;
+    public void handleClient(Minecraft minecraft) {
+        float tickrate = this.tickrate;
         if (tickrate < MainConfig.tickrate.minTickrate) {
             ScienceNotLeisure.LOG.info(
                 "Tickrate forced to change from {} to {}, because the value is too low (You can change the minimum tickrate in the config file)",
@@ -50,10 +48,6 @@ public class TickratePacket implements IMessage, IMessageHandler<TickratePacket,
             tickrate = MainConfig.tickrate.maxTickrate;
         }
 
-        if (FMLCommonHandler.instance()
-            .getSide() != Side.SERVER) {
-            TickrateAPI.updateClientTickrate(tickrate);
-        }
-        return null;
+        TickrateAPI.updateClientTickrate(tickrate);
     }
 }

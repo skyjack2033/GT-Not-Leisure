@@ -1,15 +1,14 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class TeleportRequestPacket implements IMessage, IMessageHandler<TeleportRequestPacket, IMessage> {
+public class TeleportRequestPacket extends ServerboundPacket {
 
     private int worldX, worldZ;
 
@@ -21,24 +20,23 @@ public class TeleportRequestPacket implements IMessage, IMessageHandler<Teleport
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeInt(worldX);
         buf.writeInt(worldZ);
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         worldX = buf.readInt();
         worldZ = buf.readInt();
     }
 
     @Override
-    public IMessage onMessage(TeleportRequestPacket message, MessageContext ctx) {
-        EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+    public void handleServer(EntityPlayerMP player) {
         WorldServer world = player.getServerForPlayer();
 
-        int x = message.worldX;
-        int z = message.worldZ;
+        int x = worldX;
+        int z = worldZ;
 
         int y = world.getTopSolidOrLiquidBlock(x, z);
 
@@ -72,7 +70,6 @@ public class TeleportRequestPacket implements IMessage, IMessageHandler<Teleport
         }
 
         player.setPositionAndUpdate(x + 0.5, y + 1, z + 0.5);
-        return null;
     }
 
     public boolean isSafe(World world, int x, int y, int z) {

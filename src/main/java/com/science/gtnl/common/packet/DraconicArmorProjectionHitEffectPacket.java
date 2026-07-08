@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -7,15 +9,10 @@ import net.minecraft.world.World;
 
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionHitEffectState;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
 public class DraconicArmorProjectionHitEffectPacket
-    implements IMessage, IMessageHandler<DraconicArmorProjectionHitEffectPacket, IMessage> {
+    extends ClientboundPacket {
 
     private int playerId;
     private byte shieldPowerByte;
@@ -24,17 +21,17 @@ public class DraconicArmorProjectionHitEffectPacket
 
     public DraconicArmorProjectionHitEffectPacket(EntityPlayer player, float shieldPower) {
         playerId = player.getEntityId();
-        shieldPowerByte = (byte) (Math.max(0.0F, Math.min(1.0F, shieldPower)) * Byte.MAX_VALUE);
+        shieldPowerByte = (byte) (Math.clamp(shieldPower, 0.0F, 1.0F) * Byte.MAX_VALUE);
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         playerId = buf.readInt();
         shieldPowerByte = buf.readByte();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeInt(playerId);
         buf.writeByte(shieldPowerByte);
     }
@@ -44,25 +41,17 @@ public class DraconicArmorProjectionHitEffectPacket
     }
 
     @Override
-    public IMessage onMessage(DraconicArmorProjectionHitEffectPacket message, MessageContext ctx) {
-        if (ctx.side == Side.CLIENT) {
-            onClient(message);
-        }
-        return null;
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void onClient(DraconicArmorProjectionHitEffectPacket message) {
-        World world = Minecraft.getMinecraft().theWorld;
+    public void handleClient(Minecraft minecraft) {
+        World world = minecraft.theWorld;
         if (world == null) {
             return;
         }
 
-        Entity entity = world.getEntityByID(message.playerId);
+        Entity entity = world.getEntityByID(playerId);
         if (!(entity instanceof EntityPlayer player)) {
             return;
         }
 
-        DraconicArmorProjectionHitEffectState.trigger(player, message.getShieldPower());
+        DraconicArmorProjectionHitEffectState.trigger(player, getShieldPower());
     }
 }

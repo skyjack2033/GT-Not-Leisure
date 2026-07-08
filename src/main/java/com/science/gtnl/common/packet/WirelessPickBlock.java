@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -23,20 +25,13 @@ import appeng.util.item.AEItemStack;
 import baubles.api.BaublesApi;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import gregtech.api.enums.Mods;
 import io.netty.buffer.ByteBuf;
 
-public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPickBlock, IMessage> {
+public class WirelessPickBlock extends ServerboundPacket {
 
     private int slot;
     private ItemStack stack = null;
-
-    public WirelessPickBlock() {
-
-    }
 
     public WirelessPickBlock(ItemStack stack, int slot) {
         this.stack = stack;
@@ -44,35 +39,32 @@ public class WirelessPickBlock implements IMessage, IMessageHandler<WirelessPick
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         this.stack = ByteBufUtils.readItemStack(buf);
         this.slot = buf.readInt();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         ByteBufUtils.writeItemStack(buf, this.stack);
         buf.writeInt(this.slot);
     }
 
     @Override
-    public IMessage onMessage(WirelessPickBlock message, MessageContext ctx) {
-        EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-        ItemStack handItem = player.inventory.getStackInSlot(message.slot);
-        ItemStack needItem = message.stack.copy();
+    public void handleServer(EntityPlayerMP player) {
+        ItemStack handItem = player.inventory.getStackInSlot(slot);
+        ItemStack needItem = stack.copy();
         if (handItem != null) {
-            if (handItem.stackSize > handItem.getMaxStackSize()) return null;
+            if (handItem.stackSize > handItem.getMaxStackSize()) return;
             else needItem.stackSize = handItem.getMaxStackSize();
         }
 
         ServerThreadUtil.addScheduledTask(() -> {
-            readPlayer(player, needItem, message);
+            readPlayer(player, needItem, this);
             if (needItem != null && needItem.stackSize != 0 && Mods.Baubles.isModLoaded()) {
-                readBaubles(player, needItem, message.slot);
+                readBaubles(player, needItem, slot);
             }
         });
-
-        return null;
     }
 
     public void readPlayer(EntityPlayerMP player, ItemStack needItem, WirelessPickBlock message) {
