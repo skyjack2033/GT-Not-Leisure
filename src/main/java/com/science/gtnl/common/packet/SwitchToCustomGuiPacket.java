@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
@@ -10,12 +12,9 @@ import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class SwitchToCustomGuiPacket implements IMessage, IMessageHandler<SwitchToCustomGuiPacket, IMessage> {
+public class SwitchToCustomGuiPacket extends ServerboundPacket {
 
     private int guiID;
     private int sideOrdinal;
@@ -28,21 +27,19 @@ public class SwitchToCustomGuiPacket implements IMessage, IMessageHandler<Switch
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         this.guiID = buf.readInt();
         this.sideOrdinal = buf.readInt();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeInt(this.guiID);
         buf.writeInt(this.sideOrdinal);
     }
 
     @Override
-    public IMessage onMessage(SwitchToCustomGuiPacket message, MessageContext ctx) {
-        EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-
+    public void handleServer(EntityPlayerMP player) {
         Container c = player.openContainer;
 
         if (c instanceof AEBaseContainer bc) {
@@ -52,8 +49,8 @@ public class SwitchToCustomGuiPacket implements IMessage, IMessageHandler<Switch
                 if (te != null) {
                     CommonProxy.openGui(
                         player,
-                        GuiType.values()[message.guiID],
-                        ForgeDirection.getOrientation(message.sideOrdinal),
+                        GuiType.values()[guiID],
+                        ForgeDirection.getOrientation(sideOrdinal),
                         te.getWorldObj(),
                         te.xCoord,
                         te.yCoord,
@@ -61,7 +58,5 @@ public class SwitchToCustomGuiPacket implements IMessage, IMessageHandler<Switch
                 }
             }
         }
-
-        return null;
     }
 }

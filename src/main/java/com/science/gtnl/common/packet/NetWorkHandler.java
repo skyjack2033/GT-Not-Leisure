@@ -2,52 +2,71 @@ package com.science.gtnl.common.packet;
 
 import static com.science.gtnl.ScienceNotLeisure.network;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+import com.science.gtnl.common.packet.base.PayloadHandler;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.relauncher.Side;
 import gregtech.api.enums.Mods;
 
 public class NetWorkHandler {
 
-    public static void registerAllMessage() {
-        int i = 0;
-        registerMessage(SoundPacket.class, i++, Side.CLIENT);
-        registerMessage(TickratePacket.class, i++, Side.CLIENT);
-        registerMessage(ProspectingPacket.class, i++, Side.CLIENT);
-        registerMessage(TileEntityNBTPacket.class, i++, Side.CLIENT);
-        registerMessage(SyncHPCAVariablesPacket.class, i++, Side.CLIENT);
-        registerMessage(ContainerRollBACK.class, i++, Side.CLIENT);
-        registerMessage(GetTileEntityNBTRequestPacket.class, i++, Side.SERVER);
-        registerMessage(TeleportRequestPacket.class, i++, Side.SERVER);
-        registerMessage(KeyBindingHandler.class, i++, Side.SERVER);
-        registerMessage(WirelessPickBlock.class, i++, Side.SERVER);
-        registerMessage(ContainerRollBACK.class, i++, Side.SERVER);
-        registerMessage(SudoPacket.class, i++, Side.CLIENT);
-        registerMessage(NBTUpdatePacket.class, i++, Side.SERVER);
-        registerMessage(PortableInfinityChestSyncPacket.class, i++, Side.SERVER);
-        registerMessage(PktPatternTermUploadPattern.class, i++, Side.SERVER);
-        registerMessage(DirePatternHandler.class, i++, Side.SERVER);
-        registerMessage(MEChiselSyncParallel.class, i++, Side.SERVER);
-        registerMessage(MEChiselSyncParallel.class, i++, Side.CLIENT);
-        registerMessage(PortableInfinityChestSyncPacket.class, i++, Side.CLIENT);
-        registerMessage(StatusMessage.class, i++, Side.CLIENT);
-        registerMessage(SyncCircuitNanitesPacket.class, i++, Side.CLIENT);
-        registerMessage(DraconicArmorProjectionSyncPacket.class, i++, Side.CLIENT);
-        registerMessage(DraconicArmorProjectionHitEffectPacket.class, i++, Side.CLIENT);
-        registerMessage(PlaceItemInHotbarPacket.class, i++, Side.CLIENT);
-        registerMessage(RequestGameProfilePacket.class, i++, Side.SERVER);
-        registerMessage(SwitchToCustomGuiPacket.class, i++, Side.SERVER);
-        registerMessage(SwitchSuperDualInterfaceGuiPacket.class, i++, Side.SERVER);
-        network.registerMessage(
-            SuperDualInterfaceFluidSyncPacket.class,
-            SuperDualInterfaceFluidSyncPacket.class,
-            i++,
-            Side.CLIENT);
-        if (Mods.EtFuturumRequiem.isModLoaded()) registerMessage(ElytraBoostPacket.class, i++, Side.SERVER);
+    private static int nextPacketId;
+    private static boolean initialized;
+
+    public static synchronized void registerAllMessage() {
+        if (initialized) return;
+        initialized = true;
+        nextPacketId = 0;
+        registerClientbound(SoundPacket.class);
+        registerClientbound(TickratePacket.class);
+        registerClientbound(ProspectingPacket.class);
+        registerClientbound(TileEntityNBTPacket.class);
+        registerClientbound(SyncHPCAVariablesPacket.class);
+        registerClientbound(ContainerRollBACK.Clientbound.class);
+        registerServerbound(GetTileEntityNBTRequestPacket.class);
+        registerServerbound(TeleportRequestPacket.class);
+        registerServerbound(KeyBindingHandler.class);
+        registerServerbound(WirelessPickBlock.class);
+        registerServerbound(ContainerRollBACK.class);
+        registerClientbound(SudoPacket.class);
+        registerServerbound(NBTUpdatePacket.class);
+        registerServerbound(PktPatternTermUploadPattern.class);
+        registerServerbound(DirePatternHandler.class);
+        registerServerbound(MEChiselSyncParallel.class);
+        registerClientbound(MEChiselSyncParallel.Clientbound.class);
+        registerClientbound(PortableInfinityChestSyncPacket.class);
+        registerClientbound(StatusMessage.class);
+        registerClientbound(SyncCircuitNanitesPacket.class);
+        registerClientbound(DraconicArmorProjectionSyncPacket.class);
+        registerClientbound(DraconicArmorProjectionHitEffectPacket.class);
+        registerClientbound(PlaceItemInHotbarPacket.class);
+        registerServerbound(RequestGameProfilePacket.class);
+        registerServerbound(SwitchToCustomGuiPacket.class);
+        registerServerbound(SwitchSuperDualInterfaceGuiPacket.class);
+        registerClientbound(SuperDualInterfaceFluidSyncPacket.class);
+        if (Mods.EtFuturumRequiem.isModLoaded()) registerServerbound(ElytraBoostPacket.class);
     }
 
-    private static <T extends IMessageHandler<T, IMessage> & IMessage> void registerMessage(Class<T> c, int i,
-        Side side) {
-        network.registerMessage(c, c, i, side);
+    public static <T extends ClientboundPacket> void registerClientbound(Class<T> packet) {
+        registerClientbound(PayloadHandler.Client.class, packet);
+    }
+
+    public static <T extends ServerboundPacket> void registerServerbound(Class<T> packet) {
+        registerServerbound(PayloadHandler.Server.class, packet);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T extends ClientboundPacket> void registerClientbound(
+        Class<? extends IMessageHandler> handler,
+        Class<T> packet) {
+        network.registerMessage((Class) handler, packet, nextPacketId++, Side.CLIENT);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T extends ServerboundPacket> void registerServerbound(
+        Class<? extends IMessageHandler> handler,
+        Class<T> packet) {
+        network.registerMessage((Class) handler, packet, nextPacketId++, Side.SERVER);
     }
 }

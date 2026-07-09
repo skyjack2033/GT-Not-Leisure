@@ -44,7 +44,7 @@ public class BlockMEChisel extends AEBaseTileBlock {
             if (!super.onBlockActivated(world, x, y, z, player, side, hitX, hitY, hitZ)) {
                 if (player instanceof EntityPlayerMP p) {
                     if (te.getParallel() != 1) {
-                        ScienceNotLeisure.network.sendTo(new MEChiselSyncParallel(te), p);
+                        ScienceNotLeisure.network.sendTo(new MEChiselSyncParallel.Clientbound(te), p);
                     }
                     CommonProxy.openGui(p, GuiType.MEChiselGUI, null, world, x, y, z);
                 }

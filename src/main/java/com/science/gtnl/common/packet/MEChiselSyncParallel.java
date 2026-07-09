@@ -1,18 +1,18 @@
 package com.science.gtnl.common.packet;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
 import com.science.gtnl.common.block.blocks.tile.TileEntityMEChisel;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
-public class MEChiselSyncParallel implements IMessage, IMessageHandler<MEChiselSyncParallel, IMessage> {
+public class MEChiselSyncParallel extends ServerboundPacket {
 
     private int x;
     private int y;
@@ -31,7 +31,7 @@ public class MEChiselSyncParallel implements IMessage, IMessageHandler<MEChiselS
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         parallel = buf.readInt();
         x = buf.readInt();
         y = buf.readInt();
@@ -39,7 +39,7 @@ public class MEChiselSyncParallel implements IMessage, IMessageHandler<MEChiselS
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeInt(parallel);
         buf.writeInt(x);
         buf.writeInt(y);
@@ -47,26 +47,60 @@ public class MEChiselSyncParallel implements IMessage, IMessageHandler<MEChiselS
     }
 
     @Override
-    public IMessage onMessage(MEChiselSyncParallel message, MessageContext ctx) {
-        switch (ctx.side) {
-            case SERVER -> {
-                var world = ctx.getServerHandler().playerEntity.worldObj;
-                ServerThreadUtil.addScheduledTask(() -> {
-                    if (world.getTileEntity(message.x, message.y, message.z) instanceof TileEntityMEChisel te) {
-                        te.setParallel(message.parallel);
-                    }
-                });
+    public void handleServer(EntityPlayerMP player) {
+        var world = player.worldObj;
+        ServerThreadUtil.addScheduledTask(() -> {
+            if (world.getTileEntity(x, y, z) instanceof TileEntityMEChisel te) {
+                te.setParallel(parallel);
             }
-            case CLIENT -> onClient(message, ctx);
-        }
-        return null;
+        });
     }
 
-    @SideOnly(Side.CLIENT)
-    public void onClient(MEChiselSyncParallel message, MessageContext ctx) {
-        var world = Minecraft.getMinecraft().thePlayer.worldObj;
-        if (world.getTileEntity(message.x, message.y, message.z) instanceof TileEntityMEChisel te) {
-            te.setParallel(message.parallel);
+    public static final class Clientbound extends ClientboundPacket {
+
+        private int x;
+        private int y;
+        private int z;
+        private int parallel;
+
+        public Clientbound() {
+
+        }
+
+        public Clientbound(TileEntityMEChisel te) {
+            x = te.xCoord;
+            y = te.yCoord;
+            z = te.zCoord;
+            parallel = te.getParallel();
+        }
+
+        @Override
+        protected void read(ByteBuf buf) {
+            parallel = buf.readInt();
+            x = buf.readInt();
+            y = buf.readInt();
+            z = buf.readInt();
+        }
+
+        @Override
+        protected void write(ByteBuf buf) {
+            buf.writeInt(parallel);
+            buf.writeInt(x);
+            buf.writeInt(y);
+            buf.writeInt(z);
+        }
+
+        @Override
+        public void handleClient(Minecraft minecraft) {
+            onClient(minecraft);
+        }
+
+        @SideOnly(Side.CLIENT)
+        private void onClient(Minecraft minecraft) {
+            var world = minecraft.thePlayer.worldObj;
+            if (world.getTileEntity(x, y, z) instanceof TileEntityMEChisel te) {
+                te.setParallel(parallel);
+            }
         }
     }
 }

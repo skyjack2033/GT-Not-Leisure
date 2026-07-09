@@ -1,19 +1,16 @@
 package com.science.gtnl.common.packet;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.container.portableWorkbench.ContainerPortableInfinityChest;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PortableInfinityChestSyncPacket
-    implements IMessage, IMessageHandler<PortableInfinityChestSyncPacket, IMessage> {
+public class PortableInfinityChestSyncPacket extends ClientboundPacket {
 
     private ItemStack itemStack;
     private int slot;
@@ -28,24 +25,23 @@ public class PortableInfinityChestSyncPacket
     }
 
     @Override
-    public void fromBytes(final ByteBuf buf) {
+    protected void read(final ByteBuf buf) {
         itemStack = ByteBufUtils.readItemStack(buf);
         slot = ByteBufUtils.readVarShort(buf);
         stackSize = ByteBufUtils.readVarInt(buf, 5);
     }
 
     @Override
-    public void toBytes(final ByteBuf buf) {
+    protected void write(final ByteBuf buf) {
         ByteBufUtils.writeItemStack(buf, itemStack);
         ByteBufUtils.writeVarShort(buf, slot);
         ByteBufUtils.writeVarInt(buf, stackSize, 5);
     }
 
     @Override
-    public IMessage onMessage(final PortableInfinityChestSyncPacket message, final MessageContext ctx) {
-        final EntityPlayer entityPlayer = ScienceNotLeisure.proxy.getEntityPlayerFromContext(ctx);
+    public void handleClient(Minecraft minecraft) {
+        EntityPlayer entityPlayer = minecraft.thePlayer;
         if (entityPlayer.openContainer instanceof ContainerPortableInfinityChest container)
-            container.syncData(message.itemStack, message.slot, message.stackSize);
-        return null;
+            container.syncData(itemStack, slot, stackSize);
     }
 }

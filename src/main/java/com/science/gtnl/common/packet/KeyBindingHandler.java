@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
@@ -51,13 +53,10 @@ import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import baubles.api.BaublesApi;
 import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import gregtech.api.enums.Mods;
 import io.netty.buffer.ByteBuf;
 
-public class KeyBindingHandler implements IMessage, IMessageHandler<KeyBindingHandler, IMessage> {
+public class KeyBindingHandler extends ServerboundPacket {
 
     public ItemStack stack;
     public String key;
@@ -78,14 +77,14 @@ public class KeyBindingHandler implements IMessage, IMessageHandler<KeyBindingHa
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         this.stack = ByteBufUtils.readItemStack(buf);
         this.key = ByteBufUtils.readUTF8String(buf);
         this.isAE = buf.readBoolean();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         ByteBufUtils.writeItemStack(buf, this.stack);
         ByteBufUtils.writeUTF8String(buf, this.key);
         buf.writeBoolean(this.isAE);
@@ -94,17 +93,15 @@ public class KeyBindingHandler implements IMessage, IMessageHandler<KeyBindingHa
     public static Map<UUID, Long> map = new ConcurrentHashMap<>();
 
     @Override
-    public IMessage onMessage(KeyBindingHandler message, MessageContext ctx) {
-        EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+    public void handleServer(EntityPlayerMP player) {
         var container = player.openContainer;
-        var item = message.stack;
-        switch (message.key) {
+        var item = stack;
+        switch (key) {
             case "gui.ae_retrieve_item" -> ServerThreadUtil
-                .addScheduledTask(() -> retrieveItem(player, container, item, message.isAE));
+                .addScheduledTask(() -> retrieveItem(player, container, item, isAE));
             case "gui.ae_start_craft" -> ServerThreadUtil
-                .addScheduledTask(() -> startCraft(player, container, item, message.isAE));
+                .addScheduledTask(() -> startCraft(player, container, item, isAE));
         }
-        return null;
     }
 
     private void retrieveItem(EntityPlayerMP player, Container container, ItemStack exItem, boolean isAE) {

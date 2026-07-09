@@ -1,6 +1,9 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
@@ -18,24 +21,12 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.container.implementations.ContainerPatternTerm;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.items.misc.ItemEncodedPattern;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import io.netty.buffer.ByteBuf;
 
-public class PktPatternTermUploadPattern implements IMessage, IMessageHandler<PktPatternTermUploadPattern, IMessage> {
+public class PktPatternTermUploadPattern extends ServerboundPacket {
 
     @Override
-    public void fromBytes(final ByteBuf buf) {}
-
-    @Override
-    public void toBytes(final ByteBuf buf) {}
-
-    @Override
-    public IMessage onMessage(final PktPatternTermUploadPattern message, final MessageContext ctx) {
-        var player = ctx.getServerHandler().playerEntity;
+    public void handleServer(EntityPlayerMP player) {
         ServerThreadUtil.addScheduledTask(() -> work(player));
-        return null;
     }
 
     private void work(final EntityPlayer player) {

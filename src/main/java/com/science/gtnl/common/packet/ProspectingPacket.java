@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,9 +25,6 @@ import com.science.gtnl.utils.detrav.DetravScannerGUI;
 import com.science.gtnl.utils.enums.GuiType;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import detrav.utils.FluidColors;
@@ -44,7 +43,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 
-public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingPacket, IMessage> {
+public class ProspectingPacket extends ClientboundPacket {
 
     public static final int MODE_BIG_ORES = 0;
     public static final int MODE_ALL_ORES = 1;
@@ -77,7 +76,7 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         int compressedLength = buf.readInt();
         byte[] compressed = new byte[compressedLength];
         buf.readBytes(compressed);
@@ -91,7 +90,7 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         byte[] compressed = compress();
         buf.writeInt(compressed.length);
         buf.writeBytes(compressed);
@@ -214,12 +213,9 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
     }
 
     @Override
-    public IMessage onMessage(ProspectingPacket message, MessageContext ctx) {
-        if (ctx.side.isClient()) {
-            DetravScannerGUI.newMap(new DetravMapTexture(message));
-            message.openProspectorGUI();
-        }
-        return null;
+    public void handleClient(Minecraft minecraft) {
+        DetravScannerGUI.newMap(new DetravMapTexture(this));
+        openProspectorGUI();
     }
 
     @SideOnly(Side.CLIENT)
@@ -410,7 +406,7 @@ public class ProspectingPacket implements IMessage, IMessageHandler<ProspectingP
         return ((long) relativeX & 0xFFFFFFFFL) << 32 | ((long) relativeZ & 0xFFFFFFFFL);
     }
 
-    private static int rgbaToColor(@Nullable short[] rgba) {
+    private static int rgbaToColor(short[] rgba) {
         if (rgba == null || rgba.length < 3) {
             return DEFAULT_COLOR;
         }

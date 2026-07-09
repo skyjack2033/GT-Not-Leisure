@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,13 +10,10 @@ import com.science.gtnl.client.gui.GuiSuperDualInterfaceFluid;
 
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.util.item.AEFluidStack;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
 public class SuperDualInterfaceFluidSyncPacket
-    implements IMessage, IMessageHandler<SuperDualInterfaceFluidSyncPacket, IMessage> {
+    extends ClientboundPacket {
 
     private Map<Integer, IAEFluidStack> stacks = new HashMap<>();
 
@@ -25,7 +24,7 @@ public class SuperDualInterfaceFluidSyncPacket
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
             int key = buf.readInt();
@@ -39,7 +38,7 @@ public class SuperDualInterfaceFluidSyncPacket
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeInt(stacks.size());
         for (Map.Entry<Integer, IAEFluidStack> entry : stacks.entrySet()) {
             buf.writeInt(entry.getKey());
@@ -58,12 +57,11 @@ public class SuperDualInterfaceFluidSyncPacket
     }
 
     @Override
-    public IMessage onMessage(SuperDualInterfaceFluidSyncPacket message, MessageContext ctx) {
-        if (net.minecraft.client.Minecraft.getMinecraft().currentScreen instanceof GuiSuperDualInterfaceFluid gui) {
-            for (Map.Entry<Integer, IAEFluidStack> entry : message.stacks.entrySet()) {
+    public void handleClient(net.minecraft.client.Minecraft minecraft) {
+        if (minecraft.currentScreen instanceof GuiSuperDualInterfaceFluid gui) {
+            for (Map.Entry<Integer, IAEFluidStack> entry : stacks.entrySet()) {
                 gui.update(entry.getKey(), entry.getValue());
             }
         }
-        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,12 +11,10 @@ import com.github.bsideup.jabel.Desugar;
 import com.science.gtnl.common.packet.client.SoundHandler;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 
-public class SoundPacket implements IMessage, IMessageHandler<SoundPacket, IMessage> {
+public class SoundPacket extends ClientboundPacket {
 
     public ResourceLocation soundResource;
     public float volume;
@@ -50,7 +50,7 @@ public class SoundPacket implements IMessage, IMessageHandler<SoundPacket, IMess
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         boolean isStopAll = buf.readBoolean();
         boolean isSyncPacket = buf.readBoolean();
         if (isStopAll) {
@@ -89,7 +89,7 @@ public class SoundPacket implements IMessage, IMessageHandler<SoundPacket, IMess
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         buf.writeBoolean(stopAll);
         if (stopAll) {
             buf.writeBoolean(false);
@@ -119,11 +119,8 @@ public class SoundPacket implements IMessage, IMessageHandler<SoundPacket, IMess
     }
 
     @Override
-    public IMessage onMessage(SoundPacket message, MessageContext ctx) {
-        if (ctx.side.isClient()) {
-            SoundHandler.handleSoundPacket(message);
-        }
-        return null;
+    public void handleClient(Minecraft minecraft) {
+        SoundHandler.handleSoundPacket(this);
     }
 
     @Desugar

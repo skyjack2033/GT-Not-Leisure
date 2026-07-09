@@ -1,17 +1,16 @@
 package com.science.gtnl.common.packet;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
+
 import java.nio.charset.StandardCharsets;
 
 import net.minecraft.client.Minecraft;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
-public class SudoPacket implements IMessage, IMessageHandler<SudoPacket, IMessage> {
+public class SudoPacket extends ClientboundPacket {
 
     public String message;
 
@@ -22,7 +21,7 @@ public class SudoPacket implements IMessage, IMessageHandler<SudoPacket, IMessag
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    protected void read(ByteBuf buf) {
         int length = buf.readInt();
         byte[] bytes = new byte[length];
         buf.readBytes(bytes);
@@ -30,17 +29,15 @@ public class SudoPacket implements IMessage, IMessageHandler<SudoPacket, IMessag
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    protected void write(ByteBuf buf) {
         byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
         buf.writeInt(bytes.length);
         buf.writeBytes(bytes);
     }
 
     @Override
-    public IMessage onMessage(SudoPacket message, MessageContext ctx) {
-        if (ctx.side.isServer()) return null;
-        sendChatMessage(message.message);
-        return null;
+    public void handleClient(Minecraft minecraft) {
+        sendChatMessage(message);
     }
 
     @SideOnly(Side.CLIENT)
