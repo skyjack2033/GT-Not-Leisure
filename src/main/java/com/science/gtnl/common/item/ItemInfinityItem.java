@@ -37,7 +37,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.util.GTUtility;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -94,17 +93,18 @@ public class ItemInfinityItem extends Item implements IFluidContainerItem {
 
     @Override
     public int getCapacity(ItemStack container) {
-        return Integer.MAX_VALUE;
+        return fluid == null ? 0 : Integer.MAX_VALUE;
     }
 
     @Override
     public int fill(ItemStack container, FluidStack resource, boolean doFill) {
-        return GTUtility.areFluidsEqual(resource, new FluidStack(fluid, 1)) ? resource.amount : 0;
+        if (fluid == null || resource == null || resource.amount <= 0 || resource.getFluid() == null) return 0;
+        return fluid.equals(resource.getFluid()) ? resource.amount : 0;
     }
 
     @Override
     public FluidStack drain(ItemStack container, int maxDrain, boolean doDrain) {
-        if (fluid != null) return new FluidStack(fluid, maxDrain);
+        if (fluid != null && maxDrain > 0) return new FluidStack(fluid, maxDrain);
         return null;
     }
 
