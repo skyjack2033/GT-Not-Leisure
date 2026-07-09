@@ -225,7 +225,6 @@ public enum Mixins implements IMixins {
             "randomComplement.MixinTileQuantumBridge",
             "randomComplement.MixinWirelessTerminalGuiObject")
         .addClientMixins(
-            "randomComplement.MixinGuiAmount",
             "randomComplement.MixinGuiCraftAmount",
             "randomComplement.MixinGuiCraftConfirm")
         .setPhase(Phase.LATE)),
