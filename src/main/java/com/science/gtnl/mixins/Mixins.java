@@ -217,14 +217,11 @@ public enum Mixins implements IMixins {
         .addCommonMixins(
             "randomComplement.MixinAEBaseContainer",
             "randomComplement.MixinBlockCraftingUnit",
-            "randomComplement.MixinContainerCraftAmount",
-            "randomComplement.MixinContainerCraftConfirm",
             "randomComplement.MixinContainerMEMonitorable",
             "randomComplement.MixinGuiBridge",
             "randomComplement.MixinQuantumCluster",
             "randomComplement.MixinTileQuantumBridge",
             "randomComplement.MixinWirelessTerminalGuiObject")
-        .addClientMixins("randomComplement.MixinGuiCraftAmount", "randomComplement.MixinGuiCraftConfirm")
         .setPhase(Phase.LATE)),
 
     OVERPOWERED_CHANGE(new MixinBuilder("Overpowered Mixin Changes")

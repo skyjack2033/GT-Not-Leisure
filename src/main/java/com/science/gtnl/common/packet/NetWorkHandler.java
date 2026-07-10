@@ -24,12 +24,11 @@ public class NetWorkHandler {
         registerClientbound(ProspectingPacket.class);
         registerClientbound(TileEntityNBTPacket.class);
         registerClientbound(SyncHPCAVariablesPacket.class);
-        registerClientbound(ContainerRollBACK.Clientbound.class);
+        registerClientbound(RestorePreviousGuiPacket.class);
         registerServerbound(GetTileEntityNBTRequestPacket.class);
         registerServerbound(TeleportRequestPacket.class);
         registerServerbound(KeyBindingHandler.class);
         registerServerbound(WirelessPickBlock.class);
-        registerServerbound(ContainerRollBACK.class);
         registerClientbound(SudoPacket.class);
         registerServerbound(NBTUpdatePacket.class);
         registerServerbound(PktPatternTermUploadPattern.class);

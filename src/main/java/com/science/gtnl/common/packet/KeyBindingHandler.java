@@ -19,9 +19,10 @@ import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
+import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.gui.PreviousContainerPrimaryGui;
 import com.science.gtnl.common.packet.base.ServerboundPacket;
 import com.science.gtnl.utils.MEHandler;
-import com.science.gtnl.utils.RCAEBaseContainer;
 import com.science.gtnl.utils.Utils;
 
 import appeng.api.AEApi;
@@ -38,6 +39,7 @@ import appeng.api.networking.security.PlayerSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.container.AEBaseContainer;
+import appeng.container.PrimaryGui;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.container.implementations.ContainerMEMonitorable;
@@ -308,6 +310,13 @@ public class KeyBindingHandler extends ServerboundPacket {
 
                 var host = aec.getTarget();
                 if (host instanceof IActionHost h) {
+                    if (aec.getOpenContext() == null) {
+                        ScienceNotLeisure.LOG.error(
+                            "Cannot create the primary GUI without an open context for player {}",
+                            player.getCommandSenderName());
+                        return;
+                    }
+                    PrimaryGui primaryGui = aec.createPrimaryGui();
                     if (Mods.AE2FluidCraft.isModLoaded()) ae2fcCraft(h, player, aec);
                     else Platform.openGUI(
                         player,
@@ -318,13 +327,24 @@ public class KeyBindingHandler extends ServerboundPacket {
                         GuiBridge.GUI_CRAFTING_AMOUNT);
 
                     if (player.openContainer instanceof ContainerCraftAmount cca) {
+                        cca.setPrimaryGui(primaryGui);
                         var item0 = aeItem.getItemStack();
                         cca.getCraftingItem()
                             .putStack(item0);
                         cca.setItemToCraft(aeItem);
                         cca.setInitialCraftAmount(exItem.stackSize);
                         cca.detectAndSendChanges();
+                    } else {
+                        ScienceNotLeisure.LOG.error(
+                            "Failed to open AE crafting amount container for player {}; current container is {}",
+                            player.getCommandSenderName(),
+                            player.openContainer);
                     }
+                } else {
+                    ScienceNotLeisure.LOG.error(
+                        "Cannot start AE crafting from non-action host {} for player {}",
+                        host,
+                        player.getCommandSenderName());
                 }
             }
         }
@@ -346,7 +366,21 @@ public class KeyBindingHandler extends ServerboundPacket {
                 return;
             }
 
-            final var oldContainer = player.openContainer;
+            final Container oldContainer = player.openContainer;
+            if (oldContainer == null || oldContainer instanceof AEBaseContainer) {
+                ScienceNotLeisure.LOG.error(
+                    "Cannot start non-AE wireless crafting from container {} for player {}",
+                    oldContainer,
+                    player.getCommandSenderName());
+                return;
+            }
+            if (terminal == null) {
+                ScienceNotLeisure.LOG.error(
+                    "Cannot start non-AE wireless crafting without a terminal for player {}",
+                    player.getCommandSenderName());
+                return;
+            }
+            final PrimaryGui primaryGui = new PreviousContainerPrimaryGui(oldContainer, terminal);
 
             if (terminal.getItem() instanceof ItemWirelessUltraTerminal) {
                 var value = Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM);
@@ -366,18 +400,19 @@ public class KeyBindingHandler extends ServerboundPacket {
                     Integer.MIN_VALUE);
             }
 
-            var newContainer = player.openContainer;
-
-            if (newContainer instanceof ContainerCraftAmount cca) {
-                if (newContainer instanceof RCAEBaseContainer rcc) {
-                    rcc.rc$setOldContainer(oldContainer);
-                }
+            if (player.openContainer instanceof ContainerCraftAmount cca) {
+                cca.setPrimaryGui(primaryGui);
                 var item0 = aeItem.getItemStack();
                 cca.getCraftingItem()
                     .putStack(item0);
                 cca.setItemToCraft(aeItem);
                 cca.setInitialCraftAmount(exItem.stackSize);
                 cca.detectAndSendChanges();
+            } else {
+                ScienceNotLeisure.LOG.error(
+                    "Failed to open wireless crafting amount container for player {}; current container is {}",
+                    player.getCommandSenderName(),
+                    player.openContainer);
             }
         }
     }

@@ -1,8 +1,6 @@
 package com.science.gtnl.mixins.late.randomComplement;
 
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.tileentity.TileEntity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.science.gtnl.utils.RCAEBaseContainer;
 import com.science.gtnl.utils.RCWirelessTerminalGuiObject;
 
-import appeng.api.parts.IPart;
 import appeng.api.storage.ITerminalHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.implementations.ContainerMEMonitorable;
@@ -30,12 +27,8 @@ public class MixinContainerMEMonitorable extends AEBaseContainer implements RCAE
     @Unique
     private boolean gtnl$isSpecial;
 
-    @Unique
-    @SuppressWarnings("FieldCanBeLocal")
-    private Container gtnl$oldContainer;
-
-    public MixinContainerMEMonitorable(InventoryPlayer ip, TileEntity myTile, IPart myPart) {
-        super(ip, myTile, myPart);
+    public MixinContainerMEMonitorable(InventoryPlayer ip, Object anchor) {
+        super(ip, anchor);
     }
 
     @Inject(
@@ -67,15 +60,4 @@ public class MixinContainerMEMonitorable extends AEBaseContainer implements RCAE
         return gtnl$isSpecial;
     }
 
-    @Unique
-    @Override
-    public void rc$setOldContainer(Container old) {
-        gtnl$oldContainer = old;
-    }
-
-    @Unique
-    @Override
-    public Container rc$getOldContainer() {
-        return gtnl$oldContainer;
-    }
 }

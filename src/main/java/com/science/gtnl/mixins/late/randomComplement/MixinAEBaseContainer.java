@@ -26,9 +26,6 @@ public abstract class MixinAEBaseContainer extends Container implements RCAEBase
     @Unique
     private boolean gtnl$isSpecial;
 
-    @Unique
-    private Container gtnl$oldContainer;
-
     @Inject(method = "<init>(Lnet/minecraft/entity/player/InventoryPlayer;Ljava/lang/Object;)V", at = @At("TAIL"))
     public void onInit(InventoryPlayer ip, Object anchor, CallbackInfo ci) {
         if (anchor instanceof RCWirelessTerminalGuiObject w) {
@@ -56,15 +53,4 @@ public abstract class MixinAEBaseContainer extends Container implements RCAEBase
         return gtnl$isSpecial;
     }
 
-    @Unique
-    @Override
-    public void rc$setOldContainer(Container old) {
-        gtnl$oldContainer = old;
-    }
-
-    @Unique
-    @Override
-    public Container rc$getOldContainer() {
-        return gtnl$oldContainer;
-    }
 }

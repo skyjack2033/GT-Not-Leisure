@@ -60,7 +60,6 @@ public class GTNLInputHandler implements IContainerInputHandler {
     public static int ANIMATION_TICK = 0;
     public static int FRAME_COUNTER = 0;
     public static GuiScreen LAST_GUI_SCREEN = null;
-    public static Runnable DELAY_METHOD = null;
 
     public GTNLInputHandler() {
         GuiContainerManager.addInputHandler(this);
