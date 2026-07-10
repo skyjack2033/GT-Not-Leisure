@@ -128,7 +128,7 @@ public class ProcessingArray extends MultiMachineBase<ProcessingArray> implement
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
         checkHatch(errors);
-        if (GTUtility.getTier(this.getMaxInputVoltage()) <= mTier + 4) {
+        if (GTUtility.getTier(this.getMaxInputVoltage()) > mTier + 4) {
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
         }
         checkCasingMin(errors, mCountCasing, 40);
