@@ -1,7 +1,5 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.gtnewhorizon.gtnhlib.util.CoordinatePacker;
 import com.science.gtnl.CommonProxy;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 import com.science.gtnl.utils.detrav.DetravMapTexture;
 import com.science.gtnl.utils.detrav.DetravScannerGUI;
 import com.science.gtnl.utils.enums.GuiType;

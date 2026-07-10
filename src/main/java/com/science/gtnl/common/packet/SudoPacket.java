@@ -1,10 +1,10 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import java.nio.charset.StandardCharsets;
 
 import net.minecraft.client.Minecraft;
+
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

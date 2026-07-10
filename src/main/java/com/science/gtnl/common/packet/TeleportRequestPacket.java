@@ -1,10 +1,10 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 
 import io.netty.buffer.ByteBuf;
 

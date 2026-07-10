@@ -1,7 +1,5 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -9,6 +7,7 @@ import net.minecraft.network.play.server.S2FPacketSetSlot;
 
 import com.glodblock.github.util.Util;
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 import com.science.gtnl.utils.MEHandler;
 
 import appeng.api.config.Actionable;

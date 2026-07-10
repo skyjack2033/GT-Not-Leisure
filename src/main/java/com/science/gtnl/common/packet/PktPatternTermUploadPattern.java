@@ -1,7 +1,5 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -10,6 +8,7 @@ import net.minecraft.util.ChatComponentTranslation;
 
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 import com.science.gtnl.mixins.late.appliedEnergistics.assembler.AccessorContainerPatternTerm;
 import com.science.gtnl.utils.DireCraftingPatternDetails;
 import com.science.gtnl.utils.Utils;

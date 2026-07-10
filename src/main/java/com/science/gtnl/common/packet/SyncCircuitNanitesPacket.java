@@ -1,9 +1,8 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import static com.science.gtnl.utils.event.SubscribeEventUtils.CIRCUIT_NANITES_DATA_LOAD;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 import com.science.gtnl.loader.RecipeLoader;
 
 import io.netty.buffer.ByteBuf;

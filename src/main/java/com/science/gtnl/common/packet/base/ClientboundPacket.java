@@ -1,10 +1,11 @@
 package com.science.gtnl.common.packet.base;
 
+import net.minecraft.client.Minecraft;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 
 public abstract class ClientboundPacket implements IMessage {
 
@@ -18,13 +19,10 @@ public abstract class ClientboundPacket implements IMessage {
         this.write(buf);
     }
 
-    protected void read(ByteBuf buf) {
-    }
+    protected void read(ByteBuf buf) {}
 
-    protected void write(ByteBuf buf) {
-    }
+    protected void write(ByteBuf buf) {}
 
     @SideOnly(Side.CLIENT)
     public abstract void handleClient(Minecraft minecraft);
 }
-

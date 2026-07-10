@@ -1,18 +1,17 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
 import com.github.bsideup.jabel.Desugar;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 import com.science.gtnl.common.packet.client.SoundHandler;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 
 public class SoundPacket extends ClientboundPacket {
 

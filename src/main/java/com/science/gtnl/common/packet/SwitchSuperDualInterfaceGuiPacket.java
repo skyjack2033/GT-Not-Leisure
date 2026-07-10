@@ -1,20 +1,18 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
 
 import com.science.gtnl.CommonProxy;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
 import io.netty.buffer.ByteBuf;
 
-public class SwitchSuperDualInterfaceGuiPacket
-    extends ServerboundPacket {
+public class SwitchSuperDualInterfaceGuiPacket extends ServerboundPacket {
 
     private int targetGuiId;
 

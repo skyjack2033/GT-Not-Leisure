@@ -1,10 +1,9 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -39,8 +38,7 @@ public class RequestGameProfilePacket extends ServerboundPacket {
 
     @Override
     public void handleServer(EntityPlayerMP player) {
-        ScienceNotLeisure.network.sendTo(
-            new PlaceItemInHotbarPacket(ItemUtils.getPlayerSkull(playerName), isCreative, useAE),
-            player);
+        ScienceNotLeisure.network
+            .sendTo(new PlaceItemInHotbarPacket(ItemUtils.getPlayerSkull(playerName), isCreative, useAE), player);
     }
 }

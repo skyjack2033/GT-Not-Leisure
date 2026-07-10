@@ -1,19 +1,17 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.science.gtnl.client.gui.GuiSuperDualInterfaceFluid;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.util.item.AEFluidStack;
 import io.netty.buffer.ByteBuf;
 
-public class SuperDualInterfaceFluidSyncPacket
-    extends ClientboundPacket {
+public class SuperDualInterfaceFluidSyncPacket extends ClientboundPacket {
 
     private Map<Integer, IAEFluidStack> stacks = new HashMap<>();
 

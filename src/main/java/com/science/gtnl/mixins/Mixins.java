@@ -224,9 +224,7 @@ public enum Mixins implements IMixins {
             "randomComplement.MixinQuantumCluster",
             "randomComplement.MixinTileQuantumBridge",
             "randomComplement.MixinWirelessTerminalGuiObject")
-        .addClientMixins(
-            "randomComplement.MixinGuiCraftAmount",
-            "randomComplement.MixinGuiCraftConfirm")
+        .addClientMixins("randomComplement.MixinGuiCraftAmount", "randomComplement.MixinGuiCraftConfirm")
         .setPhase(Phase.LATE)),
 
     OVERPOWERED_CHANGE(new MixinBuilder("Overpowered Mixin Changes")

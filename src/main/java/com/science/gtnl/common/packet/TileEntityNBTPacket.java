@@ -1,7 +1,5 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -10,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import cpw.mods.fml.common.network.ByteBufUtils;

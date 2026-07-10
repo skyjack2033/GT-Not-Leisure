@@ -1,10 +1,9 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 import com.science.gtnl.utils.item.ItemUtils;
 
 import cpw.mods.fml.common.network.ByteBufUtils;

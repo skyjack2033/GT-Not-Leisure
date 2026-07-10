@@ -1,18 +1,16 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionHitEffectState;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 
 import io.netty.buffer.ByteBuf;
 
-public class DraconicArmorProjectionHitEffectPacket
-    extends ClientboundPacket {
+public class DraconicArmorProjectionHitEffectPacket extends ClientboundPacket {
 
     private int playerId;
     private byte shieldPowerByte;

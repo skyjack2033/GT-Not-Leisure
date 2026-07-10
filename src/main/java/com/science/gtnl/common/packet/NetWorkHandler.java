@@ -5,6 +5,7 @@ import static com.science.gtnl.ScienceNotLeisure.network;
 import com.science.gtnl.common.packet.base.ClientboundPacket;
 import com.science.gtnl.common.packet.base.PayloadHandler;
 import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.relauncher.Side;
 import gregtech.api.enums.Mods;
@@ -57,15 +58,13 @@ public class NetWorkHandler {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T extends ClientboundPacket> void registerClientbound(
-        Class<? extends IMessageHandler> handler,
+    public static <T extends ClientboundPacket> void registerClientbound(Class<? extends IMessageHandler> handler,
         Class<T> packet) {
         network.registerMessage((Class) handler, packet, nextPacketId++, Side.CLIENT);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T extends ServerboundPacket> void registerServerbound(
-        Class<? extends IMessageHandler> handler,
+    public static <T extends ServerboundPacket> void registerServerbound(Class<? extends IMessageHandler> handler,
         Class<T> packet) {
         network.registerMessage((Class) handler, packet, nextPacketId++, Side.SERVER);
     }

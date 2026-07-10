@@ -1,11 +1,10 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 import com.science.gtnl.container.ContainerDirePatternEncoder;
 
 import cpw.mods.fml.common.network.ByteBufUtils;

@@ -1,12 +1,14 @@
 package com.science.gtnl.common.packet.base;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+
 import com.science.gtnl.ScienceNotLeisure;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
 
 public abstract class ServerboundPacket implements IMessage {
+
     private boolean invalid;
 
     @Override
@@ -23,11 +25,9 @@ public abstract class ServerboundPacket implements IMessage {
         this.write(buf);
     }
 
-    protected void read(ByteBuf buf) {
-    }
+    protected void read(ByteBuf buf) {}
 
-    protected void write(ByteBuf buf) {
-    }
+    protected void write(ByteBuf buf) {}
 
     protected final void invalidateMalformed(ByteBuf buf, RuntimeException exception) {
         this.invalid = true;

@@ -1,7 +1,5 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import static com.science.gtnl.ScienceNotLeisure.network;
 
 import net.minecraft.block.Block;
@@ -10,12 +8,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.WorldServer;
 
+import com.science.gtnl.common.packet.base.ServerboundPacket;
+
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 
 @Getter
-public class GetTileEntityNBTRequestPacket
-    extends ServerboundPacket {
+public class GetTileEntityNBTRequestPacket extends ServerboundPacket {
 
     public int x, y, z, blockID, blockMeta;
 

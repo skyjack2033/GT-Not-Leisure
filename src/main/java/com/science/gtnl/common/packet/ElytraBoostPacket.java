@@ -1,7 +1,5 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ServerboundPacket;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -10,6 +8,7 @@ import net.minecraft.nbt.NBTTagList;
 
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
 import com.reavaritia.common.items.InfinityElytra;
+import com.science.gtnl.common.packet.base.ServerboundPacket;
 
 import ganymedes01.etfuturum.api.elytra.IElytraPlayer;
 import ganymedes01.etfuturum.entities.EntityBoostingFireworkRocket;

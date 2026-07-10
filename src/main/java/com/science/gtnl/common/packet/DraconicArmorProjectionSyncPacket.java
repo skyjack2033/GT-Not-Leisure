@@ -1,7 +1,5 @@
 package com.science.gtnl.common.packet;
 
-import com.science.gtnl.common.packet.base.ClientboundPacket;
-
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
@@ -10,11 +8,11 @@ import net.minecraft.world.World;
 
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionState;
 import com.science.gtnl.common.item.items.bauble.DraconicArmorProjectionType;
+import com.science.gtnl.common.packet.base.ClientboundPacket;
 
 import io.netty.buffer.ByteBuf;
 
-public class DraconicArmorProjectionSyncPacket
-    extends ClientboundPacket {
+public class DraconicArmorProjectionSyncPacket extends ClientboundPacket {
 
     private UUID playerId;
     private String projectionTypeId;

@@ -1,5 +1,10 @@
 package com.science.gtnl.common.packet.base;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayerMP;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.science.gtnl.ScienceNotLeisure;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -7,22 +12,23 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayerMP;
-import org.jetbrains.annotations.Nullable;
 
 public final class PayloadHandler {
 
-    private PayloadHandler() {
-    }
+    private PayloadHandler() {}
 
     public static final class Client<T extends ClientboundPacket> implements IMessageHandler<T, IMessage> {
+
         @Override
         public @Nullable IMessage onMessage(T message, MessageContext ctx) {
             try {
                 runClient(message);
             } catch (RuntimeException exception) {
-                ScienceNotLeisure.LOG.error("Unhandled clientbound packet {}", message.getClass().getName(), exception);
+                ScienceNotLeisure.LOG.error(
+                    "Unhandled clientbound packet {}",
+                    message.getClass()
+                        .getName(),
+                    exception);
                 throw exception;
             }
             return null;
@@ -35,6 +41,7 @@ public final class PayloadHandler {
     }
 
     public static final class Server<T extends ServerboundPacket> implements IMessageHandler<T, IMessage> {
+
         @Override
         public @Nullable IMessage onMessage(T message, MessageContext ctx) {
             if (message.isInvalid()) {
@@ -44,7 +51,11 @@ public final class PayloadHandler {
             try {
                 message.handleServer(player);
             } catch (RuntimeException exception) {
-                ScienceNotLeisure.LOG.error("Unhandled serverbound packet {}", message.getClass().getName(), exception);
+                ScienceNotLeisure.LOG.error(
+                    "Unhandled serverbound packet {}",
+                    message.getClass()
+                        .getName(),
+                    exception);
                 throw exception;
             }
             return null;
