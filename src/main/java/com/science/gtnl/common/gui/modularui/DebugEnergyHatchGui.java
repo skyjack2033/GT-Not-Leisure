@@ -143,11 +143,6 @@ public class DebugEnergyHatchGui extends MTEHatchBaseGui<DebugEnergyHatch> {
     }
 
     @Override
-    protected UITexture getLogoTexture() {
-        return GTNLMui2Textures.PICTURE_GTNL_LOGO;
-    }
-
-    @Override
     protected boolean supportsFluidScreen() {
         return false;
     }

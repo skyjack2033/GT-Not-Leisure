@@ -203,7 +203,7 @@ public final class CraftingBatchPlannerImpl implements CraftingBatchPlanner {
     private static boolean hasValidItemStacks(IAEStack<?>[] stacks) {
         if (stacks.length == 0) return false;
         for (IAEStack<?> stack : stacks) {
-            if (stack == null || !(stack instanceof IAEItemStack) || stack.getStackSize() <= 0) return false;
+            if (!(stack instanceof IAEItemStack) || stack.getStackSize() <= 0) return false;
         }
         return true;
     }
@@ -227,9 +227,8 @@ public final class CraftingBatchPlannerImpl implements CraftingBatchPlanner {
         return limit;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private static IAEStack<?> getAvailableItem(MECraftingInventory inventory, IAEStack<?> key) {
-        return inventory.getAvailableItem((IAEStack) key);
+        return inventory.getAvailableItem(key);
     }
 
     private static long energyLimit(List<BatchRequirement> requirements, long upperBound,

@@ -17,7 +17,6 @@ import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
 import com.cleanroommc.modularui.screen.ModularPanel;
-import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
@@ -296,12 +295,6 @@ public class AssemblerMatrixGui extends GTNLMultiBlockBaseGui<AssemblerMatrix> {
                     .size(170, 10)
                     .marginLeft(2)
                     .tooltipBuilder(tooltip -> tooltip.addLine(lineTooltip)));
-    }
-
-    @Override
-    protected void createModeSwitchTooltip(RichTooltip tooltip) {
-        super.createModeSwitchTooltip(tooltip);
-        tooltip.addLine(IKey.dynamic(() -> GTUtility.getColoredSecondaryTooltip(multiblock.getMachineModeName())));
     }
 
     @Override
