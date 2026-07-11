@@ -32,6 +32,8 @@ public class WirelessPickBlock extends ServerboundPacket {
     private int slot;
     private ItemStack stack = null;
 
+    public WirelessPickBlock() {}
+
     public WirelessPickBlock(ItemStack stack, int slot) {
         this.stack = stack;
         this.slot = slot;
@@ -51,6 +53,8 @@ public class WirelessPickBlock extends ServerboundPacket {
 
     @Override
     public void handleServer(EntityPlayerMP player) {
+        if (stack == null || slot < 0 || slot >= player.inventory.mainInventory.length) return;
+
         ItemStack handItem = player.inventory.getStackInSlot(slot);
         ItemStack needItem = stack.copy();
         if (handItem != null) {
