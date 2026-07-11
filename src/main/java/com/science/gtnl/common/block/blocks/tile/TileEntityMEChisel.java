@@ -17,8 +17,12 @@ import org.jetbrains.annotations.NotNull;
 import com.cricketcraft.chisel.api.carving.CarvingUtils;
 import com.cricketcraft.chisel.api.carving.ICarvingRegistry;
 import com.google.common.collect.ImmutableSet;
+import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.utils.ChiselPatternDetails;
 import com.science.gtnl.utils.GTNLNBTTagList;
+import com.science.gtnl.utils.LargeInventoryCrafting;
+import com.science.gtnl.utils.crafting.ExactStackCacheCommit;
+import com.science.gtnl.utils.crafting.ExactStackCacheCommitImpl;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
@@ -60,6 +64,7 @@ import lombok.Getter;
 public class TileEntityMEChisel extends AENetworkInvTile implements IInterfaceHost, IGridTickable {
 
     private static final EnumSet<ForgeDirection> targets = EnumSet.complementOf(EnumSet.of(ForgeDirection.UNKNOWN));
+    private static final ExactStackCacheCommit CACHE_COMMIT = new ExactStackCacheCommitImpl();
     public final DualityInterface duality = new DualityInterface(this.getProxy(), this);
     public final AppEngInternalInventory inv = new AppEngInternalInventory(this, 1, 1);
     public final MachineSource source = new MachineSource(this);
@@ -206,14 +211,58 @@ public class TileEntityMEChisel extends AENetworkInvTile implements IInterfaceHo
     @Override
     public boolean pushPattern(ICraftingPatternDetails details, InventoryCrafting crafting) {
         if (details.getCondensedInputs().length == 0 || details.getCondensedOutputs().length == 0) return false;
+        if (!(crafting instanceof LargeInventoryCrafting largeInventory)) {
+            ScienceNotLeisure.LOG.error("ME Chisel received a crafting inventory without long batch metadata");
+            return false;
+        }
+        long crafts = largeInventory.getAssemblerSize();
+        if (crafts < 1) {
+            ScienceNotLeisure.LOG.error("ME Chisel received an invalid crafting batch size: {}", crafts);
+            return false;
+        }
+
         var inputD = details.getCondensedInputs()[0].getItemStack();
         for (var i = 0; i < crafting.getSizeInventory(); i++) {
             var input = crafting.getStackInSlot(i);
             if (input == null) continue;
             if (inputD.isItemEqual(input)) {
+                long outputAmount;
+                try {
+                    outputAmount = Math.multiplyExact(details.getCondensedOutputs()[0].getStackSize(), crafts);
+                } catch (ArithmeticException exception) {
+                    ScienceNotLeisure.LOG
+                        .error("ME Chisel output overflowed after an accepted AE batch plan", exception);
+                    return false;
+                }
                 var out = details.getCondensedOutputs()[0].copy()
-                    .setStackSize(input.stackSize);
-                cache.addStorage(out);
+                    .setStackSize(outputAmount);
+                ExactStackCacheCommit.Result result = CACHE_COMMIT
+                    .commit(out, new ExactStackCacheCommit.StackCache<>() {
+
+                        @Override
+                        public long getStoredAmount(IAEItemStack candidate) {
+                            IAEItemStack existing = cache.findPrecise(candidate);
+                            return existing == null ? 0 : existing.getStackSize();
+                        }
+
+                        @Override
+                        public long getCandidateAmount(IAEItemStack candidate) {
+                            return candidate.getStackSize();
+                        }
+
+                        @Override
+                        public void add(IAEItemStack candidate) {
+                            cache.addStorage(candidate);
+                        }
+                    });
+                if (!result.isCommitted()) {
+                    ScienceNotLeisure.LOG.error(
+                        "ME Chisel rejected an inexact cache commit: reason {}, existing {}, batch {}",
+                        result.getFailure(),
+                        result.getExistingAmount(),
+                        result.getCandidateAmount());
+                    return false;
+                }
                 return true;
             }
         }

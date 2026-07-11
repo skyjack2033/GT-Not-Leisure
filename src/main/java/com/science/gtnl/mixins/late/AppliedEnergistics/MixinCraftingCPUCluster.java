@@ -1,5 +1,9 @@
 package com.science.gtnl.mixins.late.appliedEnergistics;
 
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.inventory.InventoryCrafting;
@@ -8,17 +12,16 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Slice;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import com.llamalad7.mixinextras.sugar.ref.LocalLongRef;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.block.blocks.tile.TileEntityMEChisel;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import com.science.gtnl.config.MainConfig;
@@ -26,334 +29,272 @@ import com.science.gtnl.utils.ChiselPatternDetails;
 import com.science.gtnl.utils.DireCraftingPatternDetails;
 import com.science.gtnl.utils.LargeInventoryCrafting;
 import com.science.gtnl.utils.Utils;
+import com.science.gtnl.utils.crafting.CraftingBatchPlanner;
+import com.science.gtnl.utils.crafting.CraftingBatchPlanner.BatchPlan;
+import com.science.gtnl.utils.crafting.CraftingBatchPlanner.CommitResult;
+import com.science.gtnl.utils.crafting.CraftingBatchPlanner.MediumStrategy;
+import com.science.gtnl.utils.crafting.CraftingBatchPlanner.SessionAllocation;
+import com.science.gtnl.utils.crafting.CraftingBatchPlanner.SessionConsumption;
+import com.science.gtnl.utils.crafting.CraftingBatchPlanner.SessionSegment;
+import com.science.gtnl.utils.crafting.CraftingBatchPlannerImpl;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.networking.crafting.ICraftingMedium;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.energy.IEnergyGrid;
-import appeng.api.networking.security.BaseActionSource;
-import appeng.api.networking.security.MachineSource;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
-import appeng.api.storage.data.IItemList;
 import appeng.crafting.MECraftingInventory;
 import appeng.me.cache.CraftingGridCache;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
+import appeng.me.diagnostics.CraftingDiagnosticSessionId;
 
 @Mixin(value = CraftingCPUCluster.class, remap = false)
 public abstract class MixinCraftingCPUCluster {
 
+    @Unique
+    private static final CraftingBatchPlanner GTNL$BATCH_PLANNER = new CraftingBatchPlannerImpl();
+
     @Shadow
     private int remainingOperations;
-    @Shadow
-    private MachineSource machineSrc;
+
     @Shadow
     private MECraftingInventory inventory;
 
-    @SuppressWarnings({ "FieldCanBeLocal", "FieldMayBeFinal" })
+    /**
+     * Starts one dispatch context after AE resolves every medium registered for the pattern.
+     */
+    @WrapOperation(
+        method = "executeCrafting",
+        at = @At(
+            value = "INVOKE",
+            target = "Lappeng/me/cache/CraftingGridCache;getMediums(Lappeng/api/networking/crafting/ICraftingPatternDetails;)Ljava/util/List;"),
+        require = 1)
+    private List<ICraftingMedium> gtnl$beginDispatch(CraftingGridCache cache, ICraftingPatternDetails details,
+        Operation<List<ICraftingMedium>> original,
+        @Local(name = "craftingEntry") Map.Entry<ICraftingPatternDetails, ?> craftingEntry,
+        @Share("gtnl$batchDispatch") LocalRef<BatchDispatchContext> contextRef) {
+        List<ICraftingMedium> media = original.call(cache, details);
+        List<Boolean> compatibility = new ArrayList<>(media.size());
+        for (ICraftingMedium medium : media) {
+            compatibility.add(gtnl$isCompatiblePair(details, medium));
+        }
+
+        Object progress = craftingEntry.getValue();
+        if (!(progress instanceof AccessorTaskProgress taskProgress)) {
+            ScienceNotLeisure.LOG
+                .error("AE crafting task progress is missing the GTNL accessor for pattern {}", details);
+            contextRef.set(new BatchDispatchContext(details, null, MediumStrategy.NATIVE));
+            return media;
+        }
+
+        contextRef.set(
+            new BatchDispatchContext(details, taskProgress, GTNL$BATCH_PLANNER.resolveMediumStrategy(compatibility)));
+        return media;
+    }
+
+    /**
+     * Plans from AE's expanded one-craft inputs and returns independent stacks scaled to the exact batch.
+     */
+    @WrapOperation(
+        method = "executeCrafting",
+        at = @At(
+            value = "INVOKE",
+            target = "Lappeng/me/cluster/implementations/CraftingCPUCluster;getExpandedInputs(Lappeng/api/networking/crafting/ICraftingPatternDetails;Lappeng/me/cache/CraftingGridCache;)Ljava/util/List;"),
+        require = 1)
+    private List<IAEStack<?>> gtnl$planExpandedInputs(CraftingCPUCluster cluster, ICraftingPatternDetails details,
+        CraftingGridCache cache, Operation<List<IAEStack<?>>> original, IEnergyGrid eg,
+        @Share("gtnl$batchDispatch") LocalRef<BatchDispatchContext> contextRef) {
+        List<IAEStack<?>> expandedInputs = original.call(cluster, details, cache);
+        BatchDispatchContext context = contextRef.get();
+        if (expandedInputs == null || context == null || context.taskProgress == null) return expandedInputs;
+
+        BatchPlan plan = GTNL$BATCH_PLANNER.plan(
+            context.taskProgress.getValue(),
+            context.mediumStrategy,
+            expandedInputs,
+            details.getCondensedAEOutputs(),
+            this.inventory,
+            requested -> eg.extractAEPower(requested, Actionable.SIMULATE, PowerMultiplier.CONFIG));
+        context.resetForPlan(plan);
+        if (!plan.isBatched()) return expandedInputs;
+
+        try {
+            return GTNL$BATCH_PLANNER.scaleInputs(expandedInputs, plan.getCrafts());
+        } catch (ArithmeticException exception) {
+            ScienceNotLeisure.LOG.error(
+                "AE batch input scaling violated its checked plan for pattern {} and {} crafts",
+                details,
+                plan.getCrafts(),
+                exception);
+            context.reject();
+            return expandedInputs;
+        }
+    }
+
+    /**
+     * Rejects a planned dispatch if the actual extraction no longer matches the expanded request.
+     */
+    @WrapOperation(
+        method = "executeCrafting",
+        at = @At(
+            value = "INVOKE",
+            target = "Lappeng/crafting/MECraftingInventory;extractItems(Lappeng/api/storage/data/IAEStack;Lappeng/api/config/Actionable;)Lappeng/api/storage/data/IAEStack;"),
+        require = 1)
+    private IAEStack<?> gtnl$validateActualExtraction(MECraftingInventory craftingInventory, IAEStack<?> request,
+        Actionable mode, Operation<IAEStack<?>> original,
+        @Share("gtnl$batchDispatch") LocalRef<BatchDispatchContext> contextRef) {
+        IAEStack<?> extracted = original.call(craftingInventory, request, mode);
+        BatchDispatchContext context = contextRef.get();
+        if (context == null || !context.isPlannedBatch() || mode != Actionable.MODULATE) return extracted;
+        if (extracted != null && extracted.getStackSize() == request.getStackSize()) return extracted;
+
+        ScienceNotLeisure.LOG.error(
+            "AE batch extraction contract changed after planning for pattern {}: requested {}, extracted {}",
+            context.details,
+            request.getStackSize(),
+            extracted == null ? 0 : extracted.getStackSize());
+        context.reject();
+        if (extracted != null) craftingInventory.injectItems(extracted, Actionable.MODULATE);
+        return null;
+    }
+
+    /**
+     * Treats pushPattern as the transaction boundary for task, operation-budget, and diagnostics state.
+     */
+    @WrapOperation(
+        method = "executeCrafting",
+        at = @At(
+            value = "INVOKE",
+            target = "Lappeng/api/networking/crafting/ICraftingMedium;pushPattern(Lappeng/api/networking/crafting/ICraftingPatternDetails;Lnet/minecraft/inventory/InventoryCrafting;)Z"),
+        require = 1)
+    private boolean gtnl$commitAcceptedBatch(ICraftingMedium medium, ICraftingPatternDetails details,
+        InventoryCrafting craftingInventory, Operation<Boolean> original,
+        @Share("gtnl$batchDispatch") LocalRef<BatchDispatchContext> contextRef) {
+        BatchDispatchContext context = contextRef.get();
+        if (context == null || !context.isPlannedBatch()) {
+            return original.call(medium, details, craftingInventory);
+        }
+        if (context.rejected) return false;
+        if (!(craftingInventory instanceof LargeInventoryCrafting largeInventory)) {
+            ScienceNotLeisure.LOG
+                .error("AE supplied a crafting inventory without long batch support for pattern {}", details);
+            context.reject();
+            return false;
+        }
+
+        CommitResult commit;
+        try {
+            commit = GTNL$BATCH_PLANNER
+                .commit(context.plan, true, context.taskProgress.getValue(), this.remainingOperations);
+        } catch (RuntimeException exception) {
+            ScienceNotLeisure.LOG.error("AE batch commit precondition failed for pattern {}", details, exception);
+            context.reject();
+            return false;
+        }
+
+        largeInventory.setAssemblerSize(context.plan.getCrafts());
+        boolean accepted = original.call(medium, details, craftingInventory);
+        if (!accepted) return false;
+
+        context.taskProgress.setValue(commit.getTaskValueBeforeNativeDecrement());
+        this.remainingOperations = commit.getRemainingOperationsBeforeNativeDecrement();
+        context.committed = true;
+        return true;
+    }
+
+    /**
+     * Consumes diagnostics counts by session segments instead of invoking AE's synthetic one-craft accessor N times.
+     */
+    @WrapOperation(
+        method = "executeCrafting",
+        at = @At(
+            value = "INVOKE",
+            target = "Lappeng/me/cluster/implementations/CraftingCPUCluster$TaskProgress;access$300(Lappeng/me/cluster/implementations/CraftingCPUCluster$TaskProgress;)Lappeng/me/diagnostics/CraftingDiagnosticSessionId;"),
+        require = 1)
+    private CraftingDiagnosticSessionId gtnl$consumeBatchSessions(@Coerce Object taskProgress,
+        Operation<CraftingDiagnosticSessionId> original,
+        @Share("gtnl$batchDispatch") LocalRef<BatchDispatchContext> contextRef) {
+        BatchDispatchContext context = contextRef.get();
+        if (context == null || !context.committed) return original.call(taskProgress);
+
+        AccessorTaskProgress accessor = (AccessorTaskProgress) taskProgress;
+        context.sessionConsumption = GTNL$BATCH_PLANNER
+            .consumeSessions(gtnl$sessionSegments(accessor.getDiagnosticSessionCrafts()), context.plan.getCrafts());
+        long consumedCrafts = context.sessionConsumption.getConsumedCrafts();
+        if (consumedCrafts > 0 && consumedCrafts < context.plan.getCrafts()) {
+            ScienceNotLeisure.LOG.error(
+                "AE batch diagnostics session counts ended early for pattern {}: planned {}, consumed {}",
+                context.details,
+                context.plan.getCrafts(),
+                consumedCrafts);
+        }
+        return context.sessionConsumption.getFirstSessionId();
+    }
+
+    /**
+     * Returns checked output copies so diagnostics, postChange, waitingFor, and status observe one batch quantity.
+     */
+    @WrapOperation(
+        method = "executeCrafting",
+        at = @At(
+            value = "INVOKE",
+            target = "Lappeng/api/networking/crafting/ICraftingPatternDetails;getCondensedAEOutputs()[Lappeng/api/storage/data/IAEStack;"),
+        require = 1)
+    private IAEStack<?>[] gtnl$scaleCommittedOutputs(ICraftingPatternDetails details, Operation<IAEStack<?>[]> original,
+        @Share("gtnl$batchDispatch") LocalRef<BatchDispatchContext> contextRef) {
+        IAEStack<?>[] outputs = original.call(details);
+        BatchDispatchContext context = contextRef.get();
+        if (context == null || !context.committed) return outputs;
+        return GTNL$BATCH_PLANNER.scaleOutputs(outputs, context.plan.getCrafts());
+    }
+
+    /**
+     * Splits a scaled expected output across the session segments consumed by this committed batch.
+     */
+    @WrapOperation(
+        method = "executeCrafting",
+        at = @At(
+            value = "INVOKE",
+            target = "Lappeng/me/cluster/implementations/CraftingCpuDiagnostics;recordExpectedOutput(Lappeng/api/storage/data/IAEStack;JLappeng/me/diagnostics/CraftingDiagnosticSessionId;)V"),
+        require = 1)
+    private void gtnl$recordBatchExpectedOutput(@Coerce Object diagnostics, IAEStack<?> scaledOutput,
+        long outputObservedAtTick, CraftingDiagnosticSessionId nativeSession, Operation<Void> original,
+        @Share("gtnl$batchDispatch") LocalRef<BatchDispatchContext> contextRef) {
+        BatchDispatchContext context = contextRef.get();
+        if (context == null || !context.committed || context.sessionConsumption == null) {
+            original.call(diagnostics, scaledOutput, outputObservedAtTick, nativeSession);
+            return;
+        }
+
+        long crafts = context.plan.getCrafts();
+        if (scaledOutput.getStackSize() % crafts != 0) {
+            ScienceNotLeisure.LOG.error(
+                "AE batch diagnostics received a non-divisible output for pattern {}: amount {}, crafts {}",
+                context.details,
+                scaledOutput.getStackSize(),
+                crafts);
+            return;
+        }
+
+        long baseOutput = scaledOutput.getStackSize() / crafts;
+        for (SessionAllocation<CraftingDiagnosticSessionId> allocation : context.sessionConsumption.getAllocations()) {
+            IAEStack<?> sessionOutput = scaledOutput.copy();
+            sessionOutput.setStackSize(GTNL$BATCH_PLANNER.checkedMultiply(baseOutput, allocation.getCrafts()));
+            original.call(diagnostics, sessionOutput, outputObservedAtTick, allocation.getSessionId());
+        }
+    }
+
     @Unique
-    private boolean r$IgnoreParallel = false;
-
-    /**
-     * Calculates the maximum pattern batch size at the start of crafting execution.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(value = "INVOKE", target = "Ljava/util/Map$Entry;getKey()Ljava/lang/Object;"))
-    private Object getKeyR(Map.Entry<ICraftingPatternDetails, AccessorTaskProgress> instance,
-        Operation<ICraftingPatternDetails> original, @Share("snl$craftingFrequency") LocalLongRef craftingFrequencyR) {
-        var key = original.call(instance);
-
-        long max = 0;
-        var list = key.getCondensedOutputs();
-        for (IAEItemStack stack : list) {
-            long size = stack.getStackSize();
-            if (size > max) max = size;
-        }
-
-        craftingFrequencyR.set(
-            instance.getValue()
-                .getValue());
-        return key;
-    }
-
-    /**
-     * Checks whether the pattern can be batched by Assembler Matrix or ME Chisel, then clamps the batch size.
-     */
-    @Inject(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/api/networking/crafting/ICraftingMedium;isBusy()Z",
-            shift = At.Shift.AFTER))
-    private void executeCraftingI(IEnergyGrid eg, CraftingGridCache cc, CallbackInfo ci,
-        @Local(name = "medium") ICraftingMedium instance, @Local(name = "details") ICraftingPatternDetails details,
-        @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequencyR) {
-        assembly.set(false);
-        if ((details instanceof ChiselPatternDetails && instance instanceof TileEntityMEChisel)
-            || ((details.isCraftable() || details instanceof DireCraftingPatternDetails)
-                && instance instanceof AssemblerMatrix ef
-                && !ef.isBusy())) {
-            assembly.set(true);
-            long maxOutputSize = r$getMaxStackSize(details.getCondensedAEOutputs());
-            var craftingFrequency = Math.min(craftingFrequencyR.get(), Long.MAX_VALUE / maxOutputSize);
-            for (IAEItemStack input : details.getCondensedInputs()) {
-                if (input == null) continue;
-                long inputSize = input.getStackSize();
-                if (inputSize <= 0) continue;
-                final long size = r$multiplyStackSize(inputSize, craftingFrequency);
-                var item = this.inventory.extractItems(
-                    input.copy()
-                        .setStackSize(size),
-                    Actionable.SIMULATE,
-                    this.machineSrc);
-                if (item == null) continue;
-                if (item.getStackSize() < size) {
-                    long availableCrafts = item.getStackSize() / inputSize;
-                    if (availableCrafts < 2) {
-                        craftingFrequency = 1;
-                    } else {
-                        craftingFrequency = Math.min(craftingFrequency, availableCrafts);
-                    }
-                }
-            }
-            craftingFrequencyR.set(craftingFrequency);
-        }
-    }
-
-    /**
-     * Recalculates energy usage for batched patterns.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/api/networking/energy/IEnergyGrid;extractAEPower(DLappeng/api/config/Actionable;Lappeng/api/config/PowerMultiplier;)D"))
-    private double extractAEPowerR(IEnergyGrid eg, double v, Actionable actionable, PowerMultiplier powerMultiplier,
-        Operation<Double> original, @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequencyR) {
-        if (assembly.get()) {
-            var craftingFrequency = craftingFrequencyR.get();
-            var sum = v * craftingFrequency;
-            var o = eg.extractAEPower(sum, Actionable.SIMULATE, powerMultiplier);
-            if (o < sum - 0.01) {
-                long s = (long) (o / sum * craftingFrequency);
-                craftingFrequencyR.set(s);
-                if (s < 1) {
-                    return original.call(eg, v, actionable, powerMultiplier);
-                } else {
-                    return original.call(eg, v * s, Actionable.SIMULATE, powerMultiplier);
-                }
-            }
-            return o;
-        }
-        return original.call(eg, v, actionable, powerMultiplier);
-    }
-
-    /**
-     * Extracts ingredients with the computed batch size.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/crafting/MECraftingInventory;extractItems(Lappeng/api/storage/data/IAEStack;Lappeng/api/config/Actionable;)Lappeng/api/storage/data/IAEStack;"))
-    private IAEStack<?> extractItemsR(MECraftingInventory instance, IAEStack<?> request, Actionable mode,
-        Operation<IAEStack<?>> original, @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequency) {
-        if (assembly.get()) {
-            request = request.copy()
-                .setStackSize(request.getStackSize() * craftingFrequency.get());
-        }
-        return original.call(instance, request, mode);
-    }
-
-    /**
-     * Scales stack notifications for batched patterns.
-     */
-    @Unique
-    private void r$postChange(CraftingCPUCluster instance, IAEStack<?> receiver, BaseActionSource single,
-        LocalBooleanRef assembly, LocalLongRef craftingFrequency, Operation<Void> original) {
-        if (assembly.get()) {
-            receiver = receiver.copy()
-                .setStackSize(receiver.getStackSize() * craftingFrequency.get());
-        }
-        original.call(instance, receiver, single);
-    }
-
-    /**
-     * Scales mutable stack notifications for batched patterns.
-     */
-    @Unique
-    private void r$postChange1(CraftingCPUCluster instance, IAEStack<?> receiver, BaseActionSource single,
-        LocalBooleanRef assembly, LocalLongRef craftingFrequency, Operation<Void> original) {
-        if (assembly.get()) {
-            receiver.setStackSize(receiver.getStackSize() * craftingFrequency.get());
-        }
-        original.call(instance, receiver, single);
+    private static boolean gtnl$isCompatiblePair(ICraftingPatternDetails details, ICraftingMedium medium) {
+        return (details instanceof DireCraftingPatternDetails && medium instanceof AssemblerMatrix)
+            || (details instanceof ChiselPatternDetails && medium instanceof TileEntityMEChisel);
     }
 
     @Unique
-    private long r$getMaxStackSize(IAEStack<?>[] stacks) {
-        long maxStackSize = 1;
-        for (IAEStack<?> stack : stacks) {
-            if (stack == null) continue;
-            maxStackSize = Math.max(maxStackSize, stack.getStackSize());
-        }
-        return maxStackSize;
-    }
-
-    @Unique
-    private long r$multiplyStackSize(long stackSize, long multiplier) {
-        if (stackSize <= 0 || multiplier <= 0) return 0;
-        if (stackSize > Long.MAX_VALUE / multiplier) return Long.MAX_VALUE;
-        return stackSize * multiplier;
-    }
-
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/me/cluster/implementations/CraftingCPUCluster;postChange(Lappeng/api/storage/data/IAEStack;Lappeng/api/networking/security/BaseActionSource;)V",
-            ordinal = 1))
-    private void postChangeR1(CraftingCPUCluster instance, IAEStack<?> receiver, BaseActionSource single,
-        Operation<Void> original, @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequencyR) {
-        r$postChange1(instance, receiver, single, assembly, craftingFrequencyR, original);
-    }
-
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/me/cluster/implementations/CraftingCPUCluster;postChange(Lappeng/api/storage/data/IAEStack;Lappeng/api/networking/security/BaseActionSource;)V",
-            ordinal = 2))
-    private void postChangeR2(CraftingCPUCluster instance, IAEStack<?> receiver, BaseActionSource single,
-        Operation<Void> original, @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequencyR) {
-        r$postChange(instance, receiver, single, assembly, craftingFrequencyR, original);
-    }
-
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/me/cluster/implementations/CraftingCPUCluster;postChange(Lappeng/api/storage/data/IAEStack;Lappeng/api/networking/security/BaseActionSource;)V",
-            ordinal = 0))
-    private void postChangeR0(CraftingCPUCluster instance, IAEStack<?> receiver, BaseActionSource single,
-        Operation<Void> original, @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequencyR) {
-        r$postChange(instance, receiver, single, assembly, craftingFrequencyR, original);
-    }
-
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/me/cluster/implementations/CraftingCPUCluster;postChange(Lappeng/api/storage/data/IAEStack;Lappeng/api/networking/security/BaseActionSource;)V",
-            ordinal = 3))
-    private void postChangeR3(CraftingCPUCluster instance, IAEStack<?> receiver, BaseActionSource single,
-        Operation<Void> original, @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequencyR) {
-        r$postChange1(instance, receiver, single, assembly, craftingFrequencyR, original);
-    }
-
-    /**
-     * Scales expected output stacks before adding them to the waiting list.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/api/storage/data/IItemList;add(Lappeng/api/storage/data/IAEStack;)V",
-            ordinal = 0))
-    private void addR(IItemList<IAEStack<?>> instance, IAEStack<?> iaeStack, Operation<Void> original,
-        @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequency) {
-        if (assembly.get()) {
-            iaeStack.setStackSize(iaeStack.getStackSize() * craftingFrequency.get());
-        }
-        original.call(instance, iaeStack);
-    }
-
-    /**
-     * Scales crafting status updates for batched patterns.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/me/cluster/implementations/CraftingCPUCluster;postCraftingStatusChange(Lappeng/api/storage/data/IAEStack;)V",
-            ordinal = 0))
-    private void postCraftingStatusChangeR(CraftingCPUCluster instance, IAEStack<?> iaeStack, Operation<Void> original,
-        @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequency) {
-        if (assembly.get()) {
-            iaeStack.setStackSize(iaeStack.getStackSize() * craftingFrequency.get());
-        }
-        original.call(instance, iaeStack);
-    }
-
-    /**
-     * Lets batched patterns pass the complete input extraction check.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(value = "INVOKE", target = "Lappeng/api/storage/data/IAEStack;getStackSize()J", ordinal = 0),
-        slice = @Slice(
-            from = @At(
-                value = "INVOKE",
-                target = "Lappeng/util/inv/MEInventoryCrafting;setInventorySlotContents(ILappeng/api/storage/data/IAEStack;)V"),
-            to = @At(
-                value = "INVOKE",
-                target = "Lappeng/me/cluster/implementations/CraftingCPUCluster;postChange(Lappeng/api/storage/data/IAEStack;Lappeng/api/networking/security/BaseActionSource;)V",
-                ordinal = 1)))
-    private long getCountR(IAEStack<?> instance, Operation<Long> original,
-        @Share("snl$assembly") LocalBooleanRef assembly) {
-        if (assembly.get()) return 1L;
-        return original.call(instance);
-    }
-
-    /**
-     * Passes the batch size to large crafting inventories.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(
-            value = "INVOKE",
-            target = "Lappeng/api/networking/crafting/ICraftingMedium;pushPattern(Lappeng/api/networking/crafting/ICraftingPatternDetails;Lnet/minecraft/inventory/InventoryCrafting;)Z"))
-    private boolean pushPatternR(ICraftingMedium instance, ICraftingPatternDetails details,
-        InventoryCrafting inventoryCrafting, Operation<Boolean> original,
-        @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequency) {
-        if (assembly.get()) ((LargeInventoryCrafting) inventoryCrafting).setAssemblerSize(craftingFrequency.get());
-        return original.call(instance, details, inventoryCrafting);
-    }
-
-    /**
-     * Consumes the correct number of pending task operations for batched patterns.
-     */
-    @WrapOperation(
-        method = "executeCrafting",
-        at = @At(value = "INVOKE", target = "Ljava/util/Map$Entry;getValue()Ljava/lang/Object;", ordinal = 2))
-    private Object getValueR(Map.Entry<ICraftingPatternDetails, AccessorTaskProgress> instance,
-        Operation<AccessorTaskProgress> original, @Share("snl$assembly") LocalBooleanRef assembly,
-        @Share("snl$craftingFrequency") LocalLongRef craftingFrequency) {
-        if (assembly.get()) {
-            if (!this.r$IgnoreParallel) {
-                this.remainingOperations -= (int) (craftingFrequency.get() - 1);
-            }
-            var value = original.call(instance);
-            long extraCrafts = craftingFrequency.get() - 1;
-            value.setValue(value.getValue() - extraCrafts);
-            for (long i = 0; i < extraCrafts; i++) {
-                value.invokeConsumeCraftSession();
-            }
-            return value;
-        }
-        return original.call(instance);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static Deque<SessionSegment<CraftingDiagnosticSessionId>> gtnl$sessionSegments(LinkedList<?> segments) {
+        return (Deque) segments;
     }
 
     @Inject(method = "translateFromNetwork", at = @At("HEAD"), cancellable = true)
@@ -363,4 +304,37 @@ public abstract class MixinCraftingCPUCluster {
         cir.setReturnValue(Utils.getExtraInterfaceName(name));
     }
 
+    @Unique
+    private static final class BatchDispatchContext {
+
+        private final ICraftingPatternDetails details;
+        private final AccessorTaskProgress taskProgress;
+        private final MediumStrategy mediumStrategy;
+        private BatchPlan plan;
+        private boolean rejected;
+        private boolean committed;
+        private SessionConsumption<CraftingDiagnosticSessionId> sessionConsumption;
+
+        private BatchDispatchContext(ICraftingPatternDetails details, AccessorTaskProgress taskProgress,
+            MediumStrategy mediumStrategy) {
+            this.details = details;
+            this.taskProgress = taskProgress;
+            this.mediumStrategy = mediumStrategy;
+        }
+
+        private void resetForPlan(BatchPlan plan) {
+            this.plan = plan;
+            this.rejected = false;
+            this.committed = false;
+            this.sessionConsumption = null;
+        }
+
+        private boolean isPlannedBatch() {
+            return this.plan != null && this.plan.isBatched();
+        }
+
+        private void reject() {
+            this.rejected = true;
+        }
+    }
 }

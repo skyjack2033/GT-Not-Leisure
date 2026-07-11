@@ -8,6 +8,7 @@ import java.util.Set;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 
+import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
 import com.science.gtnl.utils.DireCraftingPatternDetails;
 import com.science.gtnl.utils.LargeInventoryCrafting;
@@ -80,29 +81,51 @@ public class AssemblerMatrixPatternState {
             return false;
         }
 
-        long assemblerSize = Math.max(1, ((LargeInventoryCrafting) table).getAssemblerSize());
+        if (!(table instanceof LargeInventoryCrafting largeInventory)) {
+            ScienceNotLeisure.LOG.error("Assembler Matrix received a crafting inventory without long batch metadata");
+            return false;
+        }
+        long assemblerSize = largeInventory.getAssemblerSize();
+        if (assemblerSize < 1) {
+            ScienceNotLeisure.LOG.error("Assembler Matrix received an invalid crafting batch size: {}", assemblerSize);
+            return false;
+        }
+
+        Queue<IAEItemStack> batchInputs = new ArrayDeque<>();
+        Queue<IAEItemStack> batchOutputs = new ArrayDeque<>();
         IAEItemStack[] patternInputs = direPattern.getInputs();
+        try {
+            for (int slot = 0; slot < table.getSizeInventory(); slot++) {
+                ItemStack stack = table.getStackInSlot(slot);
+                if (stack != null) {
+                    ItemStack containerItem = AssemblerMatrix.resolveContainerItem(stack);
+                    if (containerItem != null) {
+                        IAEItemStack patternInput = slot < patternInputs.length ? patternInputs[slot] : null;
+                        long containerAmount = patternInput == null ? assemblerSize
+                            : multiplyStackSize(patternInput.getStackSize(), assemblerSize);
+                        batchInputs.add(
+                            AEItemStack.create(containerItem)
+                                .setStackSize(containerAmount));
+                    }
+                }
+            }
+            for (IAEItemStack output : patternDetails.getCondensedOutputs()) {
+                if (output == null) continue;
+                batchOutputs.add(
+                    output.copy()
+                        .setStackSize(multiplyStackSize(output.getStackSize(), assemblerSize)));
+            }
+        } catch (ArithmeticException exception) {
+            ScienceNotLeisure.LOG.error("Assembler Matrix stack overflowed after an accepted AE batch plan", exception);
+            return false;
+        }
+
         for (int slot = 0; slot < table.getSizeInventory(); slot++) {
             ItemStack stack = table.getStackInSlot(slot);
-            if (stack != null) {
-                ItemStack containerItem = AssemblerMatrix.resolveContainerItem(stack);
-                if (containerItem != null) {
-                    IAEItemStack patternInput = slot < patternInputs.length ? patternInputs[slot] : null;
-                    long containerAmount = patternInput == null ? assemblerSize
-                        : multiplyStackSize(patternInput.getStackSize(), assemblerSize);
-                    inputs.add(
-                        AEItemStack.create(containerItem)
-                            .setStackSize(containerAmount));
-                }
-                stack.stackSize = 1;
-            }
+            if (stack != null) stack.stackSize = 1;
         }
-        for (IAEItemStack output : patternDetails.getCondensedOutputs()) {
-            if (output == null) continue;
-            outputs.add(
-                output.copy()
-                    .setStackSize(multiplyStackSize(output.getStackSize(), assemblerSize)));
-        }
+        inputs.addAll(batchInputs);
+        outputs.addAll(batchOutputs);
         return true;
     }
 
@@ -133,8 +156,9 @@ public class AssemblerMatrixPatternState {
     }
 
     private static long multiplyStackSize(long stackSize, long multiplier) {
-        if (stackSize <= 0 || multiplier <= 0) return 0;
-        if (stackSize > Long.MAX_VALUE / multiplier) return Long.MAX_VALUE;
-        return stackSize * multiplier;
+        if (stackSize <= 0 || multiplier <= 0) {
+            throw new ArithmeticException("Assembler Matrix stack quantities must be positive");
+        }
+        return Math.multiplyExact(stackSize, multiplier);
     }
 }

@@ -120,6 +120,11 @@ public class ChiselPatternDetails implements ICraftingPatternDetails {
     }
 
     @Override
+    public boolean canBeSubstitute() {
+        return false;
+    }
+
+    @Override
     public ItemStack getOutput(InventoryCrafting inventoryCrafting, World world) {
         throw new IllegalStateException("Only crafting recipes supported.");
     }

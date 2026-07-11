@@ -12,7 +12,7 @@ import com.science.gtnl.utils.LargeInventoryCrafting;
 public class MixinInventoryCrafting implements LargeInventoryCrafting {
 
     @Unique
-    private long gtnl$assembler;
+    private long gtnl$assembler = 1L;
 
     @Intrinsic
     public void setAssemblerSize(long value) {
