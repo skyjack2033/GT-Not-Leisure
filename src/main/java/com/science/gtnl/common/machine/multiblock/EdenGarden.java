@@ -336,7 +336,7 @@ public class EdenGarden extends MultiMachineBase<EdenGarden> implements IGreenHo
 
     @Override
     public int getWaterUsage() {
-        long waterUsage = (long) getTotalStoredCropCount() * WATER_PER_SEED;
+        long waterUsage = (long) getEffectiveStoredCropCount() * WATER_PER_SEED;
         return waterUsage > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) waterUsage;
     }
 

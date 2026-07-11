@@ -189,6 +189,26 @@ public interface IGreenHouse extends IVoidable {
             .sum();
     }
 
+    default int getEffectiveStoredCropCount() {
+        int count = 0;
+        for (GreenHouseStoredCrop crop : getStoredCrops()) {
+            ISeedData seedData = CropsNHUtils.getAnalyzedSeedData(crop.getSeedStack());
+            count += getEffectiveStoredCropCount(crop, seedData);
+        }
+        return count;
+    }
+
+    default int getEffectiveStoredCropCount(GreenHouseStoredCrop crop, ISeedData seedData) {
+        if (seedData == null) return 0;
+        int seedCount = crop.getSeedCount();
+        if (seedCount <= 0) return 0;
+        if (!needsBlockUnder(seedData)) return seedCount;
+
+        ItemStack blockUnder = crop.getBlockUnderStack();
+        if (CropsNHUtils.isStackInvalid(blockUnder)) return 0;
+        return Math.min(seedCount, blockUnder.stackSize);
+    }
+
     default int getUsedBlockUnderCount() {
         return getStoredCrops().stream()
             .mapToInt(
@@ -496,6 +516,39 @@ public interface IGreenHouse extends IVoidable {
         if (getStoredCrops().isEmpty()) return CheckRecipeResultRegistry.NO_RECIPE;
         if (getTotalStoredCropCount() > getMaxSeedCount()) return SEED_OVERFLOW;
 
+        IFDropTable cycleDrops = new IFDropTable();
+        int activeSeedCount = 0;
+        boolean skippedBlockUnderCrop = false;
+        for (GreenHouseStoredCrop storedCrop : getStoredCrops()) {
+            ISeedData seedData = createRuntimeSeedData(storedCrop.getSeedStack());
+            if (seedData == null) continue;
+
+            int effectiveSeedCount = getEffectiveStoredCropCount(storedCrop, seedData);
+            if (effectiveSeedCount <= 0) {
+                if (needsBlockUnder(seedData)) {
+                    skippedBlockUnderCrop = true;
+                }
+                continue;
+            }
+
+            CheckRecipeResult canGrow = validateCanGrow(seedData, storedCrop);
+            if (!canGrow.wasSuccessful()) {
+                if (canGrow == BLOCK_UNDER_MISMATCH_FARM) {
+                    skippedBlockUnderCrop = true;
+                    continue;
+                }
+                return canGrow;
+            }
+
+            IFDropTable drops = getDropsPerCycle(seedData);
+            if (drops == null) return CANNOT_GROW;
+            drops.addTo(cycleDrops, effectiveSeedCount * getGreenHouseOutputMultiplier());
+            activeSeedCount += effectiveSeedCount;
+        }
+        if (activeSeedCount <= 0) {
+            return skippedBlockUnderCrop ? BLOCK_UNDER_MISMATCH_FARM : CheckRecipeResultRegistry.NO_RECIPE;
+        }
+
         List<Pair<FluidStack, Integer>> waterToConsume = new ArrayList<>();
         int waterMissing = getWaterUsage();
         for (FluidStack fluidStack : getStoredFluids()) {
@@ -509,17 +562,6 @@ public interface IGreenHouse extends IVoidable {
             if (waterMissing <= 0) break;
         }
         if (waterMissing > 0) return NOT_ENOUGH_WATER;
-
-        IFDropTable cycleDrops = new IFDropTable();
-        for (GreenHouseStoredCrop storedCrop : getStoredCrops()) {
-            ISeedData seedData = createRuntimeSeedData(storedCrop.getSeedStack());
-            if (seedData == null) return CheckRecipeResultRegistry.NO_RECIPE;
-            CheckRecipeResult canGrow = validateCanGrow(seedData, storedCrop);
-            if (!canGrow.wasSuccessful()) return canGrow;
-            IFDropTable drops = getDropsPerCycle(seedData);
-            if (drops == null) return CANNOT_GROW;
-            drops.addTo(cycleDrops, storedCrop.getSeedCount() * getGreenHouseOutputMultiplier());
-        }
 
         cycleDrops.addTo(getIndustrialFarmDropTracker());
         if (getVoidingMode().protectItem) {
