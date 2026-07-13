@@ -332,7 +332,9 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
         return String.join("\n", des);
     }
 
-    public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ) {
+    @Override
+    public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
+        ItemStack aTool) {
         if (aPlayer.isSneaking()) {
             mVoidStone = !mVoidStone;
             GTUtility.sendChatTrans(aPlayer, "GT5U.machines.oreprocessor.void", mVoidStone);

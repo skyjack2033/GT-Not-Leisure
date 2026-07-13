@@ -288,7 +288,6 @@ public class SteamElevator extends SteamMultiMachineBase<SteamElevator> implemen
         wirelessMode = false;
         mModuleHatches.clear();
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        checkHatch(errors);
         if (mSteamInputFluids.isEmpty() && mSteamBigInputFluids.isEmpty() && mSteamWirelessInputFluids.isEmpty()) {
             wirelessMode = true;
         }
