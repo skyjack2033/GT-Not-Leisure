@@ -116,7 +116,7 @@ public class MixerRecipes implements IRecipePool {
                 ItemList.Machine_Mass_Solidifier.get(1),
                 GregtechItemList.Controller_IndustrialFluidHeater.get(1),
                 ItemList.IndustrialElectrolyzer.get(4),
-                GregtechItemList.Industrial_Mixer.get(2),
+                ItemList.IndustrialMixer.get(2),
                 ItemList.Machine_Multi_LargeChemicalReactor.get(15))
             .itemOutputs(GTNLItemList.PlatinumBasedTreatment.get(1))
             .fluidInputs(
