@@ -3733,7 +3733,7 @@ public class AssemblerRecipes implements IRecipePool {
             .itemInputs(
                 CropsNHItemList.CropManager_LV.get(2),
                 new ItemStack(Blocks.dirt, 64),
-                GTModHandler.getModItem(Mods.IndustrialCraft2.ID, "blockCrop", 64),
+                CropsNHItemList.cropSticks.get(64),
                 GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 16, 4),
                 GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 16, 2),
                 GTModHandler.getModItem(Mods.Forestry.ID, "ffarm", 4, 5))
