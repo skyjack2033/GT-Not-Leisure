@@ -3,13 +3,11 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,15 +17,18 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.GameUtils;
+import com.gtnllib.utils.MathUtils;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.Utils;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
@@ -43,10 +44,10 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 import gtnhlanth.common.register.LanthItemList;
-import tectech.thing.casing.TTCasingsContainer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class TransliminalOasis extends WirelessEnergyMultiMachineBase<TransliminalOasis> {
 
     private static final int HORIZONTAL_OFF_SET = 21;
@@ -74,11 +75,11 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
     public IStructureDefinition<TransliminalOasis> getStructureDefinition() {
         return StructureDefinition.<TransliminalOasis>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
-            .addElement('D', StructureUtility.ofBlock(BlockLoader.metaCasing, 18))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
+            .addElement('A', Casings.RadiantNaquadahAlloyCasing.asElement())
+            .addElement('B', Casings.NaquadriaReinforcedWaterPlantCasing.asElement())
+            .addElement('C', Casings.HeatResistantTriniumPlatedCasing.asElement())
+            .addElement('D', GTNLCasings.HyperCore.asElement())
+            .addElement('E', Casings.FilterMachineCasing.asElement())
             .addElement(
                 'F',
                 GTStructureUtility.buildHatchAdder(TransliminalOasis.class)
@@ -92,18 +93,17 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 6))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 2))
-            .addElement('L', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.PressureContainmentCasing.asElement())))
+            .addElement('G', Casings.SlickSterileFlocculationCasing.asElement())
+            .addElement('H', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('I', Casings.CleanStainlessSteelMachineCasing.asElement())
+            .addElement('J', Casings.ChemicallyInertMachineCasing.asElement())
+            .addElement('K', Casings.MiningNeutroniumCasing.asElement())
+            .addElement('L', Casings.HighPowerCasing.asElement())
             .addElement(
                 'M',
-                Mods.RandomThings.isModLoaded()
+                GameUtils.blockOr(Mods.RandomThings.ID, "fertilizedDirt", null) != null
                     ? StructureUtility.ofChain(
                         StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.RandomThings.ID, "fertilizedDirt")),
                         StructureUtility
@@ -111,10 +111,10 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
                     : StructureUtility.ofBlockAnyMeta(Blocks.dirt))
             .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 9))
             .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockTintedGlass, 0))
-            .addElement('P', StructureUtility.ofBlock(BlockLoader.metaBlockGlow, 31))
-            .addElement('Q', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 1))
+            .addElement('P', GTNLCasings.WhiteLamp.asElement())
+            .addElement('Q', Casings.AdvancedFilterCasing.asElement())
             .addElement('R', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('S', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 0))
+            .addElement('S', Casings.ChemicalGradeGlass.asElement())
             .addElement('T', GTStructureUtility.ofFrame(Materials.Polytetrafluoroethylene))
             .addElement('U', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
             .build();
@@ -175,14 +175,14 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
         maxParallelStored = -1;
         resetParallelTier();
         costingEU = BigInteger.ZERO;
-        costingEUText = Utils.ZERO_STRING;
+        costingEUText = MathUtils.ZERO_STRING;
         totalOverclockedDuration = 0;
         cycleNow = 0;
 
         if (!wirelessMode) return super.checkProcessing();
 
         List<ItemStack> original = getAllStoredInputs();
-        List<ItemStack> merged = new ArrayList<>();
+        List<ItemStack> merged = new ObjectArrayList<>();
 
         outer: for (ItemStack stack : original) {
             if (stack == null) continue;
@@ -237,13 +237,13 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
         BigInteger costEU = BigInteger.valueOf(processingLogic.getCalculatedEut())
             .multiply(BigInteger.valueOf(processingLogic.getDuration()));
 
-        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(Utils.NEGATIVE_ONE))) {
+        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(MathUtils.NEGATIVE_ONE))) {
             return CheckRecipeResultRegistry.insufficientPower(costEU.longValue());
         }
 
         costingEU = costingEU.add(costEU);
-        mOutputItems = Utils.mergeArray(mOutputItems, processingLogic.getOutputItems());
-        mOutputFluids = Utils.mergeArray(mOutputFluids, processingLogic.getOutputFluids());
+        mOutputItems = MathUtils.mergeArray(mOutputItems, processingLogic.getOutputItems());
+        mOutputFluids = MathUtils.mergeArray(mOutputFluids, processingLogic.getOutputFluids());
         totalOverclockedDuration += processingLogic.getDuration();
 
         endRecipeProcessing();
@@ -262,7 +262,7 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
+        return Casings.PressureContainmentCasing.getTextureId();
     }
 
     @Override
@@ -285,27 +285,8 @@ public class TransliminalOasis extends WirelessEnergyMultiMachineBase<Translimin
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("TransliminalOasisRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_TransliminalOasis_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(43, 24, 39, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_TransliminalOasis_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_TransliminalOasis_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_TransliminalOasis_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_TransliminalOasis_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

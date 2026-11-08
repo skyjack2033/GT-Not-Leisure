@@ -3,12 +3,10 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -19,9 +17,11 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -37,8 +37,10 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import tectech.thing.casing.TTCasingsContainer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
 
     private static final int HORIZONTAL_OFF_SET = 7;
@@ -57,6 +59,11 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.cracker_hub.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new CrackerHub(this.mName);
     }
@@ -66,12 +73,12 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
         return StructureDefinition.<CrackerHub>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 10))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 12))
+            .addElement('B', Casings.PressureContainmentCasing.asElement())
+            .addElement('C', Casings.TungstensteelPipeCasing.asElement())
+            .addElement('D', Casings.GrateMachineCasing.asElement())
+            .addElement('E', Casings.CleanStainlessSteelMachineCasing.asElement())
+            .addElement('F', Casings.StainlessSteelTurbineCasing.asElement())
+            .addElement('G', Casings.TungstensteelTurbineCasing.asElement())
             .addElement(
                 'H',
                 GTStructureChannels.HEATING_COIL.use(
@@ -91,14 +98,13 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
-            .addElement('J', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsBA0, 6))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
+            .addElement('J', Casings.ZPMSuperconductorPrimaryTeslaWindings.asElement())
             .addElement('K', GTStructureUtility.ofFrame(Materials.StainlessSteel))
             .addElement('L', GTStructureUtility.ofFrame(Materials.Ultimet))
             .addElement('M', GTStructureUtility.ofFrame(Materials.HSSS))
-            .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockReinforced, 10))
+            .addElement('N', Casings.NaquadahReinforcedBlock.asElement())
             .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 9))
             .addElement('P', HatchElement.Muffler.newAny(getCasingTextureID(), 16))
             .build();
@@ -180,7 +186,7 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
         FluidStack[] outputFluids = processingLogic.getOutputFluids();
         mOutputFluids = outputFluids;
         if (outputFluids != null) {
-            List<FluidStack> expandedFluids = new ArrayList<>();
+            List<FluidStack> expandedFluids = new ObjectArrayList<>();
             for (FluidStack fluidStack : outputFluids) {
                 if (fluidStack != null) {
                     long totalAmount = (long) (fluidStack.amount * (1 + factor));
@@ -200,7 +206,7 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -223,31 +229,8 @@ public class CrackerHub extends WirelessEnergyMultiMachineBase<CrackerHub> {
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("CrackerHubRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_CrackerHub_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_CrackerHub_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 23, 25, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_CrackerHub_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

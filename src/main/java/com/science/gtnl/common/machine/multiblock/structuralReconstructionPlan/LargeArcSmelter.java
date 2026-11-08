@@ -3,12 +3,10 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,10 +14,12 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -33,6 +33,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeArcSmelter extends GTMMultiMachineBase<LargeArcSmelter> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -51,10 +53,15 @@ public class LargeArcSmelter extends GTMMultiMachineBase<LargeArcSmelter> implem
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_arc_smelter.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeArcSmelter> getStructureDefinition() {
         return StructureDefinition.<LargeArcSmelter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 8))
+            .addElement('A', GTNLCasings.MolybdenumDisilicideCoil.asElement())
             .addElement(
                 'B',
                 buildHatchAdder(LargeArcSmelter.class).casingIndex(getCasingTextureID())
@@ -68,8 +75,7 @@ public class LargeArcSmelter extends GTMMultiMachineBase<LargeArcSmelter> implem
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasingsMisc, 15))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BlastSmelterCasing.asElement())))
             .addElement('C', HatchElement.Muffler.newAny(getCasingTextureID(), 1))
             .build();
     }
@@ -143,20 +149,8 @@ public class LargeArcSmelter extends GTMMultiMachineBase<LargeArcSmelter> implem
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeArcSmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .addPerfectOCInfo()
-            .beginStructureBlock(5, 4, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeArcSmelter_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

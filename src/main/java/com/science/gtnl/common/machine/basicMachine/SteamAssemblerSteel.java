@@ -3,21 +3,15 @@ package com.science.gtnl.common.machine.basicMachine;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.gtnewhorizons.modularui.api.drawable.IDrawable;
-import com.gtnewhorizons.modularui.api.math.Pos2d;
-import com.gtnewhorizons.modularui.api.math.Size;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
-import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
-import com.gtnewhorizons.modularui.common.widget.ProgressBar;
-import com.science.gtnl.utils.item.ItemUtils;
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.science.gtnl.common.gui.modularui.singleblock.GTNLSteamBasicMachineGui;
 
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.TierEU;
-import gregtech.api.gui.modularui.GUITextureSet;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -32,7 +26,14 @@ import gregtech.api.util.GTUtility;
 public class SteamAssemblerSteel extends MTEBasicMachineSteel {
 
     public SteamAssemblerSteel(int aID, String aName, String aNameRegional) {
-        super(aID, aName, aNameRegional, StatCollector.translateToLocal("Tooltip_SteamAssembler_00"), 6, 1, true);
+        super(
+            aID,
+            aName,
+            aNameRegional,
+            StatCollector.translateToLocal("gtnl.machine.steam_assembler.tooltip.0"),
+            6,
+            1,
+            true);
     }
 
     public SteamAssemblerSteel(String aName, String[] aDescription, ITexture[][][] aTextures) {
@@ -50,8 +51,18 @@ public class SteamAssemblerSteel extends MTEBasicMachineSteel {
     }
 
     @Override
+    protected BasicUIProperties getUIProperties() {
+        return SteamAssemblerBronze.applyTo(super.getUIProperties());
+    }
+
+    @Override
     public void startProcess() {
         sendLoopStart((byte) 1);
+    }
+
+    @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings uiSettings) {
+        return new GTNLSteamBasicMachineGui(this, getUIProperties()).build(data, syncManager, uiSettings);
     }
 
     @Override
@@ -153,62 +164,5 @@ public class SteamAssemblerSteel extends MTEBasicMachineSteel {
                 .addIcon(Textures.BlockIcons.OVERLAY_BOTTOM_DISASSEMBLER_GLOW)
                 .glow()
                 .build() };
-    }
-
-    @Override
-    public GUITextureSet getGUITextureSet() {
-        return GUITextureSet.STEAM.apply(getSteamVariant());
-    }
-
-    @Override
-    @Deprecated
-    public FluidSlotWidget createFluidInputSlot(IDrawable[] backgrounds, Pos2d pos) {
-        // TODO: Remove this mui1 fallback after SteamAssemblerSteel mui2 rollout is complete.
-        return (FluidSlotWidget) new FluidSlotWidget(fluidTank).setBackground(backgrounds)
-            .setPos(pos);
-    }
-
-    @Override
-    @Deprecated
-    public void addGregTechLogo(ModularWindow.Builder builder) {
-        // TODO: Remove this mui1 fallback after SteamAssemblerSteel mui2 rollout is complete.
-        builder.widget(
-            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
-                .setSize(18, 18)
-                .setPos(151, 62));
-    }
-
-    @Override
-    @Deprecated
-    public void addProgressBar(ModularWindow.Builder builder, BasicUIProperties uiProperties) {
-        // TODO: Remove this mui1 fallback after SteamAssemblerSteel mui2 rollout is complete.
-        builder.widget(
-            setNEITransferRect(
-                new ProgressBar()
-                    .setProgress(() -> maxProgresstime() != 0 ? (float) getProgresstime() / maxProgresstime() : 0)
-                    .setTexture(uiProperties.progressBarTexture.get(), uiProperties.progressBarImageSize)
-                    .setDirection(uiProperties.progressBarDirection)
-                    .setPos(uiProperties.progressBarPos)
-                    .setSize(uiProperties.progressBarSize),
-                uiProperties.neiTransferRectId));
-        addProgressBarSpecialTextures(builder, uiProperties);
-    }
-
-    @Override
-    @Deprecated
-    public void addProgressBarSpecialTextures(ModularWindow.Builder builder, BasicUIProperties uiProperties) {
-        // TODO: Remove this mui1 fallback after SteamAssemblerSteel mui2 rollout is complete.
-
-        for (Pair<IDrawable, Pair<Size, Pos2d>> specialTexture : uiProperties.specialTextures) {
-            builder.widget(
-                new DrawableWidget().setDrawable(specialTexture.getLeft())
-                    .setSize(
-                        specialTexture.getRight()
-                            .getLeft())
-                    .setPos(
-                        specialTexture.getRight()
-                            .getRight()));
-        }
-
     }
 }

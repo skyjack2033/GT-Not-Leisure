@@ -4,7 +4,6 @@ import static gregtech.api.enums.HatchElement.InputBus;
 import static gregtech.api.enums.HatchElement.InputHatch;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,6 +50,7 @@ import gregtech.common.tileentities.machines.outputme.MTEHatchOutputME;
 import gtneioreplugin.plugin.block.ModBlocks;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import kekztech.util.Util;
 import tectech.TecTech;
 import tectech.recipe.EyeOfHarmonyRecipe;
@@ -59,6 +59,7 @@ import tectech.util.CommonValues;
 import tectech.util.FluidStackLong;
 import tectech.util.ItemStackLong;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
 
     private static final String EYE_OF_HARMONY = "eyeOfHarmonyOutput";
@@ -95,8 +96,8 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     public long currentCircuitMultiplier = 0;
     public boolean enableRawStarMatter;
 
-    public List<ItemStackLong> outputItems = new ArrayList<>();
-    public List<FluidStackLong> outputFluids = new ArrayList<>();
+    public List<ItemStackLong> outputItems = new ObjectArrayList<>();
+    public List<FluidStackLong> outputFluids = new ObjectArrayList<>();
 
     public Object2LongMap<Fluid> validFluidMap = new Object2LongOpenHashMap<>() {
 
@@ -149,23 +150,23 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     @Override
     public MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ETGWEyeOfHarmonyModuleRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_10"))
+        tt.addMachineType(StatCollector.translateToLocal("gtnl.machine.etgw_eye_of_harmony_module.recipe_type"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.0"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.1"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.2"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.3"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.4"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.5"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.6"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.7"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.8"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.9"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.info.10"))
             .beginStructureBlock(9, 5, 7, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ETGWEyeOfHarmonyModule_Casing"), 1)
+            .addInputBus("0+", StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.casing"), 1)
+            .addOutputBus("0+", StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.casing"), 1)
+            .addInputHatch("0+", StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.casing"), 1)
+            .addOutputHatch("0+", StatCollector.translateToLocal("gtnl.machine.egtw_eye_of_harmony_module.casing"), 1)
             .toolTipFinisher();
         return tt;
     }
@@ -327,15 +328,15 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
     }
 
     private long getHydrogenStored() {
-        return validFluidMap.get(Materials.Hydrogen.mGas);
+        return validFluidMap.getLong(Materials.Hydrogen.mGas);
     }
 
     private long getHeliumStored() {
-        return validFluidMap.get(Materials.Helium.mGas);
+        return validFluidMap.getLong(Materials.Helium.mGas);
     }
 
     private long getStellarPlasmaStored() {
-        return validFluidMap.get(Materials.RawStarMatter.mFluid);
+        return validFluidMap.getLong(Materials.RawStarMatter.mFluid);
     }
 
     private void outputFailedChance() {
@@ -404,7 +405,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
                                 }
                             }
                         }
-                    } else if (CommonValues.RECIPE_AT == Tick || aBaseMetaTileEntity.hasWorkJustBeenEnabled()) {
+                    } else if (shouldCheckRecipeThisTick(aTick, aBaseMetaTileEntity)) {
                         if (aBaseMetaTileEntity.isAllowedToWork()) {
                             if (checkRecipe()) {
                                 mEfficiency = 10000;
@@ -423,7 +424,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
             aBaseMetaTileEntity.setActive(mMaxProgresstime > 0);
             boolean active = aBaseMetaTileEntity.isActive() && mPollution > 0;
             setMufflers(active);
-        } else {
+        } else if (aBaseMetaTileEntity.isClientSide()) {
             doActivitySound(getActivitySoundLoop());
         }
     }
@@ -491,8 +492,8 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
         }
 
         // Clear the array list for new recipes.
-        outputItems = new ArrayList<>();
-        outputFluids = new ArrayList<>();
+        outputItems = new ObjectArrayList<>();
+        outputFluids = new ObjectArrayList<>();
     }
 
     private void outputItemToAENetwork(ItemStack item, long amount) {
@@ -774,7 +775,7 @@ public class ETGWEyeOfHarmonyModule extends EternalGregTechWorkshopModule {
 
     @Override
     public String[] getInfoData() {
-        ArrayList<String> str = new ArrayList<>(Arrays.asList(super.getInfoData()));
+        ObjectArrayList<String> str = new ObjectArrayList<>(Arrays.asList(super.getInfoData()));
         str.add(
             EnumChatFormatting.GOLD.toString() + EnumChatFormatting.STRIKETHROUGH
                 + "-------------"

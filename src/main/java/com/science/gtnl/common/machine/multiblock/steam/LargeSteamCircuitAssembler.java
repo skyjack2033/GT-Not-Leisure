@@ -17,11 +17,13 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -34,6 +36,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSteamCircuitAssembler extends SteamMultiMachineBase<LargeSteamCircuitAssembler>
     implements ISurvivalConstructable {
 
@@ -54,10 +58,15 @@ public class LargeSteamCircuitAssembler extends SteamMultiMachineBase<LargeSteam
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_steam_circuit_assembler.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeSteamCircuitAssembler> getStructureDefinition() {
         return StructureDefinition.<LargeSteamCircuitAssembler>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 1))
+            .addElement('A', GTNLCasings.SteamAssemblyCasing.asElement())
             .addElement(
                 'B',
                 GTStructureChannels.TIER_MACHINE_CASING.use(
@@ -168,8 +177,8 @@ public class LargeSteamCircuitAssembler extends SteamMultiMachineBase<LargeSteam
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
-        int id = tierMachine == 2 ? StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0)
-            : StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        int id = tierMachine == 2 ? Casings.SolidSteelMachineCasing.getTextureId()
+            : Casings.BronzePlatedBricks.getTextureId();
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(id), TextureFactory.builder()
                 .addIcon(Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_ACTIVE)
@@ -185,23 +194,13 @@ public class LargeSteamCircuitAssembler extends SteamMultiMachineBase<LargeSteam
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("LargeSteamCircuitAssemblerRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.large_steam_circuit_assembler.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSteamCircuitAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCircuitAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCircuitAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCircuitAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCircuitAssembler_03"))
-            .beginStructureBlock(3, 4, 10, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamCircuitAssembler_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeSteamCircuitAssembler_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamCircuitAssembler_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

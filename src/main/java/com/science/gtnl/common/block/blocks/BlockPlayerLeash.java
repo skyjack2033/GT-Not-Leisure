@@ -7,12 +7,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.common.block.blocks.item.ItemBlockPlayerLeash;
 import com.science.gtnl.common.entity.EntityPlayerLeashKnot;
-import com.science.gtnl.utils.enums.GTNLItemList;
-
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class BlockPlayerLeash extends Block {
 
@@ -21,11 +16,11 @@ public class BlockPlayerLeash extends Block {
         this.setHardness(3f);
         this.setBlockBounds(0.375F, 0.0F, 0.375F, 0.625F, 1.0F, 0.625F);
         this.setLightOpacity(0);
-        this.setBlockName("PlayerLeash");
-        this.setBlockTextureName("planks_oak");
-        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
-        GameRegistry.registerBlock(this, ItemBlockPlayerLeash.class, getUnlocalizedName());
-        GTNLItemList.PlayerLeash.set(new ItemStack(this, 1));
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "gtnl.block.player_leash";
     }
 
     @Override

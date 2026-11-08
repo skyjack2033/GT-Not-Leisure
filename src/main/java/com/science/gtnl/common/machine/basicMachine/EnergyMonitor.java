@@ -14,7 +14,7 @@ import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.science.gtnl.common.gui.modularui.EnergyMonitorGui;
+import com.science.gtnl.common.gui.modularui.singleblock.EnergyMonitorGui;
 import com.science.gtnl.common.machine.monitor.EnergyMonitorCollector;
 import com.science.gtnl.common.machine.monitor.EnergyMonitorMode;
 import com.science.gtnl.common.machine.monitor.EnergyMonitorRegistry;
@@ -63,7 +63,7 @@ public class EnergyMonitor extends MTEBasicTank {
             aNameRegional,
             aTier,
             1,
-            new String[] { StatCollector.translateToLocal("Tooltip_EnergyMonitor_00") },
+            new String[] { StatCollector.translateToLocal("gtnl.machine.energy_monitor.tooltip.0") },
             aTextures);
     }
 

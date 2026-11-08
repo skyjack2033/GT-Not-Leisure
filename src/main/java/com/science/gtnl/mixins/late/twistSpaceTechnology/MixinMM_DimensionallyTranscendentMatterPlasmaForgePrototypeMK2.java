@@ -1,6 +1,5 @@
 package com.science.gtnl.mixins.late.twistSpaceTechnology;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,10 +24,12 @@ import com.Nxer.TwistSpaceTechnology.common.modularizedMachine.MM_DimensionallyT
 import com.Nxer.TwistSpaceTechnology.common.modularizedMachine.ModularizedMachineLogic.MultiExecutionCoreMachineSupportAllModuleBase;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.shutdown.ShutDownReason;
 import gtPlusPlus.core.util.minecraft.ItemUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
@@ -90,8 +91,8 @@ public abstract class MixinMM_DimensionallyTranscendentMatterPlasmaForgePrototyp
     public void getInfoData(CallbackInfoReturnable<String[]> cir) {
         if (!gtnl$lockRuntime) return;
         String[] original = cir.getReturnValue();
-        List<String> list = new ArrayList<>(Arrays.asList(original));
-        list.add(StatCollector.translateToLocal("Info_PlasmaForge_00"));
+        List<String> list = new ObjectArrayList<>(Arrays.asList(original));
+        list.add(IGregTechDeviceInformation.encode("gtnl.waila.plasma_forge.decay_blocking"));
         cir.setReturnValue(list.toArray(new String[0]));
     }
 
@@ -110,7 +111,7 @@ public abstract class MixinMM_DimensionallyTranscendentMatterPlasmaForgePrototyp
         super.getWailaBody(itemStack, currentTip, accessor, config);
         NBTTagCompound tag = accessor.getNBTData();
         if (!tag.getBoolean("lockRuntime")) return;
-        currentTip.add(StatCollector.translateToLocal("Info_PlasmaForge_00"));
+        currentTip.add(StatCollector.translateToLocal("gtnl.waila.plasma_forge.decay_blocking"));
     }
 
     @Override

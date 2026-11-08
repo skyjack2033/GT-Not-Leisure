@@ -2,9 +2,7 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +10,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,26 +21,35 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
+import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
+import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.recipe.metadata.CentrifugeRecipeKey;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeCentrifuge extends GTMMultiMachineBase<LargeCentrifuge> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -64,10 +70,15 @@ public class LargeCentrifuge extends GTMMultiMachineBase<LargeCentrifuge> implem
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_centrifuge.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeCentrifuge> getStructureDefinition() {
         return StructureDefinition.<LargeCentrifuge>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings2, 13))
+            .addElement('A', Casings.SteelPipeCasing.asElement())
             .addElement(
                 'B',
                 buildHatchAdder(LargeCentrifuge.class).casingIndex(getCasingTextureID())
@@ -81,8 +92,7 @@ public class LargeCentrifuge extends GTMMultiMachineBase<LargeCentrifuge> implem
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasingsMisc, 0))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.CentrifugeCasing.asElement())))
             .build();
     }
 
@@ -116,19 +126,47 @@ public class LargeCentrifuge extends GTMMultiMachineBase<LargeCentrifuge> implem
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return machineMode == MACHINEMODE_CENTRIFUGE ? GTPPRecipeMaps.centrifugeNonCellRecipes
+        return machineMode == MACHINEMODE_CENTRIFUGE ? RecipeMaps.centrifugeNonCellRecipes
             : RecipeMaps.thermalCentrifugeRecipes;
     }
 
     @NotNull
     @Override
     public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
-        return Arrays.asList(GTPPRecipeMaps.centrifugeNonCellRecipes, RecipeMaps.thermalCentrifugeRecipes);
+        return Arrays.asList(RecipeMaps.centrifugeNonCellRecipes, RecipeMaps.thermalCentrifugeRecipes);
+    }
+
+    @Override
+    public ProcessingLogic createProcessingLogic() {
+        return new GTNLProcessingLogic() {
+
+            @Override
+            public @NotNull CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
+                if (recipe.getMetadataOrDefault(CentrifugeRecipeKey.INSTANCE, Boolean.FALSE))
+                    return CheckRecipeResultRegistry.NO_RECIPE;
+                return super.validateRecipe(recipe);
+            }
+
+            @Override
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+                return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
+                    .setHeatOC(getHeatOC())
+                    .setMachineHeat(getMachineHeat())
+                    .setHeatDiscount(getHeatDiscount())
+                    .setAmperageOC(getAmperageOC())
+                    .setEUtDiscount(getEUtDiscount())
+                    .setDurationModifier(getDurationModifier())
+                    .setPerfectOC(getPerfectOC())
+                    .setMaxTierSkips(getMaxTierSkip())
+                    .setMaxOverclocks(getMaxOverclocks());
+            }
+
+        }.setMaxParallelSupplier(this::getTrueParallel);
     }
 
     @Override
     public double getDurationModifier() {
-        return 1.0 / 2.6 - (Math.max(0, mParallelTier - 1) / 50.0);
+        return 1.0 / 3.4 - (Math.max(0, mParallelTier - 1) / 50.0);
     }
 
     @Override
@@ -156,27 +194,15 @@ public class LargeCentrifuge extends GTMMultiMachineBase<LargeCentrifuge> implem
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeCentrifugeRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCentrifuge_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeCentrifuge_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeCentrifuge_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeCentrifuge_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeCentrifuge_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeCentrifuge_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeCentrifuge_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("LargeCentrifuge_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.large_centrifuge.mode." + machineMode;
     }
 
     @Override
@@ -187,18 +213,10 @@ public class LargeCentrifuge extends GTMMultiMachineBase<LargeCentrifuge> implem
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Large Centrifuge GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "LargeCentrifuge_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override

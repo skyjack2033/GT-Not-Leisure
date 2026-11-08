@@ -18,10 +18,12 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -33,6 +35,7 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class PrimitiveBrickKiln extends SteamMultiMachineBase<PrimitiveBrickKiln> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -49,7 +52,7 @@ public class PrimitiveBrickKiln extends SteamMultiMachineBase<PrimitiveBrickKiln
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("PrimitiveBrickKilnRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.primitive_brick_kiln.recipe_type");
     }
 
     public PrimitiveBrickKiln(String aName) {
@@ -80,7 +83,7 @@ public class PrimitiveBrickKiln extends SteamMultiMachineBase<PrimitiveBrickKiln
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 15);
+        return Casings.Firebricks.getTextureId();
     }
 
     @Override
@@ -109,9 +112,7 @@ public class PrimitiveBrickKiln extends SteamMultiMachineBase<PrimitiveBrickKiln
                             HatchElement.InputHatch,
                             HatchElement.Maintenance)
                         .buildAndChain(
-                            StructureUtility.onElementPass(
-                                x -> ++x.mCountCasing,
-                                StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 15)))))
+                            StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.Firebricks.asElement()))))
             .addElement(
                 'B',
                 GTStructureChannels.TIER_MACHINE_CASING.use(
@@ -211,15 +212,8 @@ public class PrimitiveBrickKiln extends SteamMultiMachineBase<PrimitiveBrickKiln
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("PrimitiveBrickKilnRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PrimitiveBrickKiln_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PrimitiveBrickKiln_01"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .beginStructureBlock(5, 7, 5, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamFormingPress_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamFormingPress_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

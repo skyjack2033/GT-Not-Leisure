@@ -1,17 +1,17 @@
 package com.science.gtnl.common.machine.multiblock;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
-import com.science.gtnl.common.gui.modularui.FOGModuleGui;
+import com.science.gtnl.common.gui.modularui.multiblock.FOGModuleGui;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.recipe.RecipeMap;
@@ -23,8 +23,10 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.OverclockCalculator;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.WirelessNetworkManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tectech.thing.metaTileEntity.multi.godforge.MTEBaseModule;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class FOGAlloySmelterModule extends MTEBaseModule {
 
     public long EUt = 0;
@@ -114,75 +116,46 @@ public class FOGAlloySmelterModule extends MTEBaseModule {
 
     @Override
     public String[] getInfoData() {
-        ArrayList<String> str = new ArrayList<>();
+        ObjectArrayList<String> str = new ObjectArrayList<>();
         str.add(
-            StatCollector.translateToLocalFormatted(
+            IGregTechDeviceInformation.encode(
                 "GT5U.infodata.progress",
                 EnumChatFormatting.GREEN + NumberFormatUtil.formatNumber(mProgresstime / 20) + EnumChatFormatting.RESET,
                 EnumChatFormatting.YELLOW + NumberFormatUtil.formatNumber(mMaxProgresstime / 20)
                     + EnumChatFormatting.RESET));
         str.add(
-            StatCollector.translateToLocalFormatted(
+            IGregTechDeviceInformation.encode(
                 "tt.infodata.multi.currently_using",
                 EnumChatFormatting.RED + (getBaseMetaTileEntity().isActive() ? NumberFormatUtil.formatNumber(EUt) : "0")
                     + EnumChatFormatting.RESET));
         str.add(
-            EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
+            IGregTechDeviceInformation.encode(
                 "tt.infodata.multi.max_parallel",
-                EnumChatFormatting.RESET + NumberFormatUtil.formatNumber(getActualParallel())));
+                EnumChatFormatting.YELLOW + NumberFormatUtil.formatNumber(getActualParallel())));
         str.add(
-            EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
+            IGregTechDeviceInformation.encode(
                 "GT5U.infodata.parallel.current",
-                EnumChatFormatting.RESET
+                EnumChatFormatting.YELLOW
                     + (getBaseMetaTileEntity().isActive() ? NumberFormatUtil.formatNumber(currentParallel) : "0")));
         str.add(
-            EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
+            IGregTechDeviceInformation.encode(
                 "tt.infodata.multi.multiplier.recipe_time",
-                EnumChatFormatting.RESET + NumberFormatUtil.formatNumber(getSpeedBonus())));
+                EnumChatFormatting.YELLOW + NumberFormatUtil.formatNumber(getSpeedBonus())));
         str.add(
-            EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
+            IGregTechDeviceInformation.encode(
                 "tt.infodata.multi.multiplier.energy",
-                EnumChatFormatting.RESET + NumberFormatUtil.formatNumber(getEnergyDiscount())));
+                EnumChatFormatting.YELLOW + NumberFormatUtil.formatNumber(getEnergyDiscount())));
         str.add(
-            EnumChatFormatting.YELLOW + StatCollector.translateToLocalFormatted(
+            IGregTechDeviceInformation.encode(
                 "tt.infodata.multi.divisor.recipe_time.non_perfect_oc",
-                EnumChatFormatting.RESET + NumberFormatUtil.formatNumber(getOverclockTimeFactor())));
+                EnumChatFormatting.YELLOW + NumberFormatUtil.formatNumber(getOverclockTimeFactor())));
         return str.toArray(new String[0]);
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FOGAlloySmelterModuleRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FOGAlloySmelterModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FOGAlloySmelterModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FOGAlloySmelterModule_02"))
-            .addSeparator(EnumChatFormatting.AQUA, 74)
-            .addInfo(StatCollector.translateToLocal("Tooltip_FOGAlloySmelterModule_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FOGAlloySmelterModule_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FOGAlloySmelterModule_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FOGAlloySmelterModule_06"))
-            .beginStructureBlock(7, 7, 13, false)
-            .addStructureInfo(
-                EnumChatFormatting.GOLD + "20"
-                    + EnumChatFormatting.GRAY
-                    + StatCollector.translateToLocal("Tooltip_FOGModule_Casing_00"))
-            .addStructureInfo(
-                EnumChatFormatting.GOLD + "20"
-                    + EnumChatFormatting.GRAY
-                    + StatCollector.translateToLocal("Tooltip_FOGModule_Casing_01"))
-            .addStructureInfo(
-                EnumChatFormatting.GOLD + "5"
-                    + EnumChatFormatting.GRAY
-                    + StatCollector.translateToLocal("Tooltip_FOGModule_Casing_02"))
-            .addStructureInfo(
-                EnumChatFormatting.GOLD + "5"
-                    + EnumChatFormatting.GRAY
-                    + StatCollector.translateToLocal("Tooltip_FOGModule_Casing_03"))
-            .addStructureInfo(
-                EnumChatFormatting.GOLD + "1"
-                    + EnumChatFormatting.GRAY
-                    + StatCollector.translateToLocal("Tooltip_FOGModule_Casing_04"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher(EnumChatFormatting.AQUA, 74);
         return tt;
     }

@@ -16,10 +16,12 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -31,6 +33,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class SteamGateAssembler extends SteamMultiMachineBase<SteamGateAssembler> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -49,13 +53,18 @@ public class SteamGateAssembler extends SteamMultiMachineBase<SteamGateAssembler
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.steam_gate_assembler.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new SteamGateAssembler(this.mName);
     }
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamGateAssemblerRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_gate_assembler.recipe_type");
     }
 
     @Override
@@ -92,19 +101,16 @@ public class SteamGateAssembler extends SteamMultiMachineBase<SteamGateAssembler
                 'A',
                 StructureUtility.ofChain(
                     buildSteamWirelessInput(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10))
+                        .casingIndex(Casings.BronzePlatedBricks.getTextureId())
                         .hint(1)
                         .build(),
-                    buildSteamBigInput(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10))
+                    buildSteamBigInput(SteamGateAssembler.class).casingIndex(Casings.BronzePlatedBricks.getTextureId())
                         .hint(1)
                         .build(),
-                    buildSteamInput(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10))
+                    buildSteamInput(SteamGateAssembler.class).casingIndex(Casings.BronzePlatedBricks.getTextureId())
                         .hint(1)
                         .build(),
-                    buildHatchAdder(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10))
+                    buildHatchAdder(SteamGateAssembler.class).casingIndex(Casings.BronzePlatedBricks.getTextureId())
                         .hint(1)
                         .atLeast(
                             SteamHatchElement.InputBus_Steam,
@@ -113,26 +119,25 @@ public class SteamGateAssembler extends SteamMultiMachineBase<SteamGateAssembler
                             HatchElement.OutputBus,
                             HatchElement.Maintenance)
                         .buildAndChain(
-                            StructureUtility.onElementPass(
-                                x -> ++x.mCountCasing,
-                                StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10)))))
+                            StructureUtility
+                                .onElementPass(x -> ++x.mCountCasing, Casings.BronzePlatedBricks.asElement()))))
             .addElement(
                 'B',
                 StructureUtility.ofChain(
                     buildSteamWirelessInput(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0))
+                        .casingIndex(Casings.SolidSteelMachineCasing.getTextureId())
                         .hint(1)
                         .build(),
                     buildSteamBigInput(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0))
+                        .casingIndex(Casings.SolidSteelMachineCasing.getTextureId())
                         .hint(1)
                         .build(),
                     buildSteamInput(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0))
+                        .casingIndex(Casings.SolidSteelMachineCasing.getTextureId())
                         .hint(1)
                         .build(),
                     buildHatchAdder(SteamGateAssembler.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0))
+                        .casingIndex(Casings.SolidSteelMachineCasing.getTextureId())
                         .hint(1)
                         .atLeast(
                             SteamHatchElement.InputBus_Steam,
@@ -141,15 +146,14 @@ public class SteamGateAssembler extends SteamMultiMachineBase<SteamGateAssembler
                             HatchElement.OutputBus,
                             HatchElement.Maintenance)
                         .buildAndChain(
-                            StructureUtility.onElementPass(
-                                x -> ++x.mCountCasing,
-                                StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0)))))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 2))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 3))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 12))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 13))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 14))
+                            StructureUtility
+                                .onElementPass(x -> ++x.mCountCasing, Casings.SolidSteelMachineCasing.asElement()))))
+            .addElement('C', Casings.BronzeGearBoxCasing.asElement())
+            .addElement('D', Casings.SteelGearBoxCasing.asElement())
+            .addElement('E', Casings.BronzePipeCasing.asElement())
+            .addElement('F', Casings.SteelPipeCasing.asElement())
+            .addElement('G', Casings.BronzeFireboxCasing.asElement())
+            .addElement('H', Casings.SteelFireboxCasing.asElement())
             .build();
     }
 
@@ -189,13 +193,8 @@ public class SteamGateAssembler extends SteamMultiMachineBase<SteamGateAssembler
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(getMachineType())
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamGateAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamGateAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamGateAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamGateAssembler_03"))
-            .beginStructureBlock(21, 20, 21, true)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

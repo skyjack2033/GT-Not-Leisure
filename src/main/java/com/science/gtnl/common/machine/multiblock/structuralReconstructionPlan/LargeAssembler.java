@@ -2,12 +2,10 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,8 +14,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -31,8 +31,9 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeAssembler extends GTMMultiMachineBase<LargeAssembler> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -48,6 +49,11 @@ public class LargeAssembler extends GTMMultiMachineBase<LargeAssembler> implemen
 
     public LargeAssembler(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_assembler.name";
     }
 
     @Override
@@ -68,8 +74,7 @@ public class LargeAssembler extends GTMMultiMachineBase<LargeAssembler> implemen
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 12))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BulkProductionFrame.asElement())))
             .build();
     }
 
@@ -151,22 +156,8 @@ public class LargeAssembler extends GTMMultiMachineBase<LargeAssembler> implemen
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(9, 3, 3, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

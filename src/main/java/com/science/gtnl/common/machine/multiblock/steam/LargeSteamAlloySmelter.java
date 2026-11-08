@@ -18,9 +18,11 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -33,6 +35,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSteamAlloySmelter extends SteamMultiMachineBase<LargeSteamAlloySmelter>
     implements ISurvivalConstructable {
 
@@ -50,6 +54,11 @@ public class LargeSteamAlloySmelter extends SteamMultiMachineBase<LargeSteamAllo
 
     public LargeSteamAlloySmelter(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_steam_alloy_smelter.name";
     }
 
     @Override
@@ -108,7 +117,7 @@ public class LargeSteamAlloySmelter extends SteamMultiMachineBase<LargeSteamAllo
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("LargeSteamAlloySmelterRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.large_steam_alloy_smelter.recipe_type");
     }
 
     @Override
@@ -175,8 +184,8 @@ public class LargeSteamAlloySmelter extends SteamMultiMachineBase<LargeSteamAllo
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
-        int id = tierMachine == 2 ? StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0)
-            : StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        int id = tierMachine == 2 ? Casings.SolidSteelMachineCasing.getTextureId()
+            : Casings.BronzePlatedBricks.getTextureId();
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(id), TextureFactory.builder()
                 .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_ALLOY_SMELTER_ACTIVE)
@@ -192,16 +201,8 @@ public class LargeSteamAlloySmelter extends SteamMultiMachineBase<LargeSteamAllo
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSteamAlloySmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamAlloySmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamAlloySmelter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamAlloySmelter_02"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .beginStructureBlock(3, 4, 3, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamAlloySmelter_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamAlloySmelter_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

@@ -21,15 +21,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraftforge.common.MinecraftForge;
 
 import com.science.gtnl.api.mixinHelper.IAnchorRespawn;
-import com.science.gtnl.common.block.blocks.item.ItemBlockDimensionRespawnAnchor;
 import com.science.gtnl.common.block.blocks.tile.TileEntityDimensionRespawnAnchor;
-import com.science.gtnl.utils.enums.GTNLItemList;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -39,35 +34,32 @@ public class BlockDimensionRespawnAnchor extends BlockContainer {
 
     public BlockDimensionRespawnAnchor() {
         super(Material.rock);
-        this.setBlockName("DimensionRespawnAnchor");
         this.setHardness(50.0F);
         this.setResistance(2000.0F);
         this.setStepSound(soundTypeStone);
         this.setHarvestLevel("pickaxe", 3);
         this.setLightOpacity(0);
         this.setTickRandomly(true);
-        GameRegistry.registerBlock(this, ItemBlockDimensionRespawnAnchor.class, getUnlocalizedName());
-        GameRegistry.registerTileEntity(TileEntityDimensionRespawnAnchor.class, "DimensionRespawnAnchorTileEntity");
-        GTNLItemList.DimensionRespawnAnchor.set(new ItemStack(this, 1));
         BlockDispenser.dispenseBehaviorRegistry
             .putObject(Item.getItemFromBlock(Blocks.glowstone), new BehaviorGlowstoneCharge());
-        MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance()
-            .bus()
-            .register(this);
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "gtnl.block.dimension_respawn_anchor";
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
-        icons[0] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorTopOff");
-        icons[1] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorTop");
-        icons[2] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorSide");
-        icons[3] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorSide1");
-        icons[4] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorSide2");
-        icons[5] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorSide3");
-        icons[6] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorSide4");
-        icons[7] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "DimensionRespawnAnchorBottom");
+        icons[0] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_top_off");
+        icons[1] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_top");
+        icons[2] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_side");
+        icons[3] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_side1");
+        icons[4] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_side2");
+        icons[5] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_side3");
+        icons[6] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_side4");
+        icons[7] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "dimension_respawn_anchor_bottom");
     }
 
     @Override
@@ -182,7 +174,7 @@ public class BlockDimensionRespawnAnchor extends BlockContainer {
             IAnchorRespawn anchor = (IAnchorRespawn) player;
             anchor.setAnchorRespawn(world.provider.dimensionId, x, y + 1, z);
 
-            player.addChatMessage(new ChatComponentTranslation("Info_DimensionRespawnAnchor_SetSpawn"));
+            player.addChatMessage(new ChatComponentTranslation("gtnl.chat.dimension_respawn_anchor.spawn_set"));
 
             world.playSoundEffect(
                 x + 0.5,

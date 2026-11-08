@@ -2,12 +2,10 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,9 +14,11 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import bartworks.util.BWUtil;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -26,14 +26,16 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -52,6 +54,11 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.alloy_blast_smelter.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new AlloyBlastSmelter(this.mName);
     }
@@ -65,7 +72,7 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility.ofCoil(AlloyBlastSmelter::setMCoilLevel, AlloyBlastSmelter::getMCoilLevel))))
-            .addElement('B', StructureUtility.ofBlock(blockCasingsMisc, 14))
+            .addElement('B', Casings.BlastSmelterHeatContainmentCoil.asElement())
             .addElement(
                 'C',
                 GTStructureUtility.buildHatchAdder(AlloyBlastSmelter.class)
@@ -80,8 +87,7 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasingsMisc, 15))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BlastSmelterCasing.asElement())))
             .addElement('D', HatchElement.Muffler.newAny(getCasingTextureID(), 1))
             .build();
     }
@@ -159,7 +165,7 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.alloyBlastSmelterRecipes;
+        return RecipeMaps.alloyBlastSmelterRecipes;
     }
 
     @Override
@@ -186,24 +192,14 @@ public class AlloyBlastSmelter extends GTMMultiMachineBase<AlloyBlastSmelter> im
     }
 
     @Override
+    public boolean addsVoltageHeat() {
+        return true;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("AlloyBlastSmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_05"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_AlloyBlastSmelter_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

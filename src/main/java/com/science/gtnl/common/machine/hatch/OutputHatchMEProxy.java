@@ -11,7 +11,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fluids.FluidStack;
 
 import com.science.gtnl.api.mixinHelper.IOutputME;
 import com.science.gtnl.api.mixinHelper.IOutputMEProviderTransfer;
@@ -19,20 +18,22 @@ import com.science.gtnl.utils.enums.GTNLItemList;
 
 import appeng.api.storage.data.IAEFluidStack;
 import gregtech.api.interfaces.ITexture;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTUtil;
 import gregtech.common.tileentities.machines.outputme.MTEHatchOutputME;
-import gregtech.common.tileentities.machines.outputme.filter.MEFilterFluid;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
+@IMetaTileEntity.SkipGenerateName
+@IMetaTileEntity.SkipGenerateDescription
 public class OutputHatchMEProxy extends MTEHatchOutputME {
 
     public static final String COPIED_DATA_IDENTIFIER = "outputHatchME";
 
     public int masterX, masterY, masterZ, masterDim;
-    public boolean masterSet = false; // indicate if values of masterX, masterY, masterZ are valid
+    public boolean masterSet = false;
     public MTEHatchOutputME master;
     private long lastProxyFlushTick;
 
@@ -42,6 +43,18 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
 
     public OutputHatchMEProxy(String aName, int aTier, String[] aDescription, ITexture[][][] aTextures) {
         super(aName, aTier, aDescription, aTextures);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        if (!hasOwnLocalName()) return super.getLocalNameKey();
+        return "gtnl.hatch.output_hatch_me_proxy.name";
+    }
+
+    @Override
+    public String getLocalName() {
+        if (!hasOwnLocalName()) return super.getLocalName();
+        return StatCollector.translateToLocal(getLocalNameKey());
     }
 
     @Override
@@ -67,7 +80,7 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
             return;
         }
         @SuppressWarnings("unchecked")
-        IOutputMEProviderTransfer<IAEFluidStack, MEFilterFluid, FluidStack> transferProvider = (IOutputMEProviderTransfer<IAEFluidStack, MEFilterFluid, FluidStack>) getProvider();
+        IOutputMEProviderTransfer<IAEFluidStack> transferProvider = (IOutputMEProviderTransfer<IAEFluidStack>) getProvider();
         if (transferProvider.gtnl$transferCacheTo(outputHatch.getProvider())) {
             markDirty();
             outputHatch.markDirty();
@@ -81,13 +94,13 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
 
     @Override
     public String[] getDescription() {
-        return new String[] { StatCollector.translateToLocal("Tooltip_OutputHatchMEProxy_00"),
-            StatCollector.translateToLocal("Tooltip_OutputHatchMEProxy_01"),
-            StatCollector.translateToLocal("Tooltip_OutputHatchMEProxy_02"),
-            StatCollector.translateToLocal("Tooltip_OutputHatchMEProxy_03"),
-            StatCollector.translateToLocal("Tooltip_OutputHatchMEProxy_04"),
-            StatCollector.translateToLocal("Tooltip_OutputHatchMEProxy_05"),
-            StatCollector.translateToLocal("Tooltip_OutputHatchMEProxy_06") };
+        return new String[] { StatCollector.translateToLocal("gtnl.hatch.output_hatch_me_proxy.tooltip.0"),
+            StatCollector.translateToLocal("gtnl.hatch.output_hatch_me_proxy.tooltip.1"),
+            StatCollector.translateToLocal("gtnl.hatch.output_hatch_me_proxy.tooltip.2"),
+            StatCollector.translateToLocal("gtnl.hatch.output_hatch_me_proxy.tooltip.3"),
+            StatCollector.translateToLocal("gtnl.hatch.output_hatch_me_proxy.tooltip.4"),
+            StatCollector.translateToLocal("gtnl.hatch.output_hatch_me_proxy.tooltip.5"),
+            StatCollector.translateToLocal("gtnl.hatch.output_hatch_me_proxy.tooltip.6") };
     }
 
     @Override
@@ -115,14 +128,16 @@ public class OutputHatchMEProxy extends MTEHatchOutputME {
     private String getWailaLinkState(IWailaDataAccessor accessor) {
         boolean linked = accessor.getNBTData()
             .hasKey("master");
-        return StatCollector.translateToLocal(linked ? "Waila_OutputMEProxy_Linked" : "Waila_OutputMEProxy_Unlinked");
+        return StatCollector
+            .translateToLocal(linked ? "gtnl.waila.output_me_proxy.linked" : "gtnl.waila.output_me_proxy.unlinked");
     }
 
     private String getWailaLinkedTarget(IWailaDataAccessor accessor) {
         NBTTagCompound tag = accessor.getNBTData();
         if (tag.hasKey("master")) {
             NBTTagCompound masterNBT = tag.getCompoundTag("master");
-            return EnumChatFormatting.AQUA + StatCollector.translateToLocal("Waila_OutputMEProxy_Target")
+            return EnumChatFormatting.AQUA + StatCollector.translateToLocal("gtnl.waila.output_me_proxy.target")
+                + " "
                 + EnumChatFormatting.WHITE
                 + "[Dim "
                 + masterNBT.getInteger("masterDim")

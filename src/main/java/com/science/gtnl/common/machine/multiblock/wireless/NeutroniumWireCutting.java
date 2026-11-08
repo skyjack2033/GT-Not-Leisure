@@ -3,27 +3,29 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -34,11 +36,11 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import tectech.thing.casing.BlockGTCasingsTT;
-import tectech.thing.casing.TTCasingsContainer;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<NeutroniumWireCutting> {
 
     private static final int HORIZONTAL_OFF_SET = 3;
@@ -57,13 +59,18 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.neutronium_wire_cutting.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new NeutroniumWireCutting(this.mName);
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 12);
+        return Casings.NaquadriaReinforcedWaterPlantCasing.getTextureId();
     }
 
     @Override
@@ -90,18 +97,16 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
         return StructureDefinition.<NeutroniumWireCutting>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 2))
-            .addElement(
-                'C',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 6))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 10))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 3))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 6))
+            .addElement('B', GTNLCasings.HeatVent.asElement())
+            .addElement('C', Casings.ReinforcedGlass.asElement())
+            .addElement('D', Casings.NeutroniumCasing.asElement())
+            .addElement('E', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('F', Casings.ExtremeDensitySpaceBendingCasing.asElement())
+            .addElement('G', Casings.FilterMachineCasing.asElement())
+            .addElement('H', Casings.StainlessSteelTurbineCasing.asElement())
+            .addElement('I', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('J', Casings.SuperplasticizerTreatedHighStrengthConcrete.asElement())
+            .addElement('K', Casings.SlickSterileFlocculationCasing.asElement())
             .addElement(
                 'L',
                 GTStructureUtility.buildHatchAdder(NeutroniumWireCutting.class)
@@ -117,9 +122,9 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))))
-            .addElement('M', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 0))
-            .addElement('N', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 6))
+                            Casings.NaquadriaReinforcedWaterPlantCasing.asElement())))
+            .addElement('M', Casings.HighPowerCasing.asElement())
+            .addElement('N', Casings.ContainmentFieldGenerator.asElement())
             .addElement('O', GTStructureUtility.ofFrame(Materials.Neutronium))
             .addElement(
                 'P',
@@ -127,8 +132,8 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
                     Block.getBlockFromItem(
                         MaterialsAlloy.HASTELLOY_N.getFrameBox(1)
                             .getItem())))
-            .addElement('Q', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('R', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
+            .addElement('Q', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('R', GTNLCasings.NeutroniumGearbox.asElement())
             .build();
     }
 
@@ -181,6 +186,12 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
         return RecipeMaps.cutterRecipes;
     }
 
+    @NotNull
+    @Override
+    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
+        return Arrays.asList(RecipeMaps.cutterRecipes, RecipeMaps.cutterFakeRecipes);
+    }
+
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
@@ -195,27 +206,8 @@ public class NeutroniumWireCutting extends WirelessEnergyMultiMachineBase<Neutro
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("NeutroniumWireCuttingRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NeutroniumWireCutting_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(31, 14, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_NeutroniumWireCutting_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_NeutroniumWireCutting_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_NeutroniumWireCutting_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_NeutroniumWireCutting_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

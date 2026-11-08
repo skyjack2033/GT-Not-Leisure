@@ -3,13 +3,11 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -18,13 +16,15 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -37,10 +37,10 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import tectech.thing.casing.BlockGTCasingsTT;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class MagneticConfinementDimensionalityShockDevice
     extends WirelessEnergyMultiMachineBase<MagneticConfinementDimensionalityShockDevice> {
 
@@ -54,10 +54,12 @@ public class MagneticConfinementDimensionalityShockDevice
 
     public MagneticConfinementDimensionalityShockDevice(String aName) {
         super(aName);
+        wirelessUpgrade = true;
     }
 
     public MagneticConfinementDimensionalityShockDevice(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+        wirelessUpgrade = true;
     }
 
     @Override
@@ -70,15 +72,15 @@ public class MagneticConfinementDimensionalityShockDevice
     public IStructureDefinition<MagneticConfinementDimensionalityShockDevice> getStructureDefinition() {
         return StructureDefinition.<MagneticConfinementDimensionalityShockDevice>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 7))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 9))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
+            .addElement('A', Casings.DimensionalInjectionCasing.asElement())
+            .addElement('B', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('C', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('D', Casings.FusionCoilBlock.asElement())
+            .addElement('E', Casings.ReactiveGasContainmentCasing.asElement())
+            .addElement('F', Casings.DimensionalBridge.asElement())
             .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockMetal9, 11))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 12))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 13))
+            .addElement('H', Casings.DimensionallyTranscendentCasing.asElement())
+            .addElement('I', Casings.HighEnergyUltravioletEmitterCasing.asElement())
             .addElement(
                 'J',
                 buildHatchAdder(MagneticConfinementDimensionalityShockDevice.class)
@@ -93,18 +95,17 @@ public class MagneticConfinementDimensionalityShockDevice
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 4))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.MolecularCasing.asElement())))
             .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockMetal8, 10))
-            .addElement('L', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 9))
+            .addElement('L', Casings.CyclotronCoil.asElement())
             .addElement(
                 'M',
                 StructureUtility.ofBlockAnyMeta(
                     Block.getBlockFromItem(
                         MaterialsAlloy.HASTELLOY_X.getFrameBox(1)
                             .getItem())))
-            .addElement('N', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 6))
+            .addElement('N', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('O', Casings.NeutroniumCasing.asElement())
             .build();
     }
 
@@ -167,12 +168,19 @@ public class MagneticConfinementDimensionalityShockDevice
     }
 
     @Override
+    public int getMaxParallelRecipes() {
+        // Called for its side effect of reading the parallel controller tier.
+        super.getMaxParallelRecipes();
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
+        setOverclockRatio(logic);
         if (wirelessMode) {
             logic.setAvailableVoltage(Long.MAX_VALUE);
             logic.setAvailableAmperage(1);
             logic.setAmperageOC(true);
-            logic.enablePerfectOverclock();
         } else {
             logic.setAvailableVoltage(getMaxInputEu());
             logic.setAvailableAmperage(1);
@@ -205,36 +213,8 @@ public class MagneticConfinementDimensionalityShockDevice
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MagneticConfinementDimensionalityShockDeviceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(23, 23, 32, true)
-            .addInputBus(
-                StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_Casing"),
-                1)
-            .addOutputBus(
-                StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_Casing"),
-                1)
-            .addInputHatch(
-                StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_Casing"),
-                1)
-            .addOutputHatch(
-                StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_Casing"),
-                1)
-            .addEnergyHatch(
-                StatCollector.translateToLocal("Tooltip_MagneticConfinementDimensionalityShockDevice_Casing"),
-                1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

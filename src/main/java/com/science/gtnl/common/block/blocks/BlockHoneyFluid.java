@@ -8,8 +8,8 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.BlockFluidBase;
+import com.science.gtnl.common.item.GTNLCreativeTabs;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -17,10 +17,10 @@ public class BlockHoneyFluid extends BlockFluidBase {
 
     public BlockHoneyFluid(Fluid fluid) {
         super(fluid, Material.water);
-        this.setBlockName("honey");
+        this.setBlockName("gtnl.honey");
         this.setQuantaPerBlock(4);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
-        GameRegistry.registerBlock(this, getUnlocalizedName());
+        GameRegistry.registerBlock(this, "honey_fluid_block");
     }
 
     @Override

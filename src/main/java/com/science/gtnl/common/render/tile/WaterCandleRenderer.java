@@ -13,8 +13,8 @@ import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
 import com.gtnewhorizons.angelica.api.ThreadSafeISBRH;
-import com.science.gtnl.ClientProxy;
 import com.science.gtnl.common.render.model.WaterCandleModel;
+import com.science.gtnl.loader.RenderLoader;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -24,11 +24,11 @@ public class WaterCandleRenderer extends TileEntitySpecialRenderer implements IS
     private final WaterCandleModel model = new WaterCandleModel();
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
-        RESOURCE_ROOT_ID + ":" + "textures/blocks/WaterCandle.png");
+        RESOURCE_ROOT_ID + ":" + "textures/blocks/water_candle.png");
 
     @Override
     public int getRenderId() {
-        return ClientProxy.WATER_CANDLE_RENDER_ID;
+        return RenderLoader.WATER_CANDLE_RENDER_ID;
     }
 
     @Override

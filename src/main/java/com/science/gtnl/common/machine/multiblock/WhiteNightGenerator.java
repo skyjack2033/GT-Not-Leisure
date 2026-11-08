@@ -1,7 +1,6 @@
 package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.sBlockCasings9;
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 
 import java.math.BigInteger;
@@ -23,15 +22,17 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.MathUtils;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.Utils;
+import com.science.gtnl.utils.enums.ModsItemlist;
 
 import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -41,17 +42,16 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
-import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 import kubatech.loaders.BlockLoader;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import tectech.thing.casing.TTCasingsContainer;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
 
     private static final int HORIZONTAL_OFF_SET = 49;
@@ -73,6 +73,11 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
 
     public WhiteNightGenerator(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.white_night_generator.name";
     }
 
     @Override
@@ -108,24 +113,22 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
                     .atLeast(HatchElement.Maintenance, HatchElement.Dynamo)
                     .casingIndex(getCasingTextureID())
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 13))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.SolidifierCasing.asElement())))
             .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 1))
             .addElement('C', StructureUtility.ofBlock(BlockLoader.defcCasingBlock, 12))
-            .addElement('D', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 8))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
+            .addElement('D', Casings.HarmonicPhononTransmissionConduit.asElement())
+            .addElement('E', Casings.ExtremeDensitySpaceBendingCasing.asElement())
             .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSE, 1))
             .addElement('G', GTStructureUtility.ofFrame(Materials.SixPhasedCopper))
-            .addElement('H', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 8))
-            .addElement('I', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 11))
-            .addElement('J', StructureUtility.ofBlock(sBlockCasings9, 5))
+            .addElement('H', Casings.HarmonicPhononTransmissionConduit.asElement())
+            .addElement('I', Casings.VolcanusCasing.asElement())
+            .addElement('J', Casings.ReinforcedSterileWaterPlantCasing.asElement())
             .addElement('K', StructureUtility.ofBlock(Loaders.gravityStabilizationCasing, 0))
             .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 8))
-            .addElement('M', StructureUtility.ofBlock(sBlockCasings9, 5))
-            .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 14))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 14))
-            .addElement('P', StructureUtility.ofBlock(sBlockCasings9, 5))
+            .addElement('M', Casings.ReinforcedSterileWaterPlantCasing.asElement())
+            .addElement('N', Casings.SolidifierRadiator.asElement())
+            .addElement('O', Casings.SolidifierRadiator.asElement())
+            .addElement('P', Casings.ReinforcedSterileWaterPlantCasing.asElement())
             .addElement('Q', GTStructureUtility.ofFrame(Materials.Kevlar))
             .build();
     }
@@ -188,7 +191,7 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
         mMaxProgresstime = 6000;
         if (wirelessMode) {
             BigInteger eu = BigInteger.valueOf(this.currentOutputEU)
-                .multiply(Utils.INTEGER_MAX_VALUE);
+                .multiply(MathUtils.INTEGER_MAX_VALUE);
             if (!addEUToGlobalEnergyMap(ownerUUID, eu)) {
                 return CheckRecipeResultRegistry.INTERNAL_ERROR;
             }
@@ -199,87 +202,26 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
     }
 
     public int getMultiTier() {
-        if (GTUtility.areStacksEqual(
-            getControllerSlot(),
-            GTModHandler.getModItem(Mods.UniversalSingularities.ID, "universal.general.singularity", 1, 31))) {
+        if (GTUtility.areStacksEqual(getControllerSlot(), ModsItemlist.USGangueSingularity.get(1))) {
             return 2;
         }
-        if (GTUtility.areStacksEqual(
-            getControllerSlot(),
-            GTModHandler.getModItem(Mods.EternalSingularity.ID, "eternal_singularity", 1, 0))) {
+        if (GTUtility.areStacksEqual(getControllerSlot(), ModsItemlist.EternalSingularity.get(1))) {
             return 1;
         }
         return 0;
     }
 
     @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_MachineType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_04"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_07"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_10"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_11"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_12"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_13"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_14"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_15"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_16"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_17"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_18"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_19"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_20"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_21"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_22"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_23"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_24"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_25"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_26"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_27"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_28"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_29"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_30"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_31"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_32"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_33"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_34"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_35"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_36"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_37"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_38"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_39"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_40"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_41"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_42"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_43"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_44"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_45"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_46"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_47"))
-            .addSeparator()
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_48"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_49"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_50"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WhiteNightGenerator_51"))
-            .beginStructureBlock(99, 84, 48, false)
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_RealArtificialStar_02_01"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
+            .addStructureInfo(
+                StatCollector.translateToLocal("gtnl.machine.real_artificial_star.structure.output_coefficient"))
             .toolTipFinisher();
         return tt;
     }
@@ -291,7 +233,8 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
         final NBTTagCompound tag = accessor.getNBTData();
         if (tag.getBoolean("isActive")) {
             currentTip.add(
-                EnumChatFormatting.AQUA + StatCollector.translateToLocal("Info_RealArtificialStar_00")
+                EnumChatFormatting.AQUA
+                    + StatCollector.translateToLocal("gtnl.machine.real_artificial_star.info.current_generation")
                     + EnumChatFormatting.GOLD
                     + tag.getLong("currentOutputEU")
                     + EnumChatFormatting.RED
@@ -352,7 +295,7 @@ public class WhiteNightGenerator extends MultiMachineBase<WhiteNightGenerator> {
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings9, 5);
+        return Casings.ReinforcedSterileWaterPlantCasing.getTextureId();
     }
 
     @Override

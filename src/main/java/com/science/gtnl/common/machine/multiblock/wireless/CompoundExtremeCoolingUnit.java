@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -21,17 +19,17 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -44,9 +42,9 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.core.material.MaterialsAlloy;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class CompoundExtremeCoolingUnit extends WirelessEnergyMultiMachineBase<CompoundExtremeCoolingUnit> {
 
     private static final int MACHINEMODE_VACUUM_FREEZE = 0;
@@ -77,22 +75,22 @@ public class CompoundExtremeCoolingUnit extends WirelessEnergyMultiMachineBase<C
         return StructureDefinition.<CompoundExtremeCoolingUnit>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 6))
-            .addElement('D', StructureUtility.ofBlock(BlockLoader.metaCasing, 7))
+            .addElement('B', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('C', GTNLCasings.Laser_Cooling_Casing.asElement())
+            .addElement('D', GTNLCasings.Antifreeze_Heatproof_Machine_Casing.asElement())
             .addElement(
                 'E',
                 StructureUtility.ofBlockAnyMeta(
                     Block.getBlockFromItem(
                         MaterialsAlloy.AQUATIC_STEEL.getFrameBox(1)
                             .getItem())))
-            .addElement('F', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 1))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 1))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
-            .addElement('K', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('L', StructureUtility.ofBlock(sBlockCasingsTT, 8))
+            .addElement('F', GTNLCasings.FusionGlass.asElement())
+            .addElement('G', Casings.LaserContainmentCasing.asElement())
+            .addElement('H', Casings.FrostProofMachineCasing.asElement())
+            .addElement('I', Casings.TungstensteelPipeCasing.asElement())
+            .addElement('J', Casings.FilterMachineCasing.asElement())
+            .addElement('K', Casings.HighPowerCasing.asElement())
+            .addElement('L', Casings.HollowCasing.asElement())
             .addElement('M', GTStructureUtility.ofFrame(Materials.Neutronium))
             .addElement(
                 'N',
@@ -108,9 +106,8 @@ public class CompoundExtremeCoolingUnit extends WirelessEnergyMultiMachineBase<C
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 1))))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.FrostProofMachineCasing.asElement())))
             .build();
     }
 
@@ -172,7 +169,7 @@ public class CompoundExtremeCoolingUnit extends WirelessEnergyMultiMachineBase<C
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 1);
+        return Casings.FrostProofMachineCasing.getTextureId();
     }
 
     @Override
@@ -203,28 +200,8 @@ public class CompoundExtremeCoolingUnit extends WirelessEnergyMultiMachineBase<C
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("CompoundExtremeCoolingUnitRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_CompoundExtremeCoolingUnit_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(31, 9, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_CompoundExtremeCoolingUnit_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_CompoundExtremeCoolingUnit_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_CompoundExtremeCoolingUnit_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_CompoundExtremeCoolingUnit_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_CompoundExtremeCoolingUnit_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -242,23 +219,15 @@ public class CompoundExtremeCoolingUnit extends WirelessEnergyMultiMachineBase<C
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_UNPACKAGER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 3;
-        GTUtility.sendChatTrans(aPlayer, "CompoundExtremeCoolingUnit_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("CompoundExtremeCoolingUnit_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.compound_extreme_cooling_unit.mode." + machineMode;
     }
 
     @Override

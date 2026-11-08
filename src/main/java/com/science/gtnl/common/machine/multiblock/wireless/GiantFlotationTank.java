@@ -3,25 +3,24 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsBA0;
 
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -32,9 +31,9 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.material.MaterialsAlloy;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class GiantFlotationTank extends WirelessEnergyMultiMachineBase<GiantFlotationTank> {
 
     private static final int HORIZONTAL_OFF_SET = 4;
@@ -61,9 +60,9 @@ public class GiantFlotationTank extends WirelessEnergyMultiMachineBase<GiantFlot
     public IStructureDefinition<GiantFlotationTank> getStructureDefinition() {
         return StructureDefinition.<GiantFlotationTank>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 5))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('C', StructureUtility.ofBlock(sBlockCasingsBA0, 6))
+            .addElement('A', Casings.IndustrialSieveCasing.asElement())
+            .addElement('B', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('C', Casings.ZPMSuperconductorPrimaryTeslaWindings.asElement())
             .addElement(
                 'D',
                 buildHatchAdder(GiantFlotationTank.class)
@@ -78,22 +77,21 @@ public class GiantFlotationTank extends WirelessEnergyMultiMachineBase<GiantFlot
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 2))))
-            .addElement('E', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 11))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings11, 5))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 7))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaCasing, 12))
-            .addElement('I', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings11, 2))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.HastelloyXStructuralBlock.asElement())))
+            .addElement('E', Casings.ThermalContainmentCasing.asElement())
+            .addElement('F', Casings.QuantiumItemPipeCasing.asElement())
+            .addElement('G', Casings.StabilizedNaquadahWaterPlantCasing.asElement())
+            .addElement('H', GTNLCasings.TungstensteelGearbox.asElement())
+            .addElement('I', GTNLCasings.FusionGlass.asElement())
+            .addElement('J', Casings.ElectrumItemPipeCasing.asElement())
             .addElement(
                 'K',
                 StructureUtility.ofBlockAnyMeta(
                     Block.getBlockFromItem(
                         MaterialsAlloy.MARAGING300.getFrameBox(1)
                             .getItem())))
-            .addElement('L', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 9))
+            .addElement('L', Casings.FlotationCellCasings.asElement())
             .addElement(
                 'M',
                 StructureUtility.ofBlockAnyMeta(
@@ -177,26 +175,8 @@ public class GiantFlotationTank extends WirelessEnergyMultiMachineBase<GiantFlot
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("GiantFlotationTankRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(27, 8, 74, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_GiantFlotationTank_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_GiantFlotationTank_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_GiantFlotationTank_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_GiantFlotationTank_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_GiantFlotationTank_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

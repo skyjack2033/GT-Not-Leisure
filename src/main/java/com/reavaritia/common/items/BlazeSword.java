@@ -16,11 +16,11 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import com.reavaritia.ReAvaritia;
 import com.reavaritia.client.ReAvaCreativeTabs;
 import com.reavaritia.common.entity.EntityBlazeFireball;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.reavaritia.utils.item.ToolHelper;
-import com.science.gtnl.utils.enums.ModList;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -30,8 +30,8 @@ public class BlazeSword extends ItemSword {
 
     public BlazeSword() {
         super(ToolHelper.BLAZE);
-        this.setUnlocalizedName("BlazeSword");
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + "BlazeSword");
+        this.setUnlocalizedName("reavaritia.blaze_sword");
+        this.setTextureName(RESOURCE_ROOT_ID + ":blaze_sword");
         this.setCreativeTab(CreativeTabs.tabCombat);
         this.setCreativeTab(ReAvaCreativeTabs.ReAvaritia);
         this.setMaxDamage(7777);
@@ -64,7 +64,7 @@ public class BlazeSword extends ItemSword {
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack itemStack, final EntityPlayer player, final List<String> toolTip,
         final boolean advancedToolTips) {
-        toolTip.add(StatCollector.translateToLocal("Tooltip_BlazeSword_00"));
+        toolTip.add(StatCollector.translateToLocal("reavaritia.item.blaze_sword.tooltip.00"));
     }
 
     @Override
@@ -73,7 +73,6 @@ public class BlazeSword extends ItemSword {
     }
 
     public static void registerEntity() {
-        EntityRegistry
-            .registerModEntity(EntityBlazeFireball.class, "BlazeFireBall", 0, ModList.ReAvaritia.ID, 64, 1, true);
+        EntityRegistry.registerModEntity(EntityBlazeFireball.class, "BlazeFireBall", 0, ReAvaritia.MODID, 64, 1, true);
     }
 }

@@ -15,9 +15,10 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
@@ -36,10 +37,10 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
-import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class SteamFusionReactor extends SteamMultiMachineBase<SteamFusionReactor> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -58,6 +59,11 @@ public class SteamFusionReactor extends SteamMultiMachineBase<SteamFusionReactor
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.steam_fusion_reactor.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new SteamFusionReactor(this.mName);
     }
@@ -66,29 +72,30 @@ public class SteamFusionReactor extends SteamMultiMachineBase<SteamFusionReactor
     public IStructureDefinition<SteamFusionReactor> getStructureDefinition() {
         return StructureDefinition.<SteamFusionReactor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 26))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 29))
+            .addElement('A', GTNLCasings.BreelPipeCasing.asElement())
+            .addElement('B', GTNLCasings.HyperPressureBreelCasing.asElement())
             .addElement('C', GTStructureUtility.chainAllGlasses())
             .addElement(
                 'D',
                 StructureUtility.ofChain(
                     buildSteamWirelessInput(SteamFusionReactor.class)
-                        .casingIndex(GTUtility.getTextureId((byte) 116, (byte) 29))
+                        .casingIndex(GTNLCasings.HyperPressureBreelCasing.getTextureId())
                         .hint(1)
                         .build(),
                     buildSteamBigInput(SteamFusionReactor.class)
-                        .casingIndex(GTUtility.getTextureId((byte) 116, (byte) 29))
+                        .casingIndex(GTNLCasings.HyperPressureBreelCasing.getTextureId())
                         .hint(1)
                         .build(),
-                    buildSteamInput(SteamFusionReactor.class).casingIndex(GTUtility.getTextureId((byte) 116, (byte) 29))
+                    buildSteamInput(SteamFusionReactor.class)
+                        .casingIndex(GTNLCasings.HyperPressureBreelCasing.getTextureId())
                         .hint(1)
                         .build(),
                     GTStructureUtility.buildHatchAdder(SteamFusionReactor.class)
                         .atLeast(HatchElement.Maintenance, HatchElement.InputHatch, HatchElement.OutputHatch)
-                        .casingIndex(GTUtility.getTextureId((byte) 116, (byte) 29))
+                        .casingIndex(GTNLCasings.HyperPressureBreelCasing.getTextureId())
                         .hint(1)
                         .buildAndChain(),
-                    StructureUtility.ofBlock(BlockLoader.metaCasing, 29)))
+                    GTNLCasings.HyperPressureBreelCasing.asElement()))
             .build();
     }
 
@@ -128,7 +135,8 @@ public class SteamFusionReactor extends SteamMultiMachineBase<SteamFusionReactor
             @Override
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
                 if (recipe.getMetadataOrDefault(SteamFusionMetadata.INSTANCE, 0) != 0) {
-                    return SimpleCheckRecipeResult.ofFailure("metadata.steamfusion");
+                    return SimpleCheckRecipeResult
+                        .ofFailure("gtnl.machine.steam_fusion_reactor.error.requires_compact_reactor");
                 }
                 return super.validateRecipe(recipe);
             }
@@ -166,42 +174,32 @@ public class SteamFusionReactor extends SteamMultiMachineBase<SteamFusionReactor
         int aColorIndex, boolean aActive, boolean aRedstone) {
         if (side == facing) {
             if (aActive) {
-                return new ITexture[] {
-                    Textures.BlockIcons.getCasingTextureForId(GTUtility.getTextureId((byte) 116, (byte) 29)),
+                return new ITexture[] { GTNLCasings.HyperPressureBreelCasing.getCasingTexture(),
                     TextureFactory.builder()
                         .addIcon(Textures.BlockIcons.OVERLAY_TOP_STEAM_MACERATOR_ACTIVE)
                         .extFacing()
                         .build() };
             } else {
-                return new ITexture[] {
-                    Textures.BlockIcons.getCasingTextureForId(GTUtility.getTextureId((byte) 116, (byte) 29)),
+                return new ITexture[] { GTNLCasings.HyperPressureBreelCasing.getCasingTexture(),
                     TextureFactory.builder()
                         .addIcon(Textures.BlockIcons.OVERLAY_TOP_STEAM_MACERATOR)
                         .extFacing()
                         .build() };
             }
         }
-        return new ITexture[] {
-            Textures.BlockIcons.getCasingTextureForId(GTUtility.getTextureId((byte) 116, (byte) 29)) };
+        return new ITexture[] { GTNLCasings.HyperPressureBreelCasing.getCasingTexture() };
 
     }
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamFusionReactorRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_fusion_reactor.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(getMachineType())
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFusionReactor_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFusionReactor_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFusionReactor_02"))
-            .beginStructureBlock(15, 3, 15, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SteamFusionReactor_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_SteamFusionReactor_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

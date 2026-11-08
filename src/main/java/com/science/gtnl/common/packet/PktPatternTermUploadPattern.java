@@ -7,11 +7,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 
 import com.gtnewhorizon.gtnhlib.util.ServerThreadUtil;
+import com.gtnllib.network.ServerboundPacket;
+import com.gtnllib.utils.GameUtils;
 import com.science.gtnl.common.machine.multiblock.AssemblerMatrix;
-import com.science.gtnl.common.packet.base.ServerboundPacket;
 import com.science.gtnl.mixins.late.appliedEnergistics.assembler.AccessorContainerPatternTerm;
 import com.science.gtnl.utils.DireCraftingPatternDetails;
-import com.science.gtnl.utils.Utils;
 
 import appeng.api.AEApi;
 import appeng.api.networking.IGridNode;
@@ -52,7 +52,7 @@ public class PktPatternTermUploadPattern extends ServerboundPacket {
         final IAEItemStack out;
         if (patternStack.getItem() instanceof ItemEncodedPattern item) {
             var pattern = item.getPatternForItem(patternStack, player.worldObj);
-            if (pattern.isCraftable() || pattern instanceof DireCraftingPatternDetails) {
+            if (pattern != null && (pattern.isCraftable() || pattern instanceof DireCraftingPatternDetails)) {
                 out = pattern.getCondensedOutputs()[0];
             } else return;
         } else return;
@@ -61,14 +61,14 @@ public class PktPatternTermUploadPattern extends ServerboundPacket {
             var channel = (AssemblerMatrix) channelNode.getMachine();
             if (channel.getPossibleOutputs()
                 .contains(out)) {
-                player.addChatMessage(new ChatComponentTranslation("text.AssemblerMatrix.tooltip.0"));
+                player.addChatMessage(new ChatComponentTranslation("gtnl.machine.assembler_matrix.pattern_exists"));
                 var stack = AEApi.instance()
                     .definitions()
                     .materials()
                     .blankPattern()
                     .maybeStack(patternStack.stackSize);
                 if (stack.isPresent()) {
-                    Utils.placeItemBackInInventory(player, stack.get());
+                    GameUtils.placeItemBackInInventory(player, stack.get());
                 }
                 patternSlotOUT.putStack(null);
                 return;

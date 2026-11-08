@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,15 +21,14 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
-import bartworks.util.BWUtil;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import goodgenerator.loader.Loaders;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.HeatingCoilLevel;
@@ -40,6 +38,7 @@ import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
@@ -54,8 +53,9 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -71,6 +71,11 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
 
     public MegaBlastFurnace(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.mega_blast_furnace.name";
     }
 
     @Override
@@ -91,32 +96,28 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
                     .casingIndex(TAE.GTPP_INDEX(15))
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 15))))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))
-            .addElement(
-                'S',
-                HatchElement.Muffler.newAny(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10), 2))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 12))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 13))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 14))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 14))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 15))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 3))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 13))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BlastSmelterCasing.asElement())))
+            .addElement('B', Casings.SolidSteelMachineCasing.asElement())
+            .addElement('S', HatchElement.Muffler.newAny(Casings.RadiantNaquadahAlloyCasing.getTextureId(), 2))
+            .addElement('C', Casings.BronzePipeCasing.asElement())
+            .addElement('D', Casings.SteelPipeCasing.asElement())
+            .addElement('E', Casings.TitaniumPipeCasing.asElement())
+            .addElement('F', Casings.TungstensteelPipeCasing.asElement())
+            .addElement('G', Casings.BronzeFireboxCasing.asElement())
+            .addElement('H', Casings.SteelFireboxCasing.asElement())
+            .addElement('I', Casings.TungstensteelFireboxCasing.asElement())
+            .addElement('J', Casings.TitaniumFireboxCasing.asElement())
+            .addElement('K', Casings.EngineIntakeCasing.asElement())
             .addElement(
                 'L',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility.ofCoil(MegaBlastFurnace::setMCoilLevel, MegaBlastFurnace::getMCoilLevel))))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
-            .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 2))
-            .addElement('O', StructureUtility.ofBlock(Loaders.FRF_Casings, 0))
-            .addElement('P', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 4))
-            .addElement('Q', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('M', Casings.PTFEPipeCasing.asElement())
+            .addElement('N', Casings.MiningNeutroniumCasing.asElement())
+            .addElement('O', Casings.NaquadahFuelRefineryCasing.asElement())
+            .addElement('P', Casings.ExtremeEngineIntakeCasing.asElement())
+            .addElement('Q', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement('R', GTStructureUtility.ofFrame(Materials.Naquadah))
             .build();
     }
@@ -164,8 +165,12 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     @Override
     public void setupParameters() {
         super.setupParameters();
-        this.mHeatingCapacity = (int) this.getMCoilLevel()
-            .getHeat() + 100 * (BWUtil.getTier(this.getMaxInputEu()) - 2);
+        mHeatingCapacity = coilAndVoltageHeat();
+    }
+
+    @Override
+    public boolean addsVoltageHeat() {
+        return true;
     }
 
     @Override
@@ -249,9 +254,8 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
     }
 
     @Override
-    public void setupProcessingLogic(ProcessingLogic logic) {
-        super.setupProcessingLogic(logic);
-        logic.setUnlimitedTierSkips();
+    public int getMaxTierSkip() {
+        return UNLIMITED_TIER_SKIPS;
     }
 
     @Override
@@ -296,26 +300,8 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("Tooltip_MegaBlastFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(23, 44, 23, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_00"))
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_MegaBlastFurnace_Casing_01"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -354,7 +340,7 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
         }
 
         return new String[] {
-            StatCollector.translateToLocal("GT5U.multiblock.Progress") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.Progress") + ": "
                 + EnumChatFormatting.GREEN
                 + NumberFormatUtil.formatNumber(mProgresstime / 20)
                 + EnumChatFormatting.RESET
@@ -363,7 +349,7 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
                 + NumberFormatUtil.formatNumber(mMaxProgresstime / 20)
                 + EnumChatFormatting.RESET
                 + " s",
-            StatCollector.translateToLocal("GT5U.multiblock.energy") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.energy") + ": "
                 + EnumChatFormatting.GREEN
                 + NumberFormatUtil.formatNumber(storedEnergy)
                 + EnumChatFormatting.RESET
@@ -372,38 +358,38 @@ public class MegaBlastFurnace extends GTMMultiMachineBase<MegaBlastFurnace> impl
                 + NumberFormatUtil.formatNumber(maxEnergy)
                 + EnumChatFormatting.RESET
                 + " EU",
-            StatCollector.translateToLocal("GT5U.multiblock.usage") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.usage") + ": "
                 + EnumChatFormatting.RED
                 + NumberFormatUtil.formatNumber(-lEUt)
                 + EnumChatFormatting.RESET
                 + " EU/t",
-            StatCollector.translateToLocal("GT5U.multiblock.mei") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.mei") + ": "
                 + EnumChatFormatting.YELLOW
                 + NumberFormatUtil.formatNumber(getMaxInputVoltage())
                 + EnumChatFormatting.RESET
                 + " EU/t(*2A) "
-                + StatCollector.translateToLocal("GT5U.machines.tier")
+                + IGregTechDeviceInformation.encode("GT5U.machines.tier")
                 + ": "
                 + EnumChatFormatting.YELLOW
                 + GTValues.VN[GTUtility.getTier(getMaxInputVoltage())]
                 + EnumChatFormatting.RESET,
-            StatCollector.translateToLocal("GT5U.multiblock.problems") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.problems") + ": "
                 + EnumChatFormatting.RED
                 + (getIdealStatus() - getRepairStatus())
                 + EnumChatFormatting.RESET
                 + " "
-                + StatCollector.translateToLocal("GT5U.multiblock.efficiency")
+                + IGregTechDeviceInformation.encode("GT5U.multiblock.efficiency")
                 + ": "
                 + EnumChatFormatting.YELLOW
                 + mEfficiency / 100.0F
                 + EnumChatFormatting.RESET
                 + " %",
-            StatCollector.translateToLocal("GT5U.EBF.heat") + ": "
+            IGregTechDeviceInformation.encode("GT5U.EBF.heat") + ": "
                 + EnumChatFormatting.GREEN
                 + NumberFormatUtil.formatNumber(mHeatingCapacity)
                 + EnumChatFormatting.RESET
                 + " K",
-            StatCollector.translateToLocal("GT5U.multiblock.pollution") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.pollution") + ": "
                 + EnumChatFormatting.GREEN
                 + getAveragePollutionPercentage()
                 + EnumChatFormatting.RESET

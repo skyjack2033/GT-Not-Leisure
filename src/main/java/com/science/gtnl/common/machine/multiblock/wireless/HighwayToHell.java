@@ -5,7 +5,6 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -19,23 +18,29 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.utils.item.LimitingItemStackHandler;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.MathUtils;
+import com.reavaritia.utils.item.ToolHelper;
+import com.science.gtnl.api.IMultiblockTooltipRules.TieredPart;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.gui.modularui.multiblock.HighwayToHellGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import bartworks.common.loaders.FluidLoader;
-import bartworks.system.material.WerkstoffLoader;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
@@ -57,9 +62,13 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.core.block.ModBlocks;
+import gregtech.api.util.tooltip.TooltipHelper;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchTurbine;
+import gtPlusPlus.xmod.gregtech.common.tileentities.machines.multi.production.turbines.MTELargerTurbineBaseLegacy;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell> {
 
     private static final int HORIZONTAL_OFF_SET = 9;
@@ -67,9 +76,18 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
     private static final int DEPTH_OFF_SET = 5;
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String HTH_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/highway_to_hell";
+    private static final String WIRELESS_GLASS_LIMIT_TOOLTIP_KEY = "gtnl.machine.highway_to_hell.wireless_glass_limit";
     private static final String[][] shape = StructureUtils.readStructureFromFile(HTH_STRUCTURE_FILE_PATH);
 
-    public ArrayList<MTEHatchTurbine> mTurbineHatches = new ArrayList<>();
+    public ObjectArrayList<MTEHatchTurbine> mTurbineHatches = new ObjectArrayList<>();
+    public LimitingItemStackHandler turbineHolder = new LimitingItemStackHandler(4, 1) {
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            syncTurbineHolderSlot(slot);
+        }
+    };
     public boolean staticAnimations = false;
     public int turbineTier;
 
@@ -86,22 +104,21 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
         return new HighwayToHell(this.mName);
     }
 
-    // TODO: Use GTNLMaterials
     @Override
     public IStructureDefinition<HighwayToHell> getStructureDefinition() {
         return StructureDefinition.<HighwayToHell>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 2))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 4))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('B', Casings.TungstensteelPipeCasing.asElement())
+            .addElement('C', Casings.CleanStainlessSteelMachineCasing.asElement())
+            .addElement('D', Casings.ChemicallyInertMachineCasing.asElement())
+            .addElement('E', Casings.MiningNeutroniumCasing.asElement())
+            .addElement('F', Casings.ExtremeEngineIntakeCasing.asElement())
+            .addElement('G', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement('H', GTStructureUtility.ofFrame(Materials.Neutronium))
-            .addElement('I', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 6))
-            .addElement('J', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 15))
-            .addElement('K', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 14))
+            .addElement('I', Casings.LargeSieveGrate.asElement())
+            .addElement('J', Casings.ReinforcedSCTurbineCasing.asElement())
+            .addElement('K', Casings.BlastSmelterHeatContainmentCoil.asElement())
             .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 9))
             .addElement(
                 'M',
@@ -122,10 +139,9 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
-            .addElement('P', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 129))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
+            .addElement('P', GTNLCasings.ReboltedNeutroniumCasing.asElement())
             .addElement('Q', CustomHatchElement.ROTOR_ASSEMBLY.newAny(getCasingTextureID(), 2))
             .build();
     }
@@ -160,6 +176,7 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
+        syncTurbineHolderWithHatches();
         boolean isFlipped = this.getFlip()
             .isHorizontallyFlipped();
         StructureUtils.setStringBlockXZ(
@@ -179,17 +196,22 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
 
     @Override
     public void checkHatch(List<StructureError> errors) {
-        for (MTEHatchTurbine h : GTUtility.validMTEList(this.mTurbineHatches)) {
-            if (!h.hasTurbine()) {
-                errors.add(GTNLStructureErrors.invalidHatchConfiguration());
-                break;
-            }
+        if (!hasAllTurbines()) {
+            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
         }
         super.checkHatch(errors);
     }
 
+    public boolean hasAllTurbines() {
+        if (mTurbineHatches.size() != 4) return false;
+        for (MTEHatchTurbine hatch : GTUtility.validMTEList(mTurbineHatches)) {
+            if (hatch == null || !MTELargerTurbineBaseLegacy.isValidTurbine(hatch.getTurbine())) return false;
+        }
+        return true;
+    }
+
     @Override
-    protected int getGlassEnergyTierLimit() {
+    public int getGlassEnergyTierLimit() {
         return VoltageIndex.UMV;
     }
 
@@ -217,13 +239,13 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
     public CheckRecipeResult checkProcessing() {
         resetParallelTier();
         costingEU = BigInteger.ZERO;
-        costingEUText = Utils.ZERO_STRING;
+        costingEUText = MathUtils.ZERO_STRING;
         totalOverclockedDuration = 0;
         turbineTier = 0;
 
-        for (MTEHatchTurbine h : GTUtility.validMTEList(this.mTurbineHatches)) {
-            if (!h.hasTurbine()) return CheckRecipeResultRegistry.NO_RECIPE;
-            turbineTier = GTUtility.min(turbineTier, MetaGeneratedTool.getPrimaryMaterial(h.getTurbine()).mToolQuality);
+        for (MTEHatchTurbine hatch : GTUtility.validMTEList(mTurbineHatches)) {
+            ItemStack turbine = hatch.getTurbine();
+            turbineTier = GTUtility.min(turbineTier, MetaGeneratedTool.getPrimaryMaterial(turbine).mToolQuality);
         }
 
         if (!wirelessMode) {
@@ -246,7 +268,7 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
         }
 
         List<ItemStack> original = getAllStoredInputs();
-        List<ItemStack> merged = new ArrayList<>();
+        List<ItemStack> merged = new ObjectArrayList<>();
 
         outer: for (ItemStack stack : original) {
             if (stack == null) continue;
@@ -297,13 +319,13 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
             public CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
                 if (wirelessMode) {
                     int voltageTier;
-                    if (mGlassTier < VoltageIndex.UMV) {
+                    if (mGlassTier < getGlassEnergyTierLimit()) {
                         voltageTier = GTUtility.min(mGlassTier, GTUtility.min(mParallelTier + 1, 14));
                     } else {
                         voltageTier = GTUtility.min(mParallelTier + 1, 14);
                     }
 
-                    if (recipe.mEUt > GTValues.V[voltageTier] * 4) {
+                    if (recipe.mEUt > GTValues.V[voltageTier] * WIRELESS_RECIPE_AMPERAGE) {
                         return CheckRecipeResultRegistry.insufficientPower(recipe.mEUt);
                     }
                 }
@@ -346,14 +368,14 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
         BigInteger costEU = BigInteger.valueOf(processingLogic.getCalculatedEut())
             .multiply(BigInteger.valueOf(processingLogic.getDuration()));
 
-        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(Utils.NEGATIVE_ONE))) {
+        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(MathUtils.NEGATIVE_ONE))) {
             return CheckRecipeResultRegistry.insufficientPower(costEU.longValue());
         }
 
         costingEU = costingEU.add(costEU);
 
-        mOutputItems = Utils.mergeArray(mOutputItems, processingLogic.getOutputItems());
-        mOutputFluids = Utils.mergeArray(mOutputFluids, processingLogic.getOutputFluids());
+        mOutputItems = MathUtils.mergeArray(mOutputItems, processingLogic.getOutputItems());
+        mOutputFluids = MathUtils.mergeArray(mOutputFluids, processingLogic.getOutputFluids());
         totalOverclockedDuration += processingLogic.getDuration();
 
         endRecipeProcessing();
@@ -393,7 +415,7 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -426,30 +448,23 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("HighwayToHellRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighwayToHell_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(19, 18, 17, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_HighwayToHell_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
+    }
+
+    @Override
+    public List<String> getTooltipWirelessModeLines() {
+        List<String> lines = new ObjectArrayList<>(super.getTooltipWirelessModeLines());
+        lines.add(
+            StatCollector.translateToLocalFormatted(
+                WIRELESS_GLASS_LIMIT_TOOLTIP_KEY,
+                GTNLMultiblockTooltipBuilder.mechanicName(WIRELESS_MODE_NAME_KEY),
+                GTNLMultiblockTooltipBuilder.partTierText(TieredPart.GLASS),
+                TooltipHelper.voltageTierText(getGlassEnergyTierLimit(), false),
+                WIRELESS_RECIPE_AMPERAGE));
+        return lines;
     }
 
     @Override
@@ -478,22 +493,89 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
     }
 
     @Override
-    public void saveNBTData(NBTTagCompound aNBT) {
-        super.saveNBTData(aNBT);
-        aNBT.setBoolean("turbineAnimationsStatic", staticAnimations);
+    public void onBlockDestroyed() {
+        IGregTechTileEntity baseMetaTileEntity = getBaseMetaTileEntity();
+        if (baseMetaTileEntity != null && baseMetaTileEntity.isServerSide()) {
+            for (int slot = 0; slot < turbineHolder.getSlots(); slot++) {
+                MTEHatchTurbine hatch = slot < mTurbineHatches.size() ? mTurbineHatches.get(slot) : null;
+                ItemStack turbine = hatch == null ? null : hatch.getTurbine();
+                if (!MTELargerTurbineBaseLegacy.isValidTurbine(turbine)) {
+                    turbine = turbineHolder.getStackInSlot(slot);
+                }
+                if (turbine == null || turbine.stackSize <= 0) continue;
+                ToolHelper.dropItem(
+                    turbine.copy(),
+                    baseMetaTileEntity.getWorld(),
+                    baseMetaTileEntity.getXCoord() + 0.5,
+                    baseMetaTileEntity.getYCoord() + 0.5,
+                    baseMetaTileEntity.getZCoord() + 0.5);
+                turbineHolder.setStackInSlot(slot, null);
+                if (hatch != null) hatch.setInventorySlotContents(0, null);
+            }
+        }
+        setTurbineInactive();
+        mTurbineHatches.clear();
+        super.onBlockDestroyed();
     }
 
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
         staticAnimations = aNBT.getBoolean("turbineAnimationsStatic");
+        if (aNBT.hasKey("inventory")) {
+            turbineHolder.deserializeNBT(aNBT.getCompoundTag("inventory"));
+        }
+        if (aNBT.hasKey("turbineHolder")) {
+            turbineHolder.deserializeNBT(aNBT.getCompoundTag("turbineHolder"));
+        }
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        aNBT.setBoolean("turbineAnimationsStatic", staticAnimations);
+        aNBT.setTag("inventory", turbineHolder.serializeNBT());
+    }
+
+    private void syncTurbineHolderSlot(int slot) {
+        if (slot < 0 || slot >= mTurbineHatches.size()) return;
+        IGregTechTileEntity baseMetaTileEntity = getBaseMetaTileEntity();
+        MTEHatchTurbine hatch = mTurbineHatches.get(slot);
+        if (hatch == null || baseMetaTileEntity == null || baseMetaTileEntity.isClientSide()) return;
+
+        ItemStack turbine = turbineHolder.getStackInSlot(slot);
+        if (MTELargerTurbineBaseLegacy.isValidTurbine(turbine)) {
+            hatch.insertTurbine(turbine.copy());
+        } else {
+            hatch.setInventorySlotContents(0, null);
+        }
+    }
+
+    private void syncTurbineHolderWithHatches() {
+        for (int slot = 0; slot < turbineHolder.getSlots() && slot < mTurbineHatches.size(); slot++) {
+            MTEHatchTurbine hatch = mTurbineHatches.get(slot);
+            if (hatch == null) continue;
+
+            ItemStack holderTurbine = turbineHolder.getStackInSlot(slot);
+            ItemStack hatchTurbine = hatch.getTurbine();
+            if (MTELargerTurbineBaseLegacy.isValidTurbine(hatchTurbine)) {
+                if (!GTUtility.areStacksEqual(holderTurbine, hatchTurbine)) {
+                    turbineHolder.setStackInSlot(slot, hatchTurbine.copy());
+                }
+            } else if (MTELargerTurbineBaseLegacy.isValidTurbine(holderTurbine)) {
+                hatch.insertTurbine(holderTurbine.copy());
+            }
+        }
     }
 
     @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         staticAnimations = !staticAnimations;
-        GTUtility.sendChatTrans(aPlayer, staticAnimations ? "Info_HighwayToHell_00" : "Info_HighwayToHell_01");
+        GTUtility.sendChatTrans(
+            aPlayer,
+            staticAnimations ? "gtnl.chat.highway_to_hell.static_turbine_texture"
+                : "gtnl.chat.highway_to_hell.animated_turbine_texture");
         for (MTEHatchTurbine h : GTUtility.validMTEList(mTurbineHatches)) {
             h.mUsingAnimation = staticAnimations;
         }
@@ -542,6 +624,11 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
         return false;
     }
 
+    @Override
+    public @NotNull MTEMultiBlockBaseGui<?> getGui() {
+        return new HighwayToHellGui(this);
+    }
+
     public enum CustomHatchElement implements IHatchElement<HighwayToHell> {
 
         ROTOR_ASSEMBLY(HighwayToHell::addTurbineHatch, MTEHatchTurbine.class) {
@@ -551,6 +638,8 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
                 return HighwayToHell.mTurbineHatches.size();
             }
         };
+
+        public static final String ROTOR_ASSEMBLY_NAME_KEY = "gt.blockmachines.hatch.turbine.name";
 
         private final List<Class<? extends IMetaTileEntity>> mteClasses;
         private final IGTHatchAdder<HighwayToHell> adder;
@@ -564,6 +653,16 @@ public class HighwayToHell extends WirelessEnergyMultiMachineBase<HighwayToHell>
         @Override
         public List<? extends Class<? extends IMetaTileEntity>> mteClasses() {
             return mteClasses;
+        }
+
+        @Override
+        public String getDescriptionLangKey() {
+            return ROTOR_ASSEMBLY_NAME_KEY;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return StatCollector.translateToLocal(ROTOR_ASSEMBLY_NAME_KEY);
         }
 
         public IGTHatchAdder<? super HighwayToHell> adder() {

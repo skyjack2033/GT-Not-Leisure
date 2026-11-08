@@ -2,12 +2,9 @@ package com.science.gtnl.common.machine.multiblock.steam;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCustomMachineCasings;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -22,12 +19,14 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
@@ -47,15 +46,20 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> implements ISurvivalConstructable {
 
-    private static final int HORIZONTAL_OFF_SET = 7;
-    private static final int VERTICAL_OFF_SET = 6;
-    private static final int DEPTH_OFF_SET = 1;
+    private static final int HORIZONTAL_OFF_SET = 3;
+    private static final int VERTICAL_OFF_SET = 5;
+    private static final int DEPTH_OFF_SET = 0;
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String LSF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/large_steam_furnace";
     private static final String[][] shape = StructureUtils.readStructureFromFile(LSF_STRUCTURE_FILE_PATH);
+    private static final int SMELTING_DURATION = 64;
+    private static final int FURNACE_RECIPE_DURATION = 128;
 
     public LargeSteamFurnace(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -63,6 +67,11 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
 
     public LargeSteamFurnace(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_steam_furnace.name";
     }
 
     @Override
@@ -135,24 +144,14 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
                 'E',
                 GTStructureChannels.TIER_MACHINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
-                        LargeSteamFurnace::getTierPlatedCasing,
-                        ImmutableList.of(Pair.of(blockCustomMachineCasings, 0), Pair.of(GregTechAPI.sBlockCasings2, 0)),
-                        -1,
-                        (t, m) -> t.tierPlatedCasing = m,
-                        t -> t.tierPlatedCasing)))
-            .addElement(
-                'F',
-                GTStructureChannels.TIER_MACHINE_CASING.use(
-                    StructureUtility.ofBlocksTiered(
                         LargeSteamFurnace::getTierBrickCasing,
                         ImmutableList
                             .of(Pair.of(BlockLoader.metaBlockColumn, 0), Pair.of(BlockLoader.metaBlockColumn, 1)),
                         -1,
                         (t, m) -> t.tierBrickCasing = m,
                         t -> t.tierBrickCasing)))
-            .addElement('G', StructureUtility.ofBlock(Blocks.stonebrick, 0))
             .addElement(
-                'H',
+                'F',
                 GTStructureChannels.TIER_MACHINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         LargeSteamFurnace::getTierIndustrialCasing,
@@ -194,16 +193,14 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
         checkHatch(errors);
         checkMachineTier(
             errors,
-            50,
+            29,
             tierPipeCasing == 1 && tierMachineCasing == 1
                 && tierFrameCasing == 1
-                && tierPlatedCasing == 1
                 && tierBrickCasing == 1
                 && tierFireboxCasing == 1
                 && tierIndustrialCasing == 1,
             tierPipeCasing == 2 && tierMachineCasing == 2
                 && tierFrameCasing == 2
-                && tierPlatedCasing == 2
                 && tierBrickCasing == 2
                 && tierFireboxCasing == 2
                 && tierIndustrialCasing == 2);
@@ -221,9 +218,9 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
             @Override
             public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
                 return super.createOverclockCalculator(recipe).setExtraDurationModifier(configSpeedBoost)
-                    .setEUtDiscount(0.5 * tierMachine * (1 << (2 * Math.min(4, recipeOcCount))))
-                    .setDurationModifier(1.0 / 10.0 / tierMachine / (1 << Math.min(4, recipeOcCount)))
-                    .setMaxTierSkips(0)
+                    .setEUtDiscount(0.5D * tierMachine * (1 << (2 * Math.min(4, recipeOcCount))))
+                    .setDurationModifier(1.0D / 10.0D / tierMachine / (1 << Math.min(4, recipeOcCount)))
+                    .setMaxTierSkips(getMaxTierSkip())
                     .setMaxOverclocks(0);
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
@@ -247,7 +244,7 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
 
         GTNLOverclockCalculator calculator = new GTNLOverclockCalculator().setEUt(availableEUt)
             .setRecipeEUt(4)
-            .setDuration(64)
+            .setDuration(SMELTING_DURATION)
             .setParallel(originalMaxParallel)
             .setNoOverclock(true);
 
@@ -285,7 +282,7 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
 
         int finalParallel = (int) (batchMultiplierMax * currentParallelBeforeBatchMode);
 
-        List<ItemStack> outputSlots = new ArrayList<>();
+        List<ItemStack> outputSlots = new ObjectArrayList<>();
         for (ItemStack stack : getItemOutputSlots(null)) {
             if (stack != null) {
                 outputSlots.add(stack.copy());
@@ -303,7 +300,7 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
             }
         }
 
-        ArrayList<ItemStack> smeltedOutputs = new ArrayList<>();
+        ObjectArrayList<ItemStack> smeltedOutputs = new ObjectArrayList<>();
         int toSmelt = finalParallel;
         for (ItemStack item : tInput) {
             ItemStack smeltedOutput = GTModHandler.getSmeltingOutput(item, false, null);
@@ -392,8 +389,8 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
-        int id = tierMachine == 2 ? StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0)
-            : StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        int id = tierMachine == 2 ? Casings.SolidSteelMachineCasing.getTextureId()
+            : Casings.BronzePlatedBricks.getTextureId();
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(id), TextureFactory.builder()
                 .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_FURNACE_ACTIVE)
@@ -409,21 +406,24 @@ public class LargeSteamFurnace extends SteamMultiMachineBase<LargeSteamFurnace> 
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("LargeSteamFurnaceRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.large_steam_furnace.recipe_type");
+    }
+
+    @Override
+    protected TooltipStats readTooltipStats() {
+        TooltipStats stats = super.readTooltipStats();
+        return new TooltipStats(
+            stats.parallels(),
+            stats.speed() * FURNACE_RECIPE_DURATION / SMELTING_DURATION,
+            stats.energyUsage(),
+            true,
+            stats.perfectOverclock());
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSteamFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .beginStructureBlock(9, 8, 10, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamFurnace_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamFurnace_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

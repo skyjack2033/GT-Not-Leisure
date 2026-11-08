@@ -2,13 +2,10 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -19,13 +16,14 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.recipe.gtnl.MatterFabricatorRecipes;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -45,8 +43,11 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtnhlanth.common.register.LanthItemList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tectech.thing.casing.BlockGTCasingsTT;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -65,15 +66,20 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.matter_fabricator.name";
+    }
+
+    @Override
     public IStructureDefinition<MatterFabricator> getStructureDefinition() {
         return StructureDefinition.<MatterFabricator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+            .addElement('A', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement('B', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 7))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 15))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('C', Casings.ZPMMachineCasing.asElement())
+            .addElement('D', Casings.SuperconductingCoilBlock.asElement())
+            .addElement('E', Casings.FilterMachineCasing.asElement())
+            .addElement('F', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement(
                 'G',
                 GTStructureUtility.buildHatchAdder(MatterFabricator.class)
@@ -84,12 +90,10 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
                         HatchElement.OutputHatch,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 0))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.HighPowerCasing.asElement())))
             .addElement('H', GTStructureUtility.ofFrame(Materials.Naquadria))
             .build();
     }
@@ -194,23 +198,23 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
         if (!foundValidInput || totalOutput == 0) return CheckRecipeResultRegistry.NO_RECIPE;
 
         if (hasCircuit1) {
-            List<ItemStack> outputItems = new ArrayList<>();
+            List<ItemStack> outputItems = new ObjectArrayList<>();
             long remaining = totalOutput;
             while (remaining > 0) {
                 int stackSize = (int) Math.min(remaining, Integer.MAX_VALUE);
                 outputItems.add(new ItemStack(outputItem.getItem(), stackSize, outputItem.getItemDamage()));
                 remaining -= stackSize;
             }
-            mOutputItems = outputItems.toArray(new ItemStack[outputItems.size()]);
+            mOutputItems = outputItems.toArray(new ItemStack[0]);
         } else {
-            List<FluidStack> outputFluids = new ArrayList<>();
+            List<FluidStack> outputFluids = new ObjectArrayList<>();
             long fluidAmount = totalOutput * 100000L;
             while (fluidAmount > 0) {
                 int amount = (int) Math.min(fluidAmount, Integer.MAX_VALUE);
                 outputFluids.add(new FluidStack(Materials.UUAmplifier.getFluid(1), amount));
                 fluidAmount -= amount;
             }
-            mOutputFluids = outputFluids.toArray(new FluidStack[outputFluids.size()]);
+            mOutputFluids = outputFluids.toArray(new FluidStack[0]);
         }
 
         this.lEUt = -totalOutput * 4L;
@@ -246,16 +250,8 @@ public class MatterFabricator extends GTMMultiMachineBase<MatterFabricator> impl
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MatterFabricatorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 5, 6, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MatterFabricator_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MatterFabricator_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MatterFabricator_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MatterFabricator_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.science.gtnl.api.mixinHelper.IOutputME;
 import com.science.gtnl.common.machine.hatch.OutputBusMEProxy;
+import com.science.gtnl.utils.machine.MachineUtils;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.me.helpers.AENetworkProxy;
@@ -25,16 +26,15 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchOutputBus;
 import gregtech.common.tileentities.machines.outputme.MTEHatchOutputBusME;
 import gregtech.common.tileentities.machines.outputme.base.MTEHatchOutputMEBase;
-import gregtech.common.tileentities.machines.outputme.filter.MEFilterItem;
 
 @Mixin(value = MTEHatchOutputBusME.class, remap = false)
 public abstract class MixinMTEHatchOutputBusME extends MTEHatchOutputBus implements IOutputME {
 
     @Shadow
-    EntityPlayer lastClickedPlayer;
+    public EntityPlayer lastClickedPlayer;
 
     @Shadow
-    public abstract MTEHatchOutputMEBase<IAEItemStack, MEFilterItem, ItemStack> getProvider();
+    public abstract MTEHatchOutputMEBase<?> getProvider();
 
     public MixinMTEHatchOutputBusME(int aID, String aName, String aNameRegional, int aTier) {
         super(aID, aName, aNameRegional, aTier);
@@ -42,12 +42,12 @@ public abstract class MixinMTEHatchOutputBusME extends MTEHatchOutputBus impleme
 
     @Override
     public List<IAEItemStack> getItemCache() {
-        return getProvider().getCacheList();
+        return (List<IAEItemStack>) getProvider().getCacheList();
     }
 
     @Override
     public long getLastInputTick() {
-        return getProvider().getLastInputTick();
+        return getProvider().getCachedAmount();
     }
 
     @Override
@@ -86,31 +86,15 @@ public abstract class MixinMTEHatchOutputBusME extends MTEHatchOutputBus impleme
     }
 
     @Override
-    public MTEHatchOutputMEBase<IAEItemStack, MEFilterItem, ItemStack> getOutputProvider() {
+    public MTEHatchOutputMEBase<?> getOutputProvider() {
         return getProvider();
     }
 
     @Inject(method = "getCopiedData", at = @At("RETURN"), cancellable = true)
     private void gtnl$injectCopiedData(EntityPlayer player, CallbackInfoReturnable<NBTTagCompound> cir) {
         if ((Object) this instanceof OutputBusMEProxy) return;
-
         IGregTechTileEntity tileEntity = getBaseMetaTileEntity();
-        if (tileEntity == null) return;
-
-        NBTTagCompound tag = cir.getReturnValue();
-        if (tag == null) {
-            tag = new NBTTagCompound();
-        }
-
-        NBTTagCompound masterNBT = new NBTTagCompound();
-        masterNBT.setInteger("masterX", tileEntity.getXCoord());
-        masterNBT.setInteger("masterY", tileEntity.getYCoord());
-        masterNBT.setInteger("masterZ", tileEntity.getZCoord());
-        masterNBT.setInteger("masterDim", tileEntity.getWorld().provider.dimensionId);
-
-        tag.setTag("master", masterNBT);
-
-        cir.setReturnValue(tag);
+        if (tileEntity != null) cir.setReturnValue(MachineUtils.addMasterPosition(tileEntity, cir.getReturnValue()));
     }
 
     @Override
@@ -128,22 +112,13 @@ public abstract class MixinMTEHatchOutputBusME extends MTEHatchOutputBus impleme
     @Override
     public boolean onRightclick(IGregTechTileEntity aBaseMetaTileEntity, EntityPlayer aPlayer, ForgeDirection side,
         float aX, float aY, float aZ) {
-        if (!(aPlayer instanceof EntityPlayerMP)) {
-            this.lastClickedPlayer = aPlayer;
-            openGui(aPlayer);
-            return onRightclick(aBaseMetaTileEntity, aPlayer);
-        }
-
         ItemStack dataStick = aPlayer.inventory.getCurrentItem();
-
-        if (!ItemList.Tool_DataStick.isStackEqual(dataStick, false, true)) {
+        if (!(aPlayer instanceof EntityPlayerMP) || !ItemList.Tool_DataStick.isStackEqual(dataStick, false, true)) {
             this.lastClickedPlayer = aPlayer;
             openGui(aPlayer);
             return onRightclick(aBaseMetaTileEntity, aPlayer);
         }
-
         if (!pasteCopiedData(aPlayer, dataStick.stackTagCompound)) return false;
-
         aPlayer.addChatMessage(new ChatComponentTranslation("GT5U.machines.output_bus.loaded"));
         return true;
     }

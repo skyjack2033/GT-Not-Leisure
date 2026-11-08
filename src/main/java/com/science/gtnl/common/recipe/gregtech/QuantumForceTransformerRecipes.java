@@ -1,29 +1,27 @@
 package com.science.gtnl.common.recipe.gregtech;
 
 import static gregtech.api.util.GTRecipeBuilder.SECONDS;
-import static gtPlusPlus.api.recipe.GTPPRecipeMaps.quantumForceTransformerRecipes;
 
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
-import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTRecipeConstants;
 import gregtech.api.util.GTUtility;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.material.MaterialsElements;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import gtnhlanth.common.register.WerkstoffMaterialPool;
 
 public class QuantumForceTransformerRecipes implements IRecipePool {
 
-    public RecipeMap<?> QFT = GTPPRecipeMaps.quantumForceTransformerRecipes;
+    public RecipeMap<?> QFT = RecipeMaps.quantumForceTransformerRecipes;
 
     @Override
     public void loadRecipes() {
@@ -83,7 +81,7 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
             .metadata(GTRecipeConstants.QFT_FOCUS_TIER, 2)
             .addTo(QFT);
 
-        GTValues.RA.stdBuilder()
+        RecipeBuilder.builder()
             .itemInputs(GGMaterial.naquadriaEarth.get(OrePrefixes.dust, 32), Materials.Magnesium.getDust(64))
             .itemOutputs(
                 GTUtility.copyAmountUnsafe(96, Materials.Naquadria.getDust(1)),
@@ -98,7 +96,7 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_UMV)
             .metadata(GTRecipeConstants.QFT_CATALYST, GregtechItemList.AdvancedNaquadahCatalyst.get(0))
             .metadata(GTRecipeConstants.QFT_FOCUS_TIER, 3)
-            .addTo(quantumForceTransformerRecipes);
+            .addTo(QFT);
 
         RecipeBuilder.builder()
             .itemInputs(
@@ -114,6 +112,6 @@ public class QuantumForceTransformerRecipes implements IRecipePool {
             .eut(TierEU.RECIPE_UV)
             .metadata(GTRecipeConstants.QFT_CATALYST, GregtechItemList.TitaTungstenIndiumCatalyst.get(0))
             .metadata(GTRecipeConstants.QFT_FOCUS_TIER, 1)
-            .addTo(quantumForceTransformerRecipes);
+            .addTo(QFT);
     }
 }

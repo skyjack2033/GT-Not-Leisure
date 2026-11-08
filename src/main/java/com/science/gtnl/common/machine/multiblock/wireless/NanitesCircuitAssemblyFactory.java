@@ -7,18 +7,19 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -33,8 +34,8 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.core.material.MaterialsElements;
-import tectech.thing.casing.TTCasingsContainer;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class NanitesCircuitAssemblyFactory extends WirelessEnergyMultiMachineBase<NanitesCircuitAssemblyFactory> {
 
     private static final int HORIZONTAL_OFF_SET = 14;
@@ -60,7 +61,7 @@ public class NanitesCircuitAssemblyFactory extends WirelessEnergyMultiMachineBas
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -85,10 +86,10 @@ public class NanitesCircuitAssemblyFactory extends WirelessEnergyMultiMachineBas
     public IStructureDefinition<NanitesCircuitAssemblyFactory> getStructureDefinition() {
         return StructureDefinition.<NanitesCircuitAssemblyFactory>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
+            .addElement('A', Casings.DimensionalInjectionCasing.asElement())
             .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSE, 2))
             .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSE, 0))
-            .addElement('D', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 3))
+            .addElement('D', Casings.AdvancedComputerCasing.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(NanitesCircuitAssemblyFactory.class)
@@ -102,10 +103,9 @@ public class NanitesCircuitAssemblyFactory extends WirelessEnergyMultiMachineBas
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
-            .addElement('F', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
+            .addElement('F', GTNLCasings.FusionGlass.asElement())
             .addElement(
                 'G',
                 StructureUtility.ofBlockAnyMeta(
@@ -119,7 +119,7 @@ public class NanitesCircuitAssemblyFactory extends WirelessEnergyMultiMachineBas
                         MaterialsAlloy.PIKYONIUM.getFrameBox(1)
                             .getItem())))
             .addElement('I', GTStructureUtility.ofFrame(Materials.Quantium))
-            .addElement('J', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+            .addElement('J', GTNLCasings.NeutroniumPipeCasing.asElement())
             .build();
     }
 
@@ -174,25 +174,8 @@ public class NanitesCircuitAssemblyFactory extends WirelessEnergyMultiMachineBas
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("NanitesCircuitAssemblyFactoryRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(29, 10, 13, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_NanitesCircuitAssemblyFactory_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_NanitesCircuitAssemblyFactory_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_NanitesCircuitAssemblyFactory_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_NanitesCircuitAssemblyFactory_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

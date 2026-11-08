@@ -1,7 +1,6 @@
 package com.science.gtnl.common.command;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -9,15 +8,15 @@ import java.util.stream.Stream;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
-import com.science.gtnl.utils.Utils;
-import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
+import com.gtnllib.utils.GameUtils;
+import com.science.gtnl.common.steam.SteamWirelessNetworkManager;
+import com.science.gtnl.utils.world.teams.TeamNetworkManager;
 
-import gregtech.common.misc.spaceprojects.SpaceProjectManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class CommandSteamNetwork extends CommandBase {
 
@@ -28,12 +27,12 @@ public class CommandSteamNetwork extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/steam_network <add/set/join/display>";
+        return "gtnl.command.steam_network.usage";
     }
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
-        List<String> completions = new ArrayList<>();
+        List<String> completions = new ObjectArrayList<>();
         String currentArg = args.length == 0 ? "" : args[args.length - 1].trim();
 
         if (args.length == 1) {
@@ -68,19 +67,23 @@ public class CommandSteamNetwork extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] strings) {
         if (strings.length < 1) {
-            getCommandUsage(sender);
+            sendMessage(sender, "gtnl.command.steam_network.usage");
             return;
         }
         switch (strings[0]) {
             case "add" -> {
-                if (!Utils.hasPermission(sender, 2)) {
+                if (!GameUtils.hasPermission(sender, 2)) {
                     sender.addChatMessage(new ChatComponentTranslation("commands.error.perm"));
+                    break;
+                }
+                if (strings.length != 3) {
+                    sendMessage(sender, "gtnl.command.steam_network.add_usage");
                     break;
                 }
                 String username = strings[1];
                 if (username == null) username = sender.getCommandSenderName();
                 String formatted_username = EnumChatFormatting.BLUE + username + EnumChatFormatting.RESET;
-                UUID uuid = SpaceProjectManager.getPlayerUUIDFromName(username);
+                UUID uuid = TeamNetworkManager.getPlayerId(username);
 
                 String Steam_String = strings[2];
 
@@ -91,34 +94,33 @@ public class CommandSteamNetwork extends CommandBase {
                     + EnumChatFormatting.RESET;
 
                 if (SteamWirelessNetworkManager.addSteamToGlobalSteamMap(uuid, new BigInteger(Steam_String)))
-                    sender.addChatMessage(
-                        new ChatComponentText(
-                            "Successfully added " + EU_string_formatted
-                                + "Steam to the global steam network of "
-                                + formatted_username
-                                + "."));
+                    sendMessage(
+                        sender,
+                        "gtnl.command.steam_network.add_success",
+                        EU_string_formatted,
+                        formatted_username);
                 else sender.addChatMessage(
-                    new ChatComponentText(
-                        "Failed to add " + EU_string_formatted
-                            + "Steam to the global steam map of "
-                            + formatted_username
-                            + ". Insufficient steam in network. "));
+                    new ChatComponentTranslation(
+                        "gtnl.command.steam_network.add_failed",
+                        EU_string_formatted,
+                        formatted_username));
 
                 sender.addChatMessage(
-                    new ChatComponentText(
-                        formatted_username + " currently has "
-                            + EnumChatFormatting.RED
-                            + NumberFormatUtil.formatNumber(
-                                new BigInteger(
-                                    SteamWirelessNetworkManager.getUserSteam(uuid)
-                                        .toString()))
-                            + EnumChatFormatting.RESET
-                            + " Steam in their network."));
+                    new ChatComponentTranslation(
+                        "gtnl.command.steam_network.balance",
+                        formatted_username,
+                        EnumChatFormatting.RED
+                            + NumberFormatUtil.formatNumber(SteamWirelessNetworkManager.getUserSteam(uuid))
+                            + EnumChatFormatting.RESET));
 
             }
             case "set" -> {
-                if (!Utils.hasPermission(sender, 2)) {
+                if (!GameUtils.hasPermission(sender, 2)) {
                     sender.addChatMessage(new ChatComponentTranslation("commands.error.perm"));
+                    break;
+                }
+                if (strings.length != 3) {
+                    sendMessage(sender, "gtnl.command.steam_network.set_usage");
                     break;
                 }
 
@@ -127,26 +129,23 @@ public class CommandSteamNetwork extends CommandBase {
                 String username = strings[1];
                 if (username == null) username = sender.getCommandSenderName();
                 String formatted_username = EnumChatFormatting.BLUE + username + EnumChatFormatting.RESET;
-                UUID uuid = SpaceProjectManager.getPlayerUUIDFromName(username);
+                UUID uuid = TeamNetworkManager.getPlayerId(username);
 
                 String Steam_String_0 = strings[2];
 
                 if ((new BigInteger(Steam_String_0).compareTo(BigInteger.ZERO)) < 0) {
-                    sender
-                        .addChatMessage(new ChatComponentText("Cannot set a users steam network to a negative value."));
+                    sender.addChatMessage(new ChatComponentTranslation("gtnl.command.steam_network.negative_amount"));
                     break;
                 }
 
                 SteamWirelessNetworkManager.setUserSteam(uuid, new BigInteger(Steam_String_0));
 
                 sender.addChatMessage(
-                    new ChatComponentText(
-                        "Successfully set " + formatted_username
-                            + "'s global steam network to "
-                            + EnumChatFormatting.RED
-                            + NumberFormatUtil.formatNumber(new BigInteger(Steam_String_0))
-                            + EnumChatFormatting.RESET
-                            + " Steam."));
+                    new ChatComponentTranslation(
+                        "gtnl.command.steam_network.set_success",
+                        formatted_username,
+                        EnumChatFormatting.RED + NumberFormatUtil.formatNumber(new BigInteger(Steam_String_0))
+                            + EnumChatFormatting.RESET));
 
             }
             case "join" -> {
@@ -163,93 +162,78 @@ public class CommandSteamNetwork extends CommandBase {
                     usernameTeam = strings[1];
                     usernameSubject = sender.getCommandSenderName();
                 } else {
-                    sender
-                        .addChatMessage(new ChatComponentText("Usage: /steam_network join <your_name> <target_name>"));
+                    sendMessage(sender, "gtnl.command.steam_network.join_usage");
                     break;
                 }
 
                 String formattedUsernameSubject = EnumChatFormatting.BLUE + usernameSubject + EnumChatFormatting.RESET;
                 String formattedUsernameTeam = EnumChatFormatting.BLUE + usernameTeam + EnumChatFormatting.RESET;
 
-                UUID uuidSubject = SpaceProjectManager.getPlayerUUIDFromName(usernameSubject);
-                UUID uuidTeam = SpaceProjectManager.getLeader(SpaceProjectManager.getPlayerUUIDFromName(usernameTeam));
+                UUID uuidSubject = TeamNetworkManager.getPlayerId(usernameSubject);
+                UUID uuidTeam = TeamNetworkManager.getPlayerId(usernameTeam);
+                UUID uuidSender = TeamNetworkManager.getPlayerId(sender.getCommandSenderName());
+                boolean senderIsLeaderOfTeam = TeamNetworkManager.isSameTeam(uuidSender, uuidTeam)
+                    && TeamNetworkManager.isTeamOwner(uuidSender);
 
-                UUID uuidSender = SpaceProjectManager.getPlayerUUIDFromName(sender.getCommandSenderName());
-                UUID uuidSenderLeader = SpaceProjectManager.getLeader(uuidSender);
-
-                boolean senderIsLeaderOfTeam = uuidSenderLeader.equals(uuidTeam);
-
-                if (!senderIsLeaderOfTeam && !Utils.hasPermission(sender, 2)) {
+                if (!senderIsLeaderOfTeam && !GameUtils.hasPermission(sender, 2)) {
                     sender.addChatMessage(new ChatComponentTranslation("commands.error.perm"));
                     break;
                 }
 
                 if (uuidSubject.equals(uuidTeam)) {
                     // Leave team
-                    SpaceProjectManager.putInTeam(uuidSubject, uuidSubject);
-                    sender.addChatMessage(
-                        new ChatComponentText(
-                            "User " + formattedUsernameSubject + " has rejoined their own global steam network."));
+                    TeamNetworkManager.createPersonalTeam(uuidSubject);
+                    sendMessage(sender, "gtnl.command.steam_network.rejoined", formattedUsernameSubject);
                     break;
                 }
 
                 // Already in same team
-                if (SpaceProjectManager.getLeader(uuidSubject)
-                    .equals(SpaceProjectManager.getLeader(uuidTeam))) {
-                    sender.addChatMessage(new ChatComponentText("They are already in the same network!"));
+                if (TeamNetworkManager.isSameTeam(uuidSubject, uuidTeam)) {
+                    sendMessage(sender, "gtnl.command.common.already_same_network");
                     break;
                 }
 
                 // Join other's team
-                SpaceProjectManager.putInTeam(uuidSubject, uuidTeam);
+                TeamNetworkManager.joinTeam(uuidSubject, uuidTeam);
 
                 sender.addChatMessage(
-                    new ChatComponentText(
-                        "Success! " + formattedUsernameSubject + " has joined " + formattedUsernameTeam + "."));
-                sender.addChatMessage(
-                    new ChatComponentText(
-                        "To undo this simply join your own network again with /steam_network join "
-                            + formattedUsernameSubject
-                            + " "
-                            + formattedUsernameSubject
-                            + "."));
+                    new ChatComponentTranslation(
+                        "gtnl.command.steam_network.join_success",
+                        formattedUsernameSubject,
+                        formattedUsernameTeam));
+                sendMessage(
+                    sender,
+                    "gtnl.command.steam_network.join_undo",
+                    formattedUsernameSubject,
+                    formattedUsernameSubject);
             }
             case "display" -> {
+                if (strings.length != 2 && strings.length != 1) {
+                    sendMessage(sender, "gtnl.command.steam_network.display_usage");
+                    break;
+                }
 
                 // Usage is /gt global_energy_display username.
 
-                String username = strings[1];
-                if (username == null) username = sender.getCommandSenderName();
+                String username = strings.length == 2 ? strings[1] : sender.getCommandSenderName();
                 String formatted_username = EnumChatFormatting.BLUE + username + EnumChatFormatting.RESET;
-                UUID userUUID = SpaceProjectManager.getPlayerUUIDFromName(username);
-
-                if (!SpaceProjectManager.isInTeam(userUUID)) {
-                    sender.addChatMessage(
-                        new ChatComponentText("User " + formatted_username + " has no global steam network."));
-                    break;
-                }
-                UUID teamUUID = SpaceProjectManager.getLeader(userUUID);
+                UUID userUUID = TeamNetworkManager.getPlayerId(username);
+                UUID teamUUID = TeamNetworkManager.getTeamId(userUUID);
 
                 sender.addChatMessage(
-                    new ChatComponentText(
-                        "User " + formatted_username
-                            + " has "
-                            + EnumChatFormatting.RED
+                    new ChatComponentTranslation(
+                        "gtnl.command.steam_network.balance",
+                        formatted_username,
+                        EnumChatFormatting.RED
                             + NumberFormatUtil.formatNumber(SteamWirelessNetworkManager.getUserSteam(userUUID))
-                            + EnumChatFormatting.RESET
-                            + "Steam in their network."));
-                if (!userUUID.equals(teamUUID)) sender.addChatMessage(
-                    new ChatComponentText(
-                        "User " + formatted_username
-                            + " is currently in network of "
-                            + EnumChatFormatting.BLUE
-                            + SpaceProjectManager.getPlayerNameFromUUID(teamUUID)
-                            + EnumChatFormatting.RESET
-                            + "."));
-
+                            + EnumChatFormatting.RESET));
+                if (!TeamNetworkManager.isTeamOwner(userUUID)) sender.addChatMessage(
+                    new ChatComponentTranslation(
+                        "gtnl.command.common.network_owner",
+                        formatted_username,
+                        EnumChatFormatting.BLUE + TeamNetworkManager.getTeamName(teamUUID) + EnumChatFormatting.RESET));
             }
-            default -> sender
-                .addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Invalid command/syntax detected."));
+            default -> sendMessage(sender, "gtnl.command.steam_network.usage");
         }
     }
 
@@ -266,6 +250,10 @@ public class CommandSteamNetwork extends CommandBase {
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
         return true;
+    }
+
+    private void sendMessage(ICommandSender sender, String key, Object... arguments) {
+        sender.addChatMessage(new ChatComponentTranslation(key, arguments));
     }
 
 }

@@ -1,14 +1,9 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.sBlockCasings1;
-import static gregtech.api.GregTechAPI.sBlockCasings10;
-import static gregtech.api.GregTechAPI.sBlockCasings3;
-import static gregtech.api.GregTechAPI.sBlockCasings9;
 import static gregtech.api.enums.HatchElement.Energy;
 import static gregtech.api.enums.HatchElement.ExoticEnergy;
 import static gregtech.api.enums.HatchElement.InputBus;
@@ -17,14 +12,9 @@ import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
-import static tectech.thing.block.TileEntityEyeOfHarmony.OrbitingObject;
 import static tectech.thing.block.TileEntityEyeOfHarmony.generateRandomFloat;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +40,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.cleanroommc.modularui.utils.fluid.FluidStackTank;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
@@ -57,39 +48,22 @@ import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructa
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
-import com.gtnewhorizons.modularui.api.drawable.IDrawable;
-import com.gtnewhorizons.modularui.api.drawable.ItemDrawable;
-import com.gtnewhorizons.modularui.api.drawable.Text;
-import com.gtnewhorizons.modularui.api.math.Alignment;
-import com.gtnewhorizons.modularui.api.math.Color;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
-import com.gtnewhorizons.modularui.api.widget.Interactable;
-import com.gtnewhorizons.modularui.common.fluid.FluidStackTank;
-import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
-import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
-import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
-import com.gtnewhorizons.modularui.common.widget.Scrollable;
-import com.gtnewhorizons.modularui.common.widget.SlotGroup;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
-import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.api.mixinHelper.IEyeOfHarmonyControllerLink;
 import com.science.gtnl.api.mixinHelper.LinkedEyeOfHarmonyUnit;
-import com.science.gtnl.common.gui.modularui.EyeOfHarmonyInjectorGui;
+import com.science.gtnl.common.gui.modularui.multiblock.EyeOfHarmonyInjectorGui;
+import com.science.gtnl.common.machine.multiMachineBase.TTMultiMachineBase;
 import com.science.gtnl.common.render.tile.EyeOfHarmonyInjectorRenderer;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
-import appeng.api.util.DimensionalCoord;
-import appeng.client.render.highlighter.BlockPosHighlighter;
-import appeng.core.localization.PlayerMessages;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatch;
 import gregtech.api.metatileentity.implementations.MTEHatchInput;
@@ -100,7 +74,6 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtil;
 import gregtech.api.util.GTUtility;
-import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.render.IMTERenderer;
 import gregtech.common.tileentities.machines.IDualInputHatch;
@@ -119,13 +92,12 @@ import tectech.thing.metaTileEntity.multi.base.INameFunction;
 import tectech.thing.metaTileEntity.multi.base.IStatusFunction;
 import tectech.thing.metaTileEntity.multi.base.LedStatus;
 import tectech.thing.metaTileEntity.multi.base.Parameters;
-import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 
-public class EyeOfHarmonyInjector extends TTMultiblockBase
+@IMetaTileEntity.SkipGenerateDescription
+public class EyeOfHarmonyInjector extends TTMultiMachineBase
     implements IConstructable, ISurvivalConstructable, IMTERenderer {
 
     public static float MAX_ANGLE = 50;
-    public static int STATUS_WINDOW_ID = 10;
     public static FluidStack heliumStack = Materials.Helium.getGas(1);
     public static FluidStack hydrogenStack = Materials.Hydrogen.getGas(1);
     public static FluidStack rawStarMatterStack = Materials.RawStarMatter.getFluid(1);
@@ -138,11 +110,11 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         + "multiblock/eye_of_harmony_injector";
     private static final String[][] shape = StructureUtils.readStructureFromFile(EOHI_STRUCTURE_FILE_PATH);
     public static INameFunction<EyeOfHarmonyInjector> MAX_HELIUM_AMOUNT_SETTING_NAME = (base, p) -> StatCollector
-        .translateToLocal("Tooltip_EyeOfHarmonyInjector_HeliumParametrization");
+        .translateToLocal("gtnl.machine.eye_of_harmony_injector.helium_threshold");
     public static INameFunction<EyeOfHarmonyInjector> MAX_HYDROGEN_AMOUNT_SETTING_NAME = (base, p) -> StatCollector
-        .translateToLocal("Tooltip_EyeOfHarmonyInjector_HydrogenParametrization");
+        .translateToLocal("gtnl.machine.eye_of_harmony_injector.hydrogen_threshold");
     public static INameFunction<EyeOfHarmonyInjector> MAX_RAWSTARMATTER_AMOUNT_SETTING_NAME = (base, p) -> StatCollector
-        .translateToLocal("Tooltip_EyeOfHarmonyInjector_RawStarMatterParametrization");
+        .translateToLocal("gtnl.machine.eye_of_harmony_injector.raw_star_matter_threshold");
     public static IStatusFunction<EyeOfHarmonyInjector> MAX_FLUID_AMOUNT_STATUS = (base, p) -> LedStatus
         .fromLimitsInclusiveOuterBoundary(p.get(), 0, maxFluidAmount / 2, maxFluidAmount, maxFluidAmount);
 
@@ -152,10 +124,10 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     public int mCountCasing;
 
     public float angle;
-    public ArrayList<TileEntityEyeOfHarmony.OrbitingObject> orbitingObjects = new ArrayList<>();
+    public ObjectArrayList<TileEntityEyeOfHarmony.OrbitingObject> orbitingObjects = new ObjectArrayList<>();
     public boolean enableRender = true;
 
-    public List<LinkedEyeOfHarmonyUnit> mLinkedUnits = new ArrayList<>();
+    public List<LinkedEyeOfHarmonyUnit> mLinkedUnits = new ObjectArrayList<>();
 
     public EyeOfHarmonyInjector(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -204,7 +176,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         float aX, float aY, float aZ, ItemStack aTool) {
         if (getBaseMetaTileEntity().isServerSide()) {
             this.enableRender = !enableRender;
-            GTUtility.sendChatTrans(aPlayer, "Info_Render_" + (this.enableRender ? "Enabled" : "Disabled"));
+            GTUtility.sendChatTrans(aPlayer, "gtnl.chat.render." + (this.enableRender ? "enabled" : "disabled"));
         }
         return true;
     }
@@ -271,21 +243,21 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     public IStructureDefinition<? extends EyeOfHarmonyInjector> getStructure_EM() {
         return StructureDefinition.<EyeOfHarmonyInjector>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
-            .addElement('A', ofBlock(sBlockCasingsTT, 6))
-            .addElement('B', ofBlock(sBlockCasingsTT, 7))
-            .addElement('C', ofBlock(sBlockCasings1, 13))
-            .addElement('D', ofBlock(sBlockCasings9, 14))
-            .addElement('E', ofBlock(sBlockCasingsTT, 8))
-            .addElement('F', ofBlock(sBlockCasings10, 12))
-            .addElement('G', ofBlock(sBlockCasingsTT, 4))
-            .addElement('H', ofBlock(sBlockCasings10, 8))
-            .addElement('I', ofBlock(sBlockCasings1, 12))
+            .addElement('A', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('B', Casings.MolecularCoil.asElement())
+            .addElement('C', Casings.DimensionalInjectionCasing.asElement())
+            .addElement('D', Casings.ParticleBeamGuidancePipeCasing.asElement())
+            .addElement('E', Casings.HollowCasing.asElement())
+            .addElement('F', Casings.BackgroundRadiationAbsorbentCasing.asElement())
+            .addElement('G', Casings.MolecularCasing.asElement())
+            .addElement('H', Casings.NeutroniumStabilizationCasing.asElement())
+            .addElement('I', Casings.DimensionallyTranscendentCasing.asElement())
             .addElement('J', ofFrame(Materials.CosmicNeutronium))
-            .addElement('K', ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('L', ofBlock(sBlockCasings1, 14))
-            .addElement('M', ofBlock(sBlockCasings10, 7))
-            .addElement('N', ofBlock(sBlockCasings3, 12))
-            .addElement('O', ofBlock(sBlockCasings9, 11))
+            .addElement('K', GTNLCasings.FusionGlass.asElement())
+            .addElement('L', Casings.DimensionalBridge.asElement())
+            .addElement('M', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('N', Casings.RadiationProofMachineCasing.asElement())
+            .addElement('O', Casings.HeatResistantTriniumPlatedCasing.asElement())
             .addElement(
                 'P',
                 ofChain(
@@ -293,7 +265,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                         .hint(1)
                         .atLeast(InputHatch, OutputHatch, InputBus, OutputBus, Energy.or(ExoticEnergy))
                         .buildAndChain(),
-                    onElementPass(e -> e.mCountCasing++, ofBlock(sBlockCasingsTT, 0))))
+                    onElementPass(e -> e.mCountCasing++, Casings.HighPowerCasing.asElement())))
             .build();
     }
 
@@ -392,16 +364,17 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
 
     @Override
     public String[] getInfoData() {
-        var ret = new ArrayList<String>();
+        var ret = new ObjectArrayList<String>();
         // Show linked purification units and their status
-        ret.add(StatCollector.translateToLocal("GT5U.infodata.purification_plant.linked_units"));
+        ret.add(IGregTechDeviceInformation.encode("GT5U.infodata.purification_plant.linked_units"));
         for (LinkedEyeOfHarmonyUnit unit : this.mLinkedUnits) {
             String text = EnumChatFormatting.AQUA + unit.mMetaTileEntity.getLocalName() + ": ";
             MTEEyeOfHarmony status = unit.mMetaTileEntity;
             if (status.mMachine) {
                 if (status.mMaxProgresstime > 0) {
                     text = text + EnumChatFormatting.GREEN
-                        + StatCollector.translateToLocal("GT5U.infodata.purification_plant.linked_units.status.online");
+                        + IGregTechDeviceInformation
+                            .encode("GT5U.infodata.purification_plant.linked_units.status.online");
                 } else {
                     text = text + EnumChatFormatting.YELLOW
                         + StatCollector
@@ -409,30 +382,12 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                 }
             } else {
                 text = text + EnumChatFormatting.RED
-                    + StatCollector.translateToLocal("GT5U.infodata.purification_plant.linked_units.status.incomplete");
+                    + IGregTechDeviceInformation
+                        .encode("GT5U.infodata.purification_plant.linked_units.status.incomplete");
             }
             ret.add(text);
         }
         return ret.toArray(new String[0]);
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("EyeOfHarmonyInjectorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_05"))
-            .beginStructureBlock(53, 13, 62, false)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_Casing"), 1)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_Casing"), 1)
-            .toolTipFinisher();
-        return tt;
     }
 
     public List<LinkedUnitGuiData> getLinkedUnitGuiData() {
@@ -442,7 +397,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
                 updateLinkedUnitForGui(unit);
             }
         }
-        List<LinkedUnitGuiData> guiData = new ArrayList<>(mLinkedUnits.size());
+        List<LinkedUnitGuiData> guiData = new ObjectArrayList<>(mLinkedUnits.size());
         for (LinkedEyeOfHarmonyUnit unit : mLinkedUnits) {
             guiData.add(new LinkedUnitGuiData(unit));
         }
@@ -600,303 +555,12 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
         super.onBlockDestroyed();
     }
 
-    @Deprecated
-    public ModularWindow createStatusWindow(EntityPlayer player) {
-        // TODO: Remove this mui1 fallback after EyeOfHarmonyInjector mui2 rollout is complete.
-        final int windowWidth = 235;
-        final int windowHeight = 220;
-        ModularWindow.Builder builder = ModularWindow.builder(windowWidth, windowHeight);
-        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
-        builder.setGuiTint(getGUIColorization());
-        builder.widget(
-            ButtonWidget.closeWindowButton(true)
-                .setPos(windowWidth - 15, 3));
-
-        // Title widget
-        builder.widget(
-            new TextWidget(StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_Title"))
-                .setTextAlignment(Alignment.Center)
-                .setPos(5, 10)
-                .setSize(windowWidth, 8));
-
-        int currentYPosition = 20;
-        Scrollable mainDisp = new Scrollable().setVerticalScroll()
-            .setHorizontalScroll();
-
-        int rowHeight = 140;
-        for (int i = 0; i < this.mLinkedUnits.size(); i++) {
-            int height = rowHeight * i;
-            LinkedEyeOfHarmonyUnit unit = mLinkedUnits.get(i);
-            if (unit == null) continue;
-            MTEEyeOfHarmony mte = unit.mMetaTileEntity;
-            if (mte == null) continue;
-            IEyeOfHarmonyControllerLink link = (IEyeOfHarmonyControllerLink) mte;
-            IGregTechTileEntity gtTE = mte.getBaseMetaTileEntity();
-
-            EyeOfHarmonyRecipe recipe = findRecipe(mte.getControllerSlot());
-            long astralAmount = link.gtnl$getAstralArrayAmount();
-
-            unit.displayHeliumMax = (unit.maxHeliumAmount != -1) ? unit.maxHeliumAmount
-                : getAutoComputedAmount(
-                    recipe,
-                    astralAmount,
-                    (long) maxFluidAmount,
-                    (long) maxHeliumAmountSetting.get(),
-                    0);
-
-            unit.displayHydrogenMax = (unit.maxHydrogenAmount != -1) ? unit.maxHydrogenAmount
-                : getAutoComputedAmount(
-                    recipe,
-                    astralAmount,
-                    (long) maxFluidAmount,
-                    (long) maxHydrogenAmountSetting.get(),
-                    1);
-
-            unit.displayRawStarMatterMax = (unit.maxRawStarMatterAmount != -1) ? unit.maxRawStarMatterAmount
-                : getAutoComputedAmount(
-                    recipe,
-                    astralAmount,
-                    (long) maxFluidAmount,
-                    (long) maxRawStarMatterAmountSetting.get(),
-                    2);
-
-            if (unit.displayRawStarMatterMax != 0 && unit.maxHeliumAmount == -1 && unit.maxHydrogenAmount == -1) {
-                unit.displayHeliumMax = 0;
-                unit.displayHydrogenMax = 0;
-            }
-
-            if ((unit.displayHeliumMax != 0 || unit.displayHydrogenMax != 0) && unit.maxRawStarMatterAmount == -1) {
-                unit.displayRawStarMatterMax = 0;
-            }
-
-            mainDisp
-                .widget(new FakeSyncWidget.LongSyncer(() -> unit.displayHeliumMax, val -> unit.displayHeliumMax = val));
-            mainDisp.widget(
-                new FakeSyncWidget.LongSyncer(() -> unit.displayHydrogenMax, val -> unit.displayHydrogenMax = val));
-            mainDisp.widget(
-                new FakeSyncWidget.LongSyncer(
-                    () -> unit.displayRawStarMatterMax,
-                    val -> unit.displayRawStarMatterMax = val));
-
-            mainDisp
-                .widget(new FakeSyncWidget.LongSyncer(() -> unit.maxHeliumAmount, val -> unit.maxHeliumAmount = val));
-            mainDisp.widget(
-                new FakeSyncWidget.LongSyncer(() -> unit.maxHydrogenAmount, val -> unit.maxHydrogenAmount = val));
-            mainDisp.widget(
-                new FakeSyncWidget.LongSyncer(
-                    () -> unit.maxRawStarMatterAmount,
-                    val -> unit.maxRawStarMatterAmount = val));
-
-            mainDisp.widget(new FakeSyncWidget.LongSyncer(() -> unit.heliumAmount, val -> unit.heliumAmount = val));
-            mainDisp.widget(new FakeSyncWidget.LongSyncer(() -> unit.hydrogenAmount, val -> unit.hydrogenAmount = val));
-            mainDisp.widget(
-                new FakeSyncWidget.LongSyncer(() -> unit.rawStarMatterAmount, val -> unit.rawStarMatterAmount = val));
-
-            mainDisp.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                if (gtTE.isClientSide()) {
-                    BlockPosHighlighter.highlightBlocks(
-                        player,
-                        Collections.singletonList(
-                            new DimensionalCoord(
-                                gtTE.getWorld(),
-                                gtTE.getXCoord(),
-                                gtTE.getYCoord(),
-                                gtTE.getZCoord())),
-                        mte.getLocalName(),
-                        PlayerMessages.MachineHighlighted.getUnlocalized(),
-                        PlayerMessages.MachineInOtherDim.getUnlocalized());
-                }
-                widget.getContext()
-                    .tryClose();
-            })
-                .setBackground(
-                    () -> new IDrawable[] { GTUITextures.BUTTON_STANDARD, new ItemDrawable(mte.getStackForm(1)) })
-                .addTooltips(
-                    Arrays.asList(
-                        StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_00"),
-                        StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_01"),
-                        String.format("X: %s, Y: %s, Z: %s", gtTE.getXCoord(), gtTE.getYCoord(), gtTE.getZCoord()),
-                        StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_02")))
-                .setSize(18, 18)
-                .setPos(0, height));
-
-            mainDisp.widget(
-                SlotGroup.ofFluidTanks(createDisplayFluidTanks(), 3)
-                    .phantom(true)
-                    .widgetCreator((slotIndex, h) -> (FluidSlotWidget) new FluidSlotWidget(h) {
-
-                        @Override
-                        public void tryClickPhantom(ClickData clickData, ItemStack cursorStack) {}
-
-                        @Override
-                        public void tryScrollPhantom(int direction) {}
-
-                        @Override
-                        public void buildTooltip(List<Text> tooltip) {
-                            FluidStack fluid = getContent();
-                            if (fluid != null) {
-                                addFluidNameInfo(tooltip, fluid);
-
-                                long amount = 0;
-
-                                if (GTUtility.areFluidsEqual(fluid, heliumStack)) {
-                                    amount = unit.heliumAmount;
-                                } else if (GTUtility.areFluidsEqual(fluid, hydrogenStack)) {
-                                    amount = unit.hydrogenAmount;
-                                } else if (GTUtility.areFluidsEqual(fluid, rawStarMatterStack)) {
-                                    amount = unit.rawStarMatterAmount;
-                                }
-
-                                tooltip.add(Text.localised("modularui.fluid.phantom.amount", amount));
-
-                                addAdditionalFluidInfo(tooltip, fluid);
-                                if (!Interactable.hasShiftDown()) {
-                                    tooltip.add(Text.EMPTY);
-                                    tooltip.add(Text.localised("modularui.tooltip.shift"));
-                                }
-                            } else {
-                                tooltip.add(
-                                    Text.localised("modularui.fluid.empty")
-                                        .format(EnumChatFormatting.WHITE));
-                            }
-                        }
-                    }.setUpdateTooltipEveryTick(true))
-                    .background(GTUITextures.SLOT_DARK_GRAY)
-                    .controlsAmount(true)
-                    .build()
-                    .setSize(54, 18)
-                    .setPos(18, height));
-
-            mainDisp.widget(
-                TextWidget.dynamicText(() -> new Text(mte.getLocalName() + " - " + unit.getStatusString()))
-                    .setSynced(true)
-                    .setTextAlignment(Alignment.CenterLeft)
-                    .setPos(75, 5 + height));
-
-            mainDisp.widget(TextWidget.dynamicText(() -> {
-                String title = StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_HeliumParametrization");
-                if (unit.maxHeliumAmount != -1) return new Text(title);
-                return new Text(title + " - " + StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_04"));
-            })
-                .setSize(200, 18)
-                .setPos(15, 18 + height))
-                .widget(
-                    new NumericWidget().setSetter(val -> unit.maxHeliumAmount = (long) val)
-                        .setGetter(() -> unit.maxHeliumAmount != -1 ? unit.maxHeliumAmount : unit.displayHeliumMax)
-                        .setBounds(-1, Long.MAX_VALUE)
-                        .setScrollValues(1, 10000, 1000000)
-                        .setTextAlignment(Alignment.Center)
-                        .setTextColor(Color.WHITE.normal)
-                        .setSize(200, 18)
-                        .setPos(15, 36 + height)
-                        .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
-
-            mainDisp.widget(TextWidget.dynamicText(() -> {
-                String title = StatCollector.translateToLocal("Tooltip_EyeOfHarmonyInjector_HydrogenParametrization");
-                if (unit.maxHydrogenAmount != -1) return new Text(title);
-                return new Text(title + " - " + StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_04"));
-            })
-                .setSize(200, 18)
-                .setPos(15, 54 + height))
-                .widget(
-                    new NumericWidget().setSetter(val -> unit.maxHydrogenAmount = (long) val)
-                        .setGetter(
-                            () -> unit.maxHydrogenAmount != -1 ? unit.maxHydrogenAmount : unit.displayHydrogenMax)
-                        .setBounds(-1, Long.MAX_VALUE)
-                        .setScrollValues(1, 10000, 1000000)
-                        .setTextAlignment(Alignment.Center)
-                        .setTextColor(Color.WHITE.normal)
-                        .setSize(200, 18)
-                        .setPos(15, 72 + height)
-                        .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
-
-            mainDisp.widget(TextWidget.dynamicText(() -> {
-                String title = StatCollector
-                    .translateToLocal("Tooltip_EyeOfHarmonyInjector_RawStarMatterParametrization");
-                if (unit.maxRawStarMatterAmount != -1) return new Text(title);
-                return new Text(title + " - " + StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_04"));
-            })
-                .setSize(200, 18)
-                .setPos(15, 90 + height))
-                .widget(
-                    new NumericWidget().setSetter(val -> unit.maxRawStarMatterAmount = (long) val)
-                        .setGetter(
-                            () -> unit.maxRawStarMatterAmount != -1 ? unit.maxRawStarMatterAmount
-                                : unit.displayRawStarMatterMax)
-                        .setBounds(-1, Long.MAX_VALUE)
-                        .setScrollValues(1, 10000, 1000000)
-                        .setTextAlignment(Alignment.Center)
-                        .setTextColor(Color.WHITE.normal)
-                        .setSize(200, 18)
-                        .setPos(15, 108 + height)
-                        .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD))
-                .setSize(200, 140);
-        }
-
-        builder.widget(
-            mainDisp.setPos(5, currentYPosition)
-                .setSize(windowWidth - 10, windowHeight - currentYPosition - 5));
-        return builder.build();
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after EyeOfHarmonyInjector mui2 rollout is complete.
-        super.addUIWidgets(builder, buildContext);
-        // Add value syncers, note that we do this here so
-        // everything is updated once the status gui opens
-        addSyncers(builder);
-
-        buildContext.addSyncedWindow(STATUS_WINDOW_ID, this::createStatusWindow);
-
-        builder.widget(
-            new ButtonWidget().setOnClick(
-                (clickData, widget) -> {
-                    if (!widget.isClient()) widget.getContext()
-                        .openSyncedWindow(STATUS_WINDOW_ID);
-                })
-                .setPlayClickSound(true)
-                .setBackground(
-                    () -> new IDrawable[] { GTUITextures.BUTTON_STANDARD,
-                        GTUITextures.OVERLAY_BUTTON_MACHINEMODE_DEFAULT })
-                .addTooltip(StatCollector.translateToLocal("Info_EyeOfHarmonyInjector_03"))
-                .setPos(174, 97)
-                .setSize(16, 16));
-
-    }
-
-    @Deprecated
-    public void addSyncers(ModularWindow.Builder builder) {
-        // TODO: Remove this mui1 fallback after EyeOfHarmonyInjector mui2 rollout is complete.
-        // Sync connection list to client
-        builder.widget(new FakeSyncWidget.ListSyncer<>(() -> mLinkedUnits, links -> {
-            mLinkedUnits.clear();
-            mLinkedUnits.addAll(links);
-        }, (buffer, link) -> {
-            // Try to save link data to NBT, so we can reconstruct it on client
-            try {
-                buffer.writeNBTTagCompoundToBuffer(link.writeLinkDataToNBT());
-            } catch (IOException e) {
-                ScienceNotLeisure.LOG.error(e.getCause());
-            }
-        }, buffer -> {
-            // Try to load link data from NBT compound as constructed above.
-            try {
-                return new LinkedEyeOfHarmonyUnit(buffer.readNBTTagCompoundFromBuffer(), true);
-            } catch (IOException e) {
-                ScienceNotLeisure.LOG.error(e.getCause());
-            }
-            return null;
-        }));
-    }
-
     @NotNull
     @Override
     public CheckRecipeResult checkProcessing_EM() {
         this.onMachineBlockUpdate();
         List<FluidStack> inputFluidStack = getStoredFluidsForColor(Optional.empty());
-        List<FluidStack> outputFluidStack = new ArrayList<>();
+        List<FluidStack> outputFluidStack = new ObjectArrayList<>();
         List<ItemStack> inputItemStack = getStoredInputs();
         boolean hasUpdate = false;
 
@@ -1251,7 +915,7 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
     }
 
     public List<MTEHatch> getAllInputHatches() {
-        List<MTEHatch> allHatches = new ArrayList<>(mInputHatches.size() + mDualInputHatches.size());
+        List<MTEHatch> allHatches = new ObjectArrayList<>(mInputHatches.size() + mDualInputHatches.size());
         for (MTEHatchInput inputHatch : GTUtility.validMTEList(mInputHatches)) {
             allHatches.add(inputHatch);
         }
@@ -1314,7 +978,15 @@ public class EyeOfHarmonyInjector extends TTMultiblockBase
             float scale = generateRandomFloat(0.3f, 0.6f);
             float rotationSpeed = generateRandomFloat(0.25f, 1f);
             float orbitSpeed = generateRandomFloat(0.5f, 1.5f);
-            orbitingObjects.add(new OrbitingObject(block, distance, rotationSpeed, orbitSpeed, xAngle, zAngle, scale));
+            orbitingObjects.add(
+                new TileEntityEyeOfHarmony.OrbitingObject(
+                    block,
+                    distance,
+                    rotationSpeed,
+                    orbitSpeed,
+                    xAngle,
+                    zAngle,
+                    scale));
         }
     }
 }

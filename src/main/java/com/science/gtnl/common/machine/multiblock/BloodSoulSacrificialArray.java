@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings8;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +22,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.dreammaster.block.BlockList;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -33,8 +31,11 @@ import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
+import com.science.gtnl.compat.bloodarsenal.BloodArsenalBlocks;
+import com.science.gtnl.compat.newhorizons.NHCoreBlock;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.CommonElements;
+import com.science.gtnl.utils.enums.ModsItemlist;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
@@ -43,16 +44,14 @@ import WayofTime.alchemicalWizardry.ModBlocks;
 import WayofTime.alchemicalWizardry.api.items.interfaces.IBindable;
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import WayofTime.alchemicalWizardry.common.entity.projectile.EntityMeteor;
-import cpw.mods.fml.common.Optional;
-import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.modularui2.GTGuiTextures;
@@ -63,7 +62,6 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.recipe.check.SingleRecipeCheck;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
@@ -72,6 +70,8 @@ import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacrificialArray> {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -85,14 +85,12 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     private static final int MACHINEMODE_FALLING_TOWER = 1;
     private static final int MACHINEMODE_ALCHEMIC = 2;
 
-    public static final Block BLOODY_ICHORIUM = Mods.NewHorizonsCoreMod.isModLoaded() ? getBloodyIchorium()
-        : Blocks.diamond_block;
-    public static final Block BLOODY_THAUMIUM = Mods.NewHorizonsCoreMod.isModLoaded() ? getBloodyThaumium()
-        : Blocks.gold_block;
-    public static final Block BLOODY_VOID = Mods.NewHorizonsCoreMod.isModLoaded() ? getBloodyVoid() : Blocks.iron_block;
+    public static final Block BLOODY_ICHORIUM = NHCoreBlock.BloodyIchorium.get(Blocks.diamond_block);
+    public static final Block BLOODY_THAUMIUM = NHCoreBlock.BloodyThaumium.get(Blocks.gold_block);
+    public static final Block BLOODY_VOID = NHCoreBlock.BloodyVoid.get(Blocks.iron_block);
 
-    public static final Block BLOOD_LAMP = Mods.BloodArsenal.isModLoaded() ? getBloodLamp() : Blocks.glowstone;
-    public static final Block LP_MATERIALIZER = Mods.BloodArsenal.isModLoaded() ? getLpMaterializer() : Blocks.hopper;
+    public static final Block BLOOD_LAMP = BloodArsenalBlocks.bloodLamp(Blocks.glowstone);
+    public static final Block LP_MATERIALIZER = BloodArsenalBlocks.lpMaterializer(Blocks.hopper);
 
     public boolean isCreativeOrb = false;
     public boolean enableRender = true;
@@ -104,6 +102,11 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
 
     public BloodSoulSacrificialArray(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.blood_soul_sacrificial_array.name";
     }
 
     @Override
@@ -150,7 +153,7 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     public CheckRecipeResult checkProcessing() {
         isCreativeOrb = false;
 
-        ItemStack requiredItem = GTModHandler.getModItem(Mods.Avaritia.ID, "Orb_Armok", 1);
+        ItemStack requiredItem = ModsItemlist.AvaritiaOrbArmok.get(1);
 
         for (ItemStack item : getAllStoredInputs()) {
             if (item != null && item.isItemEqual(requiredItem)) {
@@ -201,7 +204,7 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     public IStructureDefinition<BloodSoulSacrificialArray> getStructureDefinition() {
         return StructureDefinition.<BloodSoulSacrificialArray>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(Loaders.FRF_Casings, 0))
+            .addElement('A', Casings.NaquadahFuelRefineryCasing.asElement())
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(BloodSoulSacrificialArray.class)
@@ -209,8 +212,8 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
                     .atLeast(HatchElement.Maintenance, HatchElement.InputBus, HatchElement.OutputBus, ParallelCon)
                     .casingIndex(getCasingTextureID())
                     .buildAndChain(GregTechAPI.sBlockCasings8, 10))
-            .addElement('C', StructureUtility.ofBlock(gtPlusPlus.core.block.ModBlocks.blockSpecialMultiCasings, 13))
-            .addElement('D', StructureUtility.ofBlock(gtPlusPlus.core.block.ModBlocks.blockCasingsMisc, 9))
+            .addElement('C', Casings.ParticleContainmentCasing.asElement())
+            .addElement('D', Casings.MatterFabricatorCasing.asElement())
             .addElement('E', StructureUtility.ofBlockAnyMeta(BLOODY_ICHORIUM))
             .addElement('F', StructureUtility.ofBlockAnyMeta(BLOODY_THAUMIUM))
             .addElement('G', StructureUtility.ofBlockAnyMeta(BLOODY_VOID))
@@ -418,7 +421,7 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -442,10 +445,11 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     @Override
     public String[] getInfoData() {
         String[] info = super.getInfoData();
-        info[4] = StatCollector.translateToLocal("BloodSoulSacrificialArray.LPNetwork") + EnumChatFormatting.RED
-            + NumberFormatUtil.formatNumber(Math.abs(currentEssence))
-            + EnumChatFormatting.RESET
-            + " LP";
+        info[4] = IGregTechDeviceInformation.encode(
+            "gtnl.machine.blood_soul_sacrificial_array.info.lp_network.format",
+            EnumChatFormatting.RED,
+            NumberFormatUtil.formatNumber(Math.abs(currentEssence)),
+            EnumChatFormatting.RESET);
         return info;
     }
 
@@ -454,7 +458,8 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
         IWailaConfigHandler config) {
         super.getWailaBody(itemStack, currentTip, accessor, config);
         currentTip.add(
-            StatCollector.translateToLocal("BloodSoulSacrificialArray.LPNetwork") + EnumChatFormatting.WHITE
+            StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.info.lp_network")
+                + EnumChatFormatting.WHITE
                 + currentEssence
                 + EnumChatFormatting.RESET
                 + " LP");
@@ -463,18 +468,24 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     @Override
     public MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("BloodSoulSacrificialArrayRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_05"))
+        tt.addMachineType(StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.recipe_type"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.0"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.1"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.2"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.3"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.4"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.gtm.tooltip.2"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.gtm.tooltip.3"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.5"))
             .beginStructureBlock(33, 14, 30, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_BloodSoulSacrificialArray_Casing"), 1)
+            .addInputBus(
+                "0+",
+                StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.casing"),
+                1)
+            .addOutputBus(
+                "0+",
+                StatCollector.translateToLocal("gtnl.machine.blood_soul_sacrificial_array.tooltip.casing"),
+                1)
             .toolTipFinisher();
         return tt;
     }
@@ -488,16 +499,6 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Blood Soul Sacrificial Array GUI no longer supports mui1 startup
-        // paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-    }
-
-    @Override
     public int nextMachineMode() {
         if (machineMode == MACHINEMODE_BLOOD_DEMON) return MACHINEMODE_FALLING_TOWER;
         else if (machineMode == MACHINEMODE_FALLING_TOWER) return MACHINEMODE_ALCHEMIC;
@@ -508,7 +509,7 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 3;
-        GTUtility.sendChatTrans(aPlayer, "BloodSoulSacrificialArray_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
@@ -518,14 +519,19 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
             enableRender = !enableRender;
             GTUtility.sendChatTrans(
                 aPlayer,
-                "BloodSoulSacrificialArray_Render_" + (this.enableRender ? "Enabled" : "Disabled"));
+                this.enableRender ? "gtnl.machine.blood_soul_sacrificial_array.render.enabled"
+                    : "gtnl.machine.blood_soul_sacrificial_array.render.disabled");
         }
         return true;
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("BloodSoulSacrificialArray_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return switch (machineMode) {
+            case MACHINEMODE_BLOOD_DEMON -> "gtnl.machine.blood_soul_sacrificial_array.mode.blood_demon";
+            case MACHINEMODE_FALLING_TOWER -> "gtnl.machine.blood_soul_sacrificial_array.mode.falling_tower";
+            default -> "gtnl.machine.blood_soul_sacrificial_array.mode.alchemic";
+        };
     }
 
     @Override
@@ -569,30 +575,5 @@ public class BloodSoulSacrificialArray extends GTMMultiMachineBase<BloodSoulSacr
         }
         return this.getBaseMetaTileEntity()
             .getOwnerName();
-    }
-
-    @Optional.Method(modid = "dreamcraft")
-    public static Block getBloodyIchorium() {
-        return BlockList.BloodyIchorium.block;
-    }
-
-    @Optional.Method(modid = "dreamcraft")
-    public static Block getBloodyThaumium() {
-        return BlockList.BloodyThaumium.block;
-    }
-
-    @Optional.Method(modid = "dreamcraft")
-    public static Block getBloodyVoid() {
-        return BlockList.BloodyVoid.block;
-    }
-
-    @Optional.Method(modid = "BloodArsenal")
-    public static Block getBloodLamp() {
-        return com.arc.bloodarsenal.common.block.ModBlocks.blood_lamp;
-    }
-
-    @Optional.Method(modid = "BloodArsenal")
-    public static Block getLpMaterializer() {
-        return com.arc.bloodarsenal.common.block.ModBlocks.lp_materializer;
     }
 }

@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +22,9 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.GameUtils;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
@@ -33,8 +34,8 @@ import bartworks.API.recipe.BartWorksRecipeMaps;
 import bartworks.common.tileentities.tiered.MTERadioHatch;
 import bartworks.util.BWUtil;
 import bartworks.util.ResultWrongSievert;
-import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
@@ -57,9 +58,10 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.recipe.Sievert;
-import gregtech.common.misc.GTStructureChannels;
-import gtnhlanth.common.register.LanthItemList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -72,7 +74,7 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
     public static Sievert defaultSievertData = new Sievert(0, false);
 
     public int itemQuantity;
-    public ArrayList<MTERadioHatch> mRadHatches = new ArrayList<>();
+    public ObjectArrayList<MTERadioHatch> mRadHatches = new ObjectArrayList<>();
     public int mSievert;
     public int mNeededSievert;
 
@@ -85,13 +87,18 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_incubator.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeIncubator> getStructureDefinition() {
         return StructureDefinition.<LargeIncubator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(LanthItemList.SHIELDED_ACCELERATOR_CASING, 0))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 1))
+            .addElement('B', Casings.ShieldedAcceleratorCasing.asElement())
+            .addElement('C', Casings.PTFEPipeCasing.asElement())
+            .addElement('D', Casings.AdvancedFilterCasing.asElement())
             .addElement(
                 'E',
                 StructureUtility.ofChain(
@@ -112,10 +119,8 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
                         StructureUtility.ofBlock(GregTechAPI.sBlockReinforced, 2))))
             .addElement(
                 'F',
-                StructureUtility.ofBlockAnyMeta(
-                    Mods.EtFuturumRequiem.isModLoaded() ? GameRegistry.findBlock(Mods.EtFuturumRequiem.ID, "sponge")
-                        : Blocks.sponge,
-                    1))
+                StructureUtility
+                    .ofBlockAnyMeta(GameUtils.blockOr(Mods.EtFuturumRequiem.ID, "sponge", Blocks.sponge), 1))
             .addElement(
                 'G',
                 StructureUtility.ofChain(
@@ -303,27 +308,8 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeIncubatorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeIncubator_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeIncubator_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeIncubator_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeIncubator_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeIncubator_04"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(13, 9, 13, false)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("Tooltip_LargeIncubator_RadioHatch"),
-                StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"),
-                1)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeIncubator_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -467,7 +453,8 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
 
     public enum RadioHatchElement implements IHatchElement<LargeIncubator> {
 
-        RadioHatch(LargeIncubator::addRadiationInputToMachineList, MTERadioHatch.class) {
+        RadioHatch("gt.blockmachines.bw.radiohatchhv.name", LargeIncubator::addRadiationInputToMachineList,
+            MTERadioHatch.class) {
 
             @Override
             public long count(LargeIncubator bioVat) {
@@ -477,11 +464,24 @@ public class LargeIncubator extends MultiMachineBase<LargeIncubator> implements 
 
         public final List<Class<? extends IMetaTileEntity>> mteClasses;
         public final IGTHatchAdder<LargeIncubator> adder;
+        private final String nameKey;
 
         @SafeVarargs
-        RadioHatchElement(IGTHatchAdder<LargeIncubator> adder, Class<? extends IMetaTileEntity>... mteClasses) {
+        RadioHatchElement(String nameKey, IGTHatchAdder<LargeIncubator> adder,
+            Class<? extends IMetaTileEntity>... mteClasses) {
+            this.nameKey = nameKey;
             this.mteClasses = Collections.unmodifiableList(Arrays.asList(mteClasses));
             this.adder = adder;
+        }
+
+        @Override
+        public String getDescriptionLangKey() {
+            return nameKey;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return StatCollector.translateToLocal(nameKey);
         }
 
         @Override

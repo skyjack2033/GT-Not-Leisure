@@ -3,24 +3,24 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static goodgenerator.loader.Loaders.FRF_Coil_1;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
 import static kekztech.common.Blocks.lscLapotronicEnergyUnit;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.TAE;
@@ -37,6 +37,8 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBase<MagneticEnergyReactionFurnace> {
 
     private static final int HORIZONTAL_OFF_SET = 16;
@@ -56,16 +58,21 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.magnetic_energy_reaction_furnace.name";
+    }
+
+    @Override
     public IStructureDefinition<MagneticEnergyReactionFurnace> getStructureDefinition() {
         return StructureDefinition.<MagneticEnergyReactionFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', StructureUtility.ofBlock(FRF_Coil_1, 0))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
+            .addElement('B', GTNLCasings.FusionGlass.asElement())
             .addElement('C', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 0))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 6))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 6))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 12))
+            .addElement('D', Casings.MagTechCasing.asElement())
+            .addElement('E', Casings.NeutroniumCasing.asElement())
+            .addElement('F', Casings.ProcessorMachineCasing.asElement())
+            .addElement('G', Casings.TungstensteelTurbineCasing.asElement())
             .addElement(
                 'H',
                 GTStructureChannels.HEATING_COIL.use(
@@ -73,7 +80,7 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
                         GTStructureUtility.ofCoil(
                             MagneticEnergyReactionFurnace::setMCoilLevel,
                             MagneticEnergyReactionFurnace::getMCoilLevel))))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 13))
+            .addElement('I', Casings.HighEnergyUltravioletEmitterCasing.asElement())
             .addElement('J', GTStructureUtility.ofFrame(Materials.Neutronium))
             .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockMetal5, 1))
             .addElement(
@@ -91,7 +98,7 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
                     .hint(1)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings4Misc, 3))))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.TemperedArcFurnaceCasing.asElement())))
             .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 9))
             .addElement('N', StructureUtility.ofBlock(lscLapotronicEnergyUnit, 0))
             .build();
@@ -176,29 +183,8 @@ public class MagneticEnergyReactionFurnace extends WirelessEnergyMultiMachineBas
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MagneticEnergyReactionFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(33, 14, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MagneticEnergyReactionFurnace_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

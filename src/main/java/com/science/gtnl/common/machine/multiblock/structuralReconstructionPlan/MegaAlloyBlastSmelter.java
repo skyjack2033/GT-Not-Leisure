@@ -2,14 +2,11 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -21,11 +18,12 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 
 import bartworks.util.BWUtil;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -35,15 +33,18 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.objects.XSTR;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSmelter>
     implements ISurvivalConstructable {
 
@@ -66,22 +67,27 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.mega_alloy_blast_smelter.name";
+    }
+
+    @Override
     public IStructureDefinition<MegaAlloyBlastSmelter> getStructureDefinition() {
         return StructureDefinition.<MegaAlloyBlastSmelter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 14))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 15))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 3))
+            .addElement('B', Casings.TungstensteelPipeCasing.asElement())
+            .addElement('C', Casings.SteelFireboxCasing.asElement())
+            .addElement('D', Casings.TungstensteelFireboxCasing.asElement())
+            .addElement('E', Casings.TitaniumFireboxCasing.asElement())
             .addElement(
                 'F',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility
                             .ofCoil(MegaAlloyBlastSmelter::setMCoilLevel, MegaAlloyBlastSmelter::getMCoilLevel))))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 4))
-            .addElement('H', StructureUtility.ofBlock(blockCasingsMisc, 14))
+            .addElement('G', Casings.ExtremeEngineIntakeCasing.asElement())
+            .addElement('H', Casings.BlastSmelterHeatContainmentCoil.asElement())
             .addElement(
                 'I',
                 GTStructureUtility.buildHatchAdder(MegaAlloyBlastSmelter.class)
@@ -96,8 +102,7 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasingsMisc, 15))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BlastSmelterCasing.asElement())))
             .addElement('J', HatchElement.Muffler.newAny(getCasingTextureID(), 1))
             .build();
     }
@@ -153,7 +158,7 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.alloyBlastSmelterRecipes;
+        return RecipeMaps.alloyBlastSmelterRecipes;
     }
 
     @Override
@@ -182,9 +187,8 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
     }
 
     @Override
-    public void setupProcessingLogic(ProcessingLogic logic) {
-        super.setupProcessingLogic(logic);
-        logic.setUnlimitedTierSkips();
+    public int getMaxTierSkip() {
+        return UNLIMITED_TIER_SKIPS;
     }
 
     @Override
@@ -201,7 +205,7 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
         if (!result.wasSuccessful()) return result;
 
         if (mOutputItems != null) {
-            ArrayList<ItemStack> itemList = new ArrayList<>();
+            List<ItemStack> itemList = new ObjectArrayList<>();
 
             for (ItemStack itemStack : mOutputItems) {
                 if (itemStack == null) continue;
@@ -227,7 +231,7 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
         }
 
         if (mOutputFluids != null) {
-            ArrayList<FluidStack> fluidList = new ArrayList<>();
+            List<FluidStack> fluidList = new ObjectArrayList<>();
 
             for (FluidStack fluidStack : mOutputFluids) {
                 if (fluidStack == null) continue;
@@ -280,27 +284,8 @@ public class MegaAlloyBlastSmelter extends GTMMultiMachineBase<MegaAlloyBlastSme
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaAlloyBlastSmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_05"))
-            .addPerfectOCInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(11, 18, 11, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaAlloyBlastSmelter_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

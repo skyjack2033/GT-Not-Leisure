@@ -7,6 +7,7 @@ import net.minecraft.util.StatCollector;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
@@ -18,6 +19,7 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SteamEntityCrusherModule extends SteamElevatorModuleBase {
 
     public static Random random = new Random();
@@ -101,21 +103,13 @@ public class SteamEntityCrusherModule extends SteamElevatorModuleBase {
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamEntityCrusherModuleRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_entity_crusher_module.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SteamEntityCrusherModuleRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamEntityCrusherModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamEntityCrusherModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamEntityCrusherModule_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamEntityCrusherModule_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamEntityCrusherModule_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamEntityCrusherModule_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamEntityCrusherModule_06"))
-            .beginStructureBlock(1, 5, 2, false)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

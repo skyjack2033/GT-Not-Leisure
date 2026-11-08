@@ -1,6 +1,5 @@
 package com.science.gtnl.common.part;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 
-import com.science.gtnl.CommonProxy;
 import com.science.gtnl.api.ICustomGui;
+import com.science.gtnl.common.gui.GTNLGuiHandler;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
@@ -26,11 +25,11 @@ import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartFormationPlane;
-import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
-import appeng.util.item.AEItemStack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class PartActiveFormationPlane extends PartFormationPlane implements IGridTickable, ICustomGui {
 
@@ -135,12 +134,11 @@ public class PartActiveFormationPlane extends PartFormationPlane implements IGri
     }
 
     public List<IAEItemStack> getFilterList() {
-        List<IAEItemStack> list = new ArrayList<>();
-        AppEngInternalAEInventory config = (AppEngInternalAEInventory) this.getInventoryByName("config");
-        for (int i = 0; i < config.getSizeInventory(); i++) {
-            ItemStack is = config.getStackInSlot(i);
-            if (is != null) {
-                list.add(AEItemStack.create(is));
+        List<IAEItemStack> list = new ObjectArrayList<>();
+        for (int i = 0; i < this.Config.getSizeInventory(); i++) {
+            IAEStack<?> stack = this.Config.getAEStackInSlot(i);
+            if (stack instanceof IAEItemStack itemStack) {
+                list.add(itemStack);
             }
         }
         return list;
@@ -151,7 +149,7 @@ public class PartActiveFormationPlane extends PartFormationPlane implements IGri
         if (p.isSneaking()) {
             return false;
         }
-        CommonProxy.openGui(
+        GTNLGuiHandler.openGui(
             p,
             GuiType.ActiveFormationPlaneGUI,
             this.getSide(),

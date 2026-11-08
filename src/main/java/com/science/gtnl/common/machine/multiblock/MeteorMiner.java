@@ -1,8 +1,6 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,31 +25,27 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.drawable.IDrawable;
-import com.gtnewhorizons.modularui.api.math.Pos2d;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
-import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
 import com.science.gtnl.ScienceNotLeisure;
 import com.science.gtnl.common.block.blocks.tile.TileEntityLaserBeacon;
-import com.science.gtnl.common.gui.modularui.MeteorMinerGui;
+import com.science.gtnl.common.gui.modularui.multiblock.MeteorMinerGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
-import com.science.gtnl.config.MainConfig;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
+import com.science.gtnl.config.MachineConfig;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
+import com.science.gtnl.utils.structure.TileEntityStructureElement;
 
-import bartworks.system.material.TileEntityMetaGeneratedBlock;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -65,11 +59,8 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
-import gregtech.api.structure.error.StructureErrors;
-import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
@@ -77,16 +68,16 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
-import gregtech.common.blocks.TileEntityOres;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -98,9 +89,8 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     private static final String[][] shape_t1 = StructureUtils.readStructureFromFile(MMO_STRUCTURE_FILE_PATH);
     private static final String[][] shape_t2 = StructureUtils.readStructureFromFile(MMT_STRUCTURE_FILE_PATH);
 
-    private static final TranslatableText LASER_BEACON_NAME = TranslatableText.lang("tile.LaserBeacon.name");
-
     public TileEntityLaserBeacon renderer;
+    private TileEntityLaserBeacon previousRenderer;
     public int xStart, yStart, zStart;
     public int fortuneTier = 0;
     public boolean isStartInitialized = false;
@@ -108,7 +98,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     public boolean isWaiting = false;
     public boolean isResetting = false;
     public boolean enableRender = true;
-    public final Collection<ItemStack> itemDrop = new ArrayList<>();
+    public final Collection<ItemStack> itemDrop = new ObjectArrayList<>();
     public byte tierMachine = 0;
 
     private static final ObjectPooler<BlockPos> BLOCK_POS_POOL = new ObjectPooler<>(BlockPos::new);
@@ -119,8 +109,8 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     public static final int SCAN_WIDTH = 100;
     public static final int SCAN_HEIGHT = 150;
     public static final int SCAN_DEPTH = 100;
-    public static final int MAX_BLOCKS_PER_CYCLE = MainConfig.machine.meteor_miner.meteorMinerMaxBlockPerCycle;
-    public static final int MAX_ROWS_PER_CYCLE = MainConfig.machine.meteor_miner.meteorMinerMaxRowPerCycle;
+    public static final int MAX_BLOCKS_PER_CYCLE = MachineConfig.meteor_miner.meteorMinerMaxBlockPerCycle;
+    public static final int MAX_ROWS_PER_CYCLE = MachineConfig.meteor_miner.meteorMinerMaxRowPerCycle;
 
     public MeteorMiner(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -131,8 +121,18 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.meteor_miner.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new MeteorMiner(this.mName);
+    }
+
+    @Override
+    public boolean shouldCheckRecipeThisTick(long aTick, IGregTechTileEntity aBaseMetaTileEntity) {
+        return super.shouldCheckRecipeThisTick(aTick, aBaseMetaTileEntity) || hasFinished && aTick % 20 == 0;
     }
 
     @Override
@@ -141,28 +141,37 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape_t1))
             .addShape(STRUCTURE_PIECE_TIER2, StructureUtility.transpose(shape_t2))
             .addElement('A', GTStructureUtility.chainAllGlasses())
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 15))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings5, 5))
+            .addElement('B', Casings.SuperconductingCoilBlock.asElement())
+            .addElement('C', Casings.NaquadahCoilBlock.asElement())
             .addElement('D', GTStructureUtility.ofFrame(Materials.StainlessSteel))
-            .addElement('E', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 6))
-            .addElement('F', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 8))
-            .addElement('G', StructureUtility.ofBlock(BlockLoader.laserBeacon, 0))
+            .addElement('E', Casings.StructuralSolarCasing.asElement())
+            .addElement('F', Casings.ThermallyInsulatedCasing.asElement())
+            .addElement(
+                'G',
+                new TileEntityStructureElement<>(
+                    StructureUtility.ofBlock(BlockLoader.laserBeacon, 0),
+                    TileEntityLaserBeacon.class,
+                    (machine, beacon) -> {
+                        machine.renderer = beacon;
+                        return true;
+                    }))
             .addElement(
                 'H',
                 GTStructureUtility.buildHatchAdder(MeteorMiner.class)
                     .atLeast(HatchElement.Maintenance, HatchElement.OutputBus, HatchElement.Energy)
                     .casingIndex(getCasingTextureID())
                     .hint(1)
-                    .buildAndChain(StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 6)))
+                    .buildAndChain(Casings.StructuralSolarCasing.asElement()))
             .addElement(
                 'I',
                 GTStructureUtility.buildHatchAdder(MeteorMiner.class)
                     .hatchClass(MTEHatchInputBus.class)
+                    .description(HatchElement.InputBus::getDescriptionLangKey)
                     .shouldReject(t -> !t.mInputBusses.isEmpty())
                     .adder(MeteorMiner::addInjector)
                     .casingIndex(getCasingTextureID())
                     .hint(1)
-                    .buildAndChain(StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 6)))
+                    .buildAndChain(Casings.StructuralSolarCasing.asElement()))
             .addElement(
                 'J',
                 GTStructureUtility.buildHatchAdder(MeteorMiner.class)
@@ -172,11 +181,11 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
                         HatchElement.Energy.or(HatchElement.ExoticEnergy))
                     .casingIndex(getCasingTextureID())
                     .hint(1)
-                    .buildAndChain(StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 2)))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 7))
-            .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 2))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 3))
-            .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
+                    .buildAndChain(Casings.MiningNeutroniumCasing.asElement()))
+            .addElement('K', Casings.FusionCoilBlock.asElement())
+            .addElement('L', Casings.MiningNeutroniumCasing.asElement())
+            .addElement('M', Casings.MiningBlackPlutoniumCasing.asElement())
+            .addElement('N', Casings.HeatResistantTriniumPlatedCasing.asElement())
             .addElement('O', GTStructureUtility.ofFrame(Materials.Neutronium))
             .addElement('P', GTStructureUtility.ofFrame(Materials.BlackPlutonium))
             .build();
@@ -275,39 +284,14 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     }
 
     @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MeteorMinerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_10"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_11"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_12"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_13"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_14"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_15"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_16"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_17"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_07"))
-            .addController(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_01_01"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_01_02"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_01_02"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_01_02"), 1)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_01_03"), 2)
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_MeteorMiner_13"))
-            .addController(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_02_01"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_02_02"), 3)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_02_02"), 3)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MeteorMiner_Casing_02_02"), 3)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -316,7 +300,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         enableRender = !enableRender;
-        GTUtility.sendChatTrans(aPlayer, "MeteorMiner_Render_" + (enableRender ? "Enabled" : "Disabled"));
+        GTUtility.sendChatTrans(aPlayer, "gtnl.machine.meteor_miner.render." + (enableRender ? "enabled" : "disabled"));
         if (renderer != null) renderer.setShouldRender(enableRender);
     }
 
@@ -335,35 +319,37 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         }
         checkOneEnergyHatchMaybeExotic(errors);
         if (tierMachine == 1) checkHatchMin(errors, HatchElement.InputBus, 1);
-        if (!findLaserRenderer(getBaseMetaTileEntity().getWorld()))
-            errors.add(StructureErrors.hatchCount(ErrorType.NOT_MATCH, LASER_BEACON_NAME, 0, 1));
         setupParameters();
-        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
+    }
+
+    @Override
+    protected void onStructureCheckFinished(IGregTechTileEntity base) {
+        super.onStructureCheckFinished(base);
+        if (previousRenderer != null && (previousRenderer != renderer || !mMachine)) {
+            previousRenderer.setShouldRender(false);
+        }
+        previousRenderer = null;
+        if (!mMachine) {
+            if (renderer != null) renderer.setShouldRender(false);
+            renderer = null;
+        } else if (renderer != null) {
+            setStartCoords();
+            renderer.setRotationFields(getExtendedFacing());
+        }
+        base.sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 
     @Override
     public void clearHatches() {
         super.clearHatches();
+        previousRenderer = renderer;
+        renderer = null;
         this.tierMachine = 0;
     }
 
     @Override
     protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
         return new MeteorMinerGui(this);
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the Meteor Miner reset button is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        builder.widget(
-            new ButtonWidget().setOnClick((clickData, widget) -> this.startReset())
-                .setPlayClickSound(true)
-                .setBackground(
-                    () -> new IDrawable[] { GTUITextures.BUTTON_STANDARD, GTUITextures.OVERLAY_BUTTON_CYCLIC })
-                .setPos(new Pos2d(174, 112))
-                .setSize(16, 16));
     }
 
     @Override
@@ -380,11 +366,11 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         super.getWailaBody(itemStack, currentTip, accessor, config);
         final NBTTagCompound tag = accessor.getNBTData();
         currentTip.add(
-            StatCollector.translateToLocal("Info_MeteorMiner_00") + EnumChatFormatting.WHITE
+            StatCollector.translateToLocal("gtnl.machine.meteor_miner.info.machine_tier") + EnumChatFormatting.WHITE
                 + tag.getInteger("tierMachine")
                 + EnumChatFormatting.RESET);
         currentTip.add(
-            StatCollector.translateToLocal("Info_MeteorMiner_01") + EnumChatFormatting.WHITE
+            StatCollector.translateToLocal("gtnl.machine.meteor_miner.info.fortune_tier") + EnumChatFormatting.WHITE
                 + tag.getInteger("fortuneTier")
                 + EnumChatFormatting.RESET);
     }
@@ -500,19 +486,6 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         }
 
         return SimpleCheckRecipeResult.ofSuccess("meteor_mining");
-    }
-
-    public boolean findLaserRenderer(World w) {
-        this.setStartCoords();
-        if (w.getTileEntity(
-            xStart,
-            getBaseMetaTileEntity().getYCoord() + (this.tierMachine == 1 ? 10 : 15),
-            zStart) instanceof TileEntityLaserBeacon laser) {
-            renderer = laser;
-            renderer.setRotationFields(getExtendedFacing());
-            return true;
-        }
-        return false;
     }
 
     public int getTierMachine(ItemStack inventory) {
@@ -645,14 +618,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
         Collection<ItemStack> drops = target.getDrops(w, x, y, z, meta, 0);
 
         if (GTUtility.isOre(target, meta)) {
-            try {
-                TileEntity te = w.getTileEntity(x, y, z);
-                if (te instanceof TileEntityOres || te instanceof TileEntityMetaGeneratedBlock) {
-                    itemDrop.addAll(getOutputByDrops(drops));
-                }
-            } catch (Exception e) {
-                ScienceNotLeisure.LOG.error("GTNL Meteor Miner: GT Ore Error [{},{},{}]", x, y, z, e);
-            }
+            itemDrop.addAll(getOutputByDrops(drops));
         } else {
             itemDrop.addAll(drops);
         }
@@ -662,7 +628,7 @@ public class MeteorMiner extends MultiMachineBase<MeteorMiner> implements ISurvi
 
     public Collection<ItemStack> getOutputByDrops(Collection<ItemStack> oreBlockDrops) {
         long voltage = getMaxInputVoltage();
-        Collection<ItemStack> outputItems = new HashSet<>();
+        Collection<ItemStack> outputItems = new ObjectOpenHashSet<>();
         oreBlockDrops.forEach(currentItem -> {
             if (!doUseMaceratorRecipe(currentItem)) {
                 outputItems.add(multiplyStackSize(currentItem));

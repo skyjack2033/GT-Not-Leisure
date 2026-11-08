@@ -1,5 +1,8 @@
 package com.reavaritia.common.entity;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -7,10 +10,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import com.gtnllib.mod.ModList;
 import com.science.gtnl.api.ITileEntityTickAcceleration;
-import com.science.gtnl.utils.enums.ModList;
+import com.science.gtnl.config.ReAvaritiaConfig;
+import com.science.gtnl.mixins.early.minecraft.AccessorTileEntity;
 
 public class EntityChronarchClock extends Entity {
+
+    private static Class<?> nhUtilitiesAccelerationType;
+    private static Method nhUtilitiesAccelerationMethod;
+    private static boolean nhUtilitiesAccelerationResolved;
 
     public int radius;
     public int speedMultiplier;
@@ -76,9 +85,7 @@ public class EntityChronarchClock extends Entity {
                                 if (accelerated.tickAcceleration(speedMultiplier)) continue;
                             }
                         } else {
-                            if (te instanceof com.xir.NHUtilities.common.api.interfaces.ITileEntityTickAcceleration accelerated) {
-                                if (accelerated.tickAcceleration(speedMultiplier)) continue;
-                            }
+                            if (tryNhUtilitiesAcceleration(te)) continue;
                         }
                         safeAccelerateTileEntity(te, tMaxTime);
                     }
@@ -96,8 +103,44 @@ public class EntityChronarchClock extends Entity {
         }
     }
 
+    private boolean tryNhUtilitiesAcceleration(TileEntity tile) {
+        if (!nhUtilitiesAccelerationResolved) {
+            nhUtilitiesAccelerationResolved = true;
+            try {
+                nhUtilitiesAccelerationType = Class
+                    .forName("com.xir.NHUtilities.common.api.interfaces.ITileEntityTickAcceleration");
+                nhUtilitiesAccelerationMethod = nhUtilitiesAccelerationType.getMethod("tickAcceleration", int.class);
+            } catch (ClassNotFoundException ignored) {
+                return false;
+            } catch (NoSuchMethodException ignored) {
+                nhUtilitiesAccelerationType = null;
+                return false;
+            }
+        }
+        if (nhUtilitiesAccelerationType == null || !nhUtilitiesAccelerationType.isInstance(tile)) return false;
+        try {
+            return Boolean.TRUE.equals(nhUtilitiesAccelerationMethod.invoke(tile, speedMultiplier));
+        } catch (ReflectiveOperationException ignored) {
+            return false;
+        }
+    }
+
     private boolean shouldAccelerate(TileEntity te) {
-        return te != null && !te.isInvalid() && te.canUpdate();
+        return te != null && !te.isInvalid() && te.canUpdate() && !isBlacklisted(te);
+    }
+
+    private boolean isBlacklisted(TileEntity te) {
+        String[] blacklist = ReAvaritiaConfig.chronarch_clock.chronarchsClockTileEntityBlacklist;
+        if (blacklist.length == 0) return false;
+
+        String registryName = getRegistryName(te);
+        if (registryName == null) return false;
+
+        for (String entry : blacklist) {
+            if (entry != null && registryName.equals(entry.trim())) return true;
+        }
+
+        return false;
     }
 
     private boolean shouldAccelerate(Block block) {
@@ -129,5 +172,14 @@ public class EntityChronarchClock extends Entity {
     @Override
     public boolean isEntityInvulnerable() {
         return true;
+    }
+
+    public static String getRegistryName(TileEntity tileEntity) {
+        if (tileEntity == null) return null;
+
+        Map<Class<?>, String> classToNameMap = ((AccessorTileEntity) tileEntity).getClassToNameMap();
+        if (classToNameMap == null) return null;
+
+        return classToNameMap.get(tileEntity.getClass());
     }
 }

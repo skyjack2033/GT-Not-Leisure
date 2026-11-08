@@ -2,13 +2,11 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings4;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,10 +14,12 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -32,6 +32,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeMacerationTower extends GTMMultiMachineBase<LargeMacerationTower> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -50,6 +52,11 @@ public class LargeMacerationTower extends GTMMultiMachineBase<LargeMacerationTow
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_maceration_tower.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeMacerationTower> getStructureDefinition() {
         return StructureDefinition.<LargeMacerationTower>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -61,13 +68,12 @@ public class LargeMacerationTower extends GTMMultiMachineBase<LargeMacerationTow
                         HatchElement.Maintenance,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasings4, 14))))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaBlockColumn, 2))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.MiningOsmiridiumCasing.asElement())))
+            .addElement('B', GTNLCasings.CrushingWheels.asElement())
             .build();
     }
 
@@ -124,30 +130,20 @@ public class LargeMacerationTower extends GTMMultiMachineBase<LargeMacerationTow
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings4, 14);
+        return Casings.MiningOsmiridiumCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeMacerationTowerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeMacerationTower_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 4, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeMacerationTower_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeMacerationTower_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeMacerationTower_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeMacerationTower_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
 
     @Override
     public double getDurationModifier() {
-        return 1.0 / 2.0 - (Math.max(0, mParallelTier - 1) / 50.0);
+        return 1.0 / 4.0 - (Math.max(0, mParallelTier - 1) / 50.0);
     }
 
     @Override

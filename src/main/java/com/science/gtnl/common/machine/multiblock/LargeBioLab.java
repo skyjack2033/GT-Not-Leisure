@@ -3,12 +3,10 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gtPlusPlus.core.block.ModBlocks.blockSpecialMultiCasings2;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -17,10 +15,11 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -33,6 +32,7 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class LargeBioLab extends GTMMultiMachineBase<LargeBioLab> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -54,7 +54,7 @@ public class LargeBioLab extends GTMMultiMachineBase<LargeBioLab> implements ISu
     public IStructureDefinition<LargeBioLab> getStructureDefinition() {
         return StructureDefinition.<LargeBioLab>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
+            .addElement('A', Casings.PressureContainmentCasing.asElement())
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(LargeBioLab.class)
@@ -71,8 +71,8 @@ public class LargeBioLab extends GTMMultiMachineBase<LargeBioLab> implements ISu
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))))
-            .addElement('C', StructureUtility.ofBlock(sBlockCasingsTT, 0))
+                            Casings.NaquadriaReinforcedWaterPlantCasing.asElement())))
+            .addElement('C', Casings.HighPowerCasing.asElement())
             .addElement('D', GTStructureUtility.ofFrame(Materials.CosmicNeutronium))
             .addElement('E', StructureUtility.ofBlock(blockSpecialMultiCasings2, 2))
             .build();
@@ -134,26 +134,13 @@ public class LargeBioLab extends GTMMultiMachineBase<LargeBioLab> implements ISu
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 12);
+        return Casings.NaquadriaReinforcedWaterPlantCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeBioLabRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeBioLab_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(7, 5, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeBioLab_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

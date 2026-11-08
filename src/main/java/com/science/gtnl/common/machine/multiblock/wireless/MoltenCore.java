@@ -2,13 +2,11 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
@@ -16,11 +14,12 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -33,10 +32,11 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
+import kubatech.loaders.BlockLoader;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class MoltenCore extends WirelessEnergyMultiMachineBase<MoltenCore> {
 
     private static final int HORIZONTAL_OFF_SET = 8;
@@ -61,7 +61,7 @@ public class MoltenCore extends WirelessEnergyMultiMachineBase<MoltenCore> {
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
@@ -96,8 +96,8 @@ public class MoltenCore extends WirelessEnergyMultiMachineBase<MoltenCore> {
     public IStructureDefinition<MoltenCore> getStructureDefinition() {
         return StructureDefinition.<MoltenCore>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
+            .addElement('A', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('B', Casings.PressureContainmentCasing.asElement())
             .addElement(
                 'C',
                 GTStructureUtility.buildHatchAdder(MoltenCore.class)
@@ -114,16 +114,16 @@ public class MoltenCore extends WirelessEnergyMultiMachineBase<MoltenCore> {
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
-            .addElement('D', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 11))
-            .addElement('E', StructureUtility.ofBlock(sBlockCasingsTT, 4))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
+            .addElement('D', Casings.VolcanusCasing.asElement())
+            .addElement('E', Casings.MolecularCasing.asElement())
             .addElement(
                 'F',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility
                         .activeCoils(GTStructureUtility.ofCoil(MoltenCore::setMCoilLevel, MoltenCore::getMCoilLevel))))
-            .addElement('G', StructureUtility.ofBlock(kubatech.loaders.BlockLoader.defcCasingBlock, 7))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
+            .addElement('G', StructureUtility.ofBlock(BlockLoader.defcCasingBlock, 7))
+            .addElement('H', GTNLCasings.FusionGlass.asElement())
             .addElement(
                 'I',
                 StructureUtility.ofBlockAnyMeta(
@@ -189,28 +189,8 @@ public class MoltenCore extends WirelessEnergyMultiMachineBase<MoltenCore> {
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MoltenCoreRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MoltenCore_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(17, 17, 10, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MoltenCore_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

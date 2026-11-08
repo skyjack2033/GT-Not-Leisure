@@ -17,8 +17,8 @@ import net.minecraft.util.Facing;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.casings.BlockStaticDataClientOnly;
+import com.science.gtnl.common.item.GTNLCreativeTabs;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -48,7 +48,7 @@ public class MetaBlockGlass extends Block {
 
     @Override
     public String getUnlocalizedName() {
-        return "tile." + this.unlocalizedName;
+        return "gtnl.block." + this.unlocalizedName;
     }
 
     @Override
@@ -61,10 +61,10 @@ public class MetaBlockGlass extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister reg) {
-        this.blockIcon = reg.registerIcon(RESOURCE_ROOT_ID + ":" + "MetaBlockGlass/0");
+        this.blockIcon = reg.registerIcon(RESOURCE_ROOT_ID + ":" + "meta_block_glass/0");
         for (int Meta : META_SET) {
             BlockStaticDataClientOnly.GLASS_ICONS
-                .put(Meta, reg.registerIcon(RESOURCE_ROOT_ID + ":" + "MetaBlockGlass/" + Meta));
+                .put(Meta, reg.registerIcon(RESOURCE_ROOT_ID + ":" + "meta_block_glass/" + Meta));
         }
     }
 

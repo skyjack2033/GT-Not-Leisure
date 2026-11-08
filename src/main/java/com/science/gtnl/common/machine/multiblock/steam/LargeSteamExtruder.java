@@ -18,10 +18,12 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -36,6 +38,8 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSteamExtruder extends SteamMultiMachineBase<LargeSteamExtruder> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -51,6 +55,11 @@ public class LargeSteamExtruder extends SteamMultiMachineBase<LargeSteamExtruder
 
     public LargeSteamExtruder(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_steam_extruder.name";
     }
 
     @Override
@@ -220,8 +229,8 @@ public class LargeSteamExtruder extends SteamMultiMachineBase<LargeSteamExtruder
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
-        int id = tierMachine == 2 ? StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0)
-            : StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        int id = tierMachine == 2 ? Casings.SolidSteelMachineCasing.getTextureId()
+            : Casings.BronzePlatedBricks.getTextureId();
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(id), TextureFactory.builder()
                 .addIcon(TexturesGtBlock.oMCDIndustrialExtruderActive)
@@ -237,22 +246,13 @@ public class LargeSteamExtruder extends SteamMultiMachineBase<LargeSteamExtruder
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("LargeSteamExtruderRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.large_steam_extruder.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSteamExtruderRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamExtruder_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamExtruder_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamExtruder_02"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .beginStructureBlock(5, 8, 5, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamExtruder_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamExtruder_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

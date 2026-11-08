@@ -1,10 +1,6 @@
 package com.science.gtnl.common.machine.hatch;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,8 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
 import com.cleanroommc.modularui.factory.PosGuiData;
@@ -21,48 +15,31 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.gtnewhorizons.modularui.api.ModularUITextures;
-import com.gtnewhorizons.modularui.api.drawable.IDrawable;
-import com.gtnewhorizons.modularui.api.drawable.Text;
-import com.gtnewhorizons.modularui.api.math.Alignment;
-import com.gtnewhorizons.modularui.api.math.Color;
-import com.gtnewhorizons.modularui.api.math.Size;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
-import com.gtnewhorizons.modularui.common.internal.wrapper.BaseSlot;
-import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
-import com.gtnewhorizons.modularui.common.widget.CycleButtonWidget;
-import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
-import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
-import com.gtnewhorizons.modularui.common.widget.Scrollable;
-import com.gtnewhorizons.modularui.common.widget.SlotGroup;
-import com.gtnewhorizons.modularui.common.widget.SlotWidget;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
-import com.gtnewhorizons.modularui.common.widget.textfield.NumericWidget;
-import com.science.gtnl.common.gui.modularui.SuperInputBusMEGui;
-import com.science.gtnl.mixins.early.gregtech.AccessorCommonMetaTileEntity;
-import com.science.gtnl.mixins.early.gregtech.AccessorMetaTileEntity;
+import com.science.gtnl.api.mixinHelper.ICommonMetaTileEntityInventory;
+import com.science.gtnl.api.mixinHelper.IMetaTileEntityInventoryHandler;
+import com.science.gtnl.common.gui.modularui.hatch.SuperInputBusMEGui;
 import com.science.gtnl.utils.enums.GTNLItemList;
-import com.science.gtnl.utils.item.ItemUtils;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.IPowerChannelState;
 import appeng.api.networking.GridFlags;
+import appeng.api.networking.security.BaseActionSource;
+import appeng.api.networking.storage.IStackWatcher;
 import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.core.localization.WailaText;
+import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IItemList;
 import appeng.me.GridAccessException;
 import appeng.me.helpers.AENetworkProxy;
 import appeng.me.helpers.IGridProxyable;
 import appeng.util.item.AEItemStack;
 import gregtech.api.enums.GTValues;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IConfigurationCircuitSupport;
 import gregtech.api.interfaces.IDataCopyable;
 import gregtech.api.interfaces.ITexture;
-import gregtech.api.interfaces.modularui.IAddGregtechLogo;
-import gregtech.api.interfaces.modularui.IAddUIWidgets;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEMultiBlockBase;
@@ -71,18 +48,21 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
-import gregtech.common.gui.modularui.widget.AESlotWidget;
+import gregtech.common.config.MachineStats;
+import gregtech.common.tileentities.machines.IHatchWatcher;
 import gregtech.common.tileentities.machines.IRecipeProcessingAwareHatch;
 import gregtech.common.tileentities.machines.ISmartInputHatch;
 import gregtech.common.tileentities.machines.MTEHatchInputBusME;
+import gregtech.common.tileentities.machines.RecipeCheckReason;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateName
+@IMetaTileEntity.SkipGenerateDescription
 public class SuperInputBusME extends MTEHatchInputBusME implements IConfigurationCircuitSupport,
-    IRecipeProcessingAwareHatch, IAddGregtechLogo, IAddUIWidgets, IPowerChannelState, ISmartInputHatch, IDataCopyable {
+    IRecipeProcessingAwareHatch, IPowerChannelState, ISmartInputHatch, IDataCopyable {
 
     public static int SIDE_SLOT_COUNT = 100;
     public static int ALL_SLOT_COUNT = SIDE_SLOT_COUNT * 2 + 1 + 9 * 9;
-    public static final int CONFIG_WINDOW_ID = 10;
-    public static final int MANUAL_SLOT_WINDOW = 11;
 
     public ItemStack[] shadowInventory = new ItemStack[SIDE_SLOT_COUNT];
     public int[] storedStackSizes = new int[SIDE_SLOT_COUNT];
@@ -90,11 +70,12 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         Arrays.fill(storedStackSizes, Integer.MAX_VALUE);
     }
     public int[] savedStackSizes = new int[SIDE_SLOT_COUNT];
+    private IStackWatcher watcher;
 
     public SuperInputBusME(int aID, boolean autoPullAvailable, String aName, String aNameRegional) {
         super(aID, autoPullAvailable, aName, aNameRegional);
-        ((AccessorCommonMetaTileEntity) this).setInventory(new ItemStack[ALL_SLOT_COUNT]);
-        ((AccessorMetaTileEntity) this).setInventoryHandler(new ItemStackHandler(mInventory) {
+        ((ICommonMetaTileEntityInventory) this).setMInventory(new ItemStack[ALL_SLOT_COUNT]);
+        ((IMetaTileEntityInventoryHandler) this).setInventoryHandler(new ItemStackHandler(mInventory) {
 
             @Override
             public void onContentsChanged(int slot) {
@@ -107,8 +88,8 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     public SuperInputBusME(String aName, boolean autoPullAvailable, int aTier, String[] aDescription,
         ITexture[][][] aTextures) {
         super(aName, autoPullAvailable, aTier, aDescription, aTextures);
-        ((AccessorCommonMetaTileEntity) this).setInventory(new ItemStack[ALL_SLOT_COUNT]);
-        ((AccessorMetaTileEntity) this).setInventoryHandler(new ItemStackHandler(mInventory) {
+        ((ICommonMetaTileEntityInventory) this).setMInventory(new ItemStack[ALL_SLOT_COUNT]);
+        ((IMetaTileEntityInventoryHandler) this).setInventoryHandler(new ItemStackHandler(mInventory) {
 
             @Override
             public void onContentsChanged(int slot) {
@@ -119,25 +100,37 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     @Override
+    public String getLocalNameKey() {
+        if (!hasOwnLocalName()) return super.getLocalNameKey();
+        return autoPullAvailable ? "gtnl.hatch.super_input_bus_me.advanced.name" : "gtnl.hatch.super_input_bus_me.name";
+    }
+
+    @Override
+    public String getLocalName() {
+        if (!hasOwnLocalName()) return super.getLocalName();
+        return StatCollector.translateToLocal(getLocalNameKey());
+    }
+
+    @Override
     public String[] getDescription() {
-        List<String> strings = new ArrayList<>(8);
-        strings.add(StatCollector.translateToLocal("Tooltip_SuperInputBusME_00"));
+        List<String> strings = new ObjectArrayList<>(8);
+        strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.tooltip.0"));
         strings.add(
-            StatCollector.translateToLocal("Tooltip_SuperInputBusME_01")
+            StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.tooltip.1") + " "
                 + GTValues.TIER_COLORS[autoPullAvailable ? 7 : 4]
                 + GTValues.VN[autoPullAvailable ? 7 : 4]);
-        strings.add(StatCollector.translateToLocal("Tooltip_SuperInputBusME_02"));
-        strings.add(StatCollector.translateToLocal("Tooltip_SuperInputBusME_03"));
+        strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.tooltip.2"));
+        strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.tooltip.3"));
 
         if (autoPullAvailable) {
-            strings.add(StatCollector.translateToLocal("Tooltip_AdvancedSuperInputBusME_00"));
-            strings.add(StatCollector.translateToLocal("Tooltip_AdvancedSuperInputBusME_01"));
-            strings.add(StatCollector.translateToLocal("Tooltip_AdvancedSuperInputBusME_02"));
-            strings.add(StatCollector.translateToLocal("Tooltip_AdvancedSuperInputBusME_03"));
+            strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.auto_pull.tooltip.0"));
+            strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.auto_pull.tooltip.1"));
+            strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.auto_pull.tooltip.2"));
+            strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.auto_pull.tooltip.3"));
         }
 
-        strings.add(StatCollector.translateToLocal("Tooltip_SuperInputBusME_04"));
-        strings.add(StatCollector.translateToLocal("Tooltip_SuperInputBusME_05"));
+        strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.tooltip.4"));
+        strings.add(StatCollector.translateToLocal("gtnl.hatch.super_input_bus_me.tooltip.5"));
         return strings.toArray(new String[0]);
     }
 
@@ -183,6 +176,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
             refreshItemList();
         }
         updateAllInformationSlots();
+        configureWatchers();
     }
 
     @Override
@@ -224,6 +218,21 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     @Override
+    public boolean needsPeriodicChecks() {
+        return !MachineStats.machines.useStackWatcher;
+    }
+
+    @Override
+    public void addWatcher(IHatchWatcher watcher) {
+        watchers.add(watcher);
+    }
+
+    @Override
+    public void removeWatcher(IHatchWatcher watcher) {
+        watchers.remove(watcher);
+    }
+
+    @Override
     public boolean pasteCopiedData(EntityPlayer player, NBTTagCompound nbt) {
         if (nbt == null || !COPIED_DATA_IDENTIFIER.equals(nbt.getString("type"))) return false;
         ItemStack circuit = GTUtility.loadItem(nbt, "circuit");
@@ -237,7 +246,6 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
             if (nbt.hasKey("refreshTime")) {
                 autoPullRefreshTime = nbt.getInteger("refreshTime");
             }
-            expediteRecipeCheck = nbt.getBoolean("expediteRecipeCheck");
         }
 
         NBTTagList list = nbt.getTagList("storedStackSizes", 10);
@@ -298,8 +306,18 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     @Override
+    public int getManualSlot() {
+        return getManualSlotStartForGui();
+    }
+
+    @Override
     public int getCircuitSlotX() {
         return 188;
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return ALL_SLOT_COUNT;
     }
 
     @Override
@@ -312,14 +330,16 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
 
     @Override
     public ItemStack getStackInSlot(int aIndex) {
-        if (!processingRecipe) return super.getStackInSlot(aIndex);
+        if (aIndex < 0 || aIndex >= mInventory.length) return null;
 
-        if (aIndex < 0 || aIndex > mInventory.length) return null;
+        if (aIndex == getCircuitSlot() || (aIndex >= getManualSlot() && aIndex < ALL_SLOT_COUNT)) {
+            return mInventory[aIndex];
+        }
+
+        if (!processingRecipe) return null;
 
         // Display slots
         if (aIndex >= SIDE_SLOT_COUNT && aIndex < SIDE_SLOT_COUNT * 2) return null;
-
-        if (aIndex == getCircuitSlot() || (aIndex >= 201 && aIndex < ALL_SLOT_COUNT)) return mInventory[aIndex];
 
         if (mInventory[aIndex] != null) {
 
@@ -375,6 +395,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         if (!isActive()) {
             return;
         }
+        boolean inputChanged = false;
         AENetworkProxy proxy = getProxy();
         try {
             IMEMonitor<IAEItemStack> sg = proxy.getStorage()
@@ -388,21 +409,20 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
                     ItemStack itemstack = GTUtility.copyAmount(
                         storedStackSizes[index] == Integer.MAX_VALUE ? 1 : storedStackSizes[index],
                         currItem.getItemStack());
-                    if (expediteRecipeCheck) {
-                        ItemStack previous = this.mInventory[index];
-                        if (itemstack != null) {
-                            justHadNewItems = !ItemStack.areItemStacksEqual(itemstack, previous);
-                        }
-                    }
+                    inputChanged |= !areItemStacksEqual(mInventory[index], itemstack);
                     this.mInventory[index] = itemstack;
                     index++;
                 }
             }
             for (int i = index; i < SIDE_SLOT_COUNT; i++) {
+                inputChanged |= mInventory[i] != null;
                 mInventory[i] = null;
             }
 
         } catch (final GridAccessException ignored) {}
+        if (inputChanged) {
+            scheduleRecipeCheck(RecipeCheckReason.THROTTLED);
+        }
     }
 
     @Override
@@ -485,14 +505,6 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
                     request.setStackSize(storedStackSizes[aIndex]);
                     IAEItemStack result = sg.extractItems(request, Actionable.SIMULATE, getRequestSource());
                     ItemStack s = (result != null) ? result.getItemStack() : null;
-                    // We want to track changes in any ItemStack to notify any connected controllers to make a recipe
-                    // check early
-                    if (expediteRecipeCheck) {
-                        ItemStack previous = getStackInSlot(aIndex + SIDE_SLOT_COUNT);
-                        if (s != null) {
-                            justHadNewItems = !ItemStack.areItemStacksEqual(s, previous);
-                        }
-                    }
                     setInventorySlotContents(aIndex + SIDE_SLOT_COUNT, s);
                     return s;
                 } catch (final GridAccessException ignored) {}
@@ -569,7 +581,9 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
     }
 
     public ItemStack updateInformationSlotForGui(int index, ItemStack stack) {
-        return updateInformationSlot(index, stack);
+        ItemStack informationStack = updateInformationSlot(index, stack);
+        configureWatchers();
+        return informationStack;
     }
 
     public boolean containsFilterStackForGui(ItemStack stack) {
@@ -592,6 +606,7 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         }
         storedStackSizes[slot] = Math.max(1, stackSize);
         updateInformationSlot(slot);
+        configureWatchers();
     }
 
     protected void refreshGuiStateOnOpen() {
@@ -610,6 +625,45 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         }
     }
 
+    @Override
+    public void updateWatcher(IStackWatcher newWatcher) {
+        watcher = newWatcher;
+        configureWatchers();
+    }
+
+    @Override
+    public void onStackChange(IItemList stacks, IAEStack fullStack, IAEStack diffStack, BaseActionSource source,
+        StorageChannel channel) {
+        if (diffStack.getStackSize() > 0) {
+            scheduleRecipeCheck(RecipeCheckReason.THROTTLED);
+        }
+    }
+
+    private void configureWatchers() {
+        if (watcher != null) {
+            watcher.clear();
+            if (MachineStats.machines.useStackWatcher && !autoPullItemList) {
+                for (int i = 0; i < SIDE_SLOT_COUNT; i++) {
+                    ItemStack stack = mInventory[i];
+                    if (stack != null) watcher.add(AEItemStack.create(stack));
+                }
+            }
+        }
+        scheduleRecipeCheck(RecipeCheckReason.THROTTLED);
+    }
+
+    private boolean areItemStacksEqual(ItemStack first, ItemStack second) {
+        return first == second || first != null && second != null
+            && first.stackSize == second.stackSize
+            && GTUtility.areStacksEqual(first, second, true);
+    }
+
+    private void scheduleRecipeCheck(RecipeCheckReason reason) {
+        for (IHatchWatcher hatchWatcher : watchers) {
+            hatchWatcher.scheduleRecipeCheck(reason);
+        }
+    }
+
     protected ItemStack createDisplayStack(IAEItemStack stack, int slot) {
         ItemStack displayStack = stack == null ? null : stack.getItemStack();
         if (displayStack == null) {
@@ -619,334 +673,5 @@ public class SuperInputBusME extends MTEHatchInputBusME implements IConfiguratio
         long availableSize = stack.getStackSize();
         displayStack.stackSize = (int) Math.min(Integer.MAX_VALUE, Math.min(availableSize, requestedSize));
         return displayStack.stackSize > 0 ? displayStack : null;
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
-        buildContext.addSyncedWindow(MANUAL_SLOT_WINDOW, this::createSlotManualWindow);
-        final SlotWidget[] aeSlotWidgets = new SlotWidget[100];
-
-        if (autoPullAvailable) {
-            buildContext.addSyncedWindow(CONFIG_WINDOW_ID, this::createStackSizeConfigurationWindow);
-        }
-
-        for (int i = 15; i < SIDE_SLOT_COUNT + 15; i++) {
-            int slotID = i;
-            buildContext.addSyncedWindow(i, (player) -> createStroedStackSizeWindow(player, slotID - 15));
-        }
-
-        final Scrollable scrollable = new Scrollable().setVerticalScroll();
-        SlotGroup leftSlotGroup = SlotGroup.ofItemHandler(inventoryHandler, 10)
-            .startFromSlot(0)
-            .endAtSlot(99)
-            .phantom(true)
-            .slotCreator(index -> new BaseSlot(inventoryHandler, index, true) {
-
-                @Override
-                public boolean isEnabled() {
-                    return !autoPullItemList && super.isEnabled();
-                }
-            })
-            .widgetCreator(slot -> (SlotWidget) new SlotWidget(slot) {
-
-                @Override
-                public ClickResult onClick(int buttonId, boolean doubleClick) {
-                    if (interactionDisabled) return ClickResult.ACCEPT;
-                    if (buttonId == 2) {
-                        ClickData clickData = ClickData.create(buttonId, doubleClick);
-                        syncToServer(15, clickData::writeToPacket);
-                        return ClickResult.SUCCESS;
-                    }
-                    return super.onClick(buttonId, doubleClick);
-                }
-
-                @Override
-                public void readOnServer(int id, PacketBuffer buf) throws IOException {
-                    if (id == 15) click(ClickData.readPacket(buf));
-                    super.readOnServer(id, buf);
-                }
-
-                public void click(ClickData clickData) {
-                    if (interactionDisabled) return;
-                    if (clickData.mouseButton == 2) {
-                        getContext().openSyncedWindow(getMcSlot().slotNumber - 21);
-                    }
-                }
-
-                @Override
-                public void phantomClick(ClickData clickData, ItemStack cursorStack) {
-                    if (clickData.mouseButton != 0 || !getMcSlot().isEnabled()) return;
-                    final int aSlotIndex = getMcSlot().getSlotIndex();
-                    if (cursorStack == null) {
-                        getMcSlot().putStack(null);
-                    } else {
-                        if (containsSuchStack(cursorStack)) return;
-                        getMcSlot().putStack(GTUtility.copyAmount(1, cursorStack));
-                    }
-                    if (getBaseMetaTileEntity().isServerSide()) {
-                        final ItemStack newInfo = updateInformationSlot(aSlotIndex, cursorStack);
-                        aeSlotWidgets[getMcSlot().getSlotIndex()].getMcSlot()
-                            .putStack(newInfo);
-                    }
-                }
-
-                @Override
-                public boolean onMouseScroll(int direction) {
-                    return false;
-                }
-
-                @Override
-                public IDrawable[] getBackground() {
-                    IDrawable slot;
-                    if (autoPullItemList) {
-                        slot = GTUITextures.SLOT_DARK_GRAY;
-                    } else {
-                        slot = ModularUITextures.ITEM_SLOT;
-                    }
-                    return new IDrawable[] { slot, GTUITextures.OVERLAY_SLOT_ARROW_ME };
-                }
-
-                @Override
-                public List<String> getExtraTooltip() {
-                    if (autoPullItemList) {
-                        return Collections.singletonList(
-                            StatCollector.translateToLocal("GT5U.machines.stocking_bus.cannot_set_slot"));
-                    } else {
-                        return Collections
-                            .singletonList(StatCollector.translateToLocal("modularui.phantom.single.clear"));
-                    }
-                }
-
-                public boolean containsSuchStack(ItemStack tStack) {
-                    for (int i = 0; i < 100; ++i) {
-                        if (GTUtility.areStacksEqual(mInventory[i], tStack, false)) return true;
-                    }
-                    return false;
-                }
-            }.dynamicTooltip(() -> {
-                if (autoPullItemList) {
-                    return Collections
-                        .singletonList(StatCollector.translateToLocal("GT5U.machines.stocking_bus.cannot_set_slot"));
-                } else {
-                    return Collections.emptyList();
-                }
-            })
-                .setUpdateTooltipEveryTick(true))
-            .build();
-        scrollable.widget(leftSlotGroup);
-
-        SlotGroup rightSlotGroup = SlotGroup.ofItemHandler(inventoryHandler, 10)
-            .startFromSlot(100)
-            .endAtSlot(199)
-            .phantom(true)
-            .background(GTUITextures.SLOT_DARK_GRAY)
-            .widgetCreator(
-                slot -> aeSlotWidgets[slot.getSlotIndex() - 100] = new AESlotWidget(slot).disableInteraction())
-            .build();
-        scrollable.widget(rightSlotGroup.setPos(198, 0));
-
-        builder.widget(
-            scrollable.setSize(18 * 21 + 4, 72)
-                .setPos(7, 9))
-            .widget(
-                new DrawableWidget().setDrawable(GTUITextures.PICTURE_ARROW_DOUBLE)
-                    .setPos(190, 30)
-                    .setSize(12, 12));
-
-        if (autoPullAvailable) {
-            builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                if (clickData.mouseButton == 0) {
-                    setAutoPullItemList(!autoPullItemList);
-                } else if (clickData.mouseButton == 1 && !widget.isClient()) {
-                    widget.getContext()
-                        .openSyncedWindow(CONFIG_WINDOW_ID);
-                }
-            })
-                .setBackground(() -> {
-                    if (autoPullItemList) {
-                        return new IDrawable[] { GTUITextures.BUTTON_STANDARD_PRESSED,
-                            GTUITextures.OVERLAY_BUTTON_AUTOPULL_ME };
-                    } else {
-                        return new IDrawable[] { GTUITextures.BUTTON_STANDARD,
-                            GTUITextures.OVERLAY_BUTTON_AUTOPULL_ME_DISABLED };
-                    }
-                })
-                .setSize(16, 16)
-                .setPos(188, 10))
-                .widget(new FakeSyncWidget.BooleanSyncer(() -> autoPullItemList, this::setAutoPullItemList));
-        }
-
-        builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-            if (clickData.mouseButton == 0) {
-                widget.getContext()
-                    .openSyncedWindow(MANUAL_SLOT_WINDOW);
-            }
-        })
-            .setPlayClickSound(true)
-            .setBackground(GTUITextures.BUTTON_STANDARD, GTUITextures.OVERLAY_BUTTON_PLUS_LARGE)
-            .setSize(16, 16)
-            .setPos(188, 46));
-
-        builder.widget(TextWidget.dynamicText(() -> {
-            boolean isActive = isActive();
-            boolean isPowered = isPowered();
-            boolean isBooting = isBooting();
-
-            String state = WailaText.getPowerState(isActive, isPowered, isBooting);
-
-            if (isActive && isPowered) {
-                return new Text(MessageFormat.format("{0}{1}§f", EnumChatFormatting.GREEN, state));
-            } else {
-                return new Text(EnumChatFormatting.DARK_RED + state);
-            }
-        })
-            .setTextAlignment(Alignment.Center)
-            .setSize(130, 9)
-            .setPos(131, 84));
-        addGregTechLogo(builder);
-    }
-
-    @Deprecated
-    public ModularWindow createSlotManualWindow(final EntityPlayer player) {
-        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
-        final int WIDTH = 176;
-        final int HEIGHT = 86;
-        final int PARENT_WIDTH = getGUIWidth();
-        final int PARENT_HEIGHT = getGUIHeight();
-        ModularWindow.Builder builder = ModularWindow.builder(WIDTH, HEIGHT);
-        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
-        builder.setGuiTint(getGUIColorization());
-        builder.setDraggable(true);
-        builder.setPos(
-            (size, window) -> Alignment.Center.getAlignedPos(size, new Size(PARENT_WIDTH, PARENT_HEIGHT))
-                .add(Alignment.TopRight.getAlignedPos(new Size(PARENT_WIDTH, PARENT_HEIGHT), new Size(WIDTH, HEIGHT))));
-
-        final Scrollable scrollable = new Scrollable().setVerticalScroll();
-        SlotGroup slotGroup = SlotGroup.ofItemHandler(inventoryHandler, 9)
-            .startFromSlot(201)
-            .endAtSlot(ALL_SLOT_COUNT - 1)
-            .phantom(false)
-            .background(getGUITextureSet().getItemSlot())
-            .build();
-        scrollable.widget(slotGroup);
-
-        builder.widget(
-            scrollable.setSize(18 * 9 + 4, 18 * 4)
-                .setPos(7, 7));
-        return builder.build();
-    }
-
-    @Deprecated
-    public ModularWindow createStroedStackSizeWindow(EntityPlayer player, int slotID) {
-        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
-        final int WIDTH = 110;
-        final int HEIGHT = 66;
-        final int PARENT_WIDTH = getGUIWidth();
-        final int PARENT_HEIGHT = getGUIHeight();
-        ModularWindow.Builder builder = ModularWindow.builder(WIDTH, HEIGHT);
-        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
-        builder.setGuiTint(getGUIColorization());
-        builder.setDraggable(true);
-        builder.setPos(
-            (size, window) -> Alignment.Center.getAlignedPos(size, new Size(PARENT_WIDTH, PARENT_HEIGHT))
-                .add(
-                    Alignment.TopRight.getAlignedPos(new Size(PARENT_WIDTH, PARENT_HEIGHT), new Size(WIDTH, HEIGHT))
-                        .add(WIDTH - 3, 0)));
-
-        builder.widget(
-            TextWidget.localised("Info_SuperInputHatchME_00")
-                .setPos(3, 6)
-                .setSize(106, 14))
-            .widget(
-                new TextWidget(StatCollector.translateToLocal("Info_SuperInputHatchME_01") + slotID).setPos(3, 20)
-                    .setSize(106, 14))
-            .widget(
-                new NumericWidget().setSetter(val -> storedStackSizes[slotID] = (int) val)
-                    .setGetter(() -> storedStackSizes[slotID])
-                    .setBounds(1, Integer.MAX_VALUE)
-                    .setScrollValues(1, 1000, 10000)
-                    .setTextAlignment(Alignment.Center)
-                    .setTextColor(Color.WHITE.normal)
-                    .setSize(106, 18)
-                    .setPos(3, 36)
-                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD)
-                    .attachSyncer(
-                        new FakeSyncWidget.IntegerSyncer(
-                            () -> storedStackSizes[slotID],
-                            i -> storedStackSizes[slotID] = i),
-                        builder));
-        return builder.build();
-    }
-
-    @Deprecated
-    public ModularWindow createStackSizeConfigurationWindow(EntityPlayer player) {
-        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
-        final int WIDTH = 78;
-        final int HEIGHT = 115;
-        final int PARENT_WIDTH = getGUIWidth();
-        final int PARENT_HEIGHT = getGUIHeight();
-        ModularWindow.Builder builder = ModularWindow.builder(WIDTH, HEIGHT);
-        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
-        builder.setGuiTint(getGUIColorization());
-        builder.setDraggable(true);
-        builder.setPos(
-            (size, window) -> Alignment.Center.getAlignedPos(size, new Size(PARENT_WIDTH, PARENT_HEIGHT))
-                .add(
-                    Alignment.TopRight.getAlignedPos(new Size(PARENT_WIDTH, PARENT_HEIGHT), new Size(WIDTH, HEIGHT))
-                        .add(WIDTH - 3, 0)));
-        builder.widget(
-            TextWidget.localised("GT5U.machines.stocking_bus.min_stack_size")
-                .setPos(3, 2)
-                .setSize(74, 14))
-            .widget(
-                new NumericWidget().setSetter(val -> minAutoPullStackSize = (int) val)
-                    .setGetter(() -> minAutoPullStackSize)
-                    .setBounds(1, Integer.MAX_VALUE)
-                    .setScrollValues(1, 4, 64)
-                    .setTextAlignment(Alignment.Center)
-                    .setTextColor(Color.WHITE.normal)
-                    .setSize(70, 18)
-                    .setPos(3, 18)
-                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
-        builder.widget(
-            TextWidget.localised("GT5U.machines.stocking_bus.refresh_time")
-                .setPos(3, 42)
-                .setSize(74, 14))
-            .widget(
-                new NumericWidget().setSetter(val -> autoPullRefreshTime = (int) val)
-                    .setGetter(() -> autoPullRefreshTime)
-                    .setBounds(1, Integer.MAX_VALUE)
-                    .setScrollValues(1, 4, 64)
-                    .setTextAlignment(Alignment.Center)
-                    .setTextColor(Color.WHITE.normal)
-                    .setSize(70, 18)
-                    .setPos(3, 58)
-                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD));
-        builder.widget(
-            TextWidget.localised("GT5U.machines.stocking_bus.force_check")
-                .setPos(3, 88)
-                .setSize(50, 14))
-            .widget(
-                new CycleButtonWidget().setToggle(() -> expediteRecipeCheck, this::setRecipeCheck)
-                    .setTextureGetter(
-                        state -> expediteRecipeCheck ? GTUITextures.OVERLAY_BUTTON_CHECKMARK
-                            : GTUITextures.OVERLAY_BUTTON_CROSS)
-                    .setBackground(GTUITextures.BUTTON_STANDARD)
-                    .setPos(53, 87)
-                    .setSize(16, 16)
-                    .addTooltip(StatCollector.translateToLocal("GT5U.machines.stocking_bus.hatch_warning")));
-        return builder.build();
-    }
-
-    @Override
-    @Deprecated
-    public void addGregTechLogo(ModularWindow.Builder builder) {
-        // TODO: Remove this mui1 fallback after SuperInputBusME mui2 parity is verified.
-        builder.widget(
-            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
-                .setSize(18, 18)
-                .setPos(367, 81));
     }
 }

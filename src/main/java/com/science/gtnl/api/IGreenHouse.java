@@ -4,51 +4,38 @@ import static gregtech.api.util.GTRecipeBuilder.SECONDS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import com.gtnewhorizon.cropsnh.api.IGrowthRequirement;
 import com.gtnewhorizon.cropsnh.api.IMachineGrowthRequirement;
+import com.gtnewhorizon.cropsnh.api.IPotencyData;
 import com.gtnewhorizon.cropsnh.api.ISeedData;
 import com.gtnewhorizon.cropsnh.blocks.BlockAdvancedHarvestingUnit;
 import com.gtnewhorizon.cropsnh.blocks.BlockFertilizerUnit;
 import com.gtnewhorizon.cropsnh.blocks.BlockGrowthAccelerationUnit;
 import com.gtnewhorizon.cropsnh.blocks.BlockSeedBed;
 import com.gtnewhorizon.cropsnh.farming.registries.HydrationRegistry;
-import com.gtnewhorizon.cropsnh.farming.requirements.BlockUnderRequirement;
+import com.gtnewhorizon.cropsnh.farming.requirements.SubSoilRequirement;
 import com.gtnewhorizon.cropsnh.tileentity.TileEntityCropSticks;
 import com.gtnewhorizon.cropsnh.utility.CropsNHUtils;
 import com.gtnewhorizon.cropsnh.utility.IFDropTable;
-import com.gtnewhorizons.modularui.api.ModularUITextures;
-import com.gtnewhorizons.modularui.api.drawable.Text;
-import com.gtnewhorizons.modularui.api.math.Color;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
-import com.gtnewhorizons.modularui.common.widget.Column;
-import com.gtnewhorizons.modularui.common.widget.CycleButtonWidget;
-import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
+import com.science.gtnl.common.greenhouse.GreenHouseModes;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseMode;
-import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseModes;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseStoredCrop;
 import com.science.gtnl.utils.machine.greenHouseManager.GreenHouseViewMode;
 
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IOutputBus;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.interfaces.tileentity.IVoidable;
@@ -57,6 +44,9 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.ItemEjectionHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public interface IGreenHouse extends IVoidable {
 
@@ -71,17 +61,20 @@ public interface IGreenHouse extends IVoidable {
     int MODE_OUTPUT = 2;
 
     CheckRecipeResult BLOCK_UNDER_MISMATCH_INPUT = SimpleCheckRecipeResult
-        .ofFailure("GTNL.greenhouse.blockUnderMismatch.input");
+        .ofFailure("gtnl.greenhouse.block_under_mismatch.input");
     CheckRecipeResult BLOCK_UNDER_MISMATCH_FARM = SimpleCheckRecipeResult
-        .ofFailure("GTNL.greenhouse.blockUnderMismatch.farm");
-    CheckRecipeResult BLOCK_UNDER_NOT_FOUND = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.blockUnderNotFound");
-    CheckRecipeResult SEED_BED_TIER_TOO_LOW = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.seedBedTierTooLow");
-    CheckRecipeResult SEEDS_FULL = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.seedsFull");
-    CheckRecipeResult SEED_TYPES_FULL = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.seedTypesFull");
-    CheckRecipeResult SEED_OVERFLOW = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.seedOverflow");
-    CheckRecipeResult CANNOT_GROW = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.cannotGrow");
-    CheckRecipeResult NOT_ENOUGH_WATER = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.notEnoughWater");
-    CheckRecipeResult NOT_ENOUGH_FERTILIZER = SimpleCheckRecipeResult.ofFailure("GTNL.greenhouse.notEnoughFertilizer");
+        .ofFailure("gtnl.greenhouse.block_under_mismatch.farm");
+    CheckRecipeResult BLOCK_UNDER_NOT_FOUND = SimpleCheckRecipeResult
+        .ofFailure("gtnl.greenhouse.block_under_not_found");
+    CheckRecipeResult SEED_BED_TIER_TOO_LOW = SimpleCheckRecipeResult
+        .ofFailure("gtnl.greenhouse.seed_bed_tier_too_low");
+    CheckRecipeResult SEEDS_FULL = SimpleCheckRecipeResult.ofFailure("gtnl.greenhouse.seeds_full");
+    CheckRecipeResult SEED_TYPES_FULL = SimpleCheckRecipeResult.ofFailure("gtnl.greenhouse.seed_types_full");
+    CheckRecipeResult SEED_OVERFLOW = SimpleCheckRecipeResult.ofFailure("gtnl.greenhouse.seed_overflow");
+    CheckRecipeResult CANNOT_GROW = SimpleCheckRecipeResult.ofFailure("gtnl.greenhouse.cannot_grow");
+    CheckRecipeResult NOT_ENOUGH_WATER = SimpleCheckRecipeResult.ofFailure("gtnl.greenhouse.not_enough_water");
+    CheckRecipeResult NOT_ENOUGH_FERTILIZER = SimpleCheckRecipeResult
+        .ofFailure("gtnl.greenhouse.not_enough_fertilizer");
 
     IGregTechTileEntity getBaseMetaTileEntity();
 
@@ -90,6 +83,15 @@ public interface IGreenHouse extends IVoidable {
     int getMaxProgressTime();
 
     void setMaxProgressTime(int time);
+
+    /**
+     * Length of one farm cycle. Crops grow for this long each cycle, so a longer cycle also yields more per cycle.
+     *
+     * @return the cycle length in ticks
+     */
+    default int getCycleDuration() {
+        return CYCLE_DURATION;
+    }
 
     void setLEUt(long lEUt);
 
@@ -192,7 +194,7 @@ public interface IGreenHouse extends IVoidable {
     default int getEffectiveStoredCropCount() {
         int count = 0;
         for (GreenHouseStoredCrop crop : getStoredCrops()) {
-            ISeedData seedData = CropsNHUtils.getAnalyzedSeedData(crop.getSeedStack());
+            ISeedData seedData = CropsNHUtils.getSeedData(crop.getSeedStack(), false, true);
             count += getEffectiveStoredCropCount(crop, seedData);
         }
         return count;
@@ -219,7 +221,7 @@ public interface IGreenHouse extends IVoidable {
     default int getMissingBlockUnderCount() {
         int missing = 0;
         for (GreenHouseStoredCrop crop : getStoredCrops()) {
-            ISeedData seedData = CropsNHUtils.getAnalyzedSeedData(crop.getSeedStack());
+            ISeedData seedData = CropsNHUtils.getSeedData(crop.getSeedStack(), false, true);
             if (seedData == null || !needsBlockUnder(seedData)) continue;
             int blockCount = CropsNHUtils.isStackValid(crop.getBlockUnderStack()) ? crop.getBlockUnderStack().stackSize
                 : 0;
@@ -275,7 +277,7 @@ public interface IGreenHouse extends IVoidable {
     }
 
     default CheckRecipeResult tryAddCropStack(ItemStack input, boolean simulate) {
-        ISeedData seedData = CropsNHUtils.getAnalyzedSeedData(input);
+        ISeedData seedData = CropsNHUtils.getSeedData(input, false, true);
         if (seedData == null) return CheckRecipeResultRegistry.NO_RECIPE;
         if (seedData.getCrop()
             .getMinSeedBedTier() > getIndustrialFarmTier()) return SEED_BED_TIER_TOO_LOW;
@@ -330,7 +332,7 @@ public interface IGreenHouse extends IVoidable {
         boolean inserted = false;
         for (GreenHouseStoredCrop crop : getStoredCrops()) {
             if (remaining <= 0) break;
-            ISeedData seedData = CropsNHUtils.getAnalyzedSeedData(crop.getSeedStack());
+            ISeedData seedData = CropsNHUtils.getSeedData(crop.getSeedStack(), false, true);
             if (seedData == null || !needsBlockUnder(seedData)) continue;
             int missing = getMissingBlockUnderCount(crop);
             if (missing <= 0) continue;
@@ -369,7 +371,7 @@ public interface IGreenHouse extends IVoidable {
         return seedData.getCrop()
             .getGrowthRequirements()
             .stream()
-            .anyMatch(BlockUnderRequirement.class::isInstance);
+            .anyMatch(SubSoilRequirement.class::isInstance);
     }
 
     default int getMissingBlockUnderCount(GreenHouseStoredCrop crop) {
@@ -382,8 +384,8 @@ public interface IGreenHouse extends IVoidable {
         if (CropsNHUtils.isStackInvalid(blockUnder)) return false;
         for (IGrowthRequirement requirement : seedData.getCrop()
             .getGrowthRequirements()) {
-            if (requirement instanceof BlockUnderRequirement blockUnderRequirement
-                && blockUnderRequirement.isValidBlockUnder(blockUnder)) {
+            if (requirement instanceof SubSoilRequirement subSoilRequirement
+                && subSoilRequirement.isValidSubSoil(blockUnder)) {
                 return true;
             }
         }
@@ -393,9 +395,9 @@ public interface IGreenHouse extends IVoidable {
     default ItemStack findRequiredBlockUnder(ISeedData seedData) {
         for (IGrowthRequirement requirement : seedData.getCrop()
             .getGrowthRequirements()) {
-            if (!(requirement instanceof BlockUnderRequirement blockUnderRequirement)) continue;
+            if (!(requirement instanceof SubSoilRequirement subSoilRequirement)) continue;
             for (ItemStack input : getStoredInputs()) {
-                if (blockUnderRequirement.isValidBlockUnder(input)) {
+                if (subSoilRequirement.isValidSubSoil(input)) {
                     ItemStack result = input.copy();
                     result.stackSize = 0;
                     return result;
@@ -442,7 +444,7 @@ public interface IGreenHouse extends IVoidable {
         if (removable <= 0) return CheckRecipeResultRegistry.ITEM_OUTPUT_FULL;
 
         List<ItemStack> outputs = createStoredCropOutputs(removable);
-        ItemEjectionHelper ejectionHelper = new ItemEjectionHelper(new ArrayList<>(getOutputBus()), true);
+        ItemEjectionHelper ejectionHelper = new ItemEjectionHelper(new ObjectArrayList<>(getOutputBus()), true);
         if (ejectionHelper.ejectItems(outputs, 1) <= 0) return CheckRecipeResultRegistry.ITEM_OUTPUT_FULL;
         ejectionHelper.commit();
 
@@ -483,12 +485,12 @@ public interface IGreenHouse extends IVoidable {
         if (amount <= 0) return false;
         List<ItemStack> outputs = createStoredCropOutputs(amount);
         if (outputs.isEmpty()) return false;
-        ItemEjectionHelper ejectionHelper = new ItemEjectionHelper(new ArrayList<>(getOutputBus()), true);
+        ItemEjectionHelper ejectionHelper = new ItemEjectionHelper(new ObjectArrayList<>(getOutputBus()), true);
         return ejectionHelper.ejectItems(outputs, 1) > 0;
     }
 
     default List<ItemStack> createStoredCropOutputs(int amount) {
-        List<ItemStack> outputs = new ArrayList<>();
+        List<ItemStack> outputs = new ObjectArrayList<>();
         int remaining = amount;
         for (GreenHouseStoredCrop crop : getStoredCrops()) {
             if (remaining <= 0) break;
@@ -549,15 +551,17 @@ public interface IGreenHouse extends IVoidable {
             return skippedBlockUnderCrop ? BLOCK_UNDER_MISMATCH_FARM : CheckRecipeResultRegistry.NO_RECIPE;
         }
 
-        List<Pair<FluidStack, Integer>> waterToConsume = new ArrayList<>();
+        List<ObjectIntPair<FluidStack>> waterToConsume = new ObjectArrayList<>();
         int waterMissing = getWaterUsage();
         for (FluidStack fluidStack : getStoredFluids()) {
             if (CropsNHUtils.isStackInvalid(fluidStack)) continue;
-            int potency = HydrationRegistry.instance.getPotency(fluidStack.getFluid());
-            int amount = getAmountToConsumeBasedOnPotency(waterMissing, potency, fluidStack.amount);
-            if (amount > 0) {
-                waterMissing -= amount * potency;
-                waterToConsume.add(Pair.of(fluidStack, amount));
+            IPotencyData potency = HydrationRegistry.instance.getPotency(fluidStack.getFluid());
+            if (potency == null) continue;
+            int applications = getApplicationCountBasedOnPotency(waterMissing, potency, fluidStack.amount);
+            if (applications > 0) {
+                waterMissing -= applications * potency.getPotency();
+                waterToConsume
+                    .add(ObjectIntPair.of(fluidStack, applications * potency.getUnitsConsumedPerApplication()));
             }
             if (waterMissing <= 0) break;
         }
@@ -565,18 +569,18 @@ public interface IGreenHouse extends IVoidable {
 
         cycleDrops.addTo(getIndustrialFarmDropTracker());
         if (getVoidingMode().protectItem) {
-            ItemEjectionHelper helper = new ItemEjectionHelper(new ArrayList<>(getOutputBus()), true);
+            ItemEjectionHelper helper = new ItemEjectionHelper(new ObjectArrayList<>(getOutputBus()), true);
             ItemStack[] drops = getIndustrialFarmDropTracker().getDrops(true);
             if (drops.length != 0 && helper.ejectItems(Arrays.asList(drops), 1) <= 0) {
                 cycleDrops.addTo(getIndustrialFarmDropTracker(), -1.0d);
                 return CheckRecipeResultRegistry.ITEM_OUTPUT_FULL;
             }
         }
-        waterToConsume.forEach(pair -> pair.getLeft().amount -= pair.getRight());
+        for (ObjectIntPair<FluidStack> pair : waterToConsume) pair.left().amount -= pair.rightInt();
         setIndustrialFarmGuiDropTracker(cycleDrops);
         setGreenHouseOutputItems(getIndustrialFarmDropTracker().getDrops(false));
         setLEUt(-getIndustrialFarmEUt());
-        setMaxProgressTime(CYCLE_DURATION);
+        setMaxProgressTime(getCycleDuration());
         updateSlots();
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
@@ -586,7 +590,7 @@ public interface IGreenHouse extends IVoidable {
     void setGreenHouseOutputItems(ItemStack[] outputs);
 
     default ISeedData createRuntimeSeedData(ItemStack seedStack) {
-        return CropsNHUtils.getAnalyzedSeedData(seedStack);
+        return CropsNHUtils.getSeedData(seedStack, false, true);
     }
 
     default CheckRecipeResult validateCanGrow(ISeedData seedData, GreenHouseStoredCrop crop) {
@@ -601,17 +605,19 @@ public interface IGreenHouse extends IVoidable {
             .getGrowthRequirements()) {
             if (requirement instanceof IMachineGrowthRequirement machineGrowthRequirement
                 && !machineGrowthRequirement.canGrow(seedData, getBaseMetaTileEntity(), catalysts)) {
-                if (requirement instanceof BlockUnderRequirement) return BLOCK_UNDER_MISMATCH_FARM;
+                if (requirement instanceof SubSoilRequirement) return BLOCK_UNDER_MISMATCH_FARM;
                 return CANNOT_GROW;
             }
         }
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
-    default int getAmountToConsumeBasedOnPotency(int missingPotency, int inputPotency, int inputAmount) {
-        if (missingPotency <= 0 || inputPotency <= 0 || inputAmount <= 0) return 0;
-        int maxConsume = missingPotency / inputPotency + (missingPotency % inputPotency > 0 ? 1 : 0);
-        return Math.min(maxConsume, inputAmount);
+    default int getApplicationCountBasedOnPotency(int missingPotency, IPotencyData potency, int inputAmount) {
+        int perApplication = potency.getPotency();
+        int unitsPerApplication = potency.getUnitsConsumedPerApplication();
+        if (missingPotency <= 0 || perApplication <= 0 || inputAmount < unitsPerApplication) return 0;
+        int maxApplications = missingPotency / perApplication + (missingPotency % perApplication > 0 ? 1 : 0);
+        return Math.min(maxApplications, inputAmount / unitsPerApplication);
     }
 
     default int getNutrientScore(ISeedData seedData) {
@@ -620,7 +626,8 @@ public interface IGreenHouse extends IVoidable {
         IGregTechTileEntity base = getBaseMetaTileEntity();
         if (base == null) return 0;
         BiomeGenBase biome = base.getBiome();
-        Set<BiomeDictionary.Type> biomeTags = new HashSet<>(Arrays.asList(BiomeDictionary.getTypesForBiome(biome)));
+        Set<BiomeDictionary.Type> biomeTags = new ObjectOpenHashSet<>(
+            Arrays.asList(BiomeDictionary.getTypesForBiome(biome)));
         int likedBiomes = (int) seedData.getCrop()
             .getLikedBiomeTags()
             .stream()
@@ -654,7 +661,7 @@ public interface IGreenHouse extends IVoidable {
             .getGrowthDuration();
         int growthTicksPerHarvest = duration / growthSpeed + (duration % growthSpeed == 0 ? 0 : 1);
         double growthPercentPerGrowthTick = 1.0d / growthTicksPerHarvest;
-        return growthPercentPerGrowthTick * ((double) CYCLE_DURATION / TileEntityCropSticks.TICK_RATE)
+        return growthPercentPerGrowthTick * ((double) getCycleDuration() / TileEntityCropSticks.TICK_RATE)
             * getGrowthSpeedMultiplier();
     }
 
@@ -691,156 +698,27 @@ public interface IGreenHouse extends IVoidable {
         return drops;
     }
 
-    @Deprecated
-    default ModularWindow createConfigurationWindow(final EntityPlayer player) {
-        // TODO: Remove this MUI1 configuration window after greenhouse machines use the MUI2 panel.
-        ModularWindow.Builder builder = ModularWindow.builder(200, 100);
-        builder.setBackground(ModularUITextures.VANILLA_BACKGROUND);
-        builder.widget(
-            new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_CYCLIC)
-                .setPos(5, 5)
-                .setSize(16, 16))
-            .widget(new TextWidget(StatCollector.translateToLocal("Info_EdenGarden_Configuration")).setPos(25, 9))
-            .widget(
-                ButtonWidget.closeWindowButton(true)
-                    .setPos(185, 3))
-            .widget(
-                new Column().widget(
-                    new CycleButtonWidget().setLength(3)
-                        .setGetter(this::getSetupPhase)
-                        .setSetter(val -> {
-                            if (!(player instanceof EntityPlayerMP)) return;
-                            tryChangeSetupPhase(player);
-                        })
-                        .addTooltip(
-                            0,
-                            new Text(StatCollector.translateToLocal("Info_EdenGarden_Operating"))
-                                .color(Color.GREEN.dark(3)))
-                        .addTooltip(
-                            1,
-                            new Text(StatCollector.translateToLocal("Info_EdenGarden_Input"))
-                                .color(Color.YELLOW.dark(3)))
-                        .addTooltip(
-                            2,
-                            new Text(StatCollector.translateToLocal("Info_EdenGarden_Output"))
-                                .color(Color.YELLOW.dark(3)))
-                        .setTextureGetter(
-                            i -> i == 0
-                                ? new Text(StatCollector.translateToLocal("Info_EdenGarden_Operating"))
-                                    .color(Color.GREEN.dark(3))
-                                    .withFixedSize(70 - 18, 18, 15, 0)
-                                : i == 1
-                                    ? new Text(StatCollector.translateToLocal("Info_EdenGarden_Input"))
-                                        .color(Color.YELLOW.dark(3))
-                                        .withFixedSize(70 - 18, 18, 15, 0)
-                                    : new Text(StatCollector.translateToLocal("Info_EdenGarden_Output"))
-                                        .color(Color.YELLOW.dark(3))
-                                        .withFixedSize(70 - 18, 18, 15, 0))
-                        .setBackground(
-                            ModularUITextures.VANILLA_BACKGROUND,
-                            GTUITextures.OVERLAY_BUTTON_CYCLIC.withFixedSize(18, 18))
-                        .setSize(70, 18)
-                        .addTooltip(StatCollector.translateToLocal("Info_EdenGarden_SetupMode")))
-                    .widget(
-                        new CycleButtonWidget().setLength(2)
-                            .setGetter(
-                                () -> this.getMode()
-                                    .getUIIndex())
-                            .setSetter(val -> {
-                                if (!(player instanceof EntityPlayerMP)) return;
-                                tryChangeMode(player);
-                            })
-                            .addTooltip(
-                                0,
-                                new Text(StatCollector.translateToLocal("Info_EdenGarden_Disabled"))
-                                    .color(Color.RED.dark(3)))
-                            .addTooltip(
-                                1,
-                                new Text(StatCollector.translateToLocal("Info_EdenGarden_Enabled"))
-                                    .color(Color.GREEN.dark(3)))
-                            .setTextureGetter(
-                                i -> i == 0
-                                    ? new Text(StatCollector.translateToLocal("Info_EdenGarden_Disabled"))
-                                        .color(Color.RED.dark(3))
-                                        .withFixedSize(70 - 18, 18, 15, 0)
-                                    : new Text(StatCollector.translateToLocal("Info_EdenGarden_Enabled"))
-                                        .color(Color.GREEN.dark(3))
-                                        .withFixedSize(70 - 18, 18, 15, 0))
-                            .setBackground(
-                                ModularUITextures.VANILLA_BACKGROUND,
-                                GTUITextures.OVERLAY_BUTTON_CYCLIC.withFixedSize(18, 18))
-                            .setSize(70, 18)
-                            .addTooltip(StatCollector.translateToLocal("Info_EdenGarden_IC2Mode")))
-                    .widget(
-                        new CycleButtonWidget().setLength(2)
-                            .setGetter(() -> isUseNoHumidity() ? 1 : 0)
-                            .setSetter(val -> {
-                                if (!(player instanceof EntityPlayerMP)) return;
-                                this.tryChangeHumidityMode(player);
-                            })
-                            .addTooltip(
-                                0,
-                                new Text(StatCollector.translateToLocal("Info_EdenGarden_Disabled"))
-                                    .color(Color.RED.dark(3)))
-                            .addTooltip(
-                                1,
-                                new Text(StatCollector.translateToLocal("Info_EdenGarden_Enabled"))
-                                    .color(Color.GREEN.dark(3)))
-                            .setTextureGetter(
-                                i -> i == 0
-                                    ? new Text(StatCollector.translateToLocal("Info_EdenGarden_Disabled"))
-                                        .color(Color.RED.dark(3))
-                                        .withFixedSize(70 - 18, 18, 15, 0)
-                                    : new Text(StatCollector.translateToLocal("Info_EdenGarden_Enabled"))
-                                        .color(Color.GREEN.dark(3))
-                                        .withFixedSize(70 - 18, 18, 15, 0))
-                            .setBackground(
-                                ModularUITextures.VANILLA_BACKGROUND,
-                                GTUITextures.OVERLAY_BUTTON_CYCLIC.withFixedSize(18, 18))
-                            .setSize(70, 18)
-                            .addTooltip(StatCollector.translateToLocal("Info_EdenGarden_NoHumidityMode")))
-                    .setEnabled(widget -> !getBaseMetaTileEntity().isActive())
-                    .setPos(10, 30))
-            .widget(
-                new Column()
-                    .widget(
-                        new TextWidget(StatCollector.translateToLocal("Info_EdenGarden_SetupMode")).setSize(100, 18))
-                    .widget(new TextWidget(StatCollector.translateToLocal("Info_EdenGarden_IC2Mode")).setSize(100, 18))
-                    .widget(
-                        new TextWidget(StatCollector.translateToLocal("Info_EdenGarden_NoHumidityMode"))
-                            .setSize(100, 18))
-                    .setEnabled(widget -> !getBaseMetaTileEntity().isActive())
-                    .setPos(80, 30))
-            .widget(
-                new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_CROSS)
-                    .setSize(18, 18)
-                    .setPos(10, 30)
-                    .addTooltip(new Text("Can't change configuration when running !").color(Color.RED.dark(3)))
-                    .setEnabled(widget -> getBaseMetaTileEntity().isActive()));
-        return builder.build();
-    }
-
     default void tryChangeMode(EntityPlayer aPlayer) {
         if (this.getMaxProgressTime() > 0) {
-            GTUtility.sendChatTrans(aPlayer, "Info_EdenGarden_Mode_Working");
+            GTUtility.sendChatTrans(aPlayer, "gtnl.machine.eden_garden.message.mode_running");
             return;
         }
         if (!this.getStoredCrops()
             .isEmpty()) {
-            GTUtility.sendChatTrans(aPlayer, "Info_EdenGarden_Mode_HasSeeds");
+            GTUtility.sendChatTrans(aPlayer, "gtnl.machine.eden_garden.message.mode_has_seeds");
             return;
         }
         this.setMode(GreenHouseModes.getNextMode(this.getMode()));
         GTUtility.sendChatTrans(
             aPlayer,
-            "Info_EdenGarden_Mode_Change",
+            "gtnl.machine.eden_garden.message.mode_changed",
             this.getMode()
                 .getName());
     }
 
     default void tryChangeSetupPhase(EntityPlayer aPlayer) {
         if (this.getMaxProgressTime() > 0) {
-            GTUtility.sendChatTrans(aPlayer, "Info_EdenGarden_SetupPhase_Working");
+            GTUtility.sendChatTrans(aPlayer, "gtnl.machine.eden_garden.message.setup_mode_running");
             return;
         }
         int nextSetupPhase = this.getSetupPhase() + 1;
@@ -849,14 +727,16 @@ public interface IGreenHouse extends IVoidable {
         this.setMachineMode(machineModeFromSetupPhase(nextSetupPhase));
 
         String phaseKey = switch (nextSetupPhase) {
-            case 0 -> "Info_EdenGarden_Operating";
-            case 1 -> "Info_EdenGarden_Input";
-            case 2 -> "Info_EdenGarden_Output";
-            default -> "Info_EdenGarden_SetupPhase_Invalid";
+            case 0 -> "gtnl.machine.eden_garden.mode.operating";
+            case 1 -> "gtnl.machine.eden_garden.mode.input";
+            case 2 -> "gtnl.machine.eden_garden.mode.output";
+            default -> "gtnl.machine.eden_garden.message.invalid_setup_phase";
         };
 
-        GTUtility
-            .sendChatTrans(aPlayer, "Info_EdenGarden_SetupPhase_Change_Format", new ChatComponentTranslation(phaseKey));
+        GTUtility.sendChatTrans(
+            aPlayer,
+            "gtnl.machine.eden_garden.message.setup_phase_changed.format",
+            new ChatComponentTranslation(phaseKey));
     }
 
     @Deprecated
@@ -864,9 +744,9 @@ public interface IGreenHouse extends IVoidable {
         // TODO: Remove this legacy humidity toggle after greenhouse biome handling is fully CropsNH based.
         this.setUseNoHumidity(!this.isUseNoHumidity());
         if (this.isUseNoHumidity()) {
-            GTUtility.sendChatTrans(aPlayer, "Info_EdenGarden_NoHumidityMode_Enabled");
+            GTUtility.sendChatTrans(aPlayer, "gtnl.machine.eden_garden.message.no_humidity_enabled");
         } else {
-            GTUtility.sendChatTrans(aPlayer, "Info_EdenGarden_NoHumidityMode_Disabled");
+            GTUtility.sendChatTrans(aPlayer, "gtnl.machine.eden_garden.message.no_humidity_disabled");
         }
     }
 

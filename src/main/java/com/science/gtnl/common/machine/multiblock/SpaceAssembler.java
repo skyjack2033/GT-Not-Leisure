@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
@@ -13,17 +12,16 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.science.gtnl.api.IControllerUpgrade;
-import com.science.gtnl.common.gui.modularui.SpaceAssemblerGui;
+import com.science.gtnl.common.gui.modularui.multiblock.SpaceAssemblerGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
@@ -31,6 +29,7 @@ import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.RecipeUtil;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
@@ -48,12 +47,12 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gregtech.common.misc.GTStructureChannels;
 import gtnhintergalactic.recipe.IGRecipeMaps;
 import lombok.Getter;
 import lombok.Setter;
 import tectech.thing.casing.BlockGTCasingsTT;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     implements ISurvivalConstructable, IControllerUpgrade {
 
@@ -117,7 +116,7 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
 
     @Override
     public String getUpgradeButtonTooltip() {
-        return StatCollector.translateToLocal("Info_SpaceAssembler_00");
+        return StatCollector.translateToLocal("gtnl.gui.space_assembler.upgrade.title");
     }
 
     @Override
@@ -125,9 +124,9 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
         return StructureDefinition.<SpaceAssembler>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
+            .addElement('B', Casings.DimensionalInjectionCasing.asElement())
             .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSEMotor, 2))
-            .addElement('D', StructureUtility.ofBlock(sBlockCasingsTT, 2))
+            .addElement('D', Casings.ComputerHeatVent.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(SpaceAssembler.class)
@@ -142,7 +141,7 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 3))))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.AdvancedComputerCasing.asElement())))
             .build();
     }
 
@@ -228,7 +227,7 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 13);
+        return Casings.DimensionalInjectionCasing.getTextureId();
     }
 
     @Override
@@ -255,33 +254,9 @@ public class SpaceAssembler extends GTMMultiMachineBase<SpaceAssembler>
     }
 
     @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this MUI1 fallback after the upgrade window is fully ported to MUI2.
-        super.addUIWidgets(builder, buildContext);
-        createUpgradeButton(builder, buildContext);
-    }
-
-    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SpaceAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SpaceAssembler_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(11, 11, 11, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_SpaceAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

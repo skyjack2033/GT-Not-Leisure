@@ -2,13 +2,11 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings5;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -17,8 +15,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -26,14 +26,13 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
-import tectech.thing.casing.TTCasingsContainer;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class AdvancedMassFabricator extends WirelessEnergyMultiMachineBase<AdvancedMassFabricator>
     implements ISurvivalConstructable {
 
@@ -62,9 +61,9 @@ public class AdvancedMassFabricator extends WirelessEnergyMultiMachineBase<Advan
     public IStructureDefinition<AdvancedMassFabricator> getStructureDefinition() {
         return StructureDefinition.<AdvancedMassFabricator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings5, 8))
-            .addElement('B', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 8))
-            .addElement('C', StructureUtility.ofBlock(TTCasingsContainer.GodforgeCasings, 8))
+            .addElement('A', Casings.ElectrumFluxCoilBlock.asElement())
+            .addElement('B', Casings.HollowCasing.asElement())
+            .addElement('C', Casings.HarmonicPhononTransmissionConduit.asElement())
             .addElement(
                 'D',
                 buildHatchAdder(AdvancedMassFabricator.class)
@@ -79,10 +78,9 @@ public class AdvancedMassFabricator extends WirelessEnergyMultiMachineBase<Advan
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings5Misc, 3))))
-            .addElement('E', StructureUtility.ofBlock(ModBlocks.blockCasings5Misc, 15))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.ElementalConfinementShell.asElement())))
+            .addElement('E', Casings.ForceFieldGlass.asElement())
             .build();
     }
 
@@ -122,7 +120,7 @@ public class AdvancedMassFabricator extends WirelessEnergyMultiMachineBase<Advan
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.multiblockMassFabricatorRecipes;
+        return RecipeMaps.multiblockMassFabricatorRecipes;
     }
 
     @Override
@@ -150,27 +148,8 @@ public class AdvancedMassFabricator extends WirelessEnergyMultiMachineBase<Advan
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("AdvancedMassFabricatorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(13, 13, 21, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_AdvancedMassFabricator_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_AdvancedMassFabricator_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_AdvancedMassFabricator_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_AdvancedMassFabricator_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_AdvancedMassFabricator_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_AdvancedMassFabricator_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

@@ -1,13 +1,11 @@
 package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -17,15 +15,14 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -38,18 +35,18 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements ISurvivalConstructable {
 
-    private static final TranslatableText ICE_INPUT_HATCH_NAME = TranslatableText.lang("FluidIceInputHatch");
+    private static final String ICE_INPUT_HATCH_NAME = "gtnl.hatch.fluid_ice_input.name";
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String CIF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/cold_ice_freeze";
     private static final String[][] shape = StructureUtils.readStructureFromFile(CIF_STRUCTURE_FILE_PATH);
@@ -65,6 +62,11 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
 
     public ColdIceFreezer(final String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.cold_ice_freezer.name";
     }
 
     @Override
@@ -94,15 +96,15 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPostTick(aBaseMetaTileEntity, aTick);
         if (this.mStartUpCheck < 0) {
-            startRecipeProcessing();
             if (this.mMaxProgresstime > 0 && aTick % 20 == 0) {
+                startRecipeProcessing();
                 int baseAmount = 10 * GTUtility.getTier(-lEUt) * GTUtility.getTier(-lEUt);
                 if (!this.depleteInputFromRestrictedHatches(this.mFluidIceInputHatch, baseAmount)) {
                     this.causeMaintenanceIssue();
                     this.stopMachine(ShutDownReasonRegistry.outOfFluid(Materials.Water.getSolid(baseAmount)));
                 }
+                endRecipeProcessing();
             }
-            endRecipeProcessing();
         }
     }
 
@@ -110,9 +112,7 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
     public IStructureDefinition<ColdIceFreezer> getStructureDefinition() {
         return StructureDefinition.<ColdIceFreezer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement(
-                'A',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
+            .addElement('A', Casings.ReinforcedGlass.asElement())
             .addElement(
                 'B',
                 StructureUtility.ofChain(
@@ -127,18 +127,18 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility
-                        .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 1)),
+                    StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.FrostProofMachineCasing.asElement()),
                     GTStructureUtility.buildHatchAdder(ColdIceFreezer.class)
                         .adder(ColdIceFreezer::addFluidIceInputHatch)
                         .hatchId(21502)
+                        .description(() -> ICE_INPUT_HATCH_NAME)
                         .shouldReject(x -> !x.mFluidIceInputHatch.isEmpty())
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build()))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
+            .addElement('C', Casings.TungstensteelPipeCasing.asElement())
             .addElement('D', GTStructureUtility.ofFrame(Materials.Aluminium))
-            .addElement('E', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 10))
+            .addElement('E', Casings.AdvancedCryogenicCasing.asElement())
             .addElement('F', HatchElement.Muffler.newAny(TAE.getIndexFromPage(2, 10), 1))
             .build();
     }
@@ -206,7 +206,7 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings2, 1);
+        return Casings.FrostProofMachineCasing.getTextureId();
     }
 
     @Override
@@ -244,25 +244,8 @@ public class ColdIceFreezer extends MultiMachineBase<ColdIceFreezer> implements 
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ColdIceFreezerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 9, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_01"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"), 1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("FluidIceInputHatch"),
-                StatCollector.translateToLocal("Tooltip_ColdIceFreezer_Casing_00"),
-                1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

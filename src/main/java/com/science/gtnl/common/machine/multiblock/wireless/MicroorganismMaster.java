@@ -2,14 +2,12 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -18,17 +16,19 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.GameUtils;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.common.machine.multiblock.LargeIncubator;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
@@ -46,9 +46,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<MicroorganismMaster> {
 
     private static final int HORIZONTAL_OFF_SET = 14;
@@ -73,7 +72,7 @@ public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<Microorg
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 0);
+        return Casings.ChemicallyInertMachineCasing.getTextureId();
     }
 
     @Override
@@ -98,18 +97,18 @@ public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<Microorg
     public IStructureDefinition<MicroorganismMaster> getStructureDefinition() {
         return StructureDefinition.<MicroorganismMaster>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
-            .addElement('B', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 18))
+            .addElement('A', Casings.PTFEPipeCasing.asElement())
+            .addElement('B', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('C', GTNLCasings.HyperCore.asElement())
             .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockReinforced, 2))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 12))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 13))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 6))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 10))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 10))
-            .addElement('K', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 11))
-            .addElement('L', StructureUtility.ofBlock(sBlockCasingsTT, 4))
+            .addElement('E', Casings.TungstensteelTurbineCasing.asElement())
+            .addElement('F', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('G', Casings.HighEnergyUltravioletEmitterCasing.asElement())
+            .addElement('H', Casings.NeutroniumCasing.asElement())
+            .addElement('I', Casings.InertFiltrationCasing.asElement())
+            .addElement('J', Casings.StainlessSteelTurbineCasing.asElement())
+            .addElement('K', Casings.MolecularContainmentCasing.asElement())
+            .addElement('L', Casings.MolecularCasing.asElement())
             .addElement(
                 'M',
                 GTStructureUtility.buildHatchAdder(MicroorganismMaster.class)
@@ -124,17 +123,14 @@ public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<Microorg
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.ChemicallyInertMachineCasing.asElement())))
             .addElement('N', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
+            .addElement('O', Casings.ActiveNeutroniumCasing.asElement())
             .addElement(
                 'P',
-                StructureUtility.ofBlockAnyMeta(
-                    Mods.EtFuturumRequiem.isModLoaded() ? GameRegistry.findBlock(Mods.EtFuturumRequiem.ID, "sponge")
-                        : Blocks.sponge,
-                    1))
+                StructureUtility
+                    .ofBlockAnyMeta(GameUtils.blockOr(Mods.EtFuturumRequiem.ID, "sponge", Blocks.sponge), 1))
             .addElement('Q', GTStructureUtility.ofFrame(Materials.Naquadria))
             .build();
     }
@@ -222,30 +218,8 @@ public class MicroorganismMaster extends WirelessEnergyMultiMachineBase<Microorg
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MicroorganismMasterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(29, 25, 30, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MicroorganismMaster_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

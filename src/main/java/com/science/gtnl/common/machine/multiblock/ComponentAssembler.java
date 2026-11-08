@@ -1,16 +1,13 @@
 package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings3Misc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,14 +19,14 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.enums.GTNLStructureChannels;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import goodgenerator.loader.Loaders;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
@@ -37,6 +34,7 @@ import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoltageIndex;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.recipe.RecipeMap;
@@ -51,7 +49,10 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> implements ISurvivalConstructable {
 
     private static final String CA_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/component_assembler";
@@ -62,10 +63,8 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
     private static final int DEPTH_OFF_SET = 0;
     public static final List<Pair<Block, Integer>> COMPONENT_CASING_VARIANTS = createComponentCasingVariants();
 
-    public int mCasingTier;
-
     public static List<Pair<Block, Integer>> createComponentCasingVariants() {
-        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(8);
+        List<Pair<Block, Integer>> casingVariants = new ObjectArrayList<>(8);
         for (int tier = 0; tier < 8; tier++) {
             casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
         }
@@ -78,6 +77,11 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
 
     public ComponentAssembler(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.component_assembler.name";
     }
 
     @Override
@@ -98,7 +102,7 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
             .addElement(
                 'B',
-                GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING.use(
+                GTStructureChannels.COMPONENT_ASSEMBLYLINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         (block, meta) -> block == Loaders.componentAssemblylineCasing ? meta : -1,
                         COMPONENT_CASING_VARIANTS,
@@ -113,19 +117,17 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
                         HatchElement.InputHatch,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy))
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 6))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.SolidSteelMachineCasing.asElement())))
+            .addElement('D', Casings.AssemblyLineCasing.asElement())
+            .addElement('E', Casings.ProcessorMachineCasing.asElement())
+            .addElement('F', Casings.GrateMachineCasing.asElement())
             .addElement('G', GTStructureUtility.ofFrame(Materials.Steel))
-            .addElement('H', StructureUtility.ofBlock(blockCasings3Misc, 2))
+            .addElement('H', Casings.MultiUseCasing.asElement())
             .build();
     }
 
@@ -162,7 +164,7 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
         checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 50);
         checkHatchExact(errors, HatchElement.Maintenance, 1);
-        checkHatchMax(errors, HatchElement.Energy, 2);
+        checkHatchMax(errors, HatchElement.Energy.or(HatchElement.ExoticEnergy), 2);
         if (mCasingTier >= 8) {
             errors.add(StructureErrorRegistry.UNKNOWN_TIER);
         }
@@ -222,7 +224,7 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
+        return Casings.SolidSteelMachineCasing.getTextureId();
     }
 
     @Override
@@ -258,32 +260,17 @@ public class ComponentAssembler extends MultiMachineBase<ComponentAssembler> imp
         String[] origin = super.getInfoData();
         String[] ret = new String[origin.length + 1];
         System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
+        ret[origin.length] = IGregTechDeviceInformation.encode(
+            "gtnl.machine.component_assembly_line.tier",
+            mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1]
+                : IGregTechDeviceInformation.translatable("gtnl.machine.component_assembly_line.tier.none"));
         return ret;
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ComponentAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ComponentAssembler_07"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 5, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ComponentAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

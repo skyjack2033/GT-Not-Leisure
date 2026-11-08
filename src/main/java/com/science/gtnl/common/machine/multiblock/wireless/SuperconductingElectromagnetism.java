@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +10,6 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,15 +18,16 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import goodgenerator.loader.Loaders;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -41,10 +40,10 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gregtech.common.misc.GTStructureChannels;
 import gtnhlanth.common.register.LanthItemList;
 import tectech.thing.casing.BlockGTCasingsTT;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SuperconductingElectromagnetism extends WirelessEnergyMultiMachineBase<SuperconductingElectromagnetism> {
 
     private static final int MACHINEMODE_ELECTROMAGNETIC = 0;
@@ -77,7 +76,7 @@ public class SuperconductingElectromagnetism extends WirelessEnergyMultiMachineB
             .addElement('A', StructureUtility.ofBlock(Loaders.speedingPipe, 0))
             .addElement('B', StructureUtility.ofBlock(Loaders.compactFusionCoil, 0))
             .addElement('C', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('D', StructureUtility.ofBlock(BlockLoader.metaCasing, 8))
+            .addElement('D', GTNLCasings.MolybdenumDisilicideCoil.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(SuperconductingElectromagnetism.class)
@@ -92,8 +91,7 @@ public class SuperconductingElectromagnetism extends WirelessEnergyMultiMachineB
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 4))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.MolecularCasing.asElement())))
             .addElement('F', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
             .build();
     }
@@ -167,28 +165,8 @@ public class SuperconductingElectromagnetism extends WirelessEnergyMultiMachineB
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SuperconductingElectromagnetismRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SuperconductingElectromagnetism_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 21, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_SuperconductingElectromagnetism_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_SuperconductingElectromagnetism_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SuperconductingElectromagnetism_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_SuperconductingElectromagnetism_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SuperconductingElectromagnetism_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -200,8 +178,8 @@ public class SuperconductingElectromagnetism extends WirelessEnergyMultiMachineB
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("SuperconductingElectromagnetism_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.superconducting_electromagnetism.mode." + machineMode;
     }
 
     @Override
@@ -209,14 +187,6 @@ public class SuperconductingElectromagnetism extends WirelessEnergyMultiMachineB
         return new GTNLMultiBlockBaseGui<>(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
     }
 
     @Override
@@ -234,7 +204,7 @@ public class SuperconductingElectromagnetism extends WirelessEnergyMultiMachineB
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "SuperconductingElectromagnetism_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override

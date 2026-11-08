@@ -9,7 +9,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -18,19 +17,19 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -43,10 +42,9 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
 
     private static final int HORIZONTAL_OFF_SET = 15;
@@ -71,10 +69,10 @@ public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
     public IStructureDefinition<MegaBathTank> getStructureDefinition() {
         return StructureDefinition.<MegaBathTank>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 1))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 12))
-            .addElement('D', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+            .addElement('A', Casings.LaserContainmentCasing.asElement())
+            .addElement('B', Casings.FilterMachineCasing.asElement())
+            .addElement('C', GTNLCasings.TungstensteelGearbox.asElement())
+            .addElement('D', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(MegaBathTank.class)
@@ -91,12 +89,12 @@ public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 5))))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 9))
-            .addElement('G', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 4))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
-            .addElement('I', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 0))
+                            Casings.ReinforcedSterileWaterPlantCasing.asElement())))
+            .addElement('F', Casings.ReactiveGasContainmentCasing.asElement())
+            .addElement('G', Casings.WashPlantCasing.asElement())
+            .addElement('H', Casings.PTFEPipeCasing.asElement())
+            .addElement('I', GTNLCasings.FusionGlass.asElement())
+            .addElement('J', Casings.ChemicalGradeGlass.asElement())
             .addElement('K', GTStructureUtility.ofFrame(Materials.DarkSteel))
             .addElement('L', GTStructureUtility.ofFrame(Materials.Naquadria))
             .build();
@@ -145,7 +143,7 @@ public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
     public RecipeMap<?> getRecipeMap() {
         switch (machineMode) {
             case MACHINEMODE_SIMPLEWASH -> {
-                return GTPPRecipeMaps.simpleWasherRecipes;
+                return RecipeMaps.simpleWasherRecipes;
             }
             case MACHINEMODE_CHEMBATH -> {
                 return RecipeMaps.chemicalBathRecipes;
@@ -160,12 +158,12 @@ public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
     @Override
     public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
         return Arrays
-            .asList(RecipeMaps.oreWasherRecipes, GTPPRecipeMaps.simpleWasherRecipes, RecipeMaps.chemicalBathRecipes);
+            .asList(RecipeMaps.oreWasherRecipes, RecipeMaps.simpleWasherRecipes, RecipeMaps.chemicalBathRecipes);
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 5);
+        return Casings.ReinforcedSterileWaterPlantCasing.getTextureId();
     }
 
     @Override
@@ -188,27 +186,8 @@ public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaBathTankRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(31, 13, 31, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaBathTank_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaBathTank_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaBathTank_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaBathTank_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaBathTank_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MegaBathTank_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -219,15 +198,6 @@ public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_SIMPLEWASHER,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_CHEMBATH);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_SIMPLEWASHER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_CHEMBATH);
     }
 
     @Override
@@ -246,12 +216,12 @@ public class MegaBathTank extends WirelessEnergyMultiMachineBase<MegaBathTank> {
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 3;
-        GTUtility.sendChatTrans(aPlayer, "MegaBathTank_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("MegaBathTank_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.mega_bath_tank.mode." + machineMode;
     }
 
     @SideOnly(Side.CLIENT)

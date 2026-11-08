@@ -10,10 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.utils.BucketHandler;
+import com.science.gtnl.common.item.GTNLCreativeTabs;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -26,24 +23,23 @@ public class GTNLItemBucket extends ItemBucket {
         bucket.init();
 
         FluidContainerRegistry.registerFluidContainer(fluid, new ItemStack(bucket), new ItemStack(Items.bucket));
-        BucketHandler.INSTANCE.registerFluid(fluid.getBlock(), bucket);
+        BucketHandler.registerFluid(fluid.getBlock(), bucket);
 
         return bucket;
     }
 
-    private String fluidName;
+    public final String fluidName;
 
     public GTNLItemBucket(Block block, String fluidName) {
         super(block);
         this.fluidName = fluidName;
         setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
         setContainerItem(Items.bucket);
-        String str = StringUtils.capitalize(fluidName) + "Bucket";
-        setUnlocalizedName(str);
-        setTextureName(RESOURCE_ROOT_ID + ":" + str);
+        setUnlocalizedName("gtnl." + fluidName + "_bucket");
+        setTextureName(RESOURCE_ROOT_ID + ":" + fluidName + "_bucket");
     }
 
     public void init() {
-        GameRegistry.registerItem(this, StringUtils.capitalize(fluidName) + "Bucket");
+        GameRegistry.registerItem(this, fluidName + "_bucket");
     }
 }

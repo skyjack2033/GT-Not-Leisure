@@ -1,12 +1,8 @@
 package com.science.gtnl.utils.recipes;
 
 import java.util.Arrays;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,6 +32,8 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SingleRecipeCheck;
 import gregtech.api.util.GTRecipe;
 import gregtech.common.tileentities.machines.IDualInputInventoryWithPattern;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 
 /**
  * Logic class to calculate result of recipe check from inputs, based on recipemap.
@@ -47,21 +45,7 @@ public class GTNLProcessingLogic extends ProcessingLogic {
 
     public double extraSpeedBoost = 1.0;
     public int maxOverclocks = Integer.MAX_VALUE;
-
-    /**
-     * The {@link IDualInputInventoryWithPattern} that has any possible recipe found in the last call of
-     * {@link #tryCachePossibleRecipesFromPattern(IDualInputInventoryWithPattern)}.
-     */
-    public IDualInputInventoryWithPattern activeDualInv;
-    /**
-     * The cache keyed by the {@link IDualInputInventoryWithPattern}, storing the possible recipes of the inv.
-     * <p>
-     * The entries can be removed by {@link #removeInventoryRecipeCache(IDualInputInventoryWithPattern)}, and it
-     * requires the hatches to actively call it when the inventory is changed (like the pattern is changed).
-     * <p>
-     * It will also be fully cleared when the {@link #getCurrentRecipeMap()} is not same to the last.
-     */
-    public Map<IDualInputInventoryWithPattern, Set<GTRecipe>> dualInvWithPatternToRecipeCache = new WeakHashMap<>();
+    protected GTRecipe appliedRecipe;
 
     public GTNLProcessingLogic() {}
 
@@ -76,6 +60,8 @@ public class GTNLProcessingLogic extends ProcessingLogic {
         this.specialSlotItem = processingLogic.getSpecialSlotItem();
         this.maxParallel = processingLogic.getMaxParallel();
         this.maxParallelSupplier = processingLogic.getMaxParallelSupplier();
+        this.euModSupplier = processingLogic.getEuModSupplier();
+        this.speedBoostSupplier = processingLogic.getSpeedBoostSupplier();
         this.batchSize = processingLogic.getBatchSize();
         this.recipeMapSupplier = processingLogic.getRecipeMapSupplier();
         this.euModifier = processingLogic.getEuModifier();
@@ -88,6 +74,9 @@ public class GTNLProcessingLogic extends ProcessingLogic {
         this.overClockTimeReduction = processingLogic.getOverClockTimeReduction();
         this.overClockPowerIncrease = processingLogic.getOverClockPowerIncrease();
         this.amperageOC = processingLogic.getAmperageOC();
+        this.recipeCaching = processingLogic.getRecipeCaching();
+        this.activeDualInv = processingLogic.getActiveDualInv();
+        this.dualInvWithPatternToRecipeCache = processingLogic.getDualInvWithPatternToRecipeCache();
 
         this.outputItems = processingLogic.getOutputItems();
         this.outputFluids = processingLogic.getOutputFluids();
@@ -182,7 +171,8 @@ public class GTNLProcessingLogic extends ProcessingLogic {
         GTDualInputPattern inputs = inv.getPatternInputs();
         setInputItems(prepareCatalyst(deduplicateInputItems(inputs.inputItems)));
         setInputFluids(deduplicateInputFluids(inputs.inputFluid));
-        Set<GTRecipe> recipes = findRecipeMatches(recipeMap).collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<GTRecipe> recipes = findRecipeMatches(recipeMap)
+            .collect(Collectors.toCollection(ObjectLinkedOpenHashSet::new));
 
         // reset the status
         setInputItems();
@@ -247,8 +237,20 @@ public class GTNLProcessingLogic extends ProcessingLogic {
     }
 
     @Override
+    public GTNLProcessingLogic setEuModifierSupplier(Supplier<Double> supplier) {
+        this.euModSupplier = supplier;
+        return this;
+    }
+
+    @Override
     public GTNLProcessingLogic setSpeedBonus(double speedModifier) {
         this.speedBoost = speedModifier;
+        return this;
+    }
+
+    @Override
+    public GTNLProcessingLogic setSpeedBonusSupplier(Supplier<Double> supplier) {
+        this.speedBoostSupplier = supplier;
         return this;
     }
 
@@ -335,6 +337,12 @@ public class GTNLProcessingLogic extends ProcessingLogic {
         return this;
     }
 
+    @Override
+    public GTNLProcessingLogic noRecipeCaching() {
+        this.recipeCaching = false;
+        return this;
+    }
+
     // endregion
 
     // region Overwrite calculated result
@@ -391,6 +399,7 @@ public class GTNLProcessingLogic extends ProcessingLogic {
         this.duration = 0;
         this.calculatedParallels = 0;
         this.activeDualInv = null;
+        this.appliedRecipe = null;
         return this;
     }
 
@@ -567,6 +576,7 @@ public class GTNLProcessingLogic extends ProcessingLogic {
             return hookResult;
         }
 
+        appliedRecipe = recipe;
         outputItems = helper.getItemOutputs();
         outputFluids = helper.getFluidOutputs();
 
@@ -704,7 +714,7 @@ public class GTNLProcessingLogic extends ProcessingLogic {
             }
             for (int j = i + 1; j < inputs.length; j++) {
                 if (current == inputs[j]) {
-                    return copyUniqueItemInputs(inputs, new IdentityHashMap<>(inputs.length));
+                    return copyUniqueItemInputs(inputs, new ReferenceOpenHashSet<>(inputs.length));
                 }
             }
         }
@@ -712,24 +722,24 @@ public class GTNLProcessingLogic extends ProcessingLogic {
     }
 
     private ItemStack[] deduplicateItemInputsWithIdentityMap(ItemStack[] inputs) {
-        IdentityHashMap<ItemStack, Boolean> seenItems = new IdentityHashMap<>(inputs.length);
+        ReferenceOpenHashSet<ItemStack> seenItems = new ReferenceOpenHashSet<>(inputs.length);
         for (ItemStack input : inputs) {
             if (input == null) {
                 continue;
             }
-            if (seenItems.put(input, Boolean.TRUE) != null) {
+            if (!seenItems.add(input)) {
                 return copyUniqueItemInputs(inputs, seenItems);
             }
         }
         return inputs;
     }
 
-    private ItemStack[] copyUniqueItemInputs(ItemStack[] inputs, IdentityHashMap<ItemStack, Boolean> seenItems) {
+    private ItemStack[] copyUniqueItemInputs(ItemStack[] inputs, ReferenceOpenHashSet<ItemStack> seenItems) {
         ItemStack[] uniqueItems = new ItemStack[inputs.length];
         int uniqueCount = 0;
         seenItems.clear();
         for (ItemStack input : inputs) {
-            if (input == null || seenItems.put(input, Boolean.TRUE) != null) {
+            if (input == null || !seenItems.add(input)) {
                 continue;
             }
             uniqueItems[uniqueCount++] = input;
@@ -745,7 +755,7 @@ public class GTNLProcessingLogic extends ProcessingLogic {
             }
             for (int j = i + 1; j < inputs.length; j++) {
                 if (current == inputs[j]) {
-                    return copyUniqueFluidInputs(inputs, new IdentityHashMap<>(inputs.length));
+                    return copyUniqueFluidInputs(inputs, new ReferenceOpenHashSet<>(inputs.length));
                 }
             }
         }
@@ -753,24 +763,24 @@ public class GTNLProcessingLogic extends ProcessingLogic {
     }
 
     private FluidStack[] deduplicateFluidInputsWithIdentityMap(FluidStack[] inputs) {
-        IdentityHashMap<FluidStack, Boolean> seenFluids = new IdentityHashMap<>(inputs.length);
+        ReferenceOpenHashSet<FluidStack> seenFluids = new ReferenceOpenHashSet<>(inputs.length);
         for (FluidStack input : inputs) {
             if (input == null) {
                 continue;
             }
-            if (seenFluids.put(input, Boolean.TRUE) != null) {
+            if (!seenFluids.add(input)) {
                 return copyUniqueFluidInputs(inputs, seenFluids);
             }
         }
         return inputs;
     }
 
-    private FluidStack[] copyUniqueFluidInputs(FluidStack[] inputs, IdentityHashMap<FluidStack, Boolean> seenFluids) {
+    private FluidStack[] copyUniqueFluidInputs(FluidStack[] inputs, ReferenceOpenHashSet<FluidStack> seenFluids) {
         FluidStack[] uniqueFluids = new FluidStack[inputs.length];
         int uniqueCount = 0;
         seenFluids.clear();
         for (FluidStack input : inputs) {
-            if (input == null || seenFluids.put(input, Boolean.TRUE) != null) {
+            if (input == null || !seenFluids.add(input)) {
                 continue;
             }
             uniqueFluids[uniqueCount++] = input;
@@ -896,6 +906,10 @@ public class GTNLProcessingLogic extends ProcessingLogic {
     // Cache
     public RecipeMap<?> getLastRecipeMap() {
         return lastRecipeMap;
+    }
+
+    public GTRecipe getAppliedRecipe() {
+        return appliedRecipe;
     }
 
     public GTRecipe getLastRecipe() {

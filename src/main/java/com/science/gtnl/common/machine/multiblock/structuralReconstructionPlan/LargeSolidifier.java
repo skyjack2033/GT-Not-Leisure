@@ -2,16 +2,13 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -24,10 +21,12 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.HumongousSolidifierHatch;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -47,7 +46,10 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.tileentities.machines.IDualInputInventoryWithPattern;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSolidifier;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSolidifier extends GTMMultiMachineBase<LargeSolidifier> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -66,10 +68,15 @@ public class LargeSolidifier extends GTMMultiMachineBase<LargeSolidifier> implem
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_solidifier.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeSolidifier> getStructureDefinition() {
         return StructureDefinition.<LargeSolidifier>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings2, 13))
+            .addElement('A', Casings.SteelPipeCasing.asElement())
             .addElement(
                 'B',
                 buildHatchAdder(LargeSolidifier.class).casingIndex(getCasingTextureID())
@@ -83,8 +90,7 @@ public class LargeSolidifier extends GTMMultiMachineBase<LargeSolidifier> implem
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 4))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.WashPlantCasing.asElement())))
             .build();
     }
 
@@ -144,7 +150,7 @@ public class LargeSolidifier extends GTMMultiMachineBase<LargeSolidifier> implem
                 setInputItems(inputs.inputItems);
                 setInputFluids(inputs.inputFluid);
                 Set<GTRecipe> recipes = findRecipeMatches(RecipeMaps.fluidSolidifierRecipes)
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toCollection(ObjectOpenHashSet::new));
                 if (!recipes.isEmpty()) {
                     dualInvWithPatternToRecipeCache.put(inv, recipes);
                     activeDualInv = inv;
@@ -238,20 +244,8 @@ public class LargeSolidifier extends GTMMultiMachineBase<LargeSolidifier> implem
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSolidifierRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSolidifier_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 4, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeSolidifier_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeSolidifier_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSolidifier_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSolidifier_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeSolidifier_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeSolidifier_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

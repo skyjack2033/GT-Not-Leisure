@@ -3,9 +3,7 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static goodgenerator.loader.Loaders.compactFusionCoil;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -20,34 +18,31 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.science.gtnl.api.IControllerUpgrade;
-import com.science.gtnl.common.gui.GTNLMui1Textures;
-import com.science.gtnl.common.gui.modularui.GTNLControllerUpgradeGui;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.gui.modularui.multiblock.GTNLControllerUpgradeGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.enums.GTNLStructureChannels;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import goodgenerator.loader.Loaders;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.modularui2.GTGuiTextures;
@@ -64,9 +59,11 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<EngravingLaserPlant>
     implements IControllerUpgrade {
 
@@ -94,8 +91,6 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     @Setter
     public boolean upgradeConsumed = false;
 
-    public int mCasingTier;
-
     public EngravingLaserPlant(String aName) {
         super(aName);
     }
@@ -110,7 +105,7 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     }
 
     public static List<Pair<Block, Integer>> createComponentCasingVariants() {
-        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(13);
+        List<Pair<Block, Integer>> casingVariants = new ObjectArrayList<>(13);
         for (int tier = 0; tier < 13; tier++) {
             casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
         }
@@ -133,9 +128,9 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     public IStructureDefinition<EngravingLaserPlant> getStructureDefinition() {
         return StructureDefinition.<EngravingLaserPlant>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 8))
-            .addElement('B', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 9))
+            .addElement('A', Casings.NeutroniumStabilizationCasing.asElement())
+            .addElement('B', Casings.HighPowerCasing.asElement())
+            .addElement('C', Casings.HermeticCasing9.asElement())
             .addElement(
                 'D',
                 GTStructureUtility.buildHatchAdder(EngravingLaserPlant.class)
@@ -152,22 +147,22 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 12))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 1))
-            .addElement('G', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
+            .addElement('E', Casings.ReinforcedPhotolithographicFrameworkCasing.asElement())
+            .addElement('F', Casings.AdvancedFilterCasing.asElement())
+            .addElement('G', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('H', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement('I', StructureUtility.ofBlock(compactFusionCoil, 2))
             .addElement(
                 'J',
-                GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING.use(
+                GTStructureChannels.COMPONENT_ASSEMBLYLINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         (block, meta) -> block == Loaders.componentAssemblylineCasing ? meta : -1,
                         COMPONENT_CASING_VARIANTS,
                         -2,
                         (t, meta) -> t.mCasingTier = meta,
                         t -> t.mCasingTier)))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
+            .addElement('K', Casings.ExtremeDensitySpaceBendingCasing.asElement())
             .addElement('L', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
             .addElement('M', GTStructureUtility.ofFrame(Materials.Neutronium))
             .build();
@@ -221,6 +216,11 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     }
 
     @Override
+    protected boolean appliesMachineVoltageLimit() {
+        return true;
+    }
+
+    @Override
     public long getMachineVoltageLimit() {
         if (mCasingTier < 0) return 0;
         if (wirelessMode) {
@@ -268,48 +268,25 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "EngravingLaserPlant_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("EngravingLaserPlant_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.engraving_laser_plant.mode." + machineMode;
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("EngravingLaserPlantRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(21, 12, 22, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_EngravingLaserPlant_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
@@ -335,8 +312,10 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
         String[] origin = super.getInfoData();
         String[] ret = new String[origin.length + 1];
         System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
+        ret[origin.length] = IGregTechDeviceInformation.encode(
+            "gtnl.machine.component_assembly_line.tier",
+            mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1]
+                : IGregTechDeviceInformation.translatable("gtnl.machine.component_assembly_line.tier.none"));
         return ret;
     }
 
@@ -345,14 +324,6 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
         return new GTNLControllerUpgradeGui<>(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_SLICING);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Engraving Laser Plant custom GUI is fully ported to mui2.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTNLMui1Textures.OVERLAY_BUTTON_MACHINEMODE_SLICING);
     }
 
     @Override
@@ -378,21 +349,13 @@ public class EngravingLaserPlant extends WirelessEnergyMultiMachineBase<Engravin
     }
 
     @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the Engraving Laser Plant upgrade GUI is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        createUpgradeButton(builder, buildContext);
-    }
-
-    @Override
     public ItemStack[] getUpgradeRequiredItems() {
         return REQUIRED_ITEMS;
     }
 
     @Override
     public String getUpgradeButtonTooltip() {
-        return StatCollector.translateToLocal("Info_EngravingLaserPlant_00");
+        return StatCollector.translateToLocal("gtnl.gui.engraving_laser_plant.precision_laser_engraver_upgrade");
     }
 
     @Override

@@ -21,7 +21,10 @@ import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
+import com.cleanroommc.modularui.factory.GuiFactories;
+import com.gtnllib.utils.GameUtils;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.block.blocks.tile.TileEntityMultiEssentiaJar;
 import com.science.gtnl.common.packet.GetTileEntityNBTRequestPacket;
 import com.science.gtnl.common.packet.RequestGameProfilePacket;
 import com.science.gtnl.utils.item.ItemUtils;
@@ -29,6 +32,7 @@ import com.science.gtnl.utils.item.ItemUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.interfaces.item.IPickBlockHandler;
+import gregtech.api.items.MetaBaseItem;
 import gregtech.crossmod.backhand.Backhand;
 
 @SideOnly(Side.CLIENT)
@@ -46,7 +50,16 @@ public class ClientUtils {
         Minecraft.getMinecraft().ingameGUI.func_110326_a(component.getFormattedText(), true);
     }
 
+    public static void showSubtitleWithSuffix(String messageKey, String suffix) {
+        IChatComponent component = new ChatComponentTranslation(messageKey);
+        component.setChatStyle(new ChatStyle().setColor(EnumChatFormatting.WHITE));
+        Minecraft.getMinecraft().ingameGUI.func_110326_a(component.getFormattedText() + suffix, true);
+    }
+
     public static boolean onBeforePickBlock(EntityPlayer playerMP, World world, boolean useAE) {
+        if (tryOpenMultiEssentiaJarBlock(playerMP, world)) {
+            return true;
+        }
         if (tryHandlePickBlockHandler(playerMP)) {
             return true;
         }
@@ -64,20 +77,55 @@ public class ClientUtils {
         return false;
     }
 
+    private static boolean tryOpenMultiEssentiaJarBlock(EntityPlayer player, World world) {
+        if (player.capabilities.isCreativeMode) return false;
+
+        MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
+
+        if (target == null || target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
+            return false;
+        }
+
+        TileEntity tile = world.getTileEntity(target.blockX, target.blockY, target.blockZ);
+
+        if (!(tile instanceof TileEntityMultiEssentiaJar jar)) {
+            return false;
+        }
+
+        // 与方块右击打开 GUI 的规则保持一致：
+        // 有标签或空罐时不拦截，放行原版 pick block。
+        if (jar.hasFilterLabel() || jar.getStoredTypeCount() <= 0) {
+            return false;
+        }
+
+        // 请求服务端打开方块罐 GUI，MUI2 自带该客户端→服务端打开机制
+        GuiFactories.tileEntity()
+            .openClient(target.blockX, target.blockY, target.blockZ);
+
+        return true;
+    }
+
     private static boolean tryHandlePickBlockHandler(EntityPlayer player) {
         ItemStack mainHand = player.getCurrentEquippedItem();
-        if (mainHand != null && mainHand.getItem() instanceof IPickBlockHandler handler
-            && handler.onPickBlock(mainHand, player)) {
+        if (tryHandlePickBlockStack(mainHand, player)) {
             return true;
         }
 
         ItemStack offHand = Backhand.getOffhandItem(player);
-        return offHand != null && offHand.getItem() instanceof IPickBlockHandler handler
-            && handler.onPickBlock(offHand, player);
+        return tryHandlePickBlockStack(offHand, player);
+    }
+
+    private static boolean tryHandlePickBlockStack(ItemStack stack, EntityPlayer player) {
+        if (stack == null) return false;
+        Item item = stack.getItem();
+        if (item instanceof IPickBlockHandler handler) {
+            return handler.onPickBlock(stack, player);
+        }
+        return item instanceof MetaBaseItem metaBaseItem && metaBaseItem.onMiddleClick(stack, player);
     }
 
     public static boolean onPickEntity(EntityPlayer player, double range, boolean useAE) {
-        MovingObjectPosition target = Utils.rayTrace(player, false, true, true, range);
+        MovingObjectPosition target = GameUtils.rayTrace(player, false, true, true, range);
         if (target == null || target.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
             return false;
         }
@@ -110,7 +158,7 @@ public class ClientUtils {
     }
 
     public static boolean onPickBlockNBTRange(EntityPlayer player, World world, double reachDistance, boolean useAE) {
-        MovingObjectPosition target = Utils.rayTraceBlock(player, reachDistance);
+        MovingObjectPosition target = GameUtils.rayTraceBlock(player, reachDistance);
         if (target == null || target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return false;
 
         int x = target.blockX;
@@ -144,7 +192,7 @@ public class ClientUtils {
     }
 
     public static boolean onPickBlockRange(EntityPlayer player, World world, double reachDistance, boolean useAE) {
-        MovingObjectPosition target = Utils.rayTraceBlock(player, reachDistance);
+        MovingObjectPosition target = GameUtils.rayTraceBlock(player, reachDistance);
 
         if (target == null || target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
             return false;

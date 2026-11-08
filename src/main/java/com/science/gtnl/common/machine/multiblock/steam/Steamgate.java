@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -18,7 +17,8 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.machine.multiMachineBase.EnhancedMultiMachineBase;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
@@ -27,12 +27,12 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.BaseMetaTileEntity;
-import gregtech.api.metatileentity.implementations.MTEEnhancedMultiBlockBase;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.util.MultiblockTooltipBuilder;
 
-public class Steamgate extends MTEEnhancedMultiBlockBase<Steamgate> implements ISurvivalConstructable {
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
+public class Steamgate extends EnhancedMultiMachineBase<Steamgate> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String SG_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/steamgate";
@@ -53,11 +53,16 @@ public class Steamgate extends MTEEnhancedMultiBlockBase<Steamgate> implements I
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.steamgate.name";
+    }
+
+    @Override
     public IStructureDefinition<Steamgate> getStructureDefinition() {
         return StructureDefinition.<Steamgate>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 21))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 22))
+            .addElement('A', GTNLCasings.SteamgateRingBlock.asElement())
+            .addElement('B', GTNLCasings.SteamgateChevronBlock.asElement())
             .build();
     }
 
@@ -98,18 +103,6 @@ public class Steamgate extends MTEEnhancedMultiBlockBase<Steamgate> implements I
 
         }
         return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(14870) };
-    }
-
-    @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addInfo(StatCollector.translateToLocal("Tooltip_Steamgate_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_Steamgate_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_Steamgate_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_Steamgate_03"))
-            .beginStructureBlock(9, 9, 1, true)
-            .toolTipFinisher();
-        return tt;
     }
 
     @Override
@@ -178,8 +171,7 @@ public class Steamgate extends MTEEnhancedMultiBlockBase<Steamgate> implements I
             tag.setInteger("z", aBaseMetaTileEntity.getZCoord());
 
             device.stackTagCompound = tag;
-            aPlayer
-                .addChatMessage(new ChatComponentTranslation(StatCollector.translateToLocal("Tooltip_Steamgate_04")));
+            aPlayer.addChatMessage(new ChatComponentTranslation("gtnl.machine.steamgate.message.saved"));
         }
     }
 
@@ -217,9 +209,9 @@ public class Steamgate extends MTEEnhancedMultiBlockBase<Steamgate> implements I
         // Try to link, and report the result back to the player.
         boolean result = trySetControllerFromCoord(x, y, z);
         if (result) {
-            aPlayer.addChatMessage(new ChatComponentTranslation("Tooltip_Steamgate_05"));
+            aPlayer.addChatMessage(new ChatComponentTranslation("gtnl.machine.steamgate.message.linked"));
         } else {
-            aPlayer.addChatMessage(new ChatComponentTranslation("Tooltip_Steamgate_06"));
+            aPlayer.addChatMessage(new ChatComponentTranslation("gtnl.machine.steamgate.message.link_failed"));
         }
 
     }

@@ -8,7 +8,6 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,15 +20,16 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.compat.extrautilities.ExtraUtilitiesContent;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLStructureChannels;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.INEIPreviewModifier;
 import gregtech.api.interfaces.ITexture;
@@ -41,6 +41,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LapotronChip extends MultiMachineBase<LapotronChip>
     implements ISurvivalConstructable, INEIPreviewModifier {
 
@@ -64,6 +66,11 @@ public class LapotronChip extends MultiMachineBase<LapotronChip>
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.lapotron_chip.name";
+    }
+
+    @Override
     public void onPreviewConstruct(@NotNull ItemStack trigger) {
         if (!GTNLStructureChannels.STRUCTURE_RENDER.hasValue(trigger)) return;
         buildPiece(STRUCTURE_PIECE_MAIN, trigger, false, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET);
@@ -79,12 +86,12 @@ public class LapotronChip extends MultiMachineBase<LapotronChip>
                 GTStructureChannels.TIER_MACHINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         LapotronChip::getLapisCaelestisTier,
-                        Mods.ExtraUtilities.isModLoaded() ? getGreenScreenVariants() : getGlass(),
+                        getGreenScreenVariants(),
                         -1,
                         (t, m) -> t.tierLapisCaelestis = m,
                         t -> t.tierLapisCaelestis)))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 7))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 11))
+            .addElement('C', Casings.StabilizedNaquadahWaterPlantCasing.asElement())
+            .addElement('D', Casings.HeatProofMachineCasing.asElement())
             .addElement(
                 'E',
                 buildHatchAdder(LapotronChip.class)
@@ -93,16 +100,14 @@ public class LapotronChip extends MultiMachineBase<LapotronChip>
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
                         HatchElement.InputHatch,
-                        HatchElement.Maintenance,
                         HatchElement.Energy,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy))
-                    .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10))
+                    .casingIndex(Casings.RadiantNaquadahAlloyCasing.getTextureId())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
-            .addElement('F', StructureUtility.ofBlock(BlockLoader.metaBlockGlow, 0))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
+            .addElement('F', GTNLCasings.FortifyGlowstone.asElement())
             .addElement(
                 'G',
                 GTStructureChannels.STRUCTURE_HEIGHT.use(
@@ -121,7 +126,7 @@ public class LapotronChip extends MultiMachineBase<LapotronChip>
                         -1,
                         (t, m) -> t.tierGlass2 = m,
                         t -> t.tierGlass2)))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 15))
+            .addElement('I', Casings.SuperconductingCoilBlock.asElement())
             .addElement('K', StructureUtility.ofBlockAnyMeta(Blocks.beacon))
             .build();
     }
@@ -185,26 +190,13 @@ public class LapotronChip extends MultiMachineBase<LapotronChip>
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11);
+        return Casings.HeatProofMachineCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LapotronChipRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LapotronChip_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LapotronChip_01"))
-            .beginStructureBlock(177, 121, 177, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LapotronChip_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LapotronChip_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LapotronChip_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LapotronChip_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LapotronChip_Casing"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LapotronChip_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
-            .addSubChannelUsage(GTStructureChannels.STRUCTURE_HEIGHT)
-            .addSubChannelUsage(GTStructureChannels.STRUCTURE_LENGTH)
-            .addSubChannelUsage(GTNLStructureChannels.STRUCTURE_RENDER)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -216,7 +208,8 @@ public class LapotronChip extends MultiMachineBase<LapotronChip>
 
     public static ImmutableList<Pair<Block, Integer>> getGreenScreenVariants() {
         ImmutableList.Builder<Pair<Block, Integer>> builder = ImmutableList.builder();
-        Block greenScreen = Block.getBlockFromName("ExtraUtilities:greenscreen");
+        Block greenScreen = ExtraUtilitiesContent.greenScreen();
+        if (greenScreen == null) return getGlass();
         for (int i = 0; i < 16; i++) {
             builder.add(Pair.of(greenScreen, i));
         }

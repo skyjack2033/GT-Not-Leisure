@@ -2,9 +2,7 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 import static kubatech.loaders.BlockLoader.defcCasingBlock;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsBA0;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +10,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -21,16 +18,16 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -46,6 +43,7 @@ import gregtech.common.misc.GTStructureChannels;
 import gtnhlanth.api.recipe.LanthanidesRecipeMaps;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class DissolutionCore extends WirelessEnergyMultiMachineBase<DissolutionCore> {
 
     public static final int MACHINEMODE_DISSOLUTION = 0;
@@ -74,7 +72,7 @@ public class DissolutionCore extends WirelessEnergyMultiMachineBase<DissolutionC
     public IStructureDefinition<DissolutionCore> getStructureDefinition() {
         return StructureDefinition.<DissolutionCore>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
+            .addElement('A', Casings.ActiveNeutroniumCasing.asElement())
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(DissolutionCore.class)
@@ -89,29 +87,28 @@ public class DissolutionCore extends WirelessEnergyMultiMachineBase<DissolutionC
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
             .addElement(
                 'C',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility.ofCoil(DissolutionCore::setMCoilLevel, DissolutionCore::getMCoilLevel))))
-            .addElement('D', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings11, 2))
-            .addElement('H', StructureUtility.ofBlock(sBlockCasingsBA0, 6))
+            .addElement('D', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('E', Casings.PTFEPipeCasing.asElement())
+            .addElement('F', Casings.HeatResistantTriniumPlatedCasing.asElement())
+            .addElement('G', Casings.ElectrumItemPipeCasing.asElement())
+            .addElement('H', Casings.ZPMSuperconductorPrimaryTeslaWindings.asElement())
             .addElement('I', StructureUtility.ofBlock(defcCasingBlock, 7))
-            .addElement('J', StructureUtility.ofBlock(blockCasings2Misc, 0))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 7))
-            .addElement('L', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
+            .addElement('J', Casings.ThermalProcessingCasing.asElement())
+            .addElement('K', Casings.StabilizedNaquadahWaterPlantCasing.asElement())
+            .addElement('L', GTNLCasings.FusionGlass.asElement())
+            .addElement('M', Casings.ActiveNeutroniumCasing.asElement())
             .addElement('N', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
             .addElement('O', GTStructureUtility.ofFrame(Materials.Polytetrafluoroethylene))
-            .addElement('P', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
+            .addElement('P', Casings.ChemicallyInertMachineCasing.asElement())
             .addElement('Q', GTStructureUtility.ofFrame(Materials.BlackSteel))
-            .addElement('R', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
+            .addElement('R', Casings.NaquadriaReinforcedWaterPlantCasing.asElement())
             .build();
     }
 
@@ -173,7 +170,7 @@ public class DissolutionCore extends WirelessEnergyMultiMachineBase<DissolutionC
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -206,29 +203,8 @@ public class DissolutionCore extends WirelessEnergyMultiMachineBase<DissolutionC
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("DissolutionCoreRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DissolutionCore_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DissolutionCore_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(31, 16, 31, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_DissolutionCore_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_DissolutionCore_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_DissolutionCore_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_DissolutionCore_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_DissolutionCore_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -241,23 +217,15 @@ public class DissolutionCore extends WirelessEnergyMultiMachineBase<DissolutionC
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_UNPACKAGER);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "DissolutionCore_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("DissolutionCore_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.dissolution_core.mode." + machineMode;
     }
 
     @Override

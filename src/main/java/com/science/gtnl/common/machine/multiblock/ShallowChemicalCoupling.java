@@ -2,12 +2,10 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings8;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,13 +15,15 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
@@ -40,10 +40,11 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
-import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemicalCoupling>
     implements ISurvivalConstructable {
 
@@ -64,13 +65,13 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
     }
 
     @Override
-    public IMetaTileEntity newMetaEntity(IGregTechTileEntity iGregTechTileEntity) {
-        return new ShallowChemicalCoupling(this.mName);
+    public String getLocalNameKey() {
+        return "gtnl.machine.shallow_chemical_coupling.name";
     }
 
     @Override
-    public boolean getPerfectOC() {
-        return true;
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity iGregTechTileEntity) {
+        return new ShallowChemicalCoupling(this.mName);
     }
 
     @Override
@@ -166,9 +167,8 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(BlockLoader.metaCasing, 19))))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, GTNLCasings.ChemicallyResistantCasing.asElement())))
             .addElement('B', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
             .addElement(
                 'C',
@@ -176,7 +176,7 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
                     GTStructureUtility.activeCoils(
                         GTStructureUtility
                             .ofCoil(ShallowChemicalCoupling::setMCoilLevel, ShallowChemicalCoupling::getMCoilLevel))))
-            .addElement('D', StructureUtility.ofBlock(sBlockCasings8, 1))
+            .addElement('D', Casings.PTFEPipeCasing.asElement())
             .addElement('E', GTStructureUtility.ofFrame(Materials.NaquadahAlloy))
             .build();
     }
@@ -212,7 +212,7 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
 
     @Override
     public int getCasingTextureID() {
-        return GTUtility.getTextureId((byte) 116, (byte) 19);
+        return GTNLCasings.ChemicallyResistantCasing.getTextureId();
     }
 
     @Override
@@ -245,25 +245,8 @@ public class ShallowChemicalCoupling extends GTMMultiMachineBase<ShallowChemical
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ShallowChemicalCouplingRecipes"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_03"))
-            .addPerfectOCInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(7, 11, 7, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_Casing_00"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_Casing_00"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_Casing_00"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_Casing_00"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_Casing_00"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ShallowChemicalCoupling_Casing_00"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

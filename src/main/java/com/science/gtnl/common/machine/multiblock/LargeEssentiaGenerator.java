@@ -3,15 +3,12 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ExoticDynamo;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -30,13 +27,15 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEssentiaHatch;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
+import com.science.gtnl.common.recipe.thaumcraft.EssentiaSupply;
 import com.science.gtnl.utils.enums.GTNLItemList;
-import com.science.gtnl.utils.machine.LargeEssentiaEnergyData;
 import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import bartworks.system.material.WerkstoffLoader;
 import goodgenerator.items.GGMaterial;
 import goodgenerator.loader.Loaders;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -58,10 +57,12 @@ import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.core.fluids.GTPPFluids;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.config.ConfigBlocks;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenerator> implements ISurvivalConstructable {
 
     private static final int HORIZONTAL_OFF_SET = 4;
@@ -97,7 +98,7 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
     public int mUpgrade = 1;
 
     public final XSTR random = new XSTR();
-    public List<TileEntityEssentiaHatch> mEssentiaHatch = new ArrayList<>();
+    public List<TileEntityEssentiaHatch> mEssentiaHatch = new ObjectArrayList<>();
 
     public LargeEssentiaGenerator(int id, String name, String nameRegional) {
         super(id, name, nameRegional);
@@ -149,9 +150,7 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
 
     @Override
     public void checkHatch(List<StructureError> errors) {
-        if (mDynamoHatches.size() + mExoticDynamoHatches.size() != 1) {
-            errors.add(GTNLStructureErrors.invalidHatchConfiguration());
-        }
+        checkHatchExact(errors, HatchElement.Dynamo.or(ExoticDynamo), 1);
         for (MTEHatchInput tHatch : mInputHatches) {
             if (tHatch.mTier > mTierLimit) {
                 errors.add(GTNLStructureErrors.invalidHatchConfiguration());
@@ -166,7 +165,7 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
             if (tHatch.mTier > mTierLimit) {
                 errors.add(GTNLStructureErrors.invalidHatchConfiguration());
             }
-            int maxAmp = 64 << (Integer.bitCount(mUpgrade) + Math.max(0, GTUtility.getTier(tHatch.maxEUOutput()) - 5));
+            int maxAmp = 64 << (Integer.bitCount(mUpgrade) + Math.max(0, GTUtility.getTier(tHatch.maxEUOutput()) - 7));
             if (tHatch.maxAmperesOut() > maxAmp) {
                 errors.add(GTNLStructureErrors.invalidHatchConfiguration());
             }
@@ -189,7 +188,7 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
                             "  TCXCT  ", "T  TXT  T" } }))
             .addElement('A', StructureUtility.ofBlock(ConfigBlocks.blockCosmeticOpaque, 1))
             .addElement('T', StructureUtility.ofBlock(ConfigBlocks.blockCosmeticSolid, 7))
-            .addElement('C', StructureUtility.ofBlock(Loaders.magicCasing, 0))
+            .addElement('C', Casings.MagicCasing.asElement())
             .addElement(
                 'E',
                 GTStructureChannels.TIER_MACHINE_CASING.use(
@@ -214,12 +213,8 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility.ofBlock(Loaders.magicCasing, 0),
-                    StructureUtility.ofSpecificTileAdder(
-                        LargeEssentiaGenerator::addEssentiaHatch,
-                        TileEntityEssentiaHatch.class,
-                        Loaders.magicCasing,
-                        0)))
+                    Casings.MagicCasing.asElement(),
+                    EssentiaSupply.hatchElement(LargeEssentiaGenerator::addEssentiaHatch, Loaders.magicCasing, 0)))
             .build();
     }
 
@@ -275,18 +270,22 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
     }
 
     public long getPerAspectEnergy(Aspect aspect, int amount) {
+        return getPerAspectEnergy(aspect, amount, true);
+    }
+
+    private long getPerAspectEnergy(Aspect aspect, int amount, boolean simulate) {
         int type = LargeEssentiaEnergyData.getAspectTypeIndex(aspect);
         if (!isValidEssentia(aspect)) return 0;
         return switch (type) {
             case 0 -> normalEssentia(aspect, amount);
-            case 1 -> airEssentia(aspect, amount);
-            case 2 -> thermalEssentia(aspect, amount);
-            case 3 -> unstableEssentia(aspect, amount);
-            case 4 -> victusEssentia(aspect, amount);
-            case 5 -> taintedEssentia(aspect, amount);
-            case 6 -> mechanicEssentia(aspect, amount);
-            case 7 -> spiritEssentia(aspect, amount);
-            case 8 -> radiationEssentia(aspect, amount);
+            case 1 -> airEssentia(aspect, amount, simulate);
+            case 2 -> thermalEssentia(aspect, amount, simulate);
+            case 3 -> unstableEssentia(aspect, amount, simulate);
+            case 4 -> victusEssentia(aspect, amount, simulate);
+            case 5 -> taintedEssentia(aspect, amount, simulate);
+            case 6 -> mechanicEssentia(aspect, amount, simulate);
+            case 7 -> spiritEssentia(aspect, amount, simulate);
+            case 8 -> radiationEssentia(aspect, amount, simulate);
             case 9 -> electricEssentia(aspect, amount);
             default -> 0;
         };
@@ -297,32 +296,40 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
     }
 
     public long airEssentia(Aspect aspect, int amount) {
+        return airEssentia(aspect, amount, true);
+    }
+
+    private long airEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
         long ceoInput = (long) (LargeEssentiaEnergyData.getAspectCeo(aspect) * 8L);
-        if (depleteInput(Materials.LiquidAir.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(Materials.LiquidAir.getFluid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 1.5D;
-        } else if (depleteInput(Materials.Air.getGas(GTUtility.safeInt(ceoInput, 0)))) {
+        } else if (depleteInput(Materials.Air.getGas(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 1.0D;
         }
         return (long) (baseValue * ceoOutput);
     }
 
     public long thermalEssentia(Aspect aspect, int amount) {
+        return thermalEssentia(aspect, amount, true);
+    }
+
+    private long thermalEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
         long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
-        if (depleteInput(Materials.SuperCoolant.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(Materials.SuperCoolant.getFluid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 9.0D;
-        } else if (depleteInput(new FluidStack(GTPPFluids.Cryotheum, GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(createFluidStack(GTPPFluids.Cryotheum, ceoInput, amount), simulate)) {
             ceoOutput = 5.0D;
-        } else if (depleteInput(GTModHandler.getIC2Coolant(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(GTModHandler.getIC2Coolant(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 1.5D;
-        } else if (depleteInput(Materials.Water.getSolid(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(Materials.Water.getSolid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 1.2D;
-        } else if (depleteInput(GTModHandler.getDistilledWater(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(GTModHandler.getDistilledWater(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 1.0D;
-        } else if (depleteInput(Materials.Water.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(Materials.Water.getFluid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 0.5D;
         }
 
@@ -330,51 +337,68 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
     }
 
     public long unstableEssentia(Aspect aspect, int amount) {
+        return unstableEssentia(aspect, amount, true);
+    }
+
+    private long unstableEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
         long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 4;
-        if (depleteInput(WerkstoffLoader.Xenon.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(WerkstoffLoader.Xenon.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 4.0D;
-        } else if (depleteInput(WerkstoffLoader.Krypton.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)))) {
-            ceoOutput = 3.0D;
-        } else if (depleteInput(Materials.Argon.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
-            ceoOutput = 2.5D;
-        } else if (depleteInput(WerkstoffLoader.Neon.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)))) {
-            ceoOutput = 2.2D;
-        } else if (depleteInput(Materials.Helium.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
-            ceoOutput = 2.0D;
-        } else if (depleteInput(Materials.Nitrogen.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
-            ceoOutput = 1.0D;
-        }
+        } else if (depleteInput(
+            WerkstoffLoader.Krypton.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)),
+            simulate)) {
+                ceoOutput = 3.0D;
+            } else if (depleteInput(Materials.Argon.getFluid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
+                ceoOutput = 2.5D;
+            } else if (depleteInput(
+                WerkstoffLoader.Neon.getFluidOrGas(GTUtility.safeInt(ceoInput * amount, 0)),
+                simulate)) {
+                    ceoOutput = 2.2D;
+                } else if (depleteInput(Materials.Helium.getFluid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
+                    ceoOutput = 2.0D;
+                } else
+                    if (depleteInput(Materials.Nitrogen.getFluid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
+                        ceoOutput = 1.0D;
+                    }
         return (long) (baseValue * ceoOutput);
     }
 
     public long victusEssentia(Aspect aspect, int amount) {
+        return victusEssentia(aspect, amount, true);
+    }
+
+    private long victusEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
         long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 18;
-        if (depleteInput(new FluidStack(XPJUICE, GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(createFluidStack(XPJUICE, ceoInput, amount), simulate)) {
             ceoOutput = 2.0D;
-        } else if (depleteInput(new FluidStack(LIFEESSENCE, GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(createFluidStack(LIFEESSENCE, ceoInput, amount), simulate)) {
             ceoOutput = 6.0D;
         }
         return (long) (baseValue * ceoOutput);
     }
 
     public long taintedEssentia(Aspect aspect, int amount) {
+        return taintedEssentia(aspect, amount, true);
+    }
+
+    private long taintedEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
         long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 3;
         int chance = 2000;
-        if (depleteInput(new FluidStack(PURE, GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(createFluidStack(PURE, ceoInput, amount), simulate)) {
             ceoOutput = 60.0D;
             chance = 0;
-        } else if (depleteInput(new FluidStack(DEATH, GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(createFluidStack(DEATH, ceoInput, amount), simulate)) {
             ceoOutput = Math.pow(25000D / baseValue, 4);
             chance = 4000;
         }
 
-        if (chance > 0) {
+        if (!simulate && chance > 0) {
             double expected = (double) amount * chance / 10000.0;
             int guaranteed = (int) expected;
             double remainder = expected - guaranteed;
@@ -406,39 +430,52 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
     }
 
     public long mechanicEssentia(Aspect aspect, int amount) {
+        return mechanicEssentia(aspect, amount, true);
+    }
+
+    private long mechanicEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 0;
         long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 20;
-        if (depleteInput(Materials.Lubricant.getFluid(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(Materials.Lubricant.getFluid(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 1.0D;
         }
         return (long) (baseValue * ceoOutput);
     }
 
     public long spiritEssentia(Aspect aspect, int amount) {
+        return spiritEssentia(aspect, amount, true);
+    }
+
+    private long spiritEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
         long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 2;
-        if (depleteInput(new FluidStack(SPIRIT, GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(createFluidStack(SPIRIT, ceoInput, amount), simulate)) {
             ceoOutput = 10D * (1 + mStableValue / 100D);
-        } else if (depleteInput(new FluidStack(HOLLOW_TEARS, GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(createFluidStack(HOLLOW_TEARS, ceoInput, amount), simulate)) {
             ceoOutput = 15D * (1 + 100D / mStableValue);
         }
         return (long) (baseValue * ceoOutput);
     }
 
     public long radiationEssentia(Aspect aspect, int amount) {
+        return radiationEssentia(aspect, amount, true);
+    }
+
+    private long radiationEssentia(Aspect aspect, int amount, boolean simulate) {
         long baseValue = LargeEssentiaEnergyData.getAspectFuelValue(aspect);
         double ceoOutput = 1.0D;
         long ceoInput = (long) LargeEssentiaEnergyData.getAspectCeo(aspect) * 6;
-        if (depleteInput(Materials.Caesium.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        if (depleteInput(Materials.Caesium.getMolten(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 2.0D;
-        } else if (depleteInput(Materials.Uranium235.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(Materials.Uranium235.getMolten(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 3.0D;
-        } else if (depleteInput(Materials.Naquadah.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(Materials.Naquadah.getMolten(GTUtility.safeInt(ceoInput * amount, 0)), simulate)) {
             ceoOutput = 4.0D;
-        } else
-            if (depleteInput(GGMaterial.atomicSeparationCatalyst.getMolten(GTUtility.safeInt(ceoInput * amount, 0)))) {
+        } else if (depleteInput(
+            GGMaterial.atomicSeparationCatalyst.getMolten(GTUtility.safeInt(ceoInput * amount, 0)),
+            simulate)) {
                 ceoOutput = 16.0D;
             }
         return (long) (baseValue * ceoOutput);
@@ -465,20 +502,18 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
         if (eut <= 0) {
             for (TileEntityEssentiaHatch hatch : this.mEssentiaHatch) {
                 AspectList aspects = hatch.getAspects();
-                Iterator<Aspect> iterator = aspects.aspects.keySet()
-                    .iterator();
 
-                while (iterator.hasNext()) {
-                    Aspect aspect = iterator.next();
+                for (Aspect aspect : aspects.getAspects()) {
+                    if (aspect == null) continue;
                     if (!isValidEssentia(aspect)) continue;
 
                     int amount = aspects.getAmount(aspect);
                     if (amount <= 0) {
-                        iterator.remove();
+                        aspects.remove(aspect);
                         continue;
                     }
 
-                    long perEU = getPerAspectEnergy(aspect, amount) * mStableValue / 25;
+                    long perEU = getPerAspectEnergy(aspect, 1, true) * mStableValue / 25;
                     if (perEU <= 0) continue;
 
                     long needEU = maxEU - eut;
@@ -493,7 +528,14 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
                     }
 
                     if (canConsume > amount) canConsume = amount;
-                    long add = canConsume * perEU;
+                    int consumeAmount = GTUtility.safeInt(canConsume, 0);
+                    EssentiaConsumption consumption = adjustConsumableEssentia(aspect, consumeAmount, needEU);
+                    if (consumption.energyPerEssentia() <= 0 || consumption.amount() <= 0) continue;
+
+                    perEU = getPerAspectEnergy(aspect, consumption.amount(), false) * mStableValue / 25;
+                    if (perEU <= 0) continue;
+
+                    long add = (long) consumption.amount() * perEU;
 
                     if (Long.MAX_VALUE - eut < add) {
                         eut = Long.MAX_VALUE;
@@ -501,11 +543,7 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
                         eut += add;
                     }
 
-                    aspects.reduce(aspect, (int) canConsume);
-
-                    if (aspects.getAmount(aspect) <= 0) {
-                        iterator.remove();
-                    }
+                    hatch.reduceStoredEssentia(aspect, consumption.amount());
                 }
             }
         }
@@ -523,31 +561,43 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
         this.lEUt = euVoltage * euAmp;
     }
 
+    private EssentiaConsumption adjustConsumableEssentia(Aspect aspect, int amount, long needEU) {
+        int currentAmount = amount;
+        while (currentAmount > 0) {
+            long perEU = getPerAspectEnergy(aspect, currentAmount, true) * mStableValue / 25;
+            if (perEU > 0) {
+                long neededAmount = needEU / perEU;
+                if (neededAmount <= 0) neededAmount = 1;
+                if (neededAmount >= currentAmount) return new EssentiaConsumption(currentAmount, perEU);
+                currentAmount = GTUtility.safeInt(neededAmount, 0);
+                continue;
+            }
+            currentAmount--;
+        }
+        return new EssentiaConsumption(0, 0);
+    }
+
+    private record EssentiaConsumption(int amount, long energyPerEssentia) {}
+
+    private FluidStack createFluidStack(Fluid fluid, long multiplier, int amount) {
+        if (fluid == null) return null;
+        return new FluidStack(fluid, GTUtility.safeInt(multiplier * amount, 0));
+    }
+
     @Override
     public int getCasingTextureID() {
         return 1536;
     }
 
     @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        final MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeEssentiaGeneratorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_06"))
-            .beginStructureBlock(9, 3, 9, true)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"))
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"))
-            .addDynamoHatch(StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"))
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_EssentiaInputHatch"),
-                StatCollector.translateToLocal("Tooltip_LargeEssentiaGenerator_Casing"),
-                1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -594,7 +644,10 @@ public class LargeEssentiaGenerator extends MultiMachineBase<LargeEssentiaGenera
             if ((mUpgrade & (1 << upgrade)) == 0 && upgrade != 0) {
                 itemstack.stackSize--;
                 mUpgrade = mUpgrade | (1 << upgrade);
-                GTUtility.sendChatTrans(aPlayer, "Info_LargeEssentiaGenerator_Install", itemstack.getDisplayName());
+                GTUtility.sendChatTrans(
+                    aPlayer,
+                    "gtnl.chat.large_essentia_generator.upgrade_installed",
+                    itemstack.getDisplayName());
             }
             setupParameters();
             return true;

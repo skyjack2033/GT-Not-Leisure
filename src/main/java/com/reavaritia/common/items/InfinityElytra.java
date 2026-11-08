@@ -13,14 +13,13 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import com.reavaritia.client.ReAvaCreativeTabs;
+import com.reavaritia.common.ItemLoader;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.science.gtnl.common.packet.ElytraBoostPacket;
 
@@ -43,11 +42,11 @@ public class InfinityElytra extends ItemArmorElytra {
 
     public InfinityElytra() {
         super();
-        setUnlocalizedName("InfinityElytra");
-        setTextureName(RESOURCE_ROOT_ID + ":" + "InfinityElytra");
+        setUnlocalizedName("reavaritia.infinity_elytra");
+        setTextureName(RESOURCE_ROOT_ID + ":infinity_elytra");
         setCreativeTab(ReAvaCreativeTabs.ReAvaritia);
         setMaxDamage(9999);
-        GameRegistry.registerItem(this, "InfinityElytra");
+        GameRegistry.registerItem(this, "infinity_elytra");
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance()
             .bus()
@@ -62,14 +61,14 @@ public class InfinityElytra extends ItemArmorElytra {
 
     @Override
     public EnumRarity getRarity(ItemStack stack) {
-        return EnumHelper.addRarity("COSMIC", EnumChatFormatting.RED, "Cosmic");
+        return ItemLoader.COSMIC;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> toolTip,
         boolean advancedToolTips) {
-        toolTip.add(StatCollector.translateToLocal("Tooltip_InfinityElytra_00"));
+        toolTip.add(StatCollector.translateToLocal("reavaritia.item.infinity_elytra.tooltip.00"));
     }
 
     @Override

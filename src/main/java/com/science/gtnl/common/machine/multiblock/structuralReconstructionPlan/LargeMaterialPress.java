@@ -2,14 +2,11 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings3Misc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,13 +17,13 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
-import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -43,6 +40,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeMaterialPress extends GTMMultiMachineBase<LargeMaterialPress> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -61,13 +60,16 @@ public class LargeMaterialPress extends GTMMultiMachineBase<LargeMaterialPress> 
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_material_press.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeMaterialPress> getStructureDefinition() {
         return StructureDefinition.<LargeMaterialPress>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement(
-                'A',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
-            .addElement('B', StructureUtility.ofBlock(sBlockCasings2, 3))
+            .addElement('A', Casings.ReinforcedGlass.asElement())
+            .addElement('B', Casings.SteelGearBoxCasing.asElement())
             .addElement(
                 'C',
                 buildHatchAdder(LargeMaterialPress.class).casingIndex(getCasingTextureID())
@@ -77,12 +79,11 @@ public class LargeMaterialPress extends GTMMultiMachineBase<LargeMaterialPress> 
                         HatchElement.InputHatch,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings3Misc, 1))))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.InconelReinforcedCasing.asElement())))
             .build();
     }
 
@@ -178,20 +179,8 @@ public class LargeMaterialPress extends GTMMultiMachineBase<LargeMaterialPress> 
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeMaterialPressRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeMaterialPress_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeMaterialPress_01"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 3, 3, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeMaterialPress_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeMaterialPress_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeMaterialPress_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeMaterialPress_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeMaterialPress_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

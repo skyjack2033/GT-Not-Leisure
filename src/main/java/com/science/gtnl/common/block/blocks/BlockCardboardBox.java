@@ -17,14 +17,10 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.common.block.blocks.item.ItemBlockCardboardBox;
 import com.science.gtnl.common.block.blocks.tile.TileEntityCardboardBox;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.CardboardBoxUtils;
-import com.science.gtnl.utils.enums.GTNLItemList;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -41,21 +37,21 @@ public class BlockCardboardBox extends BlockContainer {
 
     public BlockCardboardBox() {
         super(Material.cloth);
-        setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
         setHardness(0.5F);
         setResistance(1F);
-        setBlockName("CardboardBox");
-        GameRegistry.registerBlock(this, ItemBlockCardboardBox.class, getUnlocalizedName());
-        GameRegistry.registerTileEntity(TileEntityCardboardBox.class, "CardboardBoxTileEntity");
-        GTNLItemList.CardboardBox.set(new ItemStack(this, 1));
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "gtnl.block.cardboard_box";
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
-        icons[0] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "CardboardBoxTop");
-        icons[1] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "CardboardBoxSide");
-        icons[2] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "CardboardBoxSideStorage");
+        icons[0] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "cardboard_box_top");
+        icons[1] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "cardboard_box_side");
+        icons[2] = register.registerIcon(RESOURCE_ROOT_ID + ":" + "cardboard_box_side_storage");
     }
 
     @Override

@@ -2,9 +2,7 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -28,15 +25,16 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -48,9 +46,10 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -72,6 +71,11 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_chemical_bath.name";
+    }
+
+    @Override
     public IAlignmentLimits getInitialAlignmentLimits() {
         return (d, r, f) -> d.offsetY == 0 && r.isNotRotated() && !f.isVerticallyFliped();
     }
@@ -80,7 +84,7 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
     public IStructureDefinition<LargeChemicalBath> getStructureDefinition() {
         return StructureDefinition.<LargeChemicalBath>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings2, 14))
+            .addElement('A', Casings.TitaniumPipeCasing.asElement())
             .addElement(
                 'B',
                 buildHatchAdder(LargeChemicalBath.class).casingIndex(getCasingTextureID())
@@ -94,8 +98,7 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 4))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.WashPlantCasing.asElement())))
             .build();
     }
 
@@ -138,7 +141,7 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
     @Override
     public RecipeMap<?> getRecipeMap() {
         return switch (machineMode) {
-            case MACHINEMODE_SIMPLEWASH -> GTPPRecipeMaps.simpleWasherRecipes;
+            case MACHINEMODE_SIMPLEWASH -> RecipeMaps.simpleWasherRecipes;
             case MACHINEMODE_CHEMBATH -> RecipeMaps.chemicalBathRecipes;
             default -> RecipeMaps.oreWasherRecipes;
         };
@@ -148,7 +151,7 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
     @Override
     public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
         return Arrays
-            .asList(RecipeMaps.oreWasherRecipes, GTPPRecipeMaps.simpleWasherRecipes, RecipeMaps.chemicalBathRecipes);
+            .asList(RecipeMaps.oreWasherRecipes, RecipeMaps.simpleWasherRecipes, RecipeMaps.chemicalBathRecipes);
     }
 
     @Override
@@ -181,20 +184,8 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeChemicalBathRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 7, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeChemicalBath_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -207,15 +198,6 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_CHEMBATH);
     }
 
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Large Chemical Bath GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_SIMPLEWASHER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_CHEMBATH);
-    }
-
     @SideOnly(Side.CLIENT)
     @Override
     public SoundResource getActivitySoundLoop() {
@@ -226,12 +208,12 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 3;
-        GTUtility.sendChatTrans(aPlayer, "LargeChemicalBath_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("LargeChemicalBath_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.large_chemical_bath.mode." + machineMode;
     }
 
     @Override
@@ -242,6 +224,8 @@ public class LargeChemicalBath extends GTMMultiMachineBase<LargeChemicalBath> im
     public void replaceWater() {
         IGregTechTileEntity aBaseMetaTileEntity = this.getBaseMetaTileEntity();
         World world = aBaseMetaTileEntity.getWorld();
+        // Tooltip prototypes have no world.
+        if (world == null) return;
         int baseX = aBaseMetaTileEntity.getXCoord();
         int baseY = aBaseMetaTileEntity.getYCoord();
         int baseZ = aBaseMetaTileEntity.getZCoord();

@@ -1,14 +1,9 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.sBlockCasings1;
-import static gregtech.api.GregTechAPI.sBlockCasings10;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
-import static gregtech.api.GregTechAPI.sBlockCasings8;
 import static gregtech.api.GregTechAPI.sBlockCasings9;
 import static gregtech.api.enums.HatchElement.Energy;
 import static gregtech.api.enums.HatchElement.ExoticEnergy;
@@ -18,8 +13,6 @@ import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings5Misc;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.math.BigInteger;
@@ -45,18 +38,20 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.util.Vec3Impl;
-import com.science.gtnl.loader.BlockLoader;
+import com.gtnllib.utils.MathUtils;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.machine.multiMachineBase.TTMultiMachineBase;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
-import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.IHatchElement;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.recipe.RecipeMap;
@@ -67,11 +62,11 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
-import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReason;
 import gregtech.common.WirelessComputationPacket;
 import gtPlusPlus.core.fluids.GTPPFluids;
 import gtPlusPlus.core.material.MaterialsAlloy;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tectech.mechanics.dataTransport.QuantumDataPacket;
 import tectech.thing.casing.BlockGTCasingsTT;
 import tectech.thing.metaTileEntity.hatch.MTEHatchDataInput;
@@ -82,12 +77,13 @@ import tectech.thing.metaTileEntity.multi.base.INameFunction;
 import tectech.thing.metaTileEntity.multi.base.IStatusFunction;
 import tectech.thing.metaTileEntity.multi.base.LedStatus;
 import tectech.thing.metaTileEntity.multi.base.Parameters;
-import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 import tectech.thing.metaTileEntity.multi.base.render.TTRenderedExtendedFacingTexture;
 import tectech.util.CommonValues;
 
-public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalConstructable {
+@IMetaTileEntity.SkipGenerateDescription
+public class SupercomputingCenter extends TTMultiMachineBase implements ISurvivalConstructable {
 
+    private static final String RACK_HATCH_NAME_KEY = "gt.blockmachines.hatch.rack.tier.08.name";
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String SC_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/supercomputing_center";
     private static final String[][] shape = StructureUtils.readStructureFromFile(SC_STRUCTURE_FILE_PATH);
@@ -120,8 +116,8 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
         return LedStatus.STATUS_OK;
     };
 
-    public ArrayList<MTEHatchRack> mRackHatchs = new ArrayList<>();
-    public ArrayList<MTEHatchWirelessComputationOutput> mWirelessComputationOutputHatchs = new ArrayList<>();
+    public ObjectArrayList<MTEHatchRack> mRackHatchs = new ObjectArrayList<>();
+    public ObjectArrayList<MTEHatchWirelessComputationOutput> mWirelessComputationOutputHatchs = new ObjectArrayList<>();
     public Parameters.Group.ParameterIn overclock, overvolt;
     public Parameters.Group.ParameterOut maxCurrentTemp, availableData;
 
@@ -201,8 +197,8 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     public IStructureDefinition<SupercomputingCenter> getStructure_EM() {
         return StructureDefinition.<SupercomputingCenter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
-            .addElement('A', ofBlock(sBlockCasings10, 3))
-            .addElement('B', ofBlock(sBlockCasings8, 10))
+            .addElement('A', Casings.PressureContainmentCasing.asElement())
+            .addElement('B', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement(
                 'C',
                 buildHatchAdder(SupercomputingCenter.class).atLeast(CustomHatchElement.RackHatch)
@@ -210,9 +206,9 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
                     .shouldReject(t -> !t.mRackHatchs.isEmpty())
                     .hint(1)
                     .buildAndChain(sBlockCasingsTT, 1))
-            .addElement('D', ofBlock(sBlockCasingsTT, 3))
-            .addElement('E', ofBlock(sBlockCasingsTT, 1))
-            .addElement('F', ofBlock(sBlockCasingsTT, 2))
+            .addElement('D', Casings.AdvancedComputerCasing.asElement())
+            .addElement('E', Casings.ComputerCasing.asElement())
+            .addElement('F', Casings.ComputerHeatVent.asElement())
             .addElement(
                 'G',
                 ofChain(
@@ -225,23 +221,23 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
                             HatchElement.Uncertainty,
                             HatchElement.InputData,
                             HatchElement.OutputData)
-                        .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 7))
+                        .casingIndex(Casings.StabilizedNaquadahWaterPlantCasing.getTextureId())
                         .hint(1)
                         .buildAndChain(sBlockCasings9, 7),
                     buildHatchAdder(SupercomputingCenter.class)
                         .adder(SupercomputingCenter::addWirelessDataOutputToMachineList)
-                        .casingIndex(StructureUtils.getTextureIndex(sBlockCasings9, 7))
+                        .casingIndex(Casings.StabilizedNaquadahWaterPlantCasing.getTextureId())
                         .hint(1)
                         .buildAndChain(sBlockCasings9, 7)))
-            .addElement('H', ofBlock(sBlockCasings8, 7))
-            .addElement('I', ofBlock(sBlockCasingsTT, 0))
-            .addElement('J', ofBlock(sBlockCasings8, 5))
-            .addElement('K', ofBlock(BlockLoader.metaCasing, 7))
-            .addElement('L', ofBlock(blockCasingsMisc, 5))
-            .addElement('M', ofBlock(sBlockCasings9, 15))
-            .addElement('N', ofBlock(sBlockCasings2, 7))
-            .addElement('O', ofBlock(sBlockCasings10, 8))
-            .addElement('P', ofBlock(blockCasings5Misc, 15))
+            .addElement('H', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('I', Casings.HighPowerCasing.asElement())
+            .addElement('J', Casings.EuropiumReinforcedRadiationProofMachineCasing.asElement())
+            .addElement('K', GTNLCasings.Antifreeze_Heatproof_Machine_Casing.asElement())
+            .addElement('L', Casings.ElectrolyzerCasing.asElement())
+            .addElement('M', Casings.FemtometerCalibratedParticleBeamCasing.asElement())
+            .addElement('N', Casings.DataDriveMachineCasing.asElement())
+            .addElement('O', Casings.NeutroniumStabilizationCasing.asElement())
+            .addElement('P', Casings.ForceFieldGlass.asElement())
             .addElement(
                 'Q',
                 ofBlockAnyMeta(
@@ -249,7 +245,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
                         MaterialsAlloy.HASTELLOY_N.getFrameBox(1)
                             .getItem())))
             .addElement('R', ofFrame(Materials.PulsatingIron))
-            .addElement('S', ofBlock(sBlockCasings1, 9))
+            .addElement('S', Casings.UHVMachineCasing.asElement())
             .build();
     }
 
@@ -365,7 +361,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
 
             if (energyWirelessMode) {
                 BigInteger costEU = BigInteger.valueOf(lEUt);
-                if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(Utils.NEGATIVE_ONE))) {
+                if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(MathUtils.NEGATIVE_ONE))) {
                     return CheckRecipeResultRegistry.insufficientPower(costEU.longValue());
                 }
                 lEUt = 0;
@@ -430,14 +426,12 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
         int colorIndex, boolean aActive, boolean aRedstone) {
         if (side == facing) {
-            return new ITexture[] {
-                Textures.BlockIcons.getCasingTextureForId(StructureUtils.getTextureIndex(sBlockCasings9, 7)),
+            return new ITexture[] { Casings.StabilizedNaquadahWaterPlantCasing.getCasingTexture(),
                 new TTRenderedExtendedFacingTexture(
                     aActive ? BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK_ACTIVE
                         : BlockIcons.OVERLAY_FRONT_TECTECH_MULTIBLOCK) };
         }
-        return new ITexture[] {
-            Textures.BlockIcons.getCasingTextureForId(StructureUtils.getTextureIndex(sBlockCasings9, 7)) };
+        return new ITexture[] { Casings.StabilizedNaquadahWaterPlantCasing.getCasingTexture() };
     }
 
     @Override
@@ -446,38 +440,18 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SupercomputingCenterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_06"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(28, 59, 21, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_SupercomputingCenter_Casing"))
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public String[] getInfoData() {
-        ArrayList<String> data = new ArrayList<>(Arrays.asList(super.getInfoData()));
+        ObjectArrayList<String> data = new ObjectArrayList<>(Arrays.asList(super.getInfoData()));
         if (wirelessMode) {
             WirelessComputationPacket wirelessComputationPacket = WirelessComputationPacket
                 .getPacketByUserId(getBaseMetaTileEntity().getOwnerUuid());
-            data.add(StatCollector.translateToLocal("tt.infodata.qc.wireless_mode.enabled"));
+            data.add("tt.infodata.qc.wireless_mode.enabled");
             data.add(
-                StatCollector.translateToLocalFormatted(
+                IGregTechDeviceInformation.encode(
                     "tt.infodata.qc.total_wireless_computation",
                     "" + EnumChatFormatting.YELLOW + wirelessComputationPacket.getAvailableComputationStored()));
         } else {
-            data.add(StatCollector.translateToLocal("tt.infodata.qc.wireless_mode.disabled"));
+            data.add("tt.infodata.qc.wireless_mode.disabled");
         }
         return data.toArray(new String[] {});
     }
@@ -487,13 +461,7 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
         ItemStack aTool) {
         if (getBaseMetaTileEntity().isServerSide()) {
             wirelessMode = !wirelessMode;
-            if (wirelessMode) {
-                GTUtility.sendChatTrans(aPlayer, "Info_GTNL_WirelessMode_Enabled");
-                WirelessComputationPacket.enableWirelessNetWork(getBaseMetaTileEntity());
-            } else {
-                GTUtility.sendChatTrans(aPlayer, "Info_GTNL_WirelessMode_Disabled");
-                WirelessComputationPacket.disableWirelessNetWork(getBaseMetaTileEntity());
-            }
+            switchWirelessComputation(aPlayer, wirelessMode);
         }
     }
 
@@ -597,6 +565,16 @@ public class SupercomputingCenter extends TTMultiblockBase implements ISurvivalC
         @Override
         public IGTHatchAdder<? super SupercomputingCenter> adder() {
             return adder;
+        }
+
+        @Override
+        public String getDescriptionLangKey() {
+            return RACK_HATCH_NAME_KEY;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return StatCollector.translateToLocal(RACK_HATCH_NAME_KEY);
         }
     }
 }

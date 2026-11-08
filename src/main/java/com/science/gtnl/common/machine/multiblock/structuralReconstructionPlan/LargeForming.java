@@ -2,12 +2,10 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings3Misc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,13 +14,12 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -36,6 +33,8 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeForming extends GTMMultiMachineBase<LargeForming> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -54,13 +53,16 @@ public class LargeForming extends GTMMultiMachineBase<LargeForming> implements I
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_forming.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeForming> getStructureDefinition() {
         return StructureDefinition.<LargeForming>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement(
-                'A',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
+            .addElement('A', Casings.ReinforcedGlass.asElement())
+            .addElement('B', Casings.AssemblyLineCasing.asElement())
             .addElement(
                 'C',
                 GTStructureUtility.buildHatchAdder(LargeForming.class)
@@ -70,13 +72,12 @@ public class LargeForming extends GTMMultiMachineBase<LargeForming> implements I
                         HatchElement.Maintenance,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings3Misc, 1))))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.InconelReinforcedCasing.asElement())))
+            .addElement('D', Casings.GrateMachineCasing.asElement())
             .addElement('E', GTStructureUtility.ofFrame(Materials.StainlessSteel))
             .build();
     }
@@ -144,18 +145,8 @@ public class LargeForming extends GTMMultiMachineBase<LargeForming> implements I
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeFormingRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeForming_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeForming_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 3, 3, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeForming_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeForming_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeForming_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeForming_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

@@ -3,14 +3,12 @@ package com.science.gtnl.common.machine.multiblock.steam;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gregtech.api.GregTechAPI.sBlockCasings1;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -21,20 +19,16 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.math.Alignment;
-import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
-import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
-import com.gtnewhorizons.modularui.common.widget.SlotWidget;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
-import com.science.gtnl.common.gui.modularui.SteamCactusWonderGui;
+import com.science.gtnl.common.gui.modularui.multiblock.SteamCactusWonderGui;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
@@ -50,9 +44,10 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -88,6 +83,11 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.steam_cactus_wonder.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity arg0) {
         return new SteamCactusWonder(this.mName);
     }
@@ -95,14 +95,14 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
     @Override
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPostTick(aBaseMetaTileEntity, aTick);
-        startRecipeProcessing();
         if (aBaseMetaTileEntity.isAllowedToWork()) {
             if (aTick % 20 == 0) {
+                startRecipeProcessing();
                 addFuel();
+                endRecipeProcessing();
             }
             outputSteam();
         }
-        endRecipeProcessing();
     }
 
     @Override
@@ -118,7 +118,7 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
                             .toArray(String[]::new))
                     .toArray(String[][]::new))
             .addElement('A', GTStructureUtility.chainAllGlasses())
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 12))
+            .addElement('B', Casings.BronzePipeCasing.asElement())
             .addElement(
                 'C',
                 StructureUtility.ofChain(
@@ -127,7 +127,7 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
                         .casingIndex(10)
                         .hint(1)
                         .buildAndChain(),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13)))
+                    Casings.BronzeFireboxCasing.asElement()))
             .addElement('D', GTStructureUtility.ofFrame(Materials.Steel))
             .addElement('E', StructureUtility.ofBlock(Blocks.cactus, 0))
             .addElement('F', StructureUtility.ofBlock(Blocks.sand, 0))
@@ -160,7 +160,7 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
     }
 
     public void addFuel() {
-        ArrayList<ItemStack> storedInputs = getStoredInputs();
+        List<ItemStack> storedInputs = getStoredInputs();
         for (ItemStack stack : storedInputs) {
             for (int i = 0; i < 14; i++) {
                 if (stack.isItemEqual(POSSIBLE_INPUTS[i])) {
@@ -204,13 +204,18 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
     }
 
     @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
     public int getTierRecipes() {
         return 14;
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings1, 10);
+        return Casings.BronzePlatedBricks.getTextureId();
     }
 
     @Override
@@ -235,21 +240,13 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamCactusWonderRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_cactus_wonder.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(getMachineType())
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCactusWonder_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCactusWonder_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCactusWonder_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCactusWonder_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCactusWonder_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCactusWonder_05"))
-            .beginStructureBlock(9, 11, 9, true)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -269,23 +266,6 @@ public class SteamCactusWonder extends SteamMultiMachineBase<SteamCactusWonder> 
 
     public String formatFueledAmountForGui(long fueledAmount) {
         return numberFormat.format(fueledAmount);
-    }
-
-    @Override
-    @Deprecated
-    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        // TODO: Remove this mui1 fallback after the Steam Cactus Wonder terminal text is fully ported to mui2.
-        super.drawTexts(screenElements, inventorySlot);
-
-        screenElements
-            .widget(
-                new TextWidget()
-                    .setStringSupplier(
-                        () -> EnumChatFormatting.WHITE + StatCollector.translateToLocal("Tooltip_SteamCactusWonder_06")
-                            + EnumChatFormatting.YELLOW
-                            + numberFormat.format(fueledAmount))
-                    .setTextAlignment((Alignment.CenterLeft)))
-            .widget(new FakeSyncWidget.LongSyncer(() -> fueledAmount, val -> fueledAmount = val));
     }
 
     @Override

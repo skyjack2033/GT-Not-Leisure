@@ -1,5 +1,6 @@
 package com.science.gtnl.mixins.late.gregtech;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -7,40 +8,28 @@ import com.science.gtnl.api.mixinHelper.IOutputMEProviderTransfer;
 
 import appeng.api.storage.data.IAEStack;
 import gregtech.common.tileentities.machines.outputme.base.MTEHatchOutputMEBase;
-import gregtech.common.tileentities.machines.outputme.filter.MEFilterBase;
 import gregtech.common.tileentities.machines.outputme.util.AECacheCounter;
 
 @Mixin(value = MTEHatchOutputMEBase.class, remap = false)
-public abstract class MixinMTEHatchOutputMEBase<T extends IAEStack<T>, F extends MEFilterBase<T, ?, I>, I>
-    implements IOutputMEProviderTransfer<T, F, I> {
+public abstract class MixinMTEHatchOutputMEBase<T extends IAEStack<T>> implements IOutputMEProviderTransfer<T> {
 
+    @Final
     @Shadow
     protected AECacheCounter<T> cache;
 
     @Override
-    public boolean gtnl$transferCacheTo(MTEHatchOutputMEBase<T, F, I> targetProvider) {
+    public boolean gtnl$transferCacheTo(MTEHatchOutputMEBase<T> targetProvider) {
         boolean[] transferred = { false };
-
         cache.updateAll((stack, amount) -> {
-            long available = targetProvider.getAvailableSpace();
-            if (available <= 0) {
-                return amount;
-            }
-
+            long available = targetProvider.getPhysicalSpace();
+            if (available <= 0) return amount;
             long amountToMove = Math.min(amount, available);
-            T movingStack = stack.copy()
-                .setStackSize(amountToMove);
-
-            if (!targetProvider.getFilter()
-                .isAllowed(movingStack)) {
-                return amount;
-            }
-
-            targetProvider.addToCache(movingStack);
+            targetProvider.addToCache(
+                stack.copy()
+                    .setStackSize(amountToMove));
             transferred[0] = true;
             return amount - amountToMove;
         });
-
         return transferred[0];
     }
 }

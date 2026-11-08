@@ -9,7 +9,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -21,29 +20,35 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
+import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import bartworks.util.BWUtil;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
+import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -63,6 +68,11 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
 
     public VacuumDryingFurnace(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.vacuum_drying_furnace.name";
     }
 
     @Override
@@ -94,9 +104,7 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings4Misc, 10))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.VacuumCasing.asElement())))
             .addElement('C', HatchElement.Muffler.newAny(getCasingTextureID(), 1))
             .build();
     }
@@ -137,7 +145,34 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
     }
 
     @Override
+    public ProcessingLogic createProcessingLogic() {
+        return new GTNLProcessingLogic() {
+
+            @Override
+            public @NotNull GTNLOverclockCalculator createOverclockCalculator(@NotNull GTRecipe recipe) {
+                return super.createOverclockCalculator(recipe).setExtraDurationModifier(mConfigSpeedBoost)
+                    .setHeatOC(getHeatOC())
+                    .setRecipeHeat(recipe.mSpecialValue)
+                    // Below the recipe's heat the recipe still runs, only without heat bonuses.
+                    .setMachineHeat(Math.max(getMachineHeat(), recipe.mSpecialValue))
+                    .setHeatDiscount(getHeatDiscount())
+                    .setAmperageOC(getAmperageOC())
+                    .setEUtDiscount(getEUtDiscount())
+                    .setDurationModifier(getDurationModifier())
+                    .setPerfectOC(getPerfectOC())
+                    .setMaxTierSkips(getMaxTierSkip())
+                    .setMaxOverclocks(getMaxOverclocks());
+            }
+        }.setMaxParallelSupplier(this::getTrueParallel);
+    }
+
+    @Override
     public boolean getHeatOC() {
+        return true;
+    }
+
+    @Override
+    public boolean getHeatDiscount() {
         return true;
     }
 
@@ -159,10 +194,10 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
     @Override
     public RecipeMap<?> getRecipeMap() {
         return switch (machineMode) {
-            case MACHINEMODE_DEHYDRATOR -> GTPPRecipeMaps.chemicalDehydratorNonCellRecipes;
-            case MACHINEMODE_COLD_TRAP -> GTPPRecipeMaps.coldTrapRecipes;
-            case MACHINEMODE_NUCLEAR_SALT -> GTPPRecipeMaps.nuclearSaltProcessingPlantRecipes;
-            default -> GTPPRecipeMaps.vacuumFurnaceRecipes;
+            case MACHINEMODE_DEHYDRATOR -> RecipeMaps.chemicalDehydratorNonCellRecipes;
+            case MACHINEMODE_COLD_TRAP -> RecipeMaps.coldTrapRecipes;
+            case MACHINEMODE_NUCLEAR_SALT -> RecipeMaps.nuclearSaltProcessingPlantRecipes;
+            default -> RecipeMaps.vacuumFurnaceRecipes;
         };
     }
 
@@ -170,10 +205,10 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
     @Override
     public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
         return Arrays.asList(
-            GTPPRecipeMaps.chemicalDehydratorNonCellRecipes,
-            GTPPRecipeMaps.vacuumFurnaceRecipes,
-            GTPPRecipeMaps.coldTrapRecipes,
-            GTPPRecipeMaps.nuclearSaltProcessingPlantRecipes);
+            RecipeMaps.chemicalDehydratorNonCellRecipes,
+            RecipeMaps.vacuumFurnaceRecipes,
+            RecipeMaps.coldTrapRecipes,
+            RecipeMaps.nuclearSaltProcessingPlantRecipes);
     }
 
     @Override
@@ -200,31 +235,19 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("VacuumDryingFurnace_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.vacuum_drying_furnace.mode." + machineMode;
+    }
+
+    @Override
+    public boolean addsVoltageHeat() {
+        return true;
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("VacuumDryingFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_05"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(3, 5, 3, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_VacuumDryingFurnace_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -239,16 +262,6 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Vacuum Drying Furnace GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_STEAM);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT);
-    }
-
-    @Override
     public int nextMachineMode() {
         if (machineMode == MACHINEMODE_VACUUMFURNACE) return MACHINEMODE_DEHYDRATOR;
         else if (machineMode == MACHINEMODE_DEHYDRATOR) return MACHINEMODE_COLD_TRAP;
@@ -260,7 +273,7 @@ public class VacuumDryingFurnace extends GTMMultiMachineBase<VacuumDryingFurnace
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 4;
-        GTUtility.sendChatTrans(aPlayer, "VacuumDryingFurnace_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override

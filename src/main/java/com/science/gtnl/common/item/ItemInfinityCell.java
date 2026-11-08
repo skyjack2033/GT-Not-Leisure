@@ -33,7 +33,6 @@ import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.NameConst;
-import com.science.gtnl.client.GTNLCreativeTabs;
 
 import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
@@ -56,7 +55,6 @@ import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEFluidStackType;
 import appeng.util.item.AEItemStack;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.util.GTUtility;
@@ -69,7 +67,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell {
     public static final long STORAGE_SIZE = Long.MAX_VALUE / 2;
     public static final String CUSTOM_TEXTURE_TAG = "CustomTexture";
     public static final String DEFAULT_ICON_KEY = "default";
-    public static final String DEFAULT_TEXTURE_NAME = "InfinityCell";
+    public static final String DEFAULT_TEXTURE_NAME = "infinity_cell";
     public static final String TOOLTIP_CELL_CONTENTS = NameConst.TT_KEY + "cell_contents";
     public static final String TOOLTIP_CELL_EMPTY = NameConst.TT_KEY + "cell_empty";
     public static final String TOOLTIP_INFINITY_FLUID_STORAGE = NameConst.TT_KEY + "infinity_fluid";
@@ -78,15 +76,16 @@ public class ItemInfinityCell extends ItemCreativeStorageCell {
     public static final List<ItemStack> REGISTERED_CELLS = new ObjectArrayList<>();
 
     public ItemInfinityCell() {
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + DEFAULT_TEXTURE_NAME);
         this.setHasSubtypes(true);
-        this.setUnlocalizedName("InfinityCell");
-        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
-        GameRegistry.registerItem(this, getUnlocalizedName());
         AEApi.instance()
             .registries()
             .cell()
             .addCellHandler(new InfinityCellHandler());
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "item.gtnl.infinity_cell";
     }
 
     @Override
@@ -315,20 +314,20 @@ public class ItemInfinityCell extends ItemCreativeStorageCell {
                 .getString("key");
             if (!key.isEmpty()) {
                 return StatCollector
-                    .translateToLocalFormatted("item.InfinityCell.name", StatCollector.translateToLocal(key));
+                    .translateToLocalFormatted("item.gtnl.infinity_cell.name", StatCollector.translateToLocal(key));
             }
             var r = getRecord(stack, c);
             if (!r.isEmpty()) {
                 return StatCollector.translateToLocalFormatted(
-                    "item.InfinityCell.name",
+                    "item.gtnl.infinity_cell.name",
                     c == StorageChannel.ITEMS ? ((IAEItemStack) r.get(0)).getItemStack()
                         .getDisplayName()
                         : ((IAEFluidStack) r.get(0)).getFluidStack()
                             .getLocalizedName());
             }
-            return StatCollector.translateToLocal("item.InfinityCell.unknown");
+            return StatCollector.translateToLocal("item.gtnl.infinity_cell.unknown");
         }
-        return StatCollector.translateToLocal("item.InfinityCell.unknown");
+        return StatCollector.translateToLocal("item.gtnl.infinity_cell.unknown");
     }
 
     @SideOnly(Side.CLIENT)
@@ -341,7 +340,7 @@ public class ItemInfinityCell extends ItemCreativeStorageCell {
                     var isItem = c == StorageChannel.ITEMS;
                     lines.add(
                         StatCollector
-                            .translateToLocal(isItem ? "Tooltip_InfinityCell_Contents" : TOOLTIP_CELL_CONTENTS));
+                            .translateToLocal(isItem ? "item.gtnl.infinity_cell.contents" : TOOLTIP_CELL_CONTENTS));
                     var list = getRecord(stack, c);
                     if (!list.isEmpty()) {
                         for (IAEStack<?> s : list) {

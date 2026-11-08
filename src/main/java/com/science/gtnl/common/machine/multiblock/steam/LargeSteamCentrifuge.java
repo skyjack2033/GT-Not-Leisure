@@ -17,23 +17,27 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSteamCentrifuge extends SteamMultiMachineBase<LargeSteamCentrifuge>
     implements ISurvivalConstructable {
 
@@ -50,6 +54,11 @@ public class LargeSteamCentrifuge extends SteamMultiMachineBase<LargeSteamCentri
 
     public LargeSteamCentrifuge(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_steam_centrifuge.name";
     }
 
     @Override
@@ -163,7 +172,7 @@ public class LargeSteamCentrifuge extends SteamMultiMachineBase<LargeSteamCentri
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.centrifugeNonCellRecipes;
+        return RecipeMaps.centrifugeNonCellRecipes;
     }
 
     @Override
@@ -194,8 +203,8 @@ public class LargeSteamCentrifuge extends SteamMultiMachineBase<LargeSteamCentri
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
-        int id = tierMachine == 2 ? StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0)
-            : StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        int id = tierMachine == 2 ? Casings.SolidSteelMachineCasing.getTextureId()
+            : Casings.BronzePlatedBricks.getTextureId();
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(id), TextureFactory.builder()
                 .addIcon(TexturesGtBlock.oMCDIndustrialThermalCentrifugeActive)
@@ -211,24 +220,13 @@ public class LargeSteamCentrifuge extends SteamMultiMachineBase<LargeSteamCentri
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("LargeSteamCentrifugeRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.large_steam_centrifuge.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSteamCentrifugeRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCentrifuge_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCentrifuge_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCentrifuge_02"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .beginStructureBlock(7, 10, 7, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamCentrifuge_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamCentrifuge_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeSteamCentrifuge_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeSteamCentrifuge_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

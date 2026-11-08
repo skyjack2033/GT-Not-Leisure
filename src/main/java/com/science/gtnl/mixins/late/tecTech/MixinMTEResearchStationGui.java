@@ -1,15 +1,17 @@
 package com.science.gtnl.mixins.late.tecTech;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
-import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.utils.Alignment.MainAxis;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.cleanroommc.modularui.widgets.slot.ModularSlot;
-import com.cleanroommc.modularui.widgets.slot.PhantomItemSlot;
 import com.science.gtnl.api.mixinHelper.IResearchStationMarker;
+import com.science.gtnl.common.gui.modularui.PersistentFilterSlot;
 
-import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.common.gui.modularui.multiblock.MTEResearchStationGui;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import tectech.thing.metaTileEntity.multi.MTEResearchStation;
@@ -22,11 +24,21 @@ public abstract class MixinMTEResearchStationGui extends MTEMultiBlockBaseGui<MT
     }
 
     @Override
-    protected IWidget createPowerPanelButton(PanelSyncManager syncManager, ModularPanel parent) {
+    protected Flow createRightPanelGapRow(ModularPanel parent, PanelSyncManager syncManager) {
+        return Flow.row()
+            .mainAxisAlignment(MainAxis.END)
+            .reverseLayout(true)
+            .verticalCenter()
+            .rightRel(0)
+            .coverChildrenWidth()
+            .fullHeight()
+            .child(gtnl$markerSlot());
+    }
+
+    @Unique
+    private ItemSlot gtnl$markerSlot() {
         IResearchStationMarker marker = (IResearchStationMarker) multiblock;
-        return new PhantomItemSlot().slot(new ModularSlot(marker.gtnl$getResearchMarkerInventoryHandler(), 0))
-            .background(GTGuiTextures.SLOT_ITEM_STANDARD)
-            .backgroundOverlay(GTGuiTextures.OVERLAY_SLOT_FILTER)
+        return new PersistentFilterSlot().slot(new ModularSlot(marker.gtnl$getResearchMarkerInventoryHandler(), 0))
             .size(18, 18)
             .marginLeft(5);
     }

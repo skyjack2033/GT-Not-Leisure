@@ -1,9 +1,14 @@
 package com.science.gtnl.common.machine.multiblock.module.steamElevator;
 
+import java.util.Map;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 
 import org.jetbrains.annotations.NotNull;
+
+import com.google.common.collect.ImmutableMap;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 
 import gregtech.GTMod;
 import gregtech.api.enums.GTValues;
@@ -15,7 +20,10 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReason;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SteamMonsterRepellentModule extends SteamElevatorModuleBase {
+
+    public static final String[] TIER_TITLES = { "basic", "advanced", "elite" };
 
     public int mRange;
 
@@ -33,7 +41,7 @@ public class SteamMonsterRepellentModule extends SteamElevatorModuleBase {
     public void stopMachine(@NotNull ShutDownReason reason) {
         final IGregTechTileEntity mte = this.getBaseMetaTileEntity();
         if (mte.isServerSide()) {
-            GTMod.gregtechproxy.spawnEventHandler.removeRepellent(mte);
+            GTMod.proxy.spawnEventHandler.removeRepellent(mte);
         }
         super.stopMachine(reason);
     }
@@ -42,7 +50,7 @@ public class SteamMonsterRepellentModule extends SteamElevatorModuleBase {
     public void onRemoval() {
         final IGregTechTileEntity mte = this.getBaseMetaTileEntity();
         if (mte.isServerSide()) {
-            GTMod.gregtechproxy.spawnEventHandler.removeRepellent(mte);
+            GTMod.proxy.spawnEventHandler.removeRepellent(mte);
         }
         super.onRemoval();
     }
@@ -51,7 +59,7 @@ public class SteamMonsterRepellentModule extends SteamElevatorModuleBase {
     public void onUnload() {
         final IGregTechTileEntity mte = this.getBaseMetaTileEntity();
         if (mte.isServerSide()) {
-            GTMod.gregtechproxy.spawnEventHandler.removeRepellent(mte);
+            GTMod.proxy.spawnEventHandler.removeRepellent(mte);
         }
         super.onUnload();
     }
@@ -81,30 +89,29 @@ public class SteamMonsterRepellentModule extends SteamElevatorModuleBase {
         this.mMaxProgresstime = 1000;
         IGregTechTileEntity mte = getBaseMetaTileEntity();
         if (mte.isAllowedToWork() && mte.isServerSide()) {
-            GTMod.gregtechproxy.spawnEventHandler.putRepellent(mte, mRange);
+            GTMod.proxy.spawnEventHandler.putRepellent(mte, mRange);
         }
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamMonsterRepellentModuleRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_monster_repellent_module.recipe_type");
+    }
+
+    @Override
+    public Map<String, Object> getTooltipVars() {
+        return ImmutableMap.of(
+            "tier_title",
+            TIER_TITLES[Math.min(Math.max(mTier - 1, 0), TIER_TITLES.length - 1)],
+            "range",
+            getMachineEffectRange());
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SteamMonsterRepellentModuleRecipeType"));
-        switch (mTier) {
-            case 1 -> tt.addInfo(StatCollector.translateToLocal("Tooltip_SteamMonsterRepellentModuleI_00"));
-            case 2 -> tt.addInfo(StatCollector.translateToLocal("Tooltip_SteamMonsterRepellentModuleII_00"));
-            case 3 -> tt.addInfo(StatCollector.translateToLocal("Tooltip_SteamMonsterRepellentModuleIII_00"));
-        }
-        tt.addInfo(StatCollector.translateToLocal("Tooltip_SteamMonsterRepellentModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamMonsterRepellentModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamMonsterRepellentModule_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamMonsterRepellentModule_03") + (1 << (5 + mTier)))
-            .beginStructureBlock(1, 5, 2, false)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

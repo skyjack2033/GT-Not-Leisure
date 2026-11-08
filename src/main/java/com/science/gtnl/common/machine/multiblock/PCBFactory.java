@@ -2,8 +2,6 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,35 +19,29 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.utils.item.ItemStackHandler;
+import com.google.common.collect.ImmutableMap;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.drawable.IDrawable;
-import com.gtnewhorizons.modularui.api.drawable.Text;
-import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
-import com.gtnewhorizons.modularui.common.widget.ButtonWidget;
-import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
-import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
-import com.gtnewhorizons.modularui.common.widget.SlotWidget;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.api.IControllerUpgrade;
-import com.science.gtnl.common.gui.modularui.PCBFactoryGui;
+import com.science.gtnl.common.gui.modularui.multiblock.PCBFactoryGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
+import gregtech.api.enums.TickTime;
 import gregtech.api.interfaces.IHatchElement;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -76,16 +68,19 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
+import gregtech.api.util.tooltip.TooltipHelper;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.tileentities.machines.IRecipeProcessingAwareHatch;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import tectech.thing.CustomItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     implements ISurvivalConstructable, IControllerUpgrade {
 
@@ -122,6 +117,11 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
         GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SpaceTime, 16), ItemList.ZPM6.get(8),
         ItemList.Robot_Arm_UIV.get(64), ItemList.Conveyor_Module_UIV.get(64), ItemList.Field_Generator_UEV.get(64) };
 
+    private static final int DISTILLED_WATER_INTERVAL = TickTime.SECOND * 5;
+    private static final int LOW_GRADE_WATER_PER_PARALLEL = 100;
+    private static final int HIGH_GRADE_WATER_PER_PARALLEL = 50;
+    private static final double MACHINE_TIER_BONUS = 0.1;
+    private static final int PERFECT_OVERCLOCK_TIER = 3;
     public static FluidStack DISTILLED_WATER = GTModHandler.getDistilledWater(7500);
     public static ItemStack T1NANITE = GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Neutronium, 1);
     public static ItemStack T2NANITE = GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Silver, 1);
@@ -143,7 +143,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     @Setter
     public boolean upgradeConsumed = false;
 
-    public ArrayList<MTEHatchInput> mWaterInputHatches = new ArrayList<>();
+    public ObjectArrayList<MTEHatchInput> mWaterInputHatches = new ObjectArrayList<>();
     public int machineTier;
 
     public PCBFactory(int aID, String aName, String aNameRegional) {
@@ -203,13 +203,12 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     @Override
     public void updateHatchTexture() {
         super.updateHatchTexture();
-        for (MTEHatch h : mWaterInputHatches)
-            h.updateTexture(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3));
+        for (MTEHatch h : mWaterInputHatches) h.updateTexture(Casings.PressureContainmentCasing.getTextureId());
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
@@ -241,7 +240,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             depletePurifiedWater();
         }
 
-        List<ItemStack> expandedOutputs = new ArrayList<>();
+        List<ItemStack> expandedOutputs = new ObjectArrayList<>();
 
         for (ItemStack is : mOutputItems) {
             if (is == null) continue;
@@ -298,11 +297,11 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
                 for (FluidStack fluidStack : getStoredWater()) {
                     if (GTUtility.areFluidsEqual(fluidStack, PURIFIED_WATER[requiredPCBTier - 1])) {
-                        parallel += (long) (fluidStack.amount / 100d
+                        parallel += (long) (fluidStack.amount / (double) LOW_GRADE_WATER_PER_PARALLEL
                             * GTUtility.powInt(2, machineTier - requiredPCBTier));
                     }
                     if (GTUtility.areFluidsEqual(fluidStack, PURIFIED_WATER[requiredPCBTier + 3])) {
-                        parallel += (long) (fluidStack.amount / 50d
+                        parallel += (long) (fluidStack.amount / (double) HIGH_GRADE_WATER_PER_PARALLEL
                             * GTUtility.powInt(2, machineTier - requiredPCBTier));
                     }
                 }
@@ -333,7 +332,35 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
     @Override
     public boolean getPerfectOC() {
-        return machineTier >= 3;
+        return machineTier >= PERFECT_OVERCLOCK_TIER;
+    }
+
+    @Override
+    protected boolean overclocksPerfectlyInWirelessMode() {
+        return false;
+    }
+
+    @Override
+    protected TooltipStats readTooltipStats() {
+        int tier = machineTier;
+        machineTier = 1;
+        try {
+            return super.readTooltipStats();
+        } finally {
+            machineTier = tier;
+        }
+    }
+
+    @Override
+    public Map<String, Object> getTooltipVars() {
+        return ImmutableMap.<String, Object>builder()
+            .put("distilled_water", DISTILLED_WATER.amount)
+            .put("distilled_water_seconds", DISTILLED_WATER_INTERVAL / TickTime.SECOND)
+            .put("low_grade_water", LOW_GRADE_WATER_PER_PARALLEL)
+            .put("high_grade_water", HIGH_GRADE_WATER_PER_PARALLEL)
+            .put("tier_bonus", TooltipHelper.percentageFormat.format(MACHINE_TIER_BONUS))
+            .put("perfect_overclock_tier", PERFECT_OVERCLOCK_TIER)
+            .build();
     }
 
     @Override
@@ -343,34 +370,8 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("PCBFactoryRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PCBFactory_10"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginVariableStructureBlock(13, 47, 16, 30, 14, 46, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_PCBFactory_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_PCBFactory_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_PCBFactory_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_PCBFactory_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_PCBFactory_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_PCBFactory_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -381,7 +382,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addShape(STRUCTURE_PIECE_MAIN_T2, StructureUtility.transpose(shape_t2))
             .addShape(STRUCTURE_PIECE_MAIN_T3, StructureUtility.transpose(shape_t3))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
+            .addElement('A', Casings.PressureContainmentCasing.asElement())
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(PCBFactory.class)
@@ -395,10 +396,10 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
                         HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
-                    .buildAndChain(StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7)))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 7))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 0))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+                    .buildAndChain(Casings.AdvancedIridiumPlatedMachineCasing.asElement()))
+            .addElement('C', Casings.HermeticCasing7.asElement())
+            .addElement('D', Casings.MagTechCasing.asElement())
+            .addElement('E', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement('F', GTStructureUtility.chainAllGlasses())
             .addElement('G', GTStructureUtility.ofFrame(Materials.Neutronium))
             .addElement(
@@ -410,22 +411,22 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             .addElement(
                 'I',
                 GTStructureUtility.buildHatchAdder(PCBFactory.class)
-                    .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3))
+                    .casingIndex(Casings.PressureContainmentCasing.getTextureId())
                     .hint(1)
                     .atLeast(CustomHatchElement.WaterInputHatch)
                     .buildAndChain(GregTechAPI.sBlockCasings10, 3))
-            .addElement('J', StructureUtility.ofBlock(sBlockCasingsTT, 8))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 5))
-            .addElement('L', StructureUtility.ofBlock(blockCasings2Misc, 12))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
-            .addElement('N', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 12))
-            .addElement('P', StructureUtility.ofBlock(sBlockCasingsTT, 7))
-            .addElement('Q', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 13))
-            .addElement('R', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('S', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
-            .addElement('T', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('U', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
+            .addElement('J', Casings.HollowCasing.asElement())
+            .addElement('K', Casings.IVMachineCasing.asElement())
+            .addElement('L', Casings.BulkProductionFrame.asElement())
+            .addElement('M', Casings.AssemblyLineCasing.asElement())
+            .addElement('N', Casings.HighPowerCasing.asElement())
+            .addElement('O', Casings.BackgroundRadiationAbsorbentCasing.asElement())
+            .addElement('P', Casings.MolecularCoil.asElement())
+            .addElement('Q', Casings.HighEnergyUltravioletEmitterCasing.asElement())
+            .addElement('R', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('S', Casings.HeatResistantTriniumPlatedCasing.asElement())
+            .addElement('T', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('U', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
             .build();
     }
 
@@ -485,12 +486,12 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
     @Override
     public double getEUtDiscount() {
-        return (wirelessUpgrade ? 0.6 : 0.8) - 0.1 * (machineTier - 1);
+        return (wirelessUpgrade ? 0.6 : 0.8) - MACHINE_TIER_BONUS * (machineTier - 1);
     }
 
     @Override
     public double getDurationModifier() {
-        double modifier = 1.0 / (wirelessUpgrade ? 8.0 : 3.0 + (machineTier - 1) * 0.1)
+        double modifier = 1.0 / (wirelessUpgrade ? 8.0 : 3.0 + (machineTier - 1) * MACHINE_TIER_BONUS)
             - (Math.max(0, mParallelTier - 1) / 50.0);
         return Math.max(0.00001, modifier);
     }
@@ -499,7 +500,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPostTick(aBaseMetaTileEntity, aTick);
         if (mStartUpCheck > 0 || !getBaseMetaTileEntity().isServerSide()) return;
-        if (isAllowedToWork() && aTick % 100 == 0) {
+        if (isAllowedToWork() && aTick % DISTILLED_WATER_INTERVAL == 0) {
             startRecipeProcessing();
             if (!depleteWaterInput(DISTILLED_WATER)) {
                 stopMachine(ShutDownReasonRegistry.NONE);
@@ -548,7 +549,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
             if (parallel <= 0) break;
             // Consume the higher-grade purified water first.
             if (GTUtility.areFluidsEqual(fluidStack, PURIFIED_WATER[tier + 3])) {
-                int deductAmount = 50 / (int) GTUtility.powInt(2, machineTier - tier);
+                int deductAmount = HIGH_GRADE_WATER_PER_PARALLEL / (int) GTUtility.powInt(2, machineTier - tier);
                 deductAmount = Math.max(1, deductAmount);
 
                 int timesToDeduct = fluidStack.amount / deductAmount;
@@ -564,7 +565,7 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
             // Consume the lower-grade purified water only if more parallels remain.
             if (GTUtility.areFluidsEqual(fluidStack, PURIFIED_WATER[tier - 1])) {
-                int deductAmount = 100 / (int) GTUtility.powInt(2, machineTier - tier);
+                int deductAmount = LOW_GRADE_WATER_PER_PARALLEL / (int) GTUtility.powInt(2, machineTier - tier);
                 deductAmount = Math.max(1, deductAmount);
 
                 int timesToDeduct = fluidStack.amount / deductAmount;
@@ -609,52 +610,8 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     }
 
     @Override
-    @Deprecated
-    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        // TODO: Remove this mui1 fallback after the PCB Factory terminal text is fully ported to mui2.
-        super.drawTexts(screenElements, inventorySlot);
-        screenElements.widget(
-            TextWidget.dynamicText(() -> new Text(StatCollector.translateToLocal("Info_PCBFactory_00") + machineTier))
-                .setDefaultColor(COLOR_TEXT_WHITE.get()))
-            .widget(
-                new FakeSyncWidget.IntegerSyncer(() -> machineTier, tier -> machineTier = tier).setSynced(true, false));
-    }
-
-    @Override
     public boolean isUpgradeButtonEnabled() {
         return machineTier >= 3;
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the PCB Factory upgrade GUI is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        createUpgradeButton(builder, buildContext);
-    }
-
-    @Override
-    @Deprecated
-    public void createUpgradeButton(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the PCB Factory upgrade button is fully ported to mui2.
-        buildContext.addSyncedWindow(getUpgradeWindowId(), this::createConsumeWindow);
-        builder.widget(new FakeSyncWidget.BooleanSyncer(this::isUpgradeConsumed, this::setUpgradeConsumed));
-
-        builder.widget(new ButtonWidget().setOnClick((click, widget) -> {
-            if (!widget.isClient()) {
-                widget.getContext()
-                    .openSyncedWindow(getUpgradeWindowId());
-            }
-        })
-            .setBackground(
-                () -> new IDrawable[] {
-                    upgradeConsumed ? GTUITextures.BUTTON_STANDARD_PRESSED : GTUITextures.BUTTON_STANDARD,
-                    GTUITextures.OVERLAY_BUTTON_ARROW_GREEN_UP })
-            .addTooltip(getUpgradeButtonTooltip())
-            .setTooltipShowUpDelay(5)
-            .setEnabled(widget -> machineTier >= 3)
-            .setPos(getUpgradeButtonPos())
-            .setSize(16, 16));
     }
 
     @Override
@@ -663,8 +620,15 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
     }
 
     @Override
+    public boolean tryConsumeItems() {
+        boolean result = IControllerUpgrade.super.tryConsumeItems();
+        if (result) onMachineBlockUpdate();
+        return result;
+    }
+
+    @Override
     public String getUpgradeButtonTooltip() {
-        return StatCollector.translateToLocal("Info_PCBFactory_01");
+        return StatCollector.translateToLocal("gtnl.gui.pcb_factory.upgrade.t4_machine_tier");
     }
 
     @Override
@@ -775,7 +739,12 @@ public class PCBFactory extends WirelessEnergyMultiMachineBase<PCBFactory>
 
         @Override
         public String getDisplayName() {
-            return GTUtility.translate(name);
+            return StatCollector.translateToLocal(name);
+        }
+
+        @Override
+        public String getDescriptionLangKey() {
+            return "gtnl.structure.hatch.water_input";
         }
 
         public IGTHatchAdder<? super PCBFactory> adder() {

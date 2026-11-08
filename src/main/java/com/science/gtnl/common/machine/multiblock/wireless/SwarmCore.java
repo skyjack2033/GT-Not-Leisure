@@ -1,7 +1,6 @@
 package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
@@ -12,34 +11,29 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
-import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
-import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
-import com.gtnewhorizons.modularui.common.widget.SlotWidget;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.api.IControllerUpgrade;
-import com.science.gtnl.common.gui.modularui.SwarmCoreGui;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.gui.modularui.multiblock.SwarmCoreGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
+import com.science.gtnl.utils.enums.ModsItemlist;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import bartworks.common.loaders.ItemRegistry;
 import goodgenerator.items.GGMaterial;
 import goodgenerator.util.ItemRefer;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -52,7 +46,6 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -65,6 +58,7 @@ import gtnhlanth.common.register.LanthItemList;
 import lombok.Getter;
 import tectech.thing.CustomItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> implements IControllerUpgrade {
 
     private static final int HORIZONTAL_OFF_SET = 20;
@@ -82,7 +76,7 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
             GTUtility.copyAmountUnsafe(64, MaterialsElements.STANDALONE.HYPOGEN.getFrameBox(1)),
             ItemList.Electric_Motor_UEV.get(32), ItemList.Emitter_UEV.get(8), ItemList.Sensor_UEV.get(8),
             GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.TengamAttuned, 32),
-            GTModHandler.getModItem(Mods.EternalSingularity.ID, "eternal_singularity", 16),
+            ModsItemlist.EternalSingularity.get(16),
             GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUEV, 64),
             GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Glowstone, 16),
             GTUtility.copyAmountUnsafe(16, GGMaterial.extremelyUnstableNaquadah.get(OrePrefixes.nanite, 1)),
@@ -90,14 +84,14 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
         { GTUtility.copyAmountUnsafe(128, ItemRefer.MagneticFluxCasing.get(1)),
             GTUtility.copyAmountUnsafe(128, GregtechItemList.InfinityInfusedManipulator.get(1)),
             GTUtility.copyAmountUnsafe(128, GregtechItemList.InfinityInfusedShieldingCore.get(1)),
-            GTModHandler.getModItem(Mods.GalacticraftAmunRa.ID, "tile.baseBlockRock", 48, 14),
+            ModsItemlist.AmunRaDarkMatter.get(48),
             GTUtility.copyAmountUnsafe(128, ItemRefer.GravityStabilizationCasing.get(1)),
             GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.SpaceTime, 32),
             GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Creon, 64),
             GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Mellion, 64),
             GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UMV, 64),
             GTUtility.copyAmountUnsafe(64, ItemList.Field_Generator_UIV.get(1)),
-            GTModHandler.getModItem(Mods.DraconicEvolution.ID, "chaoticCore", 32),
+            ModsItemlist.DraconicEvolutionChaoticCore.get(32),
             GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUIV, 64),
             GTOreDictUnificator.get(OrePrefixes.nanite, Materials.SixPhasedCopper, 64),
             GTOreDictUnificator.get(OrePrefixes.nanite, Materials.Gold, 64) },
@@ -152,6 +146,16 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     public void setUpgradeConsumed(boolean upgradeConsumed) {}
 
     @Override
+    public int getUpgradeProgress() {
+        return machineTier;
+    }
+
+    @Override
+    public void setUpgradeProgress(int progress) {
+        machineTier = Math.clamp(progress, 1, REQUIRED_ITEMS.length + 1);
+    }
+
+    @Override
     public boolean tryConsumeItems() {
         boolean result = IControllerUpgrade.super.tryConsumeItems();
         if (result && machineTier < 4) machineTier++;
@@ -175,8 +179,8 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
-        loadUpgradeNBTData(aNBT);
         if (aNBT.hasKey("machineTier")) machineTier = aNBT.getInteger("machineTier");
+        loadUpgradeNBTData(aNBT);
     }
 
     @Override
@@ -201,6 +205,33 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     }
 
     @Override
+    public int getMaximumUpgradePreviewLevel() {
+        return REQUIRED_ITEMS.length - 1;
+    }
+
+    @Override
+    public int getUpgradeDisplayPageCount() {
+        return REQUIRED_ITEMS.length;
+    }
+
+    @Override
+    public int getCurrentUpgradeDisplayPage() {
+        return Math.clamp(machineTier - 1, 0, REQUIRED_ITEMS.length - 1);
+    }
+
+    @Override
+    public ItemStack[] getUpgradeDisplayItems(int displayPage) {
+        if (displayPage < 0 || displayPage >= REQUIRED_ITEMS.length) return new ItemStack[0];
+        return REQUIRED_ITEMS[displayPage];
+    }
+
+    @Override
+    public int[] getUpgradeDisplayPaidCosts(int displayPage) {
+        if (displayPage < 0 || displayPage >= upgradePaidCosts.length) return new int[0];
+        return upgradePaidCosts[displayPage];
+    }
+
+    @Override
     public ItemStack[] getPreviewUpgradeRequiredItems(int previewLevel) {
         int previewIndex = machineTier - 1 + previewLevel;
         if (previewIndex >= REQUIRED_ITEMS.length) return new ItemStack[0];
@@ -221,42 +252,20 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
 
     @Override
     public String getUpgradeButtonTooltip() {
-        return StatCollector.translateToLocal("Info_SwarmCore_00");
+        return StatCollector.translateToLocal("gtnl.machine.swarm_core.upgrade_required");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SwarmCoreRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SwarmCore_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SwarmCore_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SwarmCore_02"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(41, 54, 41, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SwarmCore_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_SwarmCore_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_SwarmCore_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_SwarmCore_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SwarmCore_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_SwarmCore_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -291,16 +300,16 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
     public IStructureDefinition<SwarmCore> getStructureDefinition() {
         return StructureDefinition.<SwarmCore>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasingsTT, 8))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
-            .addElement('C', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('D', StructureUtility.ofBlock(BlockLoader.metaCasing, 18))
-            .addElement('E', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
-            .addElement('G', GTStructureUtility.activeCoils(StructureUtility.ofBlock(GregTechAPI.sBlockCasings5, 13)))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 2))
+            .addElement('A', Casings.HollowCasing.asElement())
+            .addElement('B', Casings.ExtremeDensitySpaceBendingCasing.asElement())
+            .addElement('C', Casings.HighPowerCasing.asElement())
+            .addElement('D', GTNLCasings.HyperCore.asElement())
+            .addElement('E', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('F', Casings.DimensionalBridge.asElement())
+            .addElement('G', GTStructureUtility.activeCoils(Casings.EternalCoilBlock.asElement()))
+            .addElement('H', Casings.QuarkExclusionCasing.asElement())
             .addElement('I', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('J', StructureUtility.ofBlock(sBlockCasingsTT, 4))
+            .addElement('J', Casings.MolecularCasing.asElement())
             .addElement(
                 'K',
                 GTStructureUtility.buildHatchAdder(SwarmCore.class)
@@ -315,15 +324,14 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
-            .addElement('L', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
+            .addElement('L', GTNLCasings.FusionGlass.asElement())
+            .addElement('M', Casings.ActiveNeutroniumCasing.asElement())
             .addElement('N', GTStructureUtility.ofFrame(Materials.Neutronium))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 1))
+            .addElement('O', Casings.ElectronPermeableNeutroniumCoatedGlass.asElement())
             .addElement('P', GTStructureUtility.ofFrame(Materials.NaquadahAlloy))
-            .addElement('Q', StructureUtility.ofBlock(ItemRegistry.bw_realglas2, 0))
+            .addElement('Q', StructureUtility.ofBlock(ItemRegistry.bw_realglas, 6))
             .build();
     }
 
@@ -386,11 +394,11 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
 
     @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
+        setOverclockRatio(logic);
         if (wirelessMode) {
             logic.setAvailableVoltage(Integer.MAX_VALUE);
             logic.setAvailableAmperage((8L << (2 * mParallelTier)) - 2L);
             logic.setAmperageOC(false);
-            logic.enablePerfectOverclock();
         } else {
             boolean useSingleAmp = mEnergyHatches.size() == 1 && mExoticEnergyHatches.isEmpty()
                 && getMaxInputAmps() <= 4;
@@ -416,29 +424,6 @@ public class SwarmCore extends WirelessEnergyMultiMachineBase<SwarmCore> impleme
 
     public void setMachineTierFromGui(int machineTier) {
         this.machineTier = machineTier;
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the Swarm Core upgrade GUI is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        createUpgradeButton(builder, buildContext);
-    }
-
-    @Override
-    @Deprecated
-    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        // TODO: Remove this mui1 fallback after the Swarm Core terminal text is fully ported to mui2.
-        super.drawTexts(screenElements, inventorySlot);
-        screenElements
-            .widget(
-                new TextWidget()
-                    .setStringSupplier(() -> StatCollector.translateToLocalFormatted("Info_SwarmCore_01", machineTier))
-                    .setDefaultColor(COLOR_TEXT_WHITE.get())
-                    .setEnabled(true))
-            .widget(
-                new FakeSyncWidget.IntegerSyncer(() -> machineTier, tier -> machineTier = tier).setSynced(true, false));
     }
 
 }

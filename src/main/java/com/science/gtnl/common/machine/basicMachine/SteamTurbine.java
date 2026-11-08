@@ -9,16 +9,12 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
 import com.science.gtnl.common.gui.GTNLMui2Textures;
-import com.science.gtnl.common.gui.modularui.GTNLBasicGeneratorGui;
-import com.science.gtnl.utils.item.ItemUtils;
+import com.science.gtnl.common.gui.modularui.singleblock.GTNLBasicGeneratorGui;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
-import gregtech.api.interfaces.modularui.IAddGregtechLogo;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEBasicGenerator;
@@ -26,7 +22,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTModHandler;
 
-public class SteamTurbine extends MTEBasicGenerator implements IAddGregtechLogo {
+public class SteamTurbine extends MTEBasicGenerator {
 
     public SteamTurbine(int aID, String aName, String aNameRegional, int aTier) {
         super(
@@ -34,20 +30,22 @@ public class SteamTurbine extends MTEBasicGenerator implements IAddGregtechLogo 
             aName,
             aNameRegional,
             aTier,
-            new String[] { StatCollector.translateToLocal("Tooltip_SteamTurbine_00"),
-                StatCollector.translateToLocal("Tooltip_SteamTurbine_01"), "", "" });
+            new String[] { StatCollector.translateToLocal("gtnl.machine.steam_turbine.tooltip.0"),
+                StatCollector.translateToLocal("gtnl.machine.steam_turbine.tooltip.1"), "", "" });
         mDescriptionArray[2] = StatCollector
-            .translateToLocalFormatted("Tooltip_SteamTurbine_02", 800 / getEfficiency());
-        mDescriptionArray[3] = StatCollector
-            .translateToLocalFormatted("Tooltip_SteamTurbine_03", NumberFormatUtil.formatNumber(getCapacity()));
+            .translateToLocalFormatted("gtnl.machine.steam_turbine.tooltip.2", 800 / getEfficiency());
+        mDescriptionArray[3] = StatCollector.translateToLocalFormatted(
+            "gtnl.machine.steam_turbine.tooltip.3",
+            NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     public SteamTurbine(String aName, int aTier, String[] aDescription, ITexture[][][] aTextures) {
         super(aName, aTier, aDescription, aTextures);
         mDescriptionArray[2] = StatCollector
-            .translateToLocalFormatted("Tooltip_SteamTurbine_02", 800 / getEfficiency());
-        mDescriptionArray[3] = StatCollector
-            .translateToLocalFormatted("Tooltip_SteamTurbine_03", NumberFormatUtil.formatNumber(getCapacity()));
+            .translateToLocalFormatted("gtnl.machine.steam_turbine.tooltip.2", 800 / getEfficiency());
+        mDescriptionArray[3] = StatCollector.translateToLocalFormatted(
+            "gtnl.machine.steam_turbine.tooltip.3",
+            NumberFormatUtil.formatNumber(getCapacity()));
     }
 
     @Override
@@ -206,16 +204,6 @@ public class SteamTurbine extends MTEBasicGenerator implements IAddGregtechLogo 
     @Override
     public String[] getDescription() {
         return mDescriptionArray;
-    }
-
-    @Override
-    @Deprecated
-    public void addGregTechLogo(ModularWindow.Builder builder) {
-        // TODO: Remove this mui1 fallback after SteamTurbine mui2 rollout is complete.
-        builder.widget(
-            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
-                .setSize(18, 18)
-                .setPos(151, 62));
     }
 
     @Override

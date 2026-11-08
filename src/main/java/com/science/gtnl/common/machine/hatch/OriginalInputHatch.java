@@ -7,10 +7,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 
 import gregtech.api.interfaces.ITexture;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchInput;
 
+@IMetaTileEntity.SkipGenerateName
+@IMetaTileEntity.SkipGenerateDescription
 public class OriginalInputHatch extends MTEHatchInput {
 
     public OriginalInputHatch(int aID, String aName, String aNameRegional) {
@@ -38,11 +41,23 @@ public class OriginalInputHatch extends MTEHatchInput {
     }
 
     @Override
+    public String getLocalNameKey() {
+        if (!hasOwnLocalName()) return super.getLocalNameKey();
+        return "gtnl.hatch.original_input.name";
+    }
+
+    @Override
+    public String getLocalName() {
+        if (!hasOwnLocalName()) return super.getLocalName();
+        return StatCollector.translateToLocal(getLocalNameKey());
+    }
+
+    @Override
     public String[] getDescription() {
-        return new String[] { StatCollector.translateToLocal("Tooltip_OriginalInputHatch_00"),
-            StatCollector.translateToLocal("Tooltip_OriginalInputHatch_01"),
+        return new String[] { StatCollector.translateToLocal("gtnl.hatch.original_input.tooltip.0"),
+            StatCollector.translateToLocal("gtnl.hatch.original_input.tooltip.1"),
             StatCollector.translateToLocalFormatted(
-                "Tooltip_OriginalInputHatch_02",
+                "gtnl.hatch.original_input.tooltip.2",
                 NumberFormatUtil.formatNumber(getCapacity())) };
     }
 }

@@ -2,7 +2,6 @@ package com.reavaritia.common.items;
 
 import static com.reavaritia.ReAvaritia.RESOURCE_ROOT_ID;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +25,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.IIcon;
@@ -33,21 +33,21 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
 import com.google.common.collect.ImmutableList;
+import com.gtnllib.utils.GameUtils;
 import com.reavaritia.client.ReAvaCreativeTabs;
+import com.reavaritia.common.ItemLoader;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.reavaritia.utils.item.SubtitleDisplay;
 import com.reavaritia.utils.item.ToolHelper;
 import com.science.gtnl.common.entity.EntitySaddleSlime;
-import com.science.gtnl.config.MainConfig;
+import com.science.gtnl.config.ReAvaritiaConfig;
 import com.science.gtnl.mixins.late.botania.AccessorEntityDoppleganger;
 import com.science.gtnl.mixins.late.draconicEvolution.AccessorCustomArmorHandler;
-import com.science.gtnl.utils.Utils;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
@@ -65,6 +65,7 @@ import galaxyspace.core.entity.boss.EntityGhastBoss;
 import galaxyspace.core.entity.boss.EntitySlimeBoss;
 import galaxyspace.core.entity.boss.EntityWolfBoss;
 import gregtech.api.enums.Mods;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import micdoodle8.mods.galacticraft.core.entities.EntitySkeletonBoss;
 import micdoodle8.mods.galacticraft.planets.mars.entities.EntityCreeperBoss;
 import vazkii.botania.common.entity.EntityDoppleganger;
@@ -83,14 +84,14 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
         .setDamageAllowedInCreativeMode()
         .setMagicDamage();
 
-    public List<Entity> sweepAttackTargets = new ArrayList<>();
-    public List<Entity> magnetTargets = new ArrayList<>();
+    public List<Entity> sweepAttackTargets = new ObjectArrayList<>();
+    public List<Entity> magnetTargets = new ObjectArrayList<>();
     public static final int MAX_ENTITY_PROCESS_PER_TICK = 100;
 
     public InfinitySword() {
         super(ToolHelper.INFINITY);
-        setUnlocalizedName("InfinitySword");
-        setTextureName(RESOURCE_ROOT_ID + ":" + "InfinitySword");
+        setUnlocalizedName("reavaritia.infinity_sword");
+        setTextureName(RESOURCE_ROOT_ID + ":infinity_sword");
         setCreativeTab(ReAvaCreativeTabs.ReAvaritia);
         this.setMaxDamage(9999);
         MinecraftForge.EVENT_BUS.register(this);
@@ -125,18 +126,12 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
                 playersWhoAttacked.add(playerName);
             }
             livingTarget.recentlyHit = 100;
-            DamageSource playerSource = DamageSource.causePlayerDamage((EntityPlayer) player);
-            livingTarget.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
-            livingTarget.setHealth(0);
-            livingTarget.onDeath(playerSource);
-            livingTarget.setDead();
-            livingTarget.worldObj.removeEntity(livingTarget);
+            applyPlayerLethalDamage(livingTarget, (EntityPlayer) player);
             return true;
         }
 
         if (victim instanceof EntityDragon) {
-            victim.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-            victim.setDead();
+            applyPlayerLethalDamage(victim, (EntityPlayer) player);
             return true;
         }
 
@@ -158,8 +153,8 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
     public void applyInfinityDamage(EntityLivingBase target, EntityLivingBase attacker) {
         if (target instanceof EntitySaddleSlime) return;
         if (target instanceof EntityDragon) {
-            target.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-            target.setDead();
+            applyPlayerLethalDamage(target, (EntityPlayer) attacker);
+            return;
         } else if (target instanceof EntityPlayer playerTarget && attacker.isSneaking()) {
             for (int i = 0; i < playerTarget.inventory.armorInventory.length; i++) {
                 ItemStack armorStack = playerTarget.inventory.armorInventory[i];
@@ -181,32 +176,22 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
             target.attackEntityFrom(AccessorCustomArmorHandler.getAdminKill(), Float.POSITIVE_INFINITY);
         }
 
-        DamageSource playerSource = DamageSource.causePlayerDamage((EntityPlayer) attacker);
-        target.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-        if (Mods.Avaritia.isModLoaded()) attackEntityInfinity(target, attacker);
+        applyPlayerLethalDamage(target, (EntityPlayer) attacker);
+    }
 
-        target.attackEntityFrom(DamageSource.anvil, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.fallingBlock, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.wither, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.magic, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.generic, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.fall, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.cactus, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.starve, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.drown, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.inWall, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.lava, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.inFire, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.onFire, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.outOfWorld, Float.POSITIVE_INFINITY);
+    private void applyPlayerLethalDamage(EntityLivingBase target, EntityPlayer attacker) {
+        target.hurtResistantTime = 0;
+        target.attackEntityFrom(createPlayerInfinityDamage(attacker), Float.POSITIVE_INFINITY);
+    }
 
-        if (!(target instanceof EntityPlayer || (Mods.GalaxySpace.isModLoaded() && isGalaxyBoss(target)))) {
-            target.setHealth(0);
-            target.onDeath(INFINITY_DAMAGE);
-            target.setDead();
-            target.worldObj.removeEntity(target);
-        }
+    private DamageSource createPlayerInfinityDamage(EntityPlayer attacker) {
+        return new EntityDamageSource(INFINITY_DAMAGE.damageType, attacker).setExplosion()
+            .setDamageBypassesArmor()
+            .setDamageIsAbsolute()
+            .setFireDamage()
+            .setProjectile()
+            .setDamageAllowedInCreativeMode()
+            .setMagicDamage();
     }
 
     @Optional.Method(modid = "GalaxySpace")
@@ -250,8 +235,8 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
             if (world.isRemote) {
                 long remainingTime = (COOLDOWN - (System.currentTimeMillis() - lastUsed)) / 1000;
                 showSubtitle(
-                    StatCollector.translateToLocal("Tooltip_InfinitySword_Aura_00") + remainingTime
-                        + StatCollector.translateToLocal("Tooltip_InfinitySword_Aura_01"));
+                    StatCollector.translateToLocal("reavaritia.item.infinity_sword.aura.00") + remainingTime
+                        + StatCollector.translateToLocal("reavaritia.item.infinity_sword.aura.01"));
             }
             return;
         }
@@ -294,18 +279,11 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
                 }
 
                 livingTarget.recentlyHit = 100;
-                DamageSource playerSource = DamageSource.causePlayerDamage(player);
-
-                livingTarget.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
-                livingTarget.setHealth(0);
-                livingTarget.onDeath(playerSource);
-                livingTarget.setDead();
-                livingTarget.worldObj.removeEntity(livingTarget);
+                applyPlayerLethalDamage(livingTarget, player);
 
                 shouldRemove = true;
             } else if (target instanceof EntityDragon) {
-                target.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-                target.setDead();
+                applyPlayerLethalDamage((EntityLivingBase) target, player);
                 shouldRemove = true;
             } else if (target instanceof EntityPlayer targetPlayer) {
                 if (player.isSneaking()) {
@@ -338,7 +316,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
                 target.setHealth(newHealth);
             }
 
-            if (MainConfig.re_avaritia.infinity_sword.enableExplosion) {
+            if (ReAvaritiaConfig.infinity_sword.enableExplosion) {
                 world.newExplosion(target, target.posX, target.posY, target.posZ, 250.0F, true, true);
             }
         } else {
@@ -362,33 +340,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
             return;
         }
 
-        DamageSource playerSource = DamageSource.causePlayerDamage(attacker);
-        target.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-        if (Mods.Avaritia.isModLoaded()) attackEntityInfinity(target, attacker);
-
-        target.attackEntityFrom(DamageSource.anvil, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.fallingBlock, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.wither, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.magic, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.generic, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.fall, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.cactus, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.starve, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.drown, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.inWall, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.lava, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.inFire, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.onFire, Float.POSITIVE_INFINITY);
-        target.attackEntityFrom(DamageSource.outOfWorld, Float.POSITIVE_INFINITY);
-
-        target.onDeath(INFINITY_DAMAGE);
-        if (!(target instanceof EntityPlayer || isGalaxyBoss(target))) {
-            target.setHealth(0);
-            target.onDeath(INFINITY_DAMAGE);
-            target.setDead();
-            target.worldObj.removeEntity(target);
-        }
+        applyPlayerLethalDamage(target, attacker);
     }
 
     public void tickMagnetEffect(World world, EntityPlayer player) {
@@ -450,18 +402,12 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
                     playersWhoAttacked.add(playerName);
                 }
                 livingTarget.recentlyHit = 100;
-                DamageSource playerSource = DamageSource.causePlayerDamage(player);
-                livingTarget.attackEntityFrom(playerSource, Float.POSITIVE_INFINITY);
-                livingTarget.setHealth(0);
-                livingTarget.onDeath(playerSource);
-                livingTarget.setDead();
-                livingTarget.worldObj.removeEntity(livingTarget);
+                applyPlayerLethalDamage(livingTarget, player);
                 return true;
             }
 
             if (entity instanceof EntityDragon) {
-                entity.attackEntityFrom(INFINITY_DAMAGE, Float.POSITIVE_INFINITY);
-                entity.setDead();
+                applyPlayerLethalDamage(entity, player);
                 return true;
             }
 
@@ -475,9 +421,9 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> toolTip,
         boolean advancedToolTips) {
-        toolTip.add(StatCollector.translateToLocal("Tooltip_InfinitySword_00"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_InfinitySword_01"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_InfinitySword_02"));
+        toolTip.add(StatCollector.translateToLocal("reavaritia.item.infinity_sword.tooltip.00"));
+        toolTip.add(StatCollector.translateToLocal("reavaritia.item.infinity_sword.tooltip.01"));
+        toolTip.add(StatCollector.translateToLocal("reavaritia.item.infinity_sword.tooltip.02"));
     }
 
     @Override
@@ -491,7 +437,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
 
         if (entity instanceof EntityPlayer player) {
             if (player.getCurrentEquippedItem() == stack && player.swingProgress == 0.5F && !world.isRemote) {
-                MovingObjectPosition rayTraceResult = Utils.rayTrace(player, false, true, false, 100);
+                MovingObjectPosition rayTraceResult = GameUtils.rayTrace(player, false, true, false, 100);
 
                 if (rayTraceResult != null && rayTraceResult.entityHit != null) {
                     Entity hitEntity = rayTraceResult.entityHit;
@@ -499,10 +445,10 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
                     if (hitEntity instanceof EntityLivingBase livingEntity) {
                         hitEntity(stack, livingEntity, player);
 
-                    } else if (hitEntity instanceof EntityDragonPart dragonPart) {
-                        EntityDragon dragon = (EntityDragon) dragonPart.entityDragonObj;
-                        hitEntity(stack, dragon, player);
-                    }
+                    } else if (hitEntity instanceof EntityDragonPart dragonPart
+                        && dragonPart.entityDragonObj instanceof EntityLivingBase livingPartOwner) {
+                            hitEntity(stack, livingPartOwner, player);
+                        }
                 }
             }
         }
@@ -554,7 +500,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
 
     @SideOnly(Side.CLIENT)
     public boolean isBadEffectClient(PotionEffect effect) {
-        return net.minecraft.potion.Potion.potionTypes[effect.getPotionID()].isBadEffect();
+        return Potion.potionTypes[effect.getPotionID()].isBadEffect();
     }
 
     public boolean isBadEffectServer(PotionEffect effect) {
@@ -579,7 +525,7 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
 
     @Override
     public EnumRarity getRarity(ItemStack stack) {
-        return EnumHelper.addRarity("COSMIC", EnumChatFormatting.RED, "Cosmic");
+        return ItemLoader.COSMIC;
     }
 
     @Override
@@ -604,8 +550,8 @@ public class InfinitySword extends ItemSword implements ICosmicRenderItem, Subti
     public void registerIcons(IIconRegister ir) {
         super.registerIcons(ir);
 
-        this.cosmicMask = ir.registerIcon(RESOURCE_ROOT_ID + ":" + "InfinitySword_Mask");
-        this.pommel = ir.registerIcon(RESOURCE_ROOT_ID + ":" + "InfinitySword_Pommel");
+        this.cosmicMask = ir.registerIcon(RESOURCE_ROOT_ID + ":infinity_sword_mask");
+        this.pommel = ir.registerIcon(RESOURCE_ROOT_ID + ":infinity_sword_pommel");
     }
 
     @Override

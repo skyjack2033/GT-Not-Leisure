@@ -1,8 +1,7 @@
 package com.science.gtnl.utils.item;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import net.minecraft.block.Block;
@@ -13,6 +12,8 @@ import com.science.gtnl.loader.ItemLoader;
 
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class MissingMappingsHandler {
 
@@ -31,10 +32,17 @@ public class MissingMappingsHandler {
         .remapBlock("sciencenotleisure:StargateTier9", BlockLoader.compressedStargateTier9)
 
         .remapBlock("sciencenotleisure:MetaBlockGlow", BlockLoader.metaBlockGlow)
+        .remapBlock("sciencenotleisure:tile.MetaBlockGlow", BlockLoader.metaBlockGlow)
         .remapBlock("sciencenotleisure:MetaBlockGlass", BlockLoader.metaBlockGlass)
+        .remapBlock("sciencenotleisure:tile.MetaBlockGlass", BlockLoader.metaBlockGlass)
+        .remapBlock("sciencenotleisure:MetaBlockColumn", BlockLoader.metaBlockColumn)
+        .remapBlock("sciencenotleisure:tile.MetaBlockColumn", BlockLoader.metaBlockColumn)
         .remapBlock("sciencenotleisure:MetaBlock", BlockLoader.metaBlock)
+        .remapBlock("sciencenotleisure:tile.MetaBlock", BlockLoader.metaBlock)
         .remapBlock("sciencenotleisure:MetaCasing02", BlockLoader.metaCasing02)
+        .remapBlock("sciencenotleisure:tile.MetaCasing02", BlockLoader.metaCasing02)
         .remapBlock("sciencenotleisure:MetaCasing", BlockLoader.metaCasing)
+        .remapBlock("sciencenotleisure:tile.MetaCasing", BlockLoader.metaCasing)
         .remapBlock("sciencenotleisure:PlayerLeash", BlockLoader.playerLeash)
         .remapBlock("sciencenotleisure:CompressedStargateTier0", BlockLoader.compressedStargateTier0)
         .remapBlock("sciencenotleisure:CompressedStargateTier1", BlockLoader.compressedStargateTier1)
@@ -46,11 +54,27 @@ public class MissingMappingsHandler {
         .remapBlock("sciencenotleisure:CompressedStargateTier7", BlockLoader.compressedStargateTier7)
         .remapBlock("sciencenotleisure:CompressedStargateTier8", BlockLoader.compressedStargateTier8)
         .remapBlock("sciencenotleisure:CompressedStargateTier9", BlockLoader.compressedStargateTier9)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier0", BlockLoader.compressedStargateTier0)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier1", BlockLoader.compressedStargateTier1)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier2", BlockLoader.compressedStargateTier2)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier3", BlockLoader.compressedStargateTier3)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier4", BlockLoader.compressedStargateTier4)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier5", BlockLoader.compressedStargateTier5)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier6", BlockLoader.compressedStargateTier6)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier7", BlockLoader.compressedStargateTier7)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier8", BlockLoader.compressedStargateTier8)
+        .remapBlock("sciencenotleisure:tile.CompressedStargateTier9", BlockLoader.compressedStargateTier9)
         .remapBlock("sciencenotleisure:shimmer", BlockLoader.shimmerFluidBlock)
         .remapBlock("sciencenotleisure:honey", BlockLoader.honeyFluidBlock)
+        .remapBlock("sciencenotleisure:tile.shimmer", BlockLoader.shimmerFluidBlock)
+        .remapBlock("sciencenotleisure:tile.honey", BlockLoader.honeyFluidBlock)
         .remapBlock("sciencenotleisure:tile.playerDoll", BlockLoader.playerDoll)
+        .remapBlock("sciencenotleisure:tile.RealArtificialStarRenderer", BlockLoader.artificialStarRender)
+        .remapBlock("sciencenotleisure:tile.EternalGregTechWorkshopRenderer", BlockLoader.eternalGregTechWorkshopRender)
+        .remapBlock("sciencenotleisure:tile.NanoPhagocytosisPlantRenderer", BlockLoader.nanoPhagocytosisPlantRender)
 
          // Item remappings
+        .remapItem("sciencenotleisure:overloaded_frequency_card", ItemLoader.wirelessFrequencyCard)
         .remapItem("sciencenotleisure:SteamRocket", ItemLoader.steamRocket)
         .remapItem("sciencenotleisure:InfinityLavaBucket", ItemLoader.infinityLavaBucket)
         .remapItem("sciencenotleisure:InfinityWaterBucket", ItemLoader.infinityWaterBucket)
@@ -82,6 +106,9 @@ public class MissingMappingsHandler {
         .remapItem("sciencenotleisure:TimeStopPocketWatch", ItemLoader.timeStopPocketWatch)
         .remapItem("sciencenotleisure:TwilightSword", ItemLoader.twilightSword)
         .remapItem("sciencenotleisure:WirelessUpgradeChip", ItemLoader.wirelessUpgradeChip)
+        .remapItem("sciencenotleisure:MetaItem", ItemLoader.metaItem)
+        .remapItem("sciencenotleisure:HoneyBucket", ItemLoader.honeyBucket)
+        .remapItem("sciencenotleisure:ShimmerBucket", ItemLoader.shimmerBucket)
 
         ;
 
@@ -96,11 +123,17 @@ public class MissingMappingsHandler {
 
             if (mapping.type == GameRegistry.Type.BLOCK) {
                 Block block = REMAPPER.blockRemappings.get(mapping.name);
+                if (block == null) {
+                    block = GameRegistry.findBlock("sciencenotleisure", normalizeLegacyId(mapping.name));
+                }
                 if (block != null) {
                     mapping.remap(block);
                 }
             } else if (mapping.type == GameRegistry.Type.ITEM) {
                 Item item = REMAPPER.itemRemappings.get(mapping.name);
+                if (item == null) {
+                    item = GameRegistry.findItem("sciencenotleisure", normalizeLegacyId(mapping.name));
+                }
                 if (item != null) {
                     mapping.remap(item);
                 }
@@ -108,11 +141,27 @@ public class MissingMappingsHandler {
         }
     }
 
+    private static String normalizeLegacyId(String legacyId) {
+        String prefix = "sciencenotleisure:";
+        if (!legacyId.startsWith(prefix)) return legacyId;
+
+        String id = legacyId.substring(prefix.length());
+        if (id.startsWith("tile.")) {
+            id = id.substring("tile.".length());
+        } else if (id.startsWith("item.")) {
+            id = id.substring("item.".length());
+        }
+        return id.replaceAll("([A-Z]+)([A-Z][a-z])", "$1_$2")
+            .replaceAll("([a-z0-9])([A-Z])", "$1_$2")
+            .replace('.', '_')
+            .toLowerCase(Locale.ROOT);
+    }
+
     public static class Remapper {
 
-        private final Map<String, Item> itemRemappings = new HashMap<>();
-        private final Map<String, Block> blockRemappings = new HashMap<>();
-        private final List<String> ignoreMappings = new ArrayList<>();
+        private final Map<String, Item> itemRemappings = new Object2ObjectOpenHashMap<>();
+        private final Map<String, Block> blockRemappings = new Object2ObjectOpenHashMap<>();
+        private final List<String> ignoreMappings = new ObjectArrayList<>();
 
         public Remapper remapBlock(String oldName, Block newBlock) {
             blockRemappings.put(oldName, newBlock);

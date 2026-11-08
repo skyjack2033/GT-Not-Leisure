@@ -3,12 +3,10 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -17,8 +15,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -26,13 +26,15 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -48,6 +50,11 @@ public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> im
 
     public LargeElectrolyzer(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_electrolyzer.name";
     }
 
     @Override
@@ -68,8 +75,7 @@ public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> im
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasingsMisc, 5))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.ElectrolyzerCasing.asElement())))
             .build();
     }
 
@@ -103,7 +109,7 @@ public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> im
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.electrolyzerNonCellRecipes;
+        return RecipeMaps.electrolyzerNonCellRecipes;
     }
 
     @Override
@@ -136,20 +142,8 @@ public class LargeElectrolyzer extends GTMMultiMachineBase<LargeElectrolyzer> im
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeElectrolyzerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 4, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeElectrolyzer_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

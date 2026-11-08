@@ -3,24 +3,23 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -31,10 +30,10 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import tectech.thing.casing.BlockGTCasingsTT;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class FieldForgePress extends WirelessEnergyMultiMachineBase<FieldForgePress> {
 
     private static final int HORIZONTAL_OFF_SET = 8;
@@ -61,13 +60,13 @@ public class FieldForgePress extends WirelessEnergyMultiMachineBase<FieldForgePr
     public IStructureDefinition<FieldForgePress> getStructureDefinition() {
         return StructureDefinition.<FieldForgePress>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 12))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 9))
-            .addElement('G', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 1))
+            .addElement('A', Casings.TungstensteelTurbineCasing.asElement())
+            .addElement('B', Casings.DimensionalBridge.asElement())
+            .addElement('C', Casings.PressureContainmentCasing.asElement())
+            .addElement('D', Casings.DimensionalInjectionCasing.asElement())
+            .addElement('E', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('F', Casings.ReactiveGasContainmentCasing.asElement())
+            .addElement('G', Casings.InconelReinforcedCasing.asElement())
             .addElement(
                 'H',
                 buildHatchAdder(FieldForgePress.class)
@@ -82,11 +81,10 @@ public class FieldForgePress extends WirelessEnergyMultiMachineBase<FieldForgePr
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 4))))
-            .addElement('I', StructureUtility.ofBlock(ModBlocks.blockCustomMachineCasings, 3))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
-            .addElement('K', StructureUtility.ofBlock(BlockLoader.metaCasing, 12))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.MolecularCasing.asElement())))
+            .addElement('I', Casings.RuggedBotmiumMachineCasing.asElement())
+            .addElement('J', Casings.RadiantNaquadahAlloyCasing.asElement())
+            .addElement('K', GTNLCasings.TungstensteelGearbox.asElement())
             .addElement(
                 'L',
                 StructureUtility.ofBlockAnyMeta(
@@ -160,26 +158,8 @@ public class FieldForgePress extends WirelessEnergyMultiMachineBase<FieldForgePr
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FieldForgePressRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(17, 25, 27, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_FieldForgePress_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_FieldForgePress_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_FieldForgePress_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_FieldForgePress_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FieldForgePress_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

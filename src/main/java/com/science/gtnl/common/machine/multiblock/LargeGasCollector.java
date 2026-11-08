@@ -3,13 +3,11 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,11 +20,12 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.SuperCraftingInputHatchME;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
@@ -46,7 +45,9 @@ import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.IDualInputInventoryWithPattern;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gtneioreplugin.plugin.block.ModBlocks;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -56,7 +57,7 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
     private static final int DEPTH_OFF_SET = 0;
     private static final String[][] shape = StructureUtils.readStructureFromFile(LGC_STRUCTURE_FILE_PATH);
 
-    public final ArrayList<ItemStack> dimensionRecipeInputs = new ArrayList<>(2);
+    public final ObjectArrayList<ItemStack> dimensionRecipeInputs = new ObjectArrayList<>(2);
 
     public LargeGasCollector(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -84,15 +85,13 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
                         HatchElement.OutputHatch,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy))
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 5))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.SolidSteelMachineCasing.asElement())))
+            .addElement('B', Casings.TungstensteelPipeCasing.asElement())
+            .addElement('C', Casings.GrateMachineCasing.asElement())
+            .addElement('D', Casings.HermeticCasing5.asElement())
             .build();
     }
 
@@ -220,7 +219,7 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
+        return Casings.SolidSteelMachineCasing.getTextureId();
     }
 
     @Override
@@ -230,18 +229,8 @@ public class LargeGasCollector extends MultiMachineBase<LargeGasCollector> imple
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeGasCollectorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeGasCollector_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeGasCollector_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeGasCollector_02"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(5, 5, 5, true)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeGasCollector_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeGasCollector_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeGasCollector_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeGasCollector_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeGasCollector_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

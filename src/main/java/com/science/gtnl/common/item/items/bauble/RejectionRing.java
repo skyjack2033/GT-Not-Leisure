@@ -1,7 +1,5 @@
 package com.science.gtnl.common.item.items.bauble;
 
-import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-
 import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -13,12 +11,9 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.item.BaubleItem;
-import com.science.gtnl.utils.enums.GTNLItemList;
 
 import baubles.api.BaubleType;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -26,18 +21,18 @@ public class RejectionRing extends BaubleItem {
 
     public RejectionRing() {
         this.setMaxStackSize(1);
-        this.setUnlocalizedName("RejectionRing");
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + "RejectionRing");
-        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
-        GameRegistry.registerItem(this, getUnlocalizedName());
-        GTNLItemList.RejectionRing.set(new ItemStack(this, 1));
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "item.gtnl.rejection_ring";
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack itemStack, final EntityPlayer player, final List<String> toolTip,
         final boolean advancedToolTips) {
-        toolTip.add(StatCollector.translateToLocal("Tooltip_RejectionRing_00"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.rejection_ring.tooltip.0"));
     }
 
     @Override

@@ -6,7 +6,6 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -15,9 +14,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -31,6 +31,8 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -49,6 +51,11 @@ public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> im
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_alloy_smelter.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeAlloySmelter> getStructureDefinition() {
         return StructureDefinition.<LargeAlloySmelter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -64,11 +71,10 @@ public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> im
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 11))))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 13))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.HeatProofMachineCasing.asElement())))
+            .addElement('B', Casings.SolidSteelMachineCasing.asElement())
+            .addElement('C', Casings.SteelPipeCasing.asElement())
             .addElement(
                 'D',
                 GTStructureChannels.HEATING_COIL.use(
@@ -146,25 +152,13 @@ public class LargeAlloySmelter extends GTMMultiMachineBase<LargeAlloySmelter> im
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11);
+        return Casings.HeatProofMachineCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeAlloySmelterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeAlloySmelter_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

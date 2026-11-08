@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings3Misc;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +11,6 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -21,16 +19,17 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import bartworks.API.recipe.BartWorksRecipeMaps;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -44,6 +43,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.core.material.MaterialsAlloy;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class ExtremeCompressor extends WirelessEnergyMultiMachineBase<ExtremeCompressor> {
 
     private static final int HORIZONTAL_OFF_SET = 8;
@@ -72,10 +72,10 @@ public class ExtremeCompressor extends WirelessEnergyMultiMachineBase<ExtremeCom
     public IStructureDefinition<ExtremeCompressor> getStructureDefinition() {
         return StructureDefinition.<ExtremeCompressor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 5))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 9))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
+            .addElement('A', Casings.CompressionPipeCasing.asElement())
+            .addElement('B', Casings.PressureContainmentCasing.asElement())
+            .addElement('C', Casings.HermeticCasing9.asElement())
+            .addElement('D', Casings.TungstensteelPipeCasing.asElement())
             .addElement(
                 'E',
                 StructureUtility.ofBlockAnyMeta(
@@ -98,15 +98,15 @@ public class ExtremeCompressor extends WirelessEnergyMultiMachineBase<ExtremeCom
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
-            .addElement('G', StructureUtility.ofBlock(blockCasings3Misc, 1))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings11, 4))
-            .addElement('J', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
+            .addElement('G', Casings.InconelReinforcedCasing.asElement())
+            .addElement('H', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('I', Casings.OsmiumItemPipeCasing.asElement())
+            .addElement('J', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement('K', HatchElement.Muffler.newAny(getCasingTextureID(), 5))
-            .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('L', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 1))
-            .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 9))
+            .addElement('N', Casings.ReactiveGasContainmentCasing.asElement())
             .addElement(
                 'O',
                 StructureUtility.ofBlockAnyMeta(
@@ -166,7 +166,7 @@ public class ExtremeCompressor extends WirelessEnergyMultiMachineBase<ExtremeCom
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
@@ -199,26 +199,8 @@ public class ExtremeCompressor extends WirelessEnergyMultiMachineBase<ExtremeCom
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ExtremeCompressorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(17, 16, 43, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ExtremeCompressor_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ExtremeCompressor_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ExtremeCompressor_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ExtremeCompressor_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ExtremeCompressor_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -231,23 +213,15 @@ public class ExtremeCompressor extends WirelessEnergyMultiMachineBase<ExtremeCom
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "ExtremeCompressor_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("ExtremeCompressor_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.extreme_compressor.mode." + machineMode;
     }
 
     @Override

@@ -4,6 +4,7 @@ import net.minecraft.util.StatCollector;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.mixins.early.gregtech.AccessorProcessingLogic;
 
@@ -15,6 +16,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SteamWeatherModule extends SteamElevatorModuleBase {
 
     public SteamWeatherModule(int aID, String aName, String aNameRegional) {
@@ -108,17 +110,13 @@ public class SteamWeatherModule extends SteamElevatorModuleBase {
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamWeatherModuleRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_weather_module.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SteamWeatherModuleRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamWeatherModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamWeatherModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamWeatherModule_02"))
-            .beginStructureBlock(1, 5, 2, false)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

@@ -21,15 +21,16 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLSteamMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -42,15 +43,16 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWasher> implements ISurvivalConstructable {
 
     private static final int MACHINEMODE_OREWASH = 0;
     private static final int MACHINEMODE_SIMPLEWASH = 1;
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String LSC_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/large_steam_ore_washer";
-    private static final int HORIZONTAL_OFF_SET = 4;
+    private static final int HORIZONTAL_OFF_SET = 2;
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 0;
     private static final String[][] shape = StructureUtils.readStructureFromFile(LSC_STRUCTURE_FILE_PATH);
@@ -64,11 +66,17 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_steam_ore_washer.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeSteamOreWasher> getStructureDefinition() {
         return StructureDefinition.<LargeSteamOreWasher>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
+            .addElement('A', GTStructureUtility.chainAllGlasses())
             .addElement(
-                'A',
+                'B',
                 GTStructureChannels.TIER_MACHINE_CASING.use(
                     StructureUtility.ofChain(
                         buildSteamWirelessInput(LargeSteamOreWasher.class).casingIndex(getCasingTextureID())
@@ -102,7 +110,7 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
                                         (t, m) -> t.tierMachineCasing = m,
                                         t -> t.tierMachineCasing))))))
             .addElement(
-                'B',
+                'C',
                 GTStructureChannels.TIER_MACHINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         LargeSteamOreWasher::getTierPipeCasing,
@@ -111,7 +119,16 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
                         -1,
                         (t, m) -> t.tierPipeCasing = m,
                         t -> t.tierPipeCasing)))
-            .addElement('C', GTStructureUtility.chainAllGlasses())
+            .addElement(
+                'D',
+                GTStructureChannels.TIER_MACHINE_CASING.use(
+                    StructureUtility.ofBlocksTiered(
+                        LargeSteamOreWasher::getTierFrameCasing,
+                        ImmutableList
+                            .of(Pair.of(GregTechAPI.sBlockFrames, 300), Pair.of(GregTechAPI.sBlockFrames, 305)),
+                        -1,
+                        (t, m) -> t.tierFrameCasing = m,
+                        t -> t.tierFrameCasing)))
             .build();
     }
 
@@ -146,15 +163,15 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
         checkHatch(errors);
         checkMachineTier(
             errors,
-            100,
-            tierPipeCasing == 1 && tierMachineCasing == 1,
-            tierPipeCasing == 2 && tierMachineCasing == 2);
+            53,
+            tierPipeCasing == 1 && tierMachineCasing == 1 && tierFrameCasing == 1,
+            tierPipeCasing == 2 && tierMachineCasing == 2 && tierFrameCasing == 2);
     }
 
     @Override
     public RecipeMap<?> getRecipeMap() {
         if (machineMode == MACHINEMODE_SIMPLEWASH) {
-            return GTPPRecipeMaps.simpleWasherRecipes;
+            return RecipeMaps.simpleWasherRecipes;
         }
         return RecipeMaps.oreWasherRecipes;
     }
@@ -162,7 +179,7 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
     @NotNull
     @Override
     public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
-        return Arrays.asList(GTPPRecipeMaps.simpleWasherRecipes, RecipeMaps.oreWasherRecipes);
+        return Arrays.asList(RecipeMaps.simpleWasherRecipes, RecipeMaps.oreWasherRecipes);
     }
 
     @Override
@@ -193,8 +210,8 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
-        int id = tierMachine == 2 ? StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0)
-            : StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        int id = tierMachine == 2 ? Casings.SolidSteelMachineCasing.getTextureId()
+            : Casings.BronzePlatedBricks.getTextureId();
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(id), TextureFactory.builder()
                 .addIcon(Textures.BlockIcons.OVERLAY_FRONT_STEAM_WASHER_ACTIVE)
@@ -210,22 +227,13 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("LargeSteamOreWasherRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.large_steam_ore_washer.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSteamOreWasherRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamOreWasher_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamOreWasher_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamOreWasher_02"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .beginStructureBlock(9, 5, 9, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamOreWasher_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamOreWasher_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -235,14 +243,6 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
         return new GTNLSteamMultiBlockBaseGui(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_SIMPLEWASHER);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_SIMPLEWASHER);
     }
 
     @SideOnly(Side.CLIENT)
@@ -263,7 +263,7 @@ public class LargeSteamOreWasher extends SteamMultiMachineBase<LargeSteamOreWash
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("LargeSteamOreWasher_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.large_steam_ore_washer.mode." + machineMode;
     }
 }

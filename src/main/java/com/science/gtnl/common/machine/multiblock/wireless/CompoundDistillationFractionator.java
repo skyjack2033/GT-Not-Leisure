@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +10,6 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,16 +18,16 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -44,6 +42,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.core.material.MaterialsAlloy;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class CompoundDistillationFractionator extends WirelessEnergyMultiMachineBase<CompoundDistillationFractionator> {
 
     private static final int MACHINEMODE_TOWER = 0;
@@ -73,9 +72,9 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
     public IStructureDefinition<CompoundDistillationFractionator> getStructureDefinition() {
         return StructureDefinition.<CompoundDistillationFractionator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 9))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 4))
+            .addElement('A', Casings.UHVMachineCasing.asElement())
+            .addElement('B', Casings.CleanStainlessSteelMachineCasing.asElement())
+            .addElement('C', Casings.SterileWaterPlantCasing.asElement())
             .addElement(
                 'D',
                 GTStructureUtility.buildHatchAdder(CompoundDistillationFractionator.class)
@@ -92,12 +91,12 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 7))))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 6))
-            .addElement('F', StructureUtility.ofBlock(blockCasings2Misc, 4))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('I', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+                            Casings.StabilizedNaquadahWaterPlantCasing.asElement())))
+            .addElement('E', Casings.SlickSterileFlocculationCasing.asElement())
+            .addElement('F', Casings.WashPlantCasing.asElement())
+            .addElement('G', Casings.NaquadriaReinforcedWaterPlantCasing.asElement())
+            .addElement('H', GTNLCasings.FusionGlass.asElement())
+            .addElement('I', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement(
                 'J',
                 StructureUtility.ofBlockAnyMeta(
@@ -156,7 +155,7 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 7);
+        return Casings.StabilizedNaquadahWaterPlantCasing.getTextureId();
     }
 
     @Override
@@ -189,26 +188,8 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("CompoundDistillationFractionatorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(27, 38, 11, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_CompoundDistillationFractionator_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -221,23 +202,15 @@ public class CompoundDistillationFractionator extends WirelessEnergyMultiMachine
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "CompoundDistillationFractionator_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("CompoundDistillationFractionator_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.compound_distillation_fractionator.mode." + machineMode;
     }
 
     @Override

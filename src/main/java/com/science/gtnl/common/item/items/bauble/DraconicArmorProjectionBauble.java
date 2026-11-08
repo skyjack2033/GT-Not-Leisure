@@ -7,37 +7,40 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.item.BaubleItem;
+import com.science.gtnl.common.item.GTNLCreativeTabs;
 import com.science.gtnl.common.packet.DraconicArmorProjectionSyncPacket;
 import com.science.gtnl.utils.enums.GTNLItemList;
-import com.science.gtnl.utils.item.ItemUtils;
 
 import baubles.api.BaubleType;
-import baubles.api.expanded.BaubleExpandedSlots;
 import baubles.api.expanded.IBaubleExpanded;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class DraconicArmorProjectionBauble extends BaubleItem implements IBaubleExpanded {
 
-    public static final String[] UNIVERSAL_BAUBLE_TYPE = { BaubleExpandedSlots.universalType };
-
+    private final String displayNameKey;
     private final DraconicArmorProjectionType projectionType;
 
-    public DraconicArmorProjectionBauble(String unlocalizedName, DraconicArmorProjectionType projectionType,
-        GTNLItemList itemEntry) {
+    public DraconicArmorProjectionBauble(String registrationName, String displayNameKey,
+        DraconicArmorProjectionType projectionType, GTNLItemList itemEntry) {
+        this.displayNameKey = displayNameKey;
         this.projectionType = projectionType;
-        setUnlocalizedName(unlocalizedName);
+        setUnlocalizedName(displayNameKey);
         setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
-        setTextureName(RESOURCE_ROOT_ID + ":" + unlocalizedName);
+        setTextureName(RESOURCE_ROOT_ID + ":" + registrationName);
         setMaxStackSize(1);
-        GameRegistry.registerItem(this, getUnlocalizedName());
+        GameRegistry.registerItem(this, registrationName);
         itemEntry.set(new ItemStack(this, 1));
     }
 
     @Override
+    public String getUnlocalizedName() {
+        return "item." + displayNameKey;
+    }
+
+    @Override
     public BaubleType getBaubleType(ItemStack itemStack) {
-        return ItemUtils.UNIVERSAL_TYPE;
+        return UNIVERSAL_TYPE;
     }
 
     @Override

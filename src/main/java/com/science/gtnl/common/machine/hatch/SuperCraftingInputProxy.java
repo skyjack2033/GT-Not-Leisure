@@ -1,6 +1,5 @@
 package com.science.gtnl.common.machine.hatch;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,25 +17,32 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.science.gtnl.config.MainConfig;
-import com.science.gtnl.utils.Utils;
+import com.science.gtnl.common.me.InterfaceNameLocalization;
 
+import appeng.api.util.IInterfaceViewable;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.IDataCopyable;
 import gregtech.api.interfaces.ITexture;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
 import gregtech.api.render.TextureFactory;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
+import gregtech.common.tileentities.machines.IHatchWatcher;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputSlave;
+import gregtech.common.tileentities.machines.RecipeCheckReason;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
-public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualInputHatch, IDataCopyable {
+@IMetaTileEntity.SkipGenerateName
+@IMetaTileEntity.SkipGenerateDescription
+public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualInputHatch, IDataCopyable, IHatchWatcher {
 
     private SuperCraftingInputHatchME masterSuper;
     private int masterSuperX, masterSuperY, masterSuperZ;
@@ -45,6 +51,7 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
     private MTEHatchCraftingInputME craftingMaster;
     private int craftingMasterX, craftingMasterY, craftingMasterZ;
     private boolean craftingMasterSet = false;
+    private boolean registeredWithMaster = false;
 
     public SuperCraftingInputProxy(int aID, String aName, String aNameRegional) {
         super(
@@ -53,16 +60,33 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
             aNameRegional,
             6,
             0,
-            new String[] { StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_00"),
-                StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_01"),
-                StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_02"),
-                StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_03") });
+            new String[] { StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.tooltip.0"),
+                StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.tooltip.1"),
+                StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.tooltip.2"),
+                StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.tooltip.3") });
         disableSort = true;
     }
 
     public SuperCraftingInputProxy(String aName, int aTier, String[] aDescription, ITexture[][][] aTextures) {
         super(aName, aTier, 0, aDescription, aTextures);
         disableSort = true;
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        if (!hasOwnLocalName()) return super.getLocalNameKey();
+        return "gtnl.hatch.super_crafting_input_proxy.name";
+    }
+
+    @Override
+    public String getLocalName() {
+        if (!hasOwnLocalName()) return super.getLocalName();
+        return StatCollector.translateToLocal(getLocalNameKey());
+    }
+
+    @Override
+    public String[] getDescription() {
+        return mDescriptionArray;
     }
 
     @Override
@@ -148,27 +172,25 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
 
     @Override
     public String[] getInfoData() {
-        var ret = new ArrayList<String>();
+        var ret = new ObjectArrayList<String>();
         if (getMasterSuper() != null) {
             ret.add(
-                StatCollector.translateToLocal("Chat_SuperCraftingInputProxy_00_00") + masterSuperX
-                    + ", "
-                    + masterSuperY
-                    + ", "
-                    + masterSuperZ
-                    + ".");
+                IGregTechDeviceInformation.encode(
+                    "gtnl.hatch.super_crafting_input_proxy.master_super",
+                    masterSuperX,
+                    masterSuperY,
+                    masterSuperZ));
             ret.addAll(Arrays.asList(getMasterSuper().getInfoData()));
         } else if (getCraftingMaster() != null) {
             ret.add(
-                StatCollector.translateToLocal("Chat_SuperCraftingInputProxy_00_01") + craftingMasterX
-                    + ", "
-                    + craftingMasterY
-                    + ", "
-                    + craftingMasterZ
-                    + ".");
+                IGregTechDeviceInformation.encode(
+                    "gtnl.hatch.super_crafting_input_proxy.crafting_master",
+                    craftingMasterX,
+                    craftingMasterY,
+                    craftingMasterZ));
             ret.addAll(Arrays.asList(getCraftingMaster().getInfoData()));
         } else {
-            ret.add(StatCollector.translateToLocal("Chat_SuperCraftingInputProxy_01"));
+            ret.add("gtnl.hatch.super_crafting_input_proxy.unlinked");
         }
         return ret.toArray(new String[0]);
     }
@@ -193,6 +215,27 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
     }
 
     @Override
+    public void addWatcher(IHatchWatcher watcher) {
+        watchers.add(watcher);
+        registerWithMaster();
+    }
+
+    @Override
+    public void removeWatcher(IHatchWatcher watcher) {
+        watchers.remove(watcher);
+        if (watchers.isEmpty()) {
+            unregisterFromMaster();
+        }
+    }
+
+    @Override
+    public void scheduleRecipeCheck(RecipeCheckReason reason) {
+        for (IHatchWatcher watcher : watchers) {
+            watcher.scheduleRecipeCheck(reason);
+        }
+    }
+
+    @Override
     public Iterator<? extends IDualInputInventory> inventories() {
         if (getMasterSuper() != null) return getMasterSuper().inventories();
         if (getCraftingMaster() != null) return getCraftingMaster().inventories();
@@ -210,13 +253,6 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
     public boolean supportsFluids() {
         if (getMasterSuper() != null) return getMasterSuper().supportsFluids();
         if (getCraftingMaster() != null) return getCraftingMaster().supportsFluids();
-        return false;
-    }
-
-    @Override
-    public boolean justUpdated() {
-        if (getMasterSuper() != null) return getMasterSuper().justUpdated();
-        if (getCraftingMaster() != null) return getCraftingMaster().justUpdated();
         return false;
     }
 
@@ -242,6 +278,7 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
     }
 
     public SuperCraftingInputHatchME trySetSuperMasterFromCoord(int x, int y, int z) {
+        unregisterFromMaster();
         clearCraftingMaster();
         TileEntity te = getBaseMetaTileEntity().getWorld()
             .getTileEntity(x, y, z);
@@ -252,12 +289,15 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
             masterSuperZ = z;
             masterSuperSet = true;
             masterSuper = mte;
+            registerWithMaster();
             return mte;
         }
+        registerWithMaster();
         return null;
     }
 
     public MTEHatchCraftingInputME trySetCraftingMasterFromCoord(int x, int y, int z) {
+        unregisterFromMaster();
         clearSuperMaster();
         TileEntity te = getBaseMetaTileEntity().getWorld()
             .getTileEntity(x, y, z);
@@ -267,8 +307,10 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
             craftingMasterZ = z;
             craftingMasterSet = true;
             craftingMaster = mte;
+            registerWithMaster();
             return mte;
         }
+        registerWithMaster();
         return null;
     }
 
@@ -285,7 +327,8 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
                     nbt.getInteger("zSuper")) != null;
                 aPlayer.addChatMessage(
                     new ChatComponentTranslation(
-                        success ? "Chat_SuperCraftingInputProxy_02" : "Chat_SuperCraftingInputProxy_03"));
+                        success ? "gtnl.hatch.super_crafting_input_proxy.bind_success"
+                            : "gtnl.hatch.super_crafting_input_proxy.bind_failed"));
                 return true;
             }
             if ("CraftingInputBuffer".equals(dataStick.stackTagCompound.getString("type"))) {
@@ -296,7 +339,8 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
                     nbt.getInteger("z")) != null;
                 aPlayer.addChatMessage(
                     new ChatComponentTranslation(
-                        success ? "Chat_SuperCraftingInputProxy_02" : "Chat_SuperCraftingInputProxy_03"));
+                        success ? "gtnl.hatch.super_crafting_input_proxy.bind_success"
+                            : "gtnl.hatch.super_crafting_input_proxy.bind_failed"));
                 return true;
             }
         }
@@ -372,39 +416,31 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
         boolean superLinked = tag.getBoolean("superLinked");
         boolean craftingLinked = tag.getBoolean("craftingLinked");
         currenttip.add(
-            (superLinked || craftingLinked) ? StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_05_00")
-                : StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_05_01"));
+            (superLinked || craftingLinked)
+                ? StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.waila.connected")
+                : StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.waila.unlinked"));
 
         if (superLinked) {
             currenttip.add(
-                StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_04") + tag.getInteger(
-                    "superMasterX") + ", " + tag.getInteger("superMasterY") + ", " + tag.getInteger("superMasterZ"));
+                StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.waila.connected_to") + " "
+                    + tag.getInteger("superMasterX")
+                    + ", "
+                    + tag.getInteger("superMasterY")
+                    + ", "
+                    + tag.getInteger("superMasterZ"));
         }
         if (craftingLinked) {
             currenttip.add(
-                StatCollector.translateToLocal("Tooltip_SuperCraftingInputProxy_04") + tag.getInteger("craftingMasterX")
+                StatCollector.translateToLocal("gtnl.hatch.super_crafting_input_proxy.waila.connected_to") + " "
+                    + tag.getInteger("craftingMasterX")
                     + ", "
                     + tag.getInteger("craftingMasterY")
                     + ", "
                     + tag.getInteger("craftingMasterZ"));
         }
 
-        if (tag.hasKey("superMasterName")) {
-            currenttip.add(
-                EnumChatFormatting.GOLD
-                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
-                        ? Utils.getExtraInterfaceName(tag.getString("superMasterName"))
-                        : tag.getString("superMasterName"))
-                    + EnumChatFormatting.RESET);
-        }
-        if (tag.hasKey("craftingMasterName")) {
-            currenttip.add(
-                EnumChatFormatting.GOLD
-                    + (MainConfig.machine.enableHatchInterfaceTerminalEnhance
-                        ? Utils.getExtraInterfaceName(tag.getString("craftingMasterName"))
-                        : tag.getString("craftingMasterName"))
-                    + EnumChatFormatting.RESET);
-        }
+        gtnl$addMasterName(currenttip, tag, "superMaster");
+        gtnl$addMasterName(currenttip, tag, "craftingMaster");
 
         super.getWailaBody(itemStack, currenttip, accessor, config);
     }
@@ -426,10 +462,20 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
             tag.setInteger("craftingMasterZ", craftingMasterZ);
         }
 
-        if (getMasterSuper() != null) tag.setString("superMasterName", getMasterSuper().getName());
-        if (getCraftingMaster() != null) tag.setString("craftingMasterName", getCraftingMaster().getName());
+        if (getMasterSuper() != null) gtnl$writeMasterName(tag, "superMaster", getMasterSuper());
+        if (getCraftingMaster() != null) gtnl$writeMasterName(tag, "craftingMaster", getCraftingMaster());
 
         super.getWailaNBTData(player, tile, tag, world, x, y, z);
+    }
+
+    private static void gtnl$writeMasterName(NBTTagCompound tag, String key, IInterfaceViewable master) {
+        InterfaceNameLocalization
+            .writeName(tag, key, master.getRawName(), master.getNameSuffix(), master.getDisplayRep());
+    }
+
+    private static void gtnl$addMasterName(List<String> currenttip, NBTTagCompound tag, String key) {
+        String name = InterfaceNameLocalization.localizeName(tag, key);
+        if (!name.isEmpty()) currenttip.add(EnumChatFormatting.GOLD + name + EnumChatFormatting.RESET);
     }
 
     @Override
@@ -442,6 +488,7 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
     public SuperCraftingInputHatchME getMasterSuper() {
         if (masterSuper == null) return null;
         if (masterSuper.getBaseMetaTileEntity() == null) {
+            unregisterFromMaster();
             masterSuper = null;
         }
         return masterSuper;
@@ -450,6 +497,7 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
     public MTEHatchCraftingInputME getCraftingMaster() {
         if (craftingMaster == null) return null;
         if (craftingMaster.getBaseMetaTileEntity() == null) {
+            unregisterFromMaster();
             craftingMaster = null;
         }
         return craftingMaster;
@@ -465,5 +513,26 @@ public class SuperCraftingInputProxy extends MTEHatchInputBus implements IDualIn
         craftingMaster = null;
         craftingMasterSet = false;
         craftingMasterX = craftingMasterY = craftingMasterZ = 0;
+    }
+
+    private void registerWithMaster() {
+        if (watchers.isEmpty() || registeredWithMaster) return;
+        if (masterSuper != null) {
+            masterSuper.addWatcher(this);
+            registeredWithMaster = true;
+        } else if (craftingMaster != null) {
+            craftingMaster.addWatcher(this);
+            registeredWithMaster = true;
+        }
+    }
+
+    private void unregisterFromMaster() {
+        if (!registeredWithMaster) return;
+        if (masterSuper != null) {
+            masterSuper.removeWatcher(this);
+        } else if (craftingMaster != null) {
+            craftingMaster.removeWatcher(this);
+        }
+        registeredWithMaster = false;
     }
 }

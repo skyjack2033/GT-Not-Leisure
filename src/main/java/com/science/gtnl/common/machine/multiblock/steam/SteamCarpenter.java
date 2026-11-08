@@ -14,11 +14,13 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -32,6 +34,8 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class SteamCarpenter extends SteamMultiMachineBase<SteamCarpenter> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -47,6 +51,11 @@ public class SteamCarpenter extends SteamMultiMachineBase<SteamCarpenter> implem
 
     public SteamCarpenter(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.steam_carpenter.name";
     }
 
     @Override
@@ -80,8 +89,8 @@ public class SteamCarpenter extends SteamMultiMachineBase<SteamCarpenter> implem
                         .casingIndex(10)
                         .hint(1)
                         .buildAndChain(),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10)))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 2))
+                    Casings.BronzePlatedBricks.asElement()))
+            .addElement('B', Casings.BronzeGearBoxCasing.asElement())
             .addElement('C', GTStructureUtility.ofFrame(Materials.Wood))
             .build();
     }
@@ -151,16 +160,13 @@ public class SteamCarpenter extends SteamMultiMachineBase<SteamCarpenter> implem
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamCarpenterRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_carpenter.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(getMachineType())
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCarpenter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamCarpenter_01"))
-            .beginStructureBlock(3, 3, 3, true)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

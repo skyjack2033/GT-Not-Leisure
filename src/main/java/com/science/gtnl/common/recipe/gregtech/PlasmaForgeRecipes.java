@@ -1,25 +1,21 @@
 package com.science.gtnl.common.recipe.gregtech;
 
-import static gregtech.api.recipe.RecipeMaps.plasmaForgeRecipes;
 import static gregtech.api.util.GTRecipeConstants.COIL_HEAT;
 
 import com.dreammaster.gthandler.DTPFCalculator;
 import com.science.gtnl.api.IRecipePool;
 import com.science.gtnl.common.material.GTNLMaterials;
 import com.science.gtnl.utils.enums.GTNLItemList;
+import com.science.gtnl.utils.enums.ModsItemlist;
 import com.science.gtnl.utils.recipes.RecipeBuilder;
 
 import appeng.api.AEApi;
 import goodgenerator.util.ItemRefer;
-import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
-import gregtech.api.util.GTModHandler;
-import gregtech.api.util.GTUtility;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.core.material.MaterialsElements;
 
@@ -41,13 +37,13 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 aeMaterials.cell128SpatialPart()
                     .maybeStack(16)
                     .orNull(),
-                GTModHandler.getModItem(Mods.Avaritia.ID, "Singularity", 2, 0),
+                ModsItemlist.IronSingularity.get(2),
                 ItemRefer.Fluid_Storage_Core_T8.get(2))
             .fluidInputs(GTNLMaterials.ExcitedNaquadahFuel.getFluidOrGas(1000))
             .itemOutputs(GTNLItemList.DepletedExcitedNaquadahFuelRod.get(1))
             .duration(20)
             .metadata(COIL_HEAT, 13501)
-            .eut(31457280)
+            .eut(TierEU.RECIPE_UIV)
             .addTo(PFR);
 
         int awakened_heat = 10800;
@@ -71,8 +67,9 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .calculateNonEBFRecipe(TierEU.RECIPE_ZPM, 1600);
 
             // Tier 5 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTSC.getFluid(astral_titanium.getCatalystAmount(4)),
                     Materials.Titanium.getMolten(tier_5_quantity))
@@ -82,11 +79,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(astral_titanium.getDuration(4))
                 .eut(astral_titanium.getEUt(4))
                 .metadata(COIL_HEAT, eternal_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 4 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTEC.getFluid(astral_titanium.getCatalystAmount(3)),
                     Materials.Titanium.getMolten(tier_4_quantity))
@@ -96,11 +94,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(astral_titanium.getDuration(3))
                 .eut(astral_titanium.getEUt(3))
                 .metadata(COIL_HEAT, eternal_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 3 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTRC.getFluid(astral_titanium.getCatalystAmount(2)),
                     Materials.Titanium.getMolten(tier_3_quantity))
@@ -110,11 +109,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(astral_titanium.getDuration(2))
                 .eut(astral_titanium.getEUt(2))
                 .metadata(COIL_HEAT, hypogen_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 2 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTPC.getFluid(astral_titanium.getCatalystAmount(1)),
                     Materials.Titanium.getMolten(tier_2_quantity))
@@ -124,11 +124,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(astral_titanium.getDuration(1))
                 .eut(astral_titanium.getEUt(1))
                 .metadata(COIL_HEAT, infinity_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 1 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTCC.getFluid(astral_titanium.getCatalystAmount(0)),
                     Materials.Titanium.getMolten(tier_1_quantity))
@@ -138,7 +139,7 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(astral_titanium.getDuration(0))
                 .eut(astral_titanium.getEUt(0))
                 .metadata(COIL_HEAT, awakened_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
         }
 
         {
@@ -157,8 +158,9 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .calculateNonEBFRecipe(TierEU.RECIPE_UV, 800);
 
             // Tier 5 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTSC.getFluid(celestial_tungsten.getCatalystAmount(4)),
                     Materials.Tungsten.getMolten(tier_5_quantity))
@@ -168,11 +170,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(celestial_tungsten.getDuration(4))
                 .eut(celestial_tungsten.getEUt(4))
                 .metadata(COIL_HEAT, eternal_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 4 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTEC.getFluid(celestial_tungsten.getCatalystAmount(3)),
                     Materials.Tungsten.getMolten(tier_4_quantity))
@@ -182,11 +185,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(celestial_tungsten.getDuration(3))
                 .eut(celestial_tungsten.getEUt(3))
                 .metadata(COIL_HEAT, eternal_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 3 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTRC.getFluid(celestial_tungsten.getCatalystAmount(2)),
                     Materials.Tungsten.getMolten(tier_3_quantity))
@@ -196,11 +200,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(celestial_tungsten.getDuration(2))
                 .eut(celestial_tungsten.getEUt(2))
                 .metadata(COIL_HEAT, hypogen_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 2 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTPC.getFluid(celestial_tungsten.getCatalystAmount(1)),
                     Materials.Tungsten.getMolten(tier_2_quantity))
@@ -210,11 +215,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(celestial_tungsten.getDuration(1))
                 .eut(celestial_tungsten.getEUt(1))
                 .metadata(COIL_HEAT, infinity_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 1 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTCC.getFluid(celestial_tungsten.getCatalystAmount(0)),
                     Materials.Tungsten.getMolten(tier_1_quantity))
@@ -224,7 +230,7 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(celestial_tungsten.getDuration(0))
                 .eut(celestial_tungsten.getEUt(0))
                 .metadata(COIL_HEAT, awakened_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
         }
 
         {
@@ -243,8 +249,9 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .calculateNonEBFRecipe(TierEU.RECIPE_UV, 1600);
 
             // Tier 5 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTSC.getFluid(advanced_nitinol.getCatalystAmount(4)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_5_quantity))
@@ -254,11 +261,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(advanced_nitinol.getDuration(4))
                 .eut(advanced_nitinol.getEUt(4))
                 .metadata(COIL_HEAT, eternal_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 4 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTEC.getFluid(advanced_nitinol.getCatalystAmount(3)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_4_quantity))
@@ -268,11 +276,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(advanced_nitinol.getDuration(3))
                 .eut(advanced_nitinol.getEUt(3))
                 .metadata(COIL_HEAT, eternal_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 3 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTRC.getFluid(advanced_nitinol.getCatalystAmount(2)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_3_quantity))
@@ -282,11 +291,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(advanced_nitinol.getDuration(2))
                 .eut(advanced_nitinol.getEUt(2))
                 .metadata(COIL_HEAT, hypogen_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 2 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTPC.getFluid(advanced_nitinol.getCatalystAmount(1)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_2_quantity))
@@ -296,11 +306,12 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(advanced_nitinol.getDuration(1))
                 .eut(advanced_nitinol.getEUt(1))
                 .metadata(COIL_HEAT, infinity_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
 
             // Tier 1 - Normal
-            GTValues.RA.stdBuilder()
-                .itemInputs(GTUtility.getIntegratedCircuit(4))
+            RecipeBuilder.builder()
+                .itemInputs()
+                .circuit(4)
                 .fluidInputs(
                     Materials.ExcitedDTCC.getFluid(advanced_nitinol.getCatalystAmount(0)),
                     MaterialsAlloy.NITINOL_60.getFluidStack(tier_1_quantity))
@@ -310,7 +321,7 @@ public class PlasmaForgeRecipes implements IRecipePool {
                 .duration(advanced_nitinol.getDuration(0))
                 .eut(advanced_nitinol.getEUt(0))
                 .metadata(COIL_HEAT, awakened_heat)
-                .addTo(plasmaForgeRecipes);
+                .addTo(PFR);
         }
     }
 }

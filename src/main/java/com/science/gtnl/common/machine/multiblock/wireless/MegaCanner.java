@@ -7,7 +7,6 @@ import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -15,12 +14,11 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -31,8 +29,8 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.core.block.ModBlocks;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class MegaCanner extends WirelessEnergyMultiMachineBase<MegaCanner> {
 
     private static final int HORIZONTAL_OFF_SET = 4;
@@ -54,8 +52,8 @@ public class MegaCanner extends WirelessEnergyMultiMachineBase<MegaCanner> {
     public IStructureDefinition<MegaCanner> getStructureDefinition() {
         return StructureDefinition.<MegaCanner>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 15))
-            .addElement('B', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 1))
+            .addElement('A', Casings.SuperconductingCoilBlock.asElement())
+            .addElement('B', Casings.InconelReinforcedCasing.asElement())
             .addElement(
                 'C',
                 buildHatchAdder(MegaCanner.class)
@@ -70,14 +68,10 @@ public class MegaCanner extends WirelessEnergyMultiMachineBase<MegaCanner> {
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 4))))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 8))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
-            .addElement(
-                'F',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.WashPlantCasing.asElement())))
+            .addElement('D', Casings.UVMachineCasing.asElement())
+            .addElement('E', Casings.NaquadriaReinforcedWaterPlantCasing.asElement())
+            .addElement('F', Casings.ReinforcedGlass.asElement())
             .build();
     }
 
@@ -150,26 +144,8 @@ public class MegaCanner extends WirelessEnergyMultiMachineBase<MegaCanner> {
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaCannerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(9, 18, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaCanner_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaCanner_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaCanner_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaCanner_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaCanner_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

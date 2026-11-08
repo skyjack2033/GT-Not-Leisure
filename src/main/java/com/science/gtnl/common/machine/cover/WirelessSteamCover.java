@@ -1,5 +1,7 @@
 package com.science.gtnl.common.machine.cover;
 
+import java.math.BigInteger;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidStack;
@@ -9,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.science.gtnl.common.gui.WirelessSteamCoverGui;
 import com.science.gtnl.common.gui.WirelessSteamCoverUIFactory;
-import com.science.gtnl.utils.Utils;
+import com.science.gtnl.common.steam.SteamWirelessNetworkManager;
 import com.science.gtnl.utils.enums.SteamTypes;
-import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
+import com.science.gtnl.utils.machine.MachineUtils;
 
 import gregtech.api.covers.CoverContext;
 import gregtech.api.gui.modularui.CoverUIBuildContext;
@@ -20,10 +22,9 @@ import gregtech.api.interfaces.tileentity.IMachineProgress;
 import gregtech.api.metatileentity.BaseMetaTileEntity;
 import gregtech.api.metatileentity.CommonMetaTileEntity;
 import gregtech.api.util.GTUtility;
-import gregtech.common.covers.CoverLegacyData;
 import gregtech.common.gui.modularui.cover.base.CoverBaseGui;
 
-public class WirelessSteamCover extends CoverLegacyData {
+public class WirelessSteamCover extends IntDataCover {
 
     public WirelessSteamCover(CoverContext context) {
         super(context);
@@ -53,44 +54,53 @@ public class WirelessSteamCover extends CoverLegacyData {
         if (tileEntity instanceof BaseMetaTileEntity baseTile
             && baseTile.getMetaTileEntity() instanceof CommonMetaTileEntity commonMetaTile) {
             FluidStack fluid = commonMetaTile.getFluid();
-            if (fluid != null
-                && !GTUtility.areFluidsEqual(fluid, new FluidStack(SteamTypes.values()[coverData].fluid, 1))) {
+            SteamTypes steamType = getSteamMode();
+            if (fluid != null && !steamType.fluid.matches(fluid)) {
                 return;
             }
             int capacity = commonMetaTile.getCapacity();
             int fluidAmount = fluid != null ? commonMetaTile.getFluidAmount() : 0;
-            int availableSteam = SteamWirelessNetworkManager.getUserSteamInt(Utils.getOwner(tileEntity));
-            int current = Math.max(0, Math.min(availableSteam, capacity - fluidAmount));
+            BigInteger availableSteam = SteamWirelessNetworkManager.getUserSteam(MachineUtils.getOwner(tileEntity));
+            int current = availableSteam.divide(BigInteger.valueOf(steamType.efficiencyFactor))
+                .min(BigInteger.valueOf(capacity - fluidAmount))
+                .intValue();
 
-            if (!SteamWirelessNetworkManager.addSteamToGlobalSteamMap(Utils.getOwner(tileEntity), -current)) return;
-            commonMetaTile.fill(new FluidStack(getSteamMode().fluid, current), true);
+            if (current <= 0) return;
+
+            long steamCost = (long) current * steamType.efficiencyFactor;
+            if (!SteamWirelessNetworkManager.addSteamToGlobalSteamMap(MachineUtils.getOwner(tileEntity), -steamCost))
+                return;
+            commonMetaTile.fill(steamType.fluid.getFluidStack(current), true);
         }
     }
 
     @Override
     public String getDescription() {
-        return StatCollector.translateToLocal("PipelessSteamCover");
+        return StatCollector.translateToLocal("gtnl.cover.pipeless_steam.name");
     }
 
     public SteamTypes getSteamMode() {
-        return SteamTypes.values()[coverData];
+        return SteamTypes.fromNetworkTypeId(coverData);
     }
 
     public void setSteamMode(SteamTypes type) {
+        if (type == null || !type.networkConvertible) return;
         coverData = type.ordinal();
     }
 
     @Override
     public void onCoverScrewdriverClick(EntityPlayer aPlayer, float aX, float aY, float aZ) {
-        coverData = (coverData + (aPlayer.isSneaking() ? -1 : 1)) % SteamTypes.values().length;
+        coverData = (getSteamMode().ordinal() + (aPlayer.isSneaking() ? -1 : 1))
+            % SteamTypes.NETWORK_CONVERTIBLE_TYPES.length;
         if (coverData < 0) {
-            coverData = SteamTypes.values().length - 1;
+            coverData = SteamTypes.NETWORK_CONVERTIBLE_TYPES.length - 1;
         }
 
         GTUtility.sendChatTrans(
             aPlayer,
-            "Info_PipelessSteamCover_00",
-            SteamTypes.values()[coverData].fluid.getLocalizedName());
+            "gtnl.gui.wireless_steam.switch_to",
+            getSteamMode().fluid.getFluidStack()
+                .getLocalizedName());
     }
 
     @Override
@@ -104,9 +114,7 @@ public class WirelessSteamCover extends CoverLegacyData {
     }
 
     @Override
-    @Deprecated
-    public ModularWindow createWindow(CoverUIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the mui2 WirelessSteamCoverGui is validated in all cover opening paths.
+    protected ModularWindow createWindow(CoverUIBuildContext buildContext) {
         return new WirelessSteamCoverUIFactory(buildContext).createWindow();
     }
 

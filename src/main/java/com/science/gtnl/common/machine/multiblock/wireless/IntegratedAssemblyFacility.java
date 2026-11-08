@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -18,40 +17,37 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import com.dreammaster.item.NHItemList;
+import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.science.gtnl.api.IControllerUpgrade;
-import com.science.gtnl.common.gui.modularui.GTNLControllerUpgradeGui;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.gui.modularui.multiblock.GTNLControllerUpgradeGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
+import com.science.gtnl.compat.newhorizons.NHCoreItem;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
-import com.science.gtnl.utils.enums.GTNLStructureChannels;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
-import cpw.mods.fml.common.Optional;
 import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import goodgenerator.items.GGMaterial;
 import goodgenerator.loader.Loaders;
 import goodgenerator.util.ItemRefer;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.modularui2.GTGuiTextures;
@@ -70,9 +66,12 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
 import gtnhlanth.common.register.LanthItemList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<IntegratedAssemblyFacility>
     implements IControllerUpgrade {
 
@@ -88,13 +87,8 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     private static final int MACHINEMODE_ASSEM = 0;
     private static final int MACHINEMODE_COMPO = 1;
 
-    @Optional.Method(modid = "dreamcraft")
-    public static ItemStack getPikoCircuit() {
-        return NHItemList.PikoCircuit.get(32);
-    }
-
     public static List<Pair<Block, Integer>> createComponentCasingVariants() {
-        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(13);
+        List<Pair<Block, Integer>> casingVariants = new ObjectArrayList<>(13);
         for (int tier = 0; tier < 13; tier++) {
             casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
         }
@@ -107,7 +101,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
         ItemList.Field_Generator_UIV.get(32), ItemList.Sensor_UIV.get(32), ItemList.Emitter_UIV.get(32),
         GTNLItemList.EnhancementCore.get(16),
         GTOreDictUnificator.get(OrePrefixes.nanite, Materials.TranscendentMetal, 16),
-        Mods.NewHorizonsCoreMod.isModLoaded() ? getPikoCircuit() : null,
+        NHCoreItem.PikoCircuit.get(32, null),
         GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.SuperconductorUIV, 32),
         GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Mellion, 8),
         GGMaterial.shirabon.get(OrePrefixes.plateSuperdense, 8) };
@@ -123,14 +117,17 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     @Setter
     public boolean upgradeConsumed = false;
 
-    public int mCasingTier;
-
     public IntegratedAssemblyFacility(String aName) {
         super(aName);
     }
 
     public IntegratedAssemblyFacility(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.integrated_assembly_facility.name";
     }
 
     @Override
@@ -154,10 +151,10 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     public IStructureDefinition<IntegratedAssemblyFacility> getStructureDefinition() {
         return StructureDefinition.<IntegratedAssemblyFacility>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+            .addElement('A', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement(
                 'B',
-                GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING.use(
+                GTStructureChannels.COMPONENT_ASSEMBLYLINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         (block, meta) -> block == Loaders.componentAssemblylineCasing ? meta : -1,
                         COMPONENT_CASING_VARIANTS,
@@ -174,26 +171,26 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
                         HatchElement.InputHatch,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
-                    .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7))
+                    .casingIndex(Casings.AdvancedIridiumPlatedMachineCasing.getTextureId())
                     .hint(1)
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 6))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 1))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 12))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
+            .addElement('D', Casings.ProcessorMachineCasing.asElement())
+            .addElement('E', Casings.AdvancedFilterCasing.asElement())
+            .addElement('F', Casings.ReinforcedPhotolithographicFrameworkCasing.asElement())
             .addElement('G', GTStructureUtility.ofFrame(Materials.Neutronium))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
-            .addElement('I', StructureUtility.ofBlock(LanthItemList.SHIELDED_ACCELERATOR_CASING, 0))
+            .addElement('H', Casings.ExtremeDensitySpaceBendingCasing.asElement())
+            .addElement('I', Casings.ShieldedAcceleratorCasing.asElement())
             .addElement('J', StructureUtility.ofBlock(LanthItemList.NIOBIUM_CAVITY_CASING, 0))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
+            .addElement('K', Casings.AssemblyLineCasing.asElement())
             .addElement('L', StructureUtility.ofBlock(LanthItemList.COOLANT_DELIVERY_CASING, 0))
             .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSE, 1))
             .addElement('N', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('O', StructureUtility.ofBlock(BlockLoader.metaBlockGlow, 31))
-            .addElement('P', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 9))
-            .addElement('Q', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
+            .addElement('O', GTNLCasings.WhiteLamp.asElement())
+            .addElement('P', Casings.HermeticCasing9.asElement())
+            .addElement('Q', GTNLCasings.NeutroniumGearbox.asElement())
             .addElement('R', GTStructureUtility.ofFrame(Materials.CosmicNeutronium))
             .build();
     }
@@ -237,7 +234,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
@@ -277,6 +274,11 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
                     .setDurationModifier(getDurationModifier());
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
+    }
+
+    @Override
+    protected boolean appliesMachineVoltageLimit() {
+        return true;
     }
 
     @Override
@@ -338,30 +340,8 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("IntegratedAssemblyFacilityRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(47, 13, 19, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -371,8 +351,10 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
         String[] origin = super.getInfoData();
         String[] ret = new String[origin.length + 1];
         System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
+        ret[origin.length] = IGregTechDeviceInformation.encode(
+            "gtnl.machine.component_assembly_line.tier",
+            mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1]
+                : IGregTechDeviceInformation.translatable("gtnl.machine.component_assembly_line.tier.none"));
         return ret;
     }
 
@@ -384,18 +366,10 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Integrated Assembly Facility custom GUI is fully ported to mui2.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "IntegratedAssemblyFacility_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
@@ -421,21 +395,14 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("IntegratedAssemblyFacility_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return machineMode == 0 ? "gtnl.machine.integrated_assembly_facility.mode.0"
+            : "gtnl.machine.integrated_assembly_facility.mode.1";
     }
 
     @Override
     public boolean supportsMachineModeSwitch() {
         return true;
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the Integrated Assembly Facility upgrade GUI is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        createUpgradeButton(builder, buildContext);
     }
 
     @Override
@@ -445,7 +412,7 @@ public class IntegratedAssemblyFacility extends WirelessEnergyMultiMachineBase<I
 
     @Override
     public String getUpgradeButtonTooltip() {
-        return StatCollector.translateToLocal("Info_IntegratedAssemblyFacility_00");
+        return StatCollector
+            .translateToLocal("gtnl.machine.integrated_assembly_facility.info.component_assembly_line_upgrade");
     }
-
 }

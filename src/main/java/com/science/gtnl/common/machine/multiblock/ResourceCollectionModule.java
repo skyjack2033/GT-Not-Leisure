@@ -3,9 +3,12 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gregtech.api.GregTechAPI.sBlockCasingsSE;
+import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
+import static gregtech.api.enums.HatchElement.OutputBus;
+import static gregtech.api.enums.HatchElement.OutputHatch;
 import static net.minecraft.item.ItemStack.areItemStacksEqual;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,18 +23,12 @@ import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
-import com.gtnewhorizons.modularui.api.drawable.Text;
-import com.gtnewhorizons.modularui.api.math.Color;
-import com.gtnewhorizons.modularui.api.math.Pos2d;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
-import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
-import com.gtnewhorizons.modularui.common.widget.DynamicTextWidget;
-import com.science.gtnl.common.gui.modularui.ResourceCollectionModuleGui;
+import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.common.gui.modularui.multiblock.ResourceCollectionModuleGui;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.metadata.ResourceCollectionModuleMetadata;
@@ -40,7 +37,6 @@ import com.science.gtnl.utils.structure.GTNLStructureErrors;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IHatchElement;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -61,6 +57,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtnhintergalactic.tile.multi.elevator.TileEntitySpaceElevator;
 import gtnhintergalactic.tile.multi.elevatormodules.TileEntityModuleBase;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
 import tectech.thing.metaTileEntity.multi.base.INameFunction;
 import tectech.thing.metaTileEntity.multi.base.IStatusFunction;
@@ -69,6 +66,8 @@ import tectech.thing.metaTileEntity.multi.base.Parameters;
 import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 import tectech.thing.metaTileEntity.multi.base.render.TTRenderedExtendedFacingTexture;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class ResourceCollectionModule extends TileEntityModuleBase {
 
     private static final INameFunction<ResourceCollectionModule> PARALLEL_SETTING_NAME = (base, p) -> GCCoreUtil
@@ -79,6 +78,8 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     private static final int MACHINEMODE_DRILL = 1;
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String SM_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/space_module";
+    private static final String BASE_CASING_NAME_KEY = "gt.blockcasingsSE.0.name";
+    private static final String PARALLEL_CONTROLLER_NAME_KEY = "gtnl.structure.hatch.parallel_controller";
     private static final String[][] shape = StructureUtils.readStructureFromFile(SM_STRUCTURE_FILE_PATH);
 
     public static final ItemStack MiningDroneMkVIII = ItemList.MiningDroneUV.get(16);
@@ -91,8 +92,8 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     private long processingLogicEU;
     private int mParallelTier;
 
-    Parameters.Group.ParameterIn parallelSetting;
-    public ArrayList<ParallelControllerHatch> mParallelControllerHatches = new ArrayList<>();
+    public Parameters.Group.ParameterIn parallelSetting;
+    public ObjectArrayList<ParallelControllerHatch> mParallelControllerHatches = new ObjectArrayList<>();
 
     public ResourceCollectionModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional, 25, 5, 1);
@@ -100,6 +101,11 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
     public ResourceCollectionModule(String aName) {
         super(aName, 25, 5, 1);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.resource_collection_module.name";
     }
 
     @Override
@@ -118,12 +124,20 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
             .addShape(STRUCTURE_PIECE_MAIN, transpose(shape))
             .addElement(
                 'H',
-                GTStructureUtility.ofHatchAdderOptional(
-                    ResourceCollectionModule::addAllHatchToMachineList,
-                    4096,
-                    1,
-                    sBlockCasingsSE,
-                    0))
+                StructureUtility.withDescription(
+                    Arrays.asList(
+                        BASE_CASING_NAME_KEY,
+                        CustomHatchElement.ParallelCon.getDescriptionLangKey(),
+                        InputBus.getDescriptionLangKey(),
+                        InputHatch.getDescriptionLangKey(),
+                        OutputBus.getDescriptionLangKey(),
+                        OutputHatch.getDescriptionLangKey()),
+                    GTStructureUtility.ofHatchAdderOptional(
+                        ResourceCollectionModule::addAllHatchToMachineList,
+                        4096,
+                        1,
+                        sBlockCasingsSE,
+                        0)))
             .build();
     }
 
@@ -160,13 +174,13 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
     @Override
     public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
-        machineMode = (machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "ResourceCollectionModule_Mode_" + machineMode);
+        setMachineMode((machineMode + 1) % 2);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("ResourceCollectionModule_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.resource_collection_module.mode." + machineMode;
     }
 
     @Override
@@ -262,8 +276,8 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
                     .setDurationDecreasePerOC(2)
                     .setEUtIncreasePerOC(4)
                     .setAmperage(availableAmperage)
-                    .setEUtDiscount(1 - (mParallelTier / 50.0))
-                    .setDurationModifier(1 - (Math.max(0, mParallelTier - 1) / 50.0));
+                    .setEUtDiscount(1.0D - (mParallelTier / 50.0D))
+                    .setDurationModifier(1.0D - (Math.max(0, mParallelTier - 1) / 50.0D));
             }
         }.setMaxParallelSupplier(() -> Math.min((int) parallelSetting.get(), getMaxParallelRecipes()));
     }
@@ -302,27 +316,15 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ResourceCollectionModuleRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ResourceCollectionModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ResourceCollectionModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .beginStructureBlock(1, 5, 2, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ResourceCollectionModule_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ResourceCollectionModule_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ResourceCollectionModule_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ResourceCollectionModule_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Resource Collection Module custom GUI is fully ported to mui2.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
+    protected boolean useMui2() {
+        return true;
     }
 
     @Override
@@ -330,38 +332,6 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
         return new ResourceCollectionModuleGui(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the Resource Collection Module custom GUI is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        machineModeIcons = new ArrayList<>(4);
-        setMachineModeIcons();
-        builder.widget(
-            new DynamicTextWidget(
-                () -> new Text(
-                    StatCollector.translateToLocalFormatted(
-                        "gt.interact.desc.mb.mode",
-                        StatCollector.translateToLocal("ResourceCollectionModule_Mode_" + machineMode)))
-                            .color(Color.WHITE.normal)).setPos(10, 77));
-        builder.widget(createModeSwitchButton(builder));
-    }
-
-    @Override
-    public Pos2d getMachineModeSwitchButtonPos() {
-        return new Pos2d(174, 97);
-    }
-
-    @Override
-    @Deprecated
-    public void addGregTechLogo(ModularWindow.Builder builder) {
-        // TODO: Remove this MUI1 logo hook after Resource Collection Module only uses the MUI2 GUI.
-        builder.widget(
-            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_LOGO)
-                .setSize(18, 18)
-                .setPos(172, 67));
     }
 
     public boolean addAllHatchToMachineList(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {
@@ -427,6 +397,16 @@ public class ResourceCollectionModule extends TileEntityModuleBase {
 
         public IGTHatchAdder<? super ResourceCollectionModule> adder() {
             return adder;
+        }
+
+        @Override
+        public String getDescriptionLangKey() {
+            return PARALLEL_CONTROLLER_NAME_KEY;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return StatCollector.translateToLocal(PARALLEL_CONTROLLER_NAME_KEY);
         }
     }
 }

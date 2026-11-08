@@ -1,8 +1,12 @@
 package com.reavaritia.common;
 
 import net.minecraft.block.BlockDispenser;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.EnumHelper;
 
+import com.reavaritia.ReAvaritia;
 import com.reavaritia.common.items.BlazeAxe;
 import com.reavaritia.common.items.BlazeHoe;
 import com.reavaritia.common.items.BlazePickaxe;
@@ -31,6 +35,8 @@ import gregtech.api.enums.Mods;
 
 public class ItemLoader {
 
+    public static final EnumRarity COSMIC;
+
     public static Item CrystalSword = new CrystalSword();
     public static Item CrystalAxe = new CrystalAxe();
     public static Item CrystalPickaxe = new CrystalPickaxe();
@@ -52,26 +58,36 @@ public class ItemLoader {
     public static Item ChronarchsClock = new ChronarchsClock();
     public static Item InfinityElytra;
 
+    static {
+        EnumRarity rarity;
+        try {
+            rarity = EnumRarity.valueOf("COSMIC");
+        } catch (IllegalArgumentException ignored) {
+            rarity = EnumHelper.addRarity("COSMIC", EnumChatFormatting.RED, "Cosmic");
+        }
+        COSMIC = rarity;
+    }
+
     public static void registerItems() {
-        IRegistry(CrystalPickaxe, "CrystalPickaxe");
-        IRegistry(CrystalHoe, "CrystalHoe");
-        IRegistry(CrystalShovel, "CrystalShovel");
-        IRegistry(CrystalAxe, "CrystalAxe");
-        IRegistry(CrystalSword, "CrystalSword");
-        IRegistry(BlazePickaxe, "BlazePickaxe");
-        IRegistry(BlazeAxe, "BlazeAxe");
-        IRegistry(BlazeHoe, "BlazeHoe");
-        IRegistry(BlazeSword, "BlazeSword");
-        IRegistry(BlazeShovel, "BlazeShovel");
-        IRegistry(InfinitySword, "InfinitySword");
-        IRegistry(InfinityAxe, "InfinityAxe");
-        IRegistry(InfinityPickaxe, "InfinityPickaxe");
-        IRegistry(InfinityShovel, "InfinityShovel");
-        IRegistry(InfinityHoe, "InfinityHoe");
-        IRegistry(InfinityTotem, "InfinityTotem");
-        IRegistry(InfinityBucket, "InfinityBucket");
-        IRegistry(MatterCluster, "MatterCluster");
-        IRegistry(ChronarchsClock, "ChronarchsClock");
+        IRegistry(CrystalPickaxe, "crystal_pickaxe");
+        IRegistry(CrystalHoe, "crystal_hoe");
+        IRegistry(CrystalShovel, "crystal_shovel");
+        IRegistry(CrystalAxe, "crystal_axe");
+        IRegistry(CrystalSword, "crystal_sword");
+        IRegistry(BlazePickaxe, "blaze_pickaxe");
+        IRegistry(BlazeAxe, "blaze_axe");
+        IRegistry(BlazeHoe, "blaze_hoe");
+        IRegistry(BlazeSword, "blaze_sword");
+        IRegistry(BlazeShovel, "blaze_shovel");
+        IRegistry(InfinitySword, "infinity_sword");
+        IRegistry(InfinityAxe, "infinity_axe");
+        IRegistry(InfinityPickaxe, "infinity_pickaxe");
+        IRegistry(InfinityShovel, "infinity_shovel");
+        IRegistry(InfinityHoe, "infinity_hoe");
+        IRegistry(InfinityTotem, "infinity_totem");
+        IRegistry(InfinityBucket, "infinity_bucket");
+        IRegistry(MatterCluster, "matter_cluster");
+        IRegistry(ChronarchsClock, "chronarchs_clock");
 
         BlockDispenser.dispenseBehaviorRegistry.putObject(ChronarchsClock, ChronarchsClock);
 
@@ -87,6 +103,8 @@ public class ItemLoader {
     }
 
     public static void IRegistry(Item item, String name) {
+        item.setUnlocalizedName("reavaritia." + name);
+        item.setTextureName(ReAvaritia.RESOURCE_ROOT_ID + ":" + name);
         GameRegistry.registerItem(item, name);
     }
 

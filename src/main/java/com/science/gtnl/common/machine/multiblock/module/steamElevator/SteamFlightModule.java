@@ -12,10 +12,10 @@ import net.minecraft.world.World;
 
 import org.jetbrains.annotations.NotNull;
 
-import WayofTime.alchemicalWizardry.AlchemicalWizardry;
-import cpw.mods.fml.common.Optional;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
+import com.science.gtnl.compat.bloodmagic.BloodMagicPotions;
+
 import gregtech.api.enums.GTValues;
-import gregtech.api.enums.Mods;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
@@ -23,9 +23,10 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SteamFlightModule extends SteamElevatorModuleBase {
 
-    public static final int POTION_FLIGHT_ID = Mods.BloodMagic.isModLoaded() ? getPotionFlightId() : Potion.jump.id;
+    public static final int POTION_FLIGHT_ID = BloodMagicPotions.flightId(Potion.jump.id);
 
     public SteamFlightModule(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional, 1);
@@ -87,19 +88,13 @@ public class SteamFlightModule extends SteamElevatorModuleBase {
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamFlightModuleRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_flight_module.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SteamFlightModuleRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFlightModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFlightModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFlightModule_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFlightModule_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamFlightModule_04"))
-            .beginStructureBlock(1, 5, 2, false)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -107,10 +102,5 @@ public class SteamFlightModule extends SteamElevatorModuleBase {
     @Override
     public int getMachineEffectRange() {
         return 64 * Math.max(recipeOcCount, 1);
-    }
-
-    @Optional.Method(modid = "AWWayofTime")
-    public static int getPotionFlightId() {
-        return AlchemicalWizardry.customPotionFlightID;
     }
 }

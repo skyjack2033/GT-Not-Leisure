@@ -2,13 +2,11 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCustomMachineCasings;
 import static gtnhlanth.common.register.LanthItemList.FOCUS_MANIPULATION_CASING;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,11 +14,12 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -28,15 +27,16 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase<HandOfJohnDavisonRockefeller>
     implements ISurvivalConstructable {
 
@@ -48,14 +48,17 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 0;
 
-    public int mSpeedCount = 0;
-
     public HandOfJohnDavisonRockefeller(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
     }
 
     public HandOfJohnDavisonRockefeller(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.hand_of_john_davison_rockefeller.name";
     }
 
     @Override
@@ -68,7 +71,7 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
         return StructureDefinition.<HandOfJohnDavisonRockefeller>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+            .addElement('B', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement('C', StructureUtility.ofBlockAnyMeta(FOCUS_MANIPULATION_CASING))
             .addElement(
                 'D',
@@ -84,14 +87,13 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 8))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 2))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.PressureContainmentCasing.asElement())))
+            .addElement('E', Casings.NeutroniumStabilizationCasing.asElement())
+            .addElement('F', Casings.GrateMachineCasing.asElement())
+            .addElement('G', Casings.MiningNeutroniumCasing.asElement())
             .addElement('H', GTStructureUtility.ofFrame(Materials.Tungsten))
-            .addElement('I', StructureUtility.ofBlock(blockCustomMachineCasings, 3))
+            .addElement('I', Casings.RuggedBotmiumMachineCasing.asElement())
             .build();
     }
 
@@ -123,27 +125,20 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
         checkCasingMin(errors, mCountCasing, 30);
     }
 
-    @Override
-    public void clearHatches() {
-        super.clearHatches();
-        mSpeedCount = 0;
-    }
-
-    @Override
-    public void setupParameters() {
-        super.setupParameters();
-        mSpeedCount = mGlassTier + GTUtility.getTier(this.getMaxInputVoltage());
+    private int bonusTiers() {
+        return mGlassTier + GTUtility.getTier(this.getMaxInputVoltage());
     }
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.chemicalPlantRecipes;
+        return RecipeMaps.chemicalPlantRecipes;
     }
 
     @Override
     public double getEUtDiscount() {
         double discount = 1.0;
-        for (int i = 0; i < mSpeedCount; i++) {
+        int bonusTiers = bonusTiers();
+        for (int i = 0; i < bonusTiers; i++) {
             discount *= 0.95;
         }
         return super.getEUtDiscount() * discount;
@@ -152,7 +147,8 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
     @Override
     public double getDurationModifier() {
         double speedBoost = 1.0;
-        for (int i = 0; i < mSpeedCount; i++) {
+        int bonusTiers = bonusTiers();
+        for (int i = 0; i < bonusTiers; i++) {
             speedBoost -= 0.025;
             if (speedBoost < 0.1) {
                 speedBoost = 0.1;
@@ -164,7 +160,7 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
+        return Casings.PressureContainmentCasing.getTextureId();
     }
 
     @Override
@@ -187,32 +183,8 @@ public class HandOfJohnDavisonRockefeller extends WirelessEnergyMultiMachineBase
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("HandOfJohnDavisonRockefellerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(41, 9, 9, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HandOfJohnDavisonRockefeller_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

@@ -3,6 +3,8 @@ package com.science.gtnl.common.machine.multiblock.steam;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.init.Blocks;
@@ -11,6 +13,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.common.collect.ImmutableList;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -19,10 +22,12 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -36,6 +41,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class LargeSteamCutting extends SteamMultiMachineBase<LargeSteamCutting> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -202,6 +208,12 @@ public class LargeSteamCutting extends SteamMultiMachineBase<LargeSteamCutting> 
         return RecipeMaps.cutterRecipes;
     }
 
+    @NotNull
+    @Override
+    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
+        return Arrays.asList(RecipeMaps.cutterRecipes, RecipeMaps.cutterFakeRecipes);
+    }
+
     @Override
     public int getMaxParallelRecipes() {
         if (tierMachine == 1) {
@@ -210,6 +222,11 @@ public class LargeSteamCutting extends SteamMultiMachineBase<LargeSteamCutting> 
             return 16;
         }
         return 8;
+    }
+
+    @Override
+    public double getEUtDiscount() {
+        return super.getEUtDiscount() * 0.95 * tierMachine;
     }
 
     @Override
@@ -225,8 +242,8 @@ public class LargeSteamCutting extends SteamMultiMachineBase<LargeSteamCutting> 
     @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
-        int id = tierMachine == 2 ? StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0)
-            : StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        int id = tierMachine == 2 ? Casings.SolidSteelMachineCasing.getTextureId()
+            : Casings.BronzePlatedBricks.getTextureId();
         if (side == aFacing) {
             if (aActive) return new ITexture[] { Textures.BlockIcons.getCasingTextureForId(id), TextureFactory.builder()
                 .addIcon(TexturesGtBlock.oMCDIndustrialCuttingMachineActive)
@@ -242,22 +259,13 @@ public class LargeSteamCutting extends SteamMultiMachineBase<LargeSteamCutting> 
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("LargeSteamCuttingRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.large_steam_cutting.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSteamCuttingRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCutting_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCutting_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSteamCutting_02"))
-            .addInfo(StatCollector.translateToLocal("HighPressureTooltipNotice"))
-            .beginStructureBlock(9, 4, 5, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSteamCutting_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSteamCutting_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

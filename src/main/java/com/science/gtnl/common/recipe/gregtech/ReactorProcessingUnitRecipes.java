@@ -10,19 +10,19 @@ import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
-import gregtech.api.util.GTUtility;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.material.MaterialsElements;
 
 public class ReactorProcessingUnitRecipes implements IRecipePool {
 
-    public RecipeMap<?> RPU = GTPPRecipeMaps.reactorProcessingUnitRecipes;
+    public RecipeMap<?> RPU = RecipeMaps.reactorProcessingUnitRecipes;
 
     @Override
     public void loadRecipes() {
         RecipeBuilder.builder()
-            .itemInputs(GTUtility.getIntegratedCircuit(4), MaterialsElements.getInstance().FLUORINE.getCell(3))
+            .itemInputs(MaterialsElements.getInstance().FLUORINE.getCell(3))
+            .circuit(4)
             .itemOutputs(
                 MaterialsElements.getInstance().KRYPTON.getCell(1),
                 MaterialsElements.getInstance().XENON.getCell(1),

@@ -6,15 +6,15 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.gtnllib.utils.GameUtils;
 import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.client.GTNLCreativeTabs;
-import com.science.gtnl.utils.Utils;
+import com.science.gtnl.common.item.GTNLCreativeTabs;
+import com.science.gtnl.utils.text.LanguageLoader;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
 import gregtech.api.interfaces.IItemContainer;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
-import gregtech.api.util.GTLanguageManager;
 import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipeBuilder;
@@ -39,6 +39,7 @@ public enum GTNLItemList implements IItemContainer {
     NanoPhagocytosisPlantRender,
     EternalGregTechWorkshopRender,
     PlayerDoll,
+    PigmeeFumo,
     HoneyFluidBlock,
     ShimmerFluidBlock,
     CardboardBox,
@@ -47,7 +48,6 @@ public enum GTNLItemList implements IItemContainer {
     DirePatternEncoder,
     MEChisel,
     DimensionRespawnAnchor,
-    EssentiaHatch,
     EnderElevatorBlock,
     EnderElevatorSlab,
     EnderElevatorCarpet,
@@ -57,6 +57,15 @@ public enum GTNLItemList implements IItemContainer {
     PartSuperDualInterface,
     PartActiveFormationPlane,
     PartBeamFormer,
+    MECellDock,
+    PartEnergyAcceptor,
+    PartEnergyCell,
+    PartDenseEnergyCell,
+    PartSuperDenseEnergyCell,
+    PartUniversalStorageBus,
+    PartUniversalImportBus,
+    PartUniversalExportBus,
+    SuperDenseEnergyCell,
     BlockBeamFormer,
 
     BronzeBrickCasing,
@@ -355,8 +364,17 @@ public enum GTNLItemList implements IItemContainer {
     PortableObsidianChest,
     PortableNetheriteChest,
     PortableDarkSteelChest,
+    PortableCellWorkbench,
     Stick,
     WirelessUpgradeChip,
+    WirelessFrequencyCard,
+    MEMiniPortableTerminal,
+    YogSothothTerminal,
+
+    SoulCardboardHelmet,
+    SoulCardboardChestplate,
+    SoulCardboardLeggings,
+    SoulCardboardBoots,
 
     SatietyRing,
     SuperReachRing,
@@ -377,6 +395,34 @@ public enum GTNLItemList implements IItemContainer {
     MilledNaquadahEnriched,
 
     TwilightSword,
+    ElectromagneticRailgun,
+    RailgunModule,
+    EnergyModule,
+    CelestweaveOculus,
+    CelestweaveCore,
+    CelestweaveConduit,
+    CelestweaveStride,
+    CelestweaveModule,
+    CelestweaveModuleApiarist,
+    CelestweaveModuleNightVision,
+    CelestweaveModuleSaturation,
+    CelestweaveModuleRevealing,
+    CelestweaveModuleHolo,
+    CelestweaveModuleShield,
+    CelestweaveModuleReflect,
+    CelestweaveModulePurification,
+    CelestweaveModuleHazard,
+    CelestweaveModuleSoulbound,
+    CelestweaveModuleReach,
+    CelestweaveModuleTerrasteel,
+    CelestweaveModuleBackpack,
+    CelestweaveModuleFlight,
+    CelestweaveModuleWalkAssist,
+    CelestweaveModuleDash,
+    CelestweaveModuleDigAffinity,
+    CelestweaveModuleThaumic,
+    PortalGun,
+    PortalGunC137,
 
     GaiaGlass,
     TerraGlass,
@@ -419,6 +465,11 @@ public enum GTNLItemList implements IItemContainer {
     LightGrayLampBorderless,
     WhiteLamp,
     WhiteLampBorderless,
+
+    EssentiaHatch,
+    MultiEssentiaInputHatch,
+    MultiEssentiaJar,
+    MultiEssentiaTube,
 
     MegaAlloyBlastSmelter,
     MegaBlastFurnace,
@@ -479,7 +530,7 @@ public enum GTNLItemList implements IItemContainer {
     LargeSteamMixer,
     LargeSteamWiremill,
     ElectricBlastFurnace,
-
+    StellarIrisController,
     EternalGregTechWorkshop,
     EGTWFusionModule,
     ETGWEyeOfHarmonyModule,
@@ -1154,6 +1205,12 @@ public enum GTNLItemList implements IItemContainer {
     BeamlinePipeMirror,
     OutputHatchMEProxy,
     OutputBusMEProxy,
+    WirelessVacuumConveyorInputHatch,
+    WirelessVacuumConveyorOutputHatch,
+    SmallEssentiaSmelteryLV,
+    SmallEssentiaSmelteryMV,
+    SmallEssentiaSmelteryHV,
+    StructureCompiler,
     AdvancedSuperDualInputHatchME,
     SuperDualInputHatchME,
     TypeFilteredInputBusME,
@@ -1183,6 +1240,13 @@ public enum GTNLItemList implements IItemContainer {
     AdvancedSuperInputBusME,
     DebugResearchStation,
     ResearchCenter,
+    NuclearReactor,
+    SiphonTurbine,
+    SmallInfusionMatrix,
+    SmallArcaneAssembler,
+    IndustrialCrucible,
+    LargeBeeBreeder,
+    LargeCropBreeder,
     ExplosionDynamoHatch,
     AutoConfigurationMaintenanceHatch,
     SterileConfigurationMaintenanceHatch,
@@ -1197,12 +1261,18 @@ public enum GTNLItemList implements IItemContainer {
     SteamTurbineHV,
     SteamAssemblerBronze,
     SteamAssemblerSteel,
+    HydraulicSuperBuffer,
+    BreelReinforcedSteamInputBus,
+    BreelReinforcedSteamOutputBus,
+    StronzeReinforcedSteamInputHatch,
     ManaTank,
     BigSteamInputHatch,
     SuperDataAccessHatch,
     FluidManaInputHatch,
     FluidIceInputHatch,
     FluidBlazeInputHatch,
+    NuclearItemBus,
+    NuclearFluidHatch,
     SuperCraftingInputHatchME,
     SuperCraftingInputBusME,
     SuperCraftingInputProxy,
@@ -1284,6 +1354,12 @@ public enum GTNLItemList implements IItemContainer {
     GasCollectorUIV,
     GasCollectorUMV,
     GasCollectorUXV;
+
+    public static final GTNLItemList[] CELESTWEAVE_MODULE = { CelestweaveModuleApiarist, CelestweaveModuleNightVision,
+        CelestweaveModuleSaturation, CelestweaveModuleRevealing, CelestweaveModuleHolo, CelestweaveModuleShield,
+        CelestweaveModuleReflect, CelestweaveModulePurification, CelestweaveModuleHazard, CelestweaveModuleSoulbound,
+        CelestweaveModuleReach, CelestweaveModuleTerrasteel, CelestweaveModuleBackpack, CelestweaveModuleFlight,
+        CelestweaveModuleWalkAssist, CelestweaveModuleDash, CelestweaveModuleDigAffinity, CelestweaveModuleThaumic };
 
     public static final GTNLItemList[] ENERGY_HATCH_LV = { EnergyHatchLV, EnergyHatchLV4A, EnergyHatchLV16A,
         EnergyHatchLV64A };
@@ -1590,14 +1666,14 @@ public enum GTNLItemList implements IItemContainer {
 
     public GTNLItemList set(Item aItem) {
         if (aItem == null) return this;
-        return set(Utils.newItemStack(aItem));
+        return set(GameUtils.newItemStack(aItem));
     }
 
     public GTNLItemList set(ItemStack aStack) {
         if (aStack == null) return this;
         mHasNotBeenSet = false;
         mStack = GTUtility.copyAmountUnsafe(1, aStack);
-        if (Utils.isClientSide()) {
+        if (GameUtils.isClientSide()) {
             Item item = mStack.getItem();
             if (item == null) return this;
             if (Block.getBlockFromItem(item) == GregTechAPI.sBlockMachines) {
@@ -1695,7 +1771,7 @@ public enum GTNLItemList implements IItemContainer {
         // Construct a translation key from UnlocalizedName and CamelCased DisplayName
         final String tKey = rStack.getUnlocalizedName() + ".with." + tCamelCasedDisplayNameBuilder + ".name";
 
-        GTLanguageManager.addStringLocalization(tKey, aDisplayName);
+        LanguageLoader.addGTEnglishName(tKey, aDisplayName);
         rStack.setStackDisplayName(aDisplayName);
         return GTUtility.copyAmount(aAmount, rStack);
     }

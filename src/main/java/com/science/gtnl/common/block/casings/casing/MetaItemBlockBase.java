@@ -8,7 +8,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
-import com.science.gtnl.utils.item.MetaTooltipUtils;
+import com.gtnllib.utils.MetaTooltipUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -43,8 +43,8 @@ public abstract class MetaItemBlockBase extends ItemBlock {
         String[] tooltips = getTooltips(aItemStack.getItemDamage());
         MetaTooltipUtils.appendTooltips(tooltips, theTooltipsList);
         if (!canCreatureSpawn()) {
-            theTooltipsList.add(StatCollector.translateToLocal("Tooltip_NoMobsSpawnInThisBlock"));
-            theTooltipsList.add(StatCollector.translateToLocal("Tooltip_NoTileEntitySpawnInThisBlock"));
+            theTooltipsList.add(StatCollector.translateToLocal("gtnl.tooltip.no_mobs_spawn"));
+            theTooltipsList.add(StatCollector.translateToLocal("gtnl.tooltip.no_tile_entity_spawn"));
         }
     }
 

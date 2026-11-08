@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings4;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.util.Arrays;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,11 +21,12 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -41,6 +40,8 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargePacker extends GTMMultiMachineBase<LargePacker> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -61,6 +62,11 @@ public class LargePacker extends GTMMultiMachineBase<LargePacker> implements ISu
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_packer.name";
+    }
+
+    @Override
     public IStructureDefinition<LargePacker> getStructureDefinition() {
         return StructureDefinition.<LargePacker>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
@@ -72,12 +78,12 @@ public class LargePacker extends GTMMultiMachineBase<LargePacker> implements ISu
                         HatchElement.Maintenance,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasings4, 0))))
+                        StructureUtility.onElementPass(
+                            x -> ++x.mCountCasing,
+                            Casings.RobustTungstenSteelMachineCasing.asElement())))
             .build();
     }
 
@@ -150,23 +156,13 @@ public class LargePacker extends GTMMultiMachineBase<LargePacker> implements ISu
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings4, 0);
+        return Casings.RobustTungstenSteelMachineCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargePackerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargePacker_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargePacker_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(3, 3, 6, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargePacker_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargePacker_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargePacker_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargePacker_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -179,23 +175,15 @@ public class LargePacker extends GTMMultiMachineBase<LargePacker> implements ISu
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Large Packer GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_UNPACKAGER);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "LargePacker_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("LargePacker_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.large_packer.mode." + machineMode;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.hatch;
 import static gregtech.common.misc.WirelessNetworkManager.number_of_energy_additions;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -25,77 +24,64 @@ import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.google.common.collect.ImmutableSet;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.common.widget.DrawableWidget;
-import com.gtnewhorizons.modularui.common.widget.FluidSlotWidget;
 import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.common.gui.modularui.WirelessSteamDynamoHatchGui;
-import com.science.gtnl.common.material.GTNLMaterials;
+import com.science.gtnl.common.gui.modularui.hatch.WirelessSteamDynamoHatchGui;
+import com.science.gtnl.common.steam.SteamWirelessNetworkManager;
 import com.science.gtnl.mixins.early.gregtech.AccessorMTEHatch;
 import com.science.gtnl.utils.enums.SteamTypes;
-import com.science.gtnl.utils.item.ItemUtils;
-import com.science.gtnl.utils.world.steam.SteamWirelessNetworkManager;
+import com.science.gtnl.utils.world.teams.TeamNetworkManager;
 
-import gregtech.api.enums.Materials;
+import gregtech.api.enums.OutputHatchType;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.fluid.IFluidStore;
-import gregtech.api.interfaces.modularui.IAddGregtechLogo;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchOutput;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
-import gregtech.common.misc.spaceprojects.SpaceProjectManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
-public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidStore, IAddGregtechLogo {
+@IMetaTileEntity.SkipGenerateName
+@IMetaTileEntity.SkipGenerateDescription
+public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidStore {
 
     public UUID ownerUUID;
     public UUID teamUUID;
     public boolean isInTeam;
     public BigInteger steamDisplay;
-    public Set<Fluid> mLockedFluids;
+    public Set<GTUtility.FluidId> mLockedFluids;
 
     public WirelessSteamDynamoHatch(final int aID, final String aName, final String aNameRegional, int aTier) {
         super(aID, aName, aNameRegional, aTier);
-        this.mLockedFluids = ImmutableSet.of(
-            Materials.Steam.mGas,
-            GTModHandler.getSuperHeatedSteam(1)
-                .getFluid(),
-            Materials.DenseSupercriticalSteam.mGas,
-            GTNLMaterials.CompressedSteam.getMolten(1)
-                .getFluid());
+        this.mLockedFluids = SteamTypes.getSupportedFluids();
     }
 
-    public WirelessSteamDynamoHatch(final String aName, int aTier, final ITexture[][][] aTextures, Set<Fluid> aFluid) {
+    public WirelessSteamDynamoHatch(final String aName, int aTier, final ITexture[][][] aTextures,
+        Set<GTUtility.FluidId> aFluid) {
         super(aName, aTier, 3, new String[] { "" }, aTextures);
-        this.mLockedFluids = ImmutableSet.of(
-            Materials.Steam.mGas,
-            GTModHandler.getSuperHeatedSteam(1)
-                .getFluid(),
-            Materials.DenseSupercriticalSteam.mGas,
-            GTNLMaterials.CompressedSteam.getMolten(1)
-                .getFluid());
+        this.mLockedFluids = SteamTypes.getSupportedFluids();
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        if (!hasOwnLocalName()) return super.getLocalNameKey();
+        return mTier == 0 ? "gtnl.hatch.pipeless_steam.vent.name" : "gtnl.hatch.pipeless_jetstream.vent.name";
+    }
+
+    @Override
+    public String getLocalName() {
+        if (!hasOwnLocalName()) return super.getLocalName();
+        return StatCollector.translateToLocal(getLocalNameKey());
     }
 
     @Override
     public MetaTileEntity newMetaEntity(final IGregTechTileEntity aTileEntity) {
         return new WirelessSteamDynamoHatch(this.mName, this.mTier, this.mTextures, this.mLockedFluids);
-    }
-
-    @Override
-    @Deprecated
-    public void addGregTechLogo(ModularWindow.Builder builder) {
-        // TODO: Remove this mui1 fallback after WirelessSteamDynamoHatch mui2 parity is verified.
-        builder.widget(
-            new DrawableWidget().setDrawable(ItemUtils.PICTURE_GTNL_STEAM_LOGO)
-                .setSize(18, 18)
-                .setPos(151, 62));
     }
 
     @Override
@@ -113,12 +99,6 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
         return true;
     }
 
-    public boolean acceptsFluidLock(String name) {
-        return false;
-    }
-
-    public void setLockedFluidName(String lockedFluidName) {}
-
     @Override
     public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {}
@@ -135,39 +115,43 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
 
     @Override
     public boolean isFluidInputAllowed(final FluidStack aFluid) {
-        for (Fluid allowed : mLockedFluids) {
-            if (allowed.getName()
-                .equals(
-                    aFluid.getFluid()
-                        .getName())) {
-                return true;
-            }
-        }
-        return false;
+        return FluidIdUtils.matchesAny(mLockedFluids, aFluid);
     }
 
     @Override
-    @Deprecated
-    public FluidSlotWidget createFluidSlot() {
-        // TODO: Remove this mui1 fallback after WirelessSteamDynamoHatch mui2 parity is verified.
-        return super.createFluidSlot().setFilter(mLockedFluids::contains);
+    public boolean isFiltered() {
+        return isFluidLocked();
+    }
+
+    @Override
+    public boolean isFilteredToFluid(GTUtility.FluidId id) {
+        return id != null && FluidIdUtils.matchesAny(
+            mLockedFluids,
+            id.getFluidStack()
+                .getFluid());
+    }
+
+    @Override
+    public OutputHatchType getHatchType() {
+        return OutputHatchType.StandardFiltered;
     }
 
     @Override
     public String[] getDescription() {
-        ArrayList<String> desc = new ArrayList<>();
+        ObjectArrayList<String> desc = new ObjectArrayList<>();
 
-        desc.add(StatCollector.translateToLocal("Tooltip_PipelessSteamDynamoHatch_00"));
-        desc.add(StatCollector.translateToLocal("Tooltip_PipelessSteamDynamoHatch_01"));
-        desc.add(StatCollector.translateToLocal("HatchCustomFluid_01") + getCapacity() + "L");
+        desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.tooltip.0"));
+        desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.tooltip.1"));
+        desc.add(
+            StatCollector.translateToLocal("gtnl.hatch.custom_fluid.tooltip.capacity") + " " + getCapacity() + "L");
         if (mTier == 0) {
-            desc.add(StatCollector.translateToLocal("Tooltip_PipelessSteamVent_00"));
-            desc.add(StatCollector.translateToLocal("Tooltip_PipelessSteamVent_01"));
-            desc.add(StatCollector.translateToLocal("Tooltip_PipelessSteamVent_02"));
+            desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.steam.tooltip.0"));
+            desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.steam.tooltip.1"));
+            desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.steam.tooltip.2"));
         } else {
-            desc.add(StatCollector.translateToLocal("Tooltip_PipelessJetstreamVent_00"));
-            desc.add(StatCollector.translateToLocal("Tooltip_PipelessJetstreamVent_01"));
-            desc.add(StatCollector.translateToLocal("Tooltip_PipelessJetstreamVent_02"));
+            desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.jetstream.tooltip.0"));
+            desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.jetstream.tooltip.1"));
+            desc.add(StatCollector.translateToLocal("gtnl.hatch.wireless_steam_dynamo.jetstream.tooltip.2"));
         }
 
         return desc.toArray(new String[] {});
@@ -234,18 +218,7 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
     public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
         super.onFirstTick(aBaseMetaTileEntity);
         if (!aBaseMetaTileEntity.isServerSide()) return;
-
-        ownerUUID = aBaseMetaTileEntity.getOwnerUuid();
-
-        SpaceProjectManager.checkOrCreateTeam(ownerUUID);
-
-        isInTeam = SpaceProjectManager.isInTeam(ownerUUID);
-
-        if (isInTeam) {
-            teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-            steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
-        }
-
+        refreshSteamNetworkState(aBaseMetaTileEntity);
         tryFetchingSteam();
     }
 
@@ -261,32 +234,37 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
     public void onPostTick(IGregTechTileEntity baseMetaTileEntity, long tick) {
         super.onPostTick(baseMetaTileEntity, tick);
         if (baseMetaTileEntity.isServerSide() && tick % 200 == 0L) {
-            isInTeam = SpaceProjectManager.isInTeam(ownerUUID);
-
-            if (isInTeam) {
-                teamUUID = SpaceProjectManager.getLeader(ownerUUID);
-                steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
-            }
+            refreshSteamNetworkState(baseMetaTileEntity);
         }
     }
 
+    private void refreshSteamNetworkState(IGregTechTileEntity baseMetaTileEntity) {
+        UUID baseOwnerUUID = baseMetaTileEntity.getOwnerUuid();
+        if (baseOwnerUUID != null) ownerUUID = baseOwnerUUID;
+        if (ownerUUID == null) {
+            isInTeam = false;
+            teamUUID = null;
+            steamDisplay = BigInteger.ZERO;
+            return;
+        }
+
+        isInTeam = true;
+        teamUUID = TeamNetworkManager.getTeamId(ownerUUID);
+        steamDisplay = SteamWirelessNetworkManager.getUserSteam(ownerUUID);
+    }
+
     private void tryFetchingSteam() {
+        if (ownerUUID == null) return;
         FluidStack currentSteamStack = getFillableStack();
 
         if (currentSteamStack != null && currentSteamStack.amount > 0) {
             int rawAmount = currentSteamStack.amount;
             Fluid fluidType = currentSteamStack.getFluid();
 
-            SteamTypes matchedSteamType = null;
-            for (SteamTypes steamType : SteamTypes.VALUES) {
-                if (steamType.fluid != null && steamType.fluid.equals(fluidType)) {
-                    matchedSteamType = steamType;
-                    break;
-                }
-            }
+            SteamTypes matchedSteamType = SteamTypes.fromFluid(fluidType);
 
             if (matchedSteamType != null) {
-                int convertedAmount = rawAmount * matchedSteamType.efficiencyFactor;
+                long convertedAmount = (long) rawAmount * (long) matchedSteamType.efficiencyFactor;
 
                 if (!SteamWirelessNetworkManager.addSteamToGlobalSteamMap(ownerUUID, convertedAmount)) {
                     return;
@@ -300,12 +278,17 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
     @Override
     public void saveNBTData(NBTTagCompound aNBT) {
         super.saveNBTData(aNBT);
-        aNBT.setString("OwnerUUID", ownerUUID.toString());
+        if (ownerUUID != null) {
+            aNBT.setString("OwnerUUID", ownerUUID.toString());
+        }
     }
 
     @Override
     public void loadNBTData(NBTTagCompound aNBT) {
         super.loadNBTData(aNBT);
+        if (!aNBT.hasKey("OwnerUUID")) {
+            return;
+        }
         try {
             ownerUUID = UUID.fromString(aNBT.getString("OwnerUUID"));
         } catch (IllegalArgumentException e) {
@@ -323,16 +306,19 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
         boolean isInTeam = tag.getBoolean("isInSteamNetwork");
 
         if (!isInTeam) {
-            currenttip.add(StatCollector.translateToLocalFormatted("Info_SteamNetwork_00", steamNetworkOwner));
+            currenttip
+                .add(StatCollector.translateToLocalFormatted("gtnl.waila.steam_network.unlinked", steamNetworkOwner));
         } else {
             String steamNetworkDisplay = tag.getString("SteamNetworkDisplay");
             currenttip.add(
-                StatCollector
-                    .translateToLocalFormatted("Info_SteamNetwork_01", steamNetworkOwner, steamNetworkDisplay));
+                StatCollector.translateToLocalFormatted(
+                    "gtnl.waila.steam_network.balance",
+                    steamNetworkOwner,
+                    steamNetworkDisplay));
             if (tag.hasKey("SteamNetworkTeam")) {
                 currenttip.add(
                     StatCollector.translateToLocalFormatted(
-                        "Info_SteamNetwork_02",
+                        "gtnl.waila.steam_network.team",
                         steamNetworkOwner,
                         tag.getString("SteamNetworkTeam")));
             }
@@ -343,17 +329,20 @@ public class WirelessSteamDynamoHatch extends MTEHatchOutput implements IFluidSt
     public void getWailaNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y,
         int z) {
         super.getWailaNBTData(player, tile, tag, world, x, y, z);
-        tag.setString("SteamNetworkOwner", SpaceProjectManager.getPlayerNameFromUUID(ownerUUID));
+        if (ownerUUID == null) {
+            return;
+        }
+        tag.setString("SteamNetworkOwner", TeamNetworkManager.getPlayerName(ownerUUID));
         tag.setBoolean("isInSteamNetwork", isInTeam);
 
-        if (isInTeam) {
+        if (isInTeam && steamDisplay != null) {
             tag.setString(
                 "SteamNetworkDisplay",
                 steamDisplay.toString()
                     .length() > 10 ? GTUtility.scientificFormat(steamDisplay)
                         : NumberFormatUtil.formatNumber(steamDisplay));
-            if (!ownerUUID.equals(teamUUID)) {
-                tag.setString("SteamNetworkTeam", SpaceProjectManager.getPlayerNameFromUUID(teamUUID));
+            if (teamUUID != null && !TeamNetworkManager.isTeamOwner(ownerUUID)) {
+                tag.setString("SteamNetworkTeam", TeamNetworkManager.getTeamName(teamUUID));
             }
         }
     }

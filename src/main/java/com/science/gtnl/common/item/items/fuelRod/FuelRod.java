@@ -1,6 +1,5 @@
 package com.science.gtnl.common.item.items.fuelRod;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +17,7 @@ import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorComponent;
 import ic2.core.util.StackUtil;
 import ic2.core.util.Util;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 // Code From NH-Utilities
 public class FuelRod extends RadioactiveItem implements IReactorComponent, IBoxable {
@@ -34,7 +34,7 @@ public class FuelRod extends RadioactiveItem implements IReactorComponent, IBoxa
     // region Constructor
     public FuelRod(String aName, int aCells, int aEUt, int aHeat, int aRads, int aDuration, float aHeatBonus,
         ItemStack aDepletedResult) {
-        super(aName, aRads);
+        super(aName, "item.gtnl.infinity_fuel_rod", aRads);
         this.setMaxStackSize(64);
         this.numberOfCells = aCells;
         this.Power = aEUt / 25.0F;
@@ -69,7 +69,7 @@ public class FuelRod extends RadioactiveItem implements IReactorComponent, IBoxa
                         + checkPulseAble(reactor, x, y - 1, stack, x, y, true)
                         + checkPulseAble(reactor, x, y + 1, stack, x, y, true);
                     heat = sumUp(pulses) * this.Heat;
-                    ArrayList<ItemStackCoord> heatAcceptors = new ArrayList<>();
+                    List<ItemStackCoord> heatAcceptors = new ObjectArrayList<>();
                     this.checkHeatAcceptor(reactor, x - 1, y, heatAcceptors);
                     this.checkHeatAcceptor(reactor, x + 1, y, heatAcceptors);
                     this.checkHeatAcceptor(reactor, x, y - 1, heatAcceptors);
@@ -113,7 +113,7 @@ public class FuelRod extends RadioactiveItem implements IReactorComponent, IBoxa
         return (x * x + x) / 2;
     }
 
-    private void checkHeatAcceptor(@NotNull IReactor reactor, int x, int y, ArrayList<ItemStackCoord> heatAcceptors) {
+    private void checkHeatAcceptor(@NotNull IReactor reactor, int x, int y, List<ItemStackCoord> heatAcceptors) {
         ItemStack thing = reactor.getItemAt(x, y);
         if (thing != null && thing.getItem() instanceof IReactorComponent
             && ((IReactorComponent) thing.getItem()).canStoreHeat(reactor, thing, x, y)) {
@@ -199,21 +199,22 @@ public class FuelRod extends RadioactiveItem implements IReactorComponent, IBoxa
         final int powerInfo = (int) this.Power * 25;
         list.add(
             String.format(
-                StatCollector.translateToLocal("Tooltip_FuelRod_00"),
+                StatCollector.translateToLocal("item.gtnl.fuel_rod.tooltip.durability"),
                 Duration - getCustomDamage(stack),
                 Duration));
-        if (this.HeatBonus > 0F)
-            list.add(String.format(StatCollector.translateToLocal("Tooltip_FuelRod_01"), this.HeatBonus));
+        if (this.HeatBonus > 0F) list.add(
+            String
+                .format(StatCollector.translateToLocal("item.gtnl.fuel_rod.tooltip.mox_coefficient"), this.HeatBonus));
         list.add(
             String.format(
                 String.format(
-                    StatCollector.translateToLocal("Tooltip_FuelRod_02"),
+                    StatCollector.translateToLocal("item.gtnl.fuel_rod.tooltip.heat_output"),
                     this.Heat,
                     this.Heat * 6,
                     this.Heat * 24)));
         list.add(
             String.format(
-                StatCollector.translateToLocal("Tooltip_FuelRod_03"),
+                StatCollector.translateToLocal("item.gtnl.fuel_rod.tooltip.power_output"),
                 powerInfo,
                 powerInfo * 4,
                 powerInfo * 12));

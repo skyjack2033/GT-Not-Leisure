@@ -2,12 +2,10 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings3Misc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,9 +14,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -29,13 +28,12 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.structure.error.ErrorType;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssembler>
     implements ISurvivalConstructable {
 
@@ -55,12 +53,17 @@ public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssem
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_circuit_assembler.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeCircuitAssembler> getStructureDefinition() {
         return StructureDefinition.<LargeCircuitAssembler>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 14))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
+            .addElement('B', Casings.TitaniumPipeCasing.asElement())
+            .addElement('C', Casings.GrateMachineCasing.asElement())
             .addElement(
                 'D',
                 GTStructureUtility.buildHatchAdder(LargeCircuitAssembler.class)
@@ -74,8 +77,7 @@ public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssem
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings3Misc, 2))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.MultiUseCasing.asElement())))
             .build();
     }
 
@@ -105,10 +107,7 @@ public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssem
         setupParameters();
         checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 30);
-        int energyHatchCount = mEnergyHatches.size() + mExoticEnergyHatches.size();
-        if (energyHatchCount > 1) {
-            errors.add(StructureErrors.hatchCount(ErrorType.TOO_MANY, HatchElement.Energy, energyHatchCount, 1));
-        }
+        checkHatchMax(errors, HatchElement.Energy.or(HatchElement.ExoticEnergy), 1);
     }
 
     @Override
@@ -156,22 +155,8 @@ public class LargeCircuitAssembler extends GTMMultiMachineBase<LargeCircuitAssem
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeCircuitAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCircuitAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCircuitAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 3, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeCircuitAssembler_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeCircuitAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeCircuitAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeCircuitAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeCircuitAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

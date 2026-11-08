@@ -1,6 +1,5 @@
 package com.reavaritia.utils;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,6 +48,7 @@ import fox.spiteful.avaritia.Config;
 import fox.spiteful.avaritia.LudicrousEvents;
 import fox.spiteful.avaritia.LudicrousText;
 import gregtech.api.enums.Mods;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class SubscribeEventUtils {
 
@@ -123,7 +123,7 @@ public class SubscribeEventUtils {
                 && ToolHelper.hammerdrops.containsKey(event.harvester)
                 && ToolHelper.hammerdrops.get(event.harvester) != null) {
 
-                ArrayList<ItemStack> garbage = new ArrayList<>();
+                ObjectArrayList<ItemStack> garbage = new ObjectArrayList<>();
                 for (ItemStack drop : event.drops) {
                     if (isGarbage(drop)) garbage.add(drop);
                 }
@@ -427,7 +427,7 @@ public class SubscribeEventUtils {
                     .contains(StatCollector.translateToLocal("attribute.name.generic.attackDamage"))
                     || event.toolTip.get(x)
                         .contains(StatCollector.translateToLocal("Attack Damage"))) {
-                    var damage = StatCollector.translateToLocal("Damage_InfinitySword");
+                    var damage = StatCollector.translateToLocal("reavaritia.item.infinity_sword.damage");
                     if (Mods.Avaritia.isModLoaded()) damage = makeFabulous(damage);
                     event.toolTip.set(
                         x,

@@ -13,12 +13,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.loader.EffectLoader;
-import com.science.gtnl.utils.enums.GTNLItemList;
+import com.science.gtnl.utils.ColorUtils;
 
 import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fox.spiteful.avaritia.render.IHaloRenderItem;
@@ -30,11 +28,11 @@ public class TestItem extends Item implements IHaloRenderItem {
 
     public TestItem() {
         super();
-        this.setUnlocalizedName("TestItem");
-        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + "TestItem");
-        GameRegistry.registerItem(this, getUnlocalizedName());
-        GTNLItemList.TestItem.set(new ItemStack(this, 1));
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "item.gtnl.test_item";
     }
 
     @Override
@@ -50,20 +48,20 @@ public class TestItem extends Item implements IHaloRenderItem {
     public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> toolTip,
         boolean advancedToolTips) {
 
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_00"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_01"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_02"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_03"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_04"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_05"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_06"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_07"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_08"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_09"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_10"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_11"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_12"));
-        toolTip.add(StatCollector.translateToLocal("Tooltip_Testitem_13"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.0"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.1"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.2"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.3"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.4"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.5"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.6"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.7"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.8"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.9"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.10"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.11"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.12"));
+        toolTip.add(StatCollector.translateToLocal("item.gtnl.test_item.tooltip.13"));
 
     }
 
@@ -104,7 +102,7 @@ public class TestItem extends Item implements IHaloRenderItem {
     @Override
     @Optional.Method(modid = "Avaritia")
     public int getHaloColour(ItemStack stack) {
-        return 0xE6FFFFFF;
+        return ColorUtils.itemGhostWhite.getColor();
     }
 
 }

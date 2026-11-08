@@ -6,7 +6,6 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,17 +16,16 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.metadata.FuelRefiningMetadata;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -43,9 +41,10 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -64,6 +63,11 @@ public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.fuel_refining_complex.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new FuelRefiningComplex(this.mName);
     }
@@ -72,24 +76,22 @@ public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex
     public IStructureDefinition<FuelRefiningComplex> getStructureDefinition() {
         return StructureDefinition.<FuelRefiningComplex>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement(
-                'A',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
+            .addElement('A', Casings.ReinforcedGlass.asElement())
             .addElement('B', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 0))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
+            .addElement('C', Casings.AssemblyLineCasing.asElement())
+            .addElement('D', Casings.RobustTungstenSteelMachineCasing.asElement())
+            .addElement('E', Casings.CleanStainlessSteelMachineCasing.asElement())
             .addElement(
                 'F',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility
                             .ofCoil(FuelRefiningComplex::setMCoilLevel, FuelRefiningComplex::getMCoilLevel))))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 6))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
+            .addElement('G', Casings.HermeticCasing6.asElement())
+            .addElement('H', Casings.ChemicallyInertMachineCasing.asElement())
+            .addElement('I', Casings.PTFEPipeCasing.asElement())
             .addElement('J', GTStructureUtility.ofFrame(Materials.TungstenSteel))
-            .addElement('K', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 4))
+            .addElement('K', Casings.WashPlantCasing.asElement())
             .addElement(
                 'L',
                 GTStructureUtility.buildHatchAdder(FuelRefiningComplex.class)
@@ -100,13 +102,11 @@ public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex
                         HatchElement.InputBus,
                         HatchElement.InputHatch,
                         HatchElement.OutputHatch,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 1))))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.InconelReinforcedCasing.asElement())))
             .build();
     }
 
@@ -217,19 +217,8 @@ public class FuelRefiningComplex extends GTMMultiMachineBase<FuelRefiningComplex
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FuelRefiningComplexRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(17, 14, 16, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_FuelRefiningComplex_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

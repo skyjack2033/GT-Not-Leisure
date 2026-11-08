@@ -3,11 +3,9 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -18,12 +16,13 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -38,7 +37,10 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -57,6 +59,11 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.wood_distillation.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new WoodDistillation(this.mName);
     }
@@ -65,7 +72,7 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
     public IStructureDefinition<WoodDistillation> getStructureDefinition() {
         return StructureDefinition.<WoodDistillation>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 2))
+            .addElement('A', GTNLCasings.HeatVent.asElement())
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(WoodDistillation.class)
@@ -80,16 +87,15 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 11))))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 1))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 13))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 14))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 10))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 3))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.HeatProofMachineCasing.asElement())))
+            .addElement('C', Casings.FrostProofMachineCasing.asElement())
+            .addElement('D', Casings.SteelPipeCasing.asElement())
+            .addElement('E', Casings.FilterMachineCasing.asElement())
+            .addElement('F', Casings.SteelFireboxCasing.asElement())
+            .addElement('G', Casings.CleanStainlessSteelMachineCasing.asElement())
+            .addElement('H', Casings.StainlessSteelTurbineCasing.asElement())
+            .addElement('I', Casings.HermeticCasing3.asElement())
             .addElement('J', GTStructureUtility.ofFrame(Materials.StainlessSteel))
             .addElement('K', HatchElement.Muffler.newAny(getCasingTextureID(), 2))
             .build();
@@ -176,7 +182,7 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
         FluidStack[] outputFluids = processingLogic.getOutputFluids();
         mOutputFluids = outputFluids;
         if (outputFluids != null) {
-            List<FluidStack> expandedFluids = new ArrayList<>();
+            List<FluidStack> expandedFluids = new ObjectArrayList<>();
             for (FluidStack fluidStack : outputFluids) {
                 if (fluidStack != null) {
                     long totalAmount = (long) fluidStack.amount * GTUtility.getTier(this.getMaxInputVoltage()) * 2;
@@ -196,7 +202,7 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11);
+        return Casings.HeatProofMachineCasing.getTextureId();
     }
 
     @Override
@@ -229,18 +235,8 @@ public class WoodDistillation extends GTMMultiMachineBase<WoodDistillation> impl
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("WoodDistillationRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WoodDistillation_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(23, 20, 15, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_WoodDistillation_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_WoodDistillation_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_WoodDistillation_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_WoodDistillation_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_WoodDistillation_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

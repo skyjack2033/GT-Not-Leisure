@@ -2,14 +2,12 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +20,7 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.CustomFluidHatch;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
@@ -30,6 +29,7 @@ import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import bartworks.util.BWUtil;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.HeatingCoilLevel;
@@ -39,6 +39,7 @@ import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.metatileentity.implementations.MTEHatch;
@@ -49,7 +50,6 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.ExoticEnergyInputHelper;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
@@ -57,12 +57,13 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> implements ISurvivalConstructable {
 
-    private static final TranslatableText BLAZE_INPUT_HATCH_NAME = TranslatableText.lang("FluidBlazeInputHatch");
+    private static final String BLAZE_INPUT_HATCH_NAME = "gtnl.hatch.fluid_blaze_input.name";
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     private static final String BBF_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/blaze_blast_furnace";
@@ -84,6 +85,11 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.blaze_blast_furnace.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(final IGregTechTileEntity aTileEntity) {
         return new BlazeBlastFurnace(this.mName);
     }
@@ -92,14 +98,14 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
     public IStructureDefinition<BlazeBlastFurnace> getStructureDefinition() {
         return StructureDefinition.<BlazeBlastFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings2, 15))
+            .addElement('A', Casings.TungstensteelPipeCasing.asElement())
             .addElement(
                 'B',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility.ofCoil(BlazeBlastFurnace::setMCoilLevel, BlazeBlastFurnace::getMCoilLevel))))
-            .addElement('C', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 11))
-            .addElement('D', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 14))
+            .addElement('C', Casings.VolcanusCasing.asElement())
+            .addElement('D', Casings.BlastSmelterHeatContainmentCoil.asElement())
             .addElement(
                 'E',
                 StructureUtility.ofChain(
@@ -115,11 +121,11 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility
-                        .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 15)),
+                    StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BlastSmelterCasing.asElement()),
                     GTStructureUtility.buildHatchAdder(BlazeBlastFurnace.class)
                         .adder(BlazeBlastFurnace::addFluidBlazeInputHatch)
                         .hatchId(21503)
+                        .description(() -> BLAZE_INPUT_HATCH_NAME)
                         .shouldReject(x -> !x.mFluidBlazeInputHatch.isEmpty())
                         .casingIndex(getCasingTextureID())
                         .hint(1)
@@ -149,12 +155,6 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
             true);
     }
 
-    public int getMultiTier(ItemStack inventory) {
-        if (inventory == null) return 1;
-        if (inventory.isItemEqual(GTNLItemList.BlazeCube.get(1))) return 4;
-        return 1;
-    }
-
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
@@ -175,7 +175,7 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
     @Override
     public void setupParameters() {
         super.setupParameters();
-        this.mMultiTier = getMultiTier(getControllerSlot());
+        this.mMultiTier = GTUtility.areStacksEqual(getControllerSlot(), GTNLItemList.BlazeCube.get(1), true) ? 4 : 1;
         this.mHeatingCapacity = (int) getMCoilLevel().getHeat() + 100 * (BWUtil.getTier(getMaxInputVoltage()) - 2);
     }
 
@@ -235,32 +235,27 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
 
     @Override
     public double getDurationModifier() {
-        return 1.0 / 3;
+        return 1.0 / 4.0;
     }
 
     @Override
     public double getEUtDiscount() {
-        return 0.75;
-    }
-
-    @Override
-    public int getMaxTierSkip() {
-        return 0;
+        return 0.70;
     }
 
     @Override
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPostTick(aBaseMetaTileEntity, aTick);
         if (this.mStartUpCheck < 0) {
-            startRecipeProcessing();
             if (this.mMaxProgresstime > 0 && aTick % 20 == 0) {
+                startRecipeProcessing();
                 int baseAmount = 10 * GTUtility.getTier(-lEUt) * GTUtility.getTier(-lEUt) * mMultiTier;
                 if (!this.depleteInputFromRestrictedHatches(this.mFluidBlazeInputHatch, baseAmount)) {
                     this.causeMaintenanceIssue();
                     this.stopMachine(ShutDownReasonRegistry.outOfFluid(Materials.Blaze.getMolten(baseAmount)));
                 }
+                endRecipeProcessing();
             }
-            endRecipeProcessing();
         }
     }
 
@@ -321,7 +316,7 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
         }
 
         return new String[] {
-            StatCollector.translateToLocal("GT5U.multiblock.Progress") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.Progress") + ": "
                 + EnumChatFormatting.GREEN
                 + NumberFormatUtil.formatNumber(mProgresstime / 20)
                 + EnumChatFormatting.RESET
@@ -330,7 +325,7 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
                 + NumberFormatUtil.formatNumber(mMaxProgresstime / 20)
                 + EnumChatFormatting.RESET
                 + " s",
-            StatCollector.translateToLocal("GT5U.multiblock.energy") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.energy") + ": "
                 + EnumChatFormatting.GREEN
                 + NumberFormatUtil.formatNumber(storedEnergy)
                 + EnumChatFormatting.RESET
@@ -339,38 +334,38 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
                 + NumberFormatUtil.formatNumber(maxEnergy)
                 + EnumChatFormatting.RESET
                 + " EU",
-            StatCollector.translateToLocal("GT5U.multiblock.usage") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.usage") + ": "
                 + EnumChatFormatting.RED
                 + NumberFormatUtil.formatNumber(-lEUt)
                 + EnumChatFormatting.RESET
                 + " EU/t",
-            StatCollector.translateToLocal("GT5U.multiblock.mei") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.mei") + ": "
                 + EnumChatFormatting.YELLOW
                 + NumberFormatUtil.formatNumber(getMaxInputVoltage())
                 + EnumChatFormatting.RESET
                 + " EU/t(*2A) "
-                + StatCollector.translateToLocal("GT5U.machines.tier")
+                + IGregTechDeviceInformation.encode("GT5U.machines.tier")
                 + ": "
                 + EnumChatFormatting.YELLOW
                 + GTValues.VN[GTUtility.getTier(getMaxInputVoltage())]
                 + EnumChatFormatting.RESET,
-            StatCollector.translateToLocal("GT5U.multiblock.problems") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.problems") + ": "
                 + EnumChatFormatting.RED
                 + (getIdealStatus() - getRepairStatus())
                 + EnumChatFormatting.RESET
                 + " "
-                + StatCollector.translateToLocal("GT5U.multiblock.efficiency")
+                + IGregTechDeviceInformation.encode("GT5U.multiblock.efficiency")
                 + ": "
                 + EnumChatFormatting.YELLOW
                 + mEfficiency / 100.0F
                 + EnumChatFormatting.RESET
                 + " %",
-            StatCollector.translateToLocal("GT5U.EBF.heat") + ": "
+            IGregTechDeviceInformation.encode("GT5U.EBF.heat") + ": "
                 + EnumChatFormatting.GREEN
                 + NumberFormatUtil.formatNumber(mHeatingCapacity)
                 + EnumChatFormatting.RESET
                 + " K",
-            StatCollector.translateToLocal("GT5U.multiblock.pollution") + ": "
+            IGregTechDeviceInformation.encode("GT5U.multiblock.pollution") + ": "
                 + EnumChatFormatting.GREEN
                 + getAveragePollutionPercentage()
                 + EnumChatFormatting.RESET
@@ -378,36 +373,21 @@ public class BlazeBlastFurnace extends MultiMachineBase<BlazeBlastFurnace> imple
     }
 
     @Override
+    public boolean addsVoltageHeat() {
+        return true;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("BlazeBlastFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_05"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 6, 7, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_00"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_00"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_00"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_00"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_00"), 1)
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_01"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_00"), 1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("FluidBlazeInputHatch"),
-                StatCollector.translateToLocal("Tooltip_BlazeBlastFurnace_Casing_00"),
-                1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
 
     @Override
     public int getMaxParallelRecipes() {
-        return 64 * mMultiTier;
+        return 32 * mMultiTier;
     }
 
     public boolean addFluidBlazeInputHatch(IGregTechTileEntity aTileEntity, int aBaseCasingIndex) {

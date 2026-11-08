@@ -3,26 +3,28 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -35,6 +37,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -53,13 +57,16 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_cutter.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeCutter> getStructureDefinition() {
         return StructureDefinition.<LargeCutter>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement(
-                'A',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 3))
+            .addElement('A', Casings.ReinforcedGlass.asElement())
+            .addElement('B', GTNLCasings.SlicingBlades.asElement())
             .addElement(
                 'C',
                 buildHatchAdder(LargeCutter.class).casingIndex(getCasingTextureID())
@@ -72,8 +79,7 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 13))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.CuttingFactoryFrame.asElement())))
             .build();
     }
 
@@ -108,6 +114,12 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
     @Override
     public RecipeMap<?> getRecipeMap() {
         return RecipeMaps.cutterRecipes;
+    }
+
+    @NotNull
+    @Override
+    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
+        return Arrays.asList(RecipeMaps.cutterRecipes, RecipeMaps.cutterFakeRecipes);
     }
 
     @Override
@@ -145,19 +157,8 @@ public class LargeCutter extends GTMMultiMachineBase<LargeCutter> implements ISu
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeCutterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCutter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeCutter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(7, 4, 4, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeCutter_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

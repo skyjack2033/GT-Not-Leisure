@@ -13,15 +13,17 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
@@ -36,6 +38,8 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class SteamExtractinator extends SteamMultiMachineBase<SteamExtractinator> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -54,6 +58,11 @@ public class SteamExtractinator extends SteamMultiMachineBase<SteamExtractinator
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.steam_extractinator.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity arg0) {
         return new SteamExtractinator(this.mName);
     }
@@ -62,15 +71,15 @@ public class SteamExtractinator extends SteamMultiMachineBase<SteamExtractinator
     public IStructureDefinition<SteamExtractinator> getStructureDefinition() {
         return StructureDefinition.<SteamExtractinator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 3))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing02, 0))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 3))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 12))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 13))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13))
+            .addElement('A', GTNLCasings.ConcentratingSieveMesh.asElement())
+            .addElement('B', GTNLCasings.VibrationSafeCasing.asElement())
+            .addElement('C', Casings.SolidSteelMachineCasing.asElement())
+            .addElement('D', Casings.SteelGearBoxCasing.asElement())
+            .addElement('E', Casings.BronzePipeCasing.asElement())
+            .addElement('F', Casings.SteelPipeCasing.asElement())
+            .addElement('G', Casings.BronzeFireboxCasing.asElement())
             .addElement('H', GTStructureUtility.ofFrame(Materials.Steel))
-            .addElement('I', StructureUtility.ofBlock(BlockLoader.metaBlockColumn, 1))
+            .addElement('I', GTNLCasings.SteelBrickCasing.asElement())
             .addElement(
                 'J',
                 StructureUtility.ofChain(
@@ -79,7 +88,7 @@ public class SteamExtractinator extends SteamMultiMachineBase<SteamExtractinator
                         .casingIndex(10)
                         .hint(2)
                         .buildAndChain(),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10)))
+                    Casings.BronzePlatedBricks.asElement()))
             .addElement(
                 'K',
                 StructureUtility.ofChain(
@@ -88,7 +97,7 @@ public class SteamExtractinator extends SteamMultiMachineBase<SteamExtractinator
                         .casingIndex(10)
                         .hint(3)
                         .buildAndChain(),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10)))
+                    Casings.BronzePlatedBricks.asElement()))
             .addElement(
                 'L',
                 StructureUtility.ofChain(
@@ -101,7 +110,7 @@ public class SteamExtractinator extends SteamMultiMachineBase<SteamExtractinator
                     buildSteamInput(SteamExtractinator.class).casingIndex(10)
                         .hint(1)
                         .build(),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10)))
+                    Casings.BronzePlatedBricks.asElement()))
             .build();
     }
 
@@ -174,20 +183,13 @@ public class SteamExtractinator extends SteamMultiMachineBase<SteamExtractinator
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamExtractinatorRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_extractinator.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(getMachineType())
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamExtractinator_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamExtractinator_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamExtractinator_02"))
-            .beginStructureBlock(15, 10, 17, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SteamExtractinator_Casing_00"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_SteamExtractinator_Casing_01"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SteamExtractinator_Casing_02"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

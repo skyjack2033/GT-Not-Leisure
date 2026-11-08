@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
+import com.science.gtnl.common.item.GTNLCreativeTabs;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class MetaBlockColumn extends Block {
 
-    public String[] textureName = new String[] { "Side", "Top", "Bottom" };
+    public String[] textureName = new String[] { "side", "top", "bottom" };
     public Int2ObjectMap<IIcon[]> textureMap = new Int2ObjectOpenHashMap<>();
 
     public MetaBlockColumn() {
@@ -38,6 +38,11 @@ public class MetaBlockColumn extends Block {
     public MetaBlockColumn(String unlocalizedName) {
         this();
         this.setBlockName(unlocalizedName);
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "gtnl.block.meta_block_column";
     }
 
     @SideOnly(Side.CLIENT)
@@ -57,7 +62,7 @@ public class MetaBlockColumn extends Block {
             IIcon[] textures = new IIcon[textureName.length];
             for (int i = 0; i < this.textureName.length; ++i) {
                 textures[i] = reg
-                    .registerIcon(RESOURCE_ROOT_ID + ":" + "MetaBlockColumn/" + meta + "_" + textureName[i]);
+                    .registerIcon(RESOURCE_ROOT_ID + ":" + "meta_block_column/" + meta + "_" + textureName[i]);
             }
             this.textureMap.put(meta, textures);
         }

@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
@@ -15,21 +14,21 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.cleanroommc.modularui.utils.item.ItemStackHandler;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
-import com.gtnewhorizons.modularui.api.screen.ModularWindow;
-import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.science.gtnl.api.IControllerUpgrade;
-import com.science.gtnl.common.gui.modularui.GTNLControllerUpgradeGui;
+import com.science.gtnl.common.gui.modularui.multiblock.GTNLControllerUpgradeGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
@@ -52,11 +51,11 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import lombok.Getter;
 import lombok.Setter;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<HorizontalCompressor>
     implements IControllerUpgrade {
 
@@ -102,14 +101,14 @@ public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<Horizon
     public IStructureDefinition<HorizontalCompressor> getStructureDefinition() {
         return StructureDefinition.<HorizontalCompressor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
-            .addElement('C', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 11))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 9))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 8))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 10))
+            .addElement('A', Casings.HighPowerCasing.asElement())
+            .addElement('B', Casings.PressureContainmentCasing.asElement())
+            .addElement('C', Casings.MultitankExteriorCasing.asElement())
+            .addElement('D', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('E', Casings.ReactiveGasContainmentCasing.asElement())
+            .addElement('F', Casings.HermeticCasing8.asElement())
+            .addElement('G', Casings.SolidSteelMachineCasing.asElement())
+            .addElement('H', Casings.StainlessSteelTurbineCasing.asElement())
             .addElement(
                 'I',
                 buildHatchAdder(HorizontalCompressor.class)
@@ -126,8 +125,8 @@ public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<Horizon
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 0))))
-            .addElement('J', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 0))
+                            Casings.RobustTungstenSteelMachineCasing.asElement())))
+            .addElement('J', Casings.CentrifugeCasing.asElement())
             .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockMetal5, 2))
             .addElement(
                 'L',
@@ -205,7 +204,7 @@ public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<Horizon
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 0);
+        return Casings.RobustTungstenSteelMachineCasing.getTextureId();
     }
 
     @Override
@@ -238,28 +237,8 @@ public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<Horizon
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("HorizontalCompressorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HorizontalCompressor_00"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(11, 10, 30, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_HorizontalCompressor_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_HorizontalCompressor_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_HorizontalCompressor_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_HorizontalCompressor_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HorizontalCompressor_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_HorizontalCompressor_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -267,14 +246,6 @@ public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<Horizon
     @Override
     protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
         return new GTNLControllerUpgradeGui<>(this);
-    }
-
-    @Override
-    @Deprecated
-    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
-        // TODO: Remove this mui1 fallback after the Horizontal Compressor upgrade GUI is fully ported to mui2.
-        super.addUIWidgets(builder, buildContext);
-        createUpgradeButton(builder, buildContext);
     }
 
     @Override
@@ -308,7 +279,7 @@ public class HorizontalCompressor extends WirelessEnergyMultiMachineBase<Horizon
 
     @Override
     public String getUpgradeButtonTooltip() {
-        return StatCollector.translateToLocal("Info_HorizontalCompressor_00");
+        return StatCollector.translateToLocal("gtnl.machine.horizontal_compressor.upgrade");
     }
 
 }

@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ExoticDynamo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -11,14 +10,12 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.dreammaster.block.BlockList;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -26,15 +23,16 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.api.IConfigurationMaintenance;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
+import com.science.gtnl.compat.newhorizons.NHCoreBlock;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.metadata.ElectrocellGeneratorMetadata;
 
-import cpw.mods.fml.common.Optional;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -53,7 +51,9 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator> implements ISurvivalConstructable {
 
     private static final int HORIZONTAL_OFF_SET = 5;
@@ -64,8 +64,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
     private static final String[][] shape = StructureUtils.readStructureFromFile(EG_STRUCTURE_FILE_PATH);
     public static final Random random = new Random();
     public static final double[] FLUID_MULTIPLIERS = { 1.0, 1.8, 2.5, 3.5 };
-    public static final Block COMPRESSED_GRAPHITE = Mods.NewHorizonsCoreMod.isModLoaded() ? getCompressedGraphite()
-        : Blocks.coal_block;
+    public static final Block COMPRESSED_GRAPHITE = NHCoreBlock.CompressedGraphite.get(Blocks.coal_block);
 
     public double generatorValue = 1;
     public FluidStack matchedFluid;
@@ -81,11 +80,6 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
 
     public ElectrocellGenerator(String aName) {
         super(aName);
-    }
-
-    @Optional.Method(modid = "dreamcraft")
-    public static Block getCompressedGraphite() {
-        return BlockList.CompressedGraphite.block;
     }
 
     @Override
@@ -105,6 +99,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
         super.onPostTick(aBaseMetaTileEntity, aTick);
         if (mStartUpCheck > 0 || !aBaseMetaTileEntity.isServerSide()) return;
         if (mMaxProgresstime > 0 && aTick % 20 == 0) {
+            startRecipeProcessing();
             FluidStack matchedFluidExtra = matchedFluid.copy();
             matchedFluidExtra.amount = (int) (matchedFluidExtra.amount * generatorValue);
             if (depleteInput(matchedFluidExtra)) {
@@ -118,6 +113,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
             } else {
                 lEUt -= (long) (1000 / generatorValue);
             }
+            endRecipeProcessing();
         }
         if (mMaxProgresstime > 0 && lEUt <= 0) {
             stopMachine(ShutDownReasonRegistry.NONE);
@@ -140,9 +136,8 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility
-                        .onElementPass(x -> x.mCountCasing++, StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
+                    StructureUtility.onElementPass(x -> x.mCountCasing++, Casings.SolidSteelMachineCasing.asElement())))
+            .addElement('B', Casings.FilterMachineCasing.asElement())
             .addElement('C', GTStructureUtility.ofFrame(Materials.Steel))
             .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockMetal4, 2))
             .addElement('E', StructureUtility.ofBlock(COMPRESSED_GRAPHITE, 0))
@@ -156,8 +151,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility
-                        .onElementPass(x -> x.mCountCasing++, StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))))
+                    StructureUtility.onElementPass(x -> x.mCountCasing++, Casings.SolidSteelMachineCasing.asElement())))
             .addElement(
                 'G',
                 StructureUtility.ofChain(
@@ -168,8 +162,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility
-                        .onElementPass(x -> x.mCountCasing++, StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))))
+                    StructureUtility.onElementPass(x -> x.mCountCasing++, Casings.SolidSteelMachineCasing.asElement())))
             .addElement(
                 'H',
                 GTStructureUtility.buildHatchAdder(ElectrocellGenerator.class)
@@ -177,9 +170,8 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.SolidSteelMachineCasing.asElement())))
             .build();
     }
 
@@ -240,7 +232,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
         matchedFluid = null;
         outputFluid = null;
 
-        ArrayList<FluidStack> fluidStacks = getStoredFluids();
+        List<FluidStack> fluidStacks = getStoredFluids();
         Object2IntOpenHashMap<Fluid> availableFluids = getAvailableFluidAmounts(fluidStacks);
 
         for (GTRecipe recipe : GTNLRecipeMaps.ElectrocellGeneratorRecipes.getAllRecipes()) {
@@ -258,14 +250,14 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
                         lastEUt = lEUt;
                         outputFluid = recipe.mFluidOutputs[0];
 
-                        List<ItemStack> outputList = new ArrayList<>(recipe.mOutputs.length);
+                        List<ItemStack> outputList = new ObjectArrayList<>(recipe.mOutputs.length);
                         for (int i = 0; i < recipe.mOutputs.length; i++) {
                             int chance = recipe.getOutputChance(i);
                             if (random.nextInt(10000) < chance) {
                                 outputList.add(recipe.mOutputs[i]);
                             }
                         }
-                        mOutputItems = outputList.toArray(new ItemStack[outputList.size()]);
+                        mOutputItems = outputList.toArray(new ItemStack[0]);
 
                         for (MTEHatchMaintenance maintenance : mMaintenanceHatches) {
                             if (maintenance instanceof IConfigurationMaintenance customMaintenance
@@ -287,7 +279,7 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
+        return Casings.SolidSteelMachineCasing.getTextureId();
     }
 
     @Override
@@ -319,18 +311,14 @@ public class ElectrocellGenerator extends MultiMachineBase<ElectrocellGenerator>
     }
 
     @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ElectrocellGeneratorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_05"))
-            .beginStructureBlock(11, 5, 3, true)
-            .addDynamoHatch(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ElectrocellGenerator_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

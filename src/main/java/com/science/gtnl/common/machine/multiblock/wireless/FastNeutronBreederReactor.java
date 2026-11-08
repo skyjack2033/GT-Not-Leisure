@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,7 +9,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,34 +17,35 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
-import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<FastNeutronBreederReactor> {
 
     private static final int MACHINEMODE_DECAY = 0;
@@ -77,10 +76,10 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
     public IStructureDefinition<FastNeutronBreederReactor> getStructureDefinition() {
         return StructureDefinition.<FastNeutronBreederReactor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 7))
+            .addElement('A', GTNLCasings.Antifreeze_Heatproof_Machine_Casing.asElement())
             .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSE, 1))
             .addElement('C', StructureUtility.ofBlockAnyMeta(LanthItemList.COOLANT_DELIVERY_CASING))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 7))
+            .addElement('D', Casings.HermeticCasing7.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(FastNeutronBreederReactor.class)
@@ -95,18 +94,17 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 12))))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('H', StructureUtility.ofBlock(Loaders.MAR_Casing, 0))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BulkProductionFrame.asElement())))
+            .addElement('F', Casings.PressureContainmentCasing.asElement())
+            .addElement('G', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('H', Casings.FieldRestrictionCasing.asElement())
             .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 9))
             .addElement('J', StructureUtility.ofBlockAnyMeta(LanthItemList.SHIELDED_ACCELERATOR_CASING))
-            .addElement('K', StructureUtility.ofBlock(blockCasings2Misc, 9))
-            .addElement('L', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 15))
+            .addElement('K', Casings.CyclotronCoil.asElement())
+            .addElement('L', GTNLCasings.FusionGlass.asElement())
+            .addElement('M', Casings.SuperconductingCoilBlock.asElement())
             .addElement('N', GTStructureUtility.ofFrame(Materials.TungstenCarbide))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 7))
+            .addElement('O', Casings.StabilizedNaquadahWaterPlantCasing.asElement())
             .build();
     }
 
@@ -151,7 +149,7 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
         } else if (machineMode == MACHINEMODE_NEUTRON) {
             return GTNLRecipeMaps.ElectricNeutronActivatorRecipes;
         } else {
-            return GTPPRecipeMaps.cyclotronRecipes;
+            return RecipeMaps.cyclotronRecipes;
         }
     }
 
@@ -161,7 +159,7 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
         return Arrays.asList(
             GTNLRecipeMaps.DecayHastenerRecipes,
             GTNLRecipeMaps.ElectricNeutronActivatorRecipes,
-            GTPPRecipeMaps.cyclotronRecipes);
+            RecipeMaps.cyclotronRecipes);
     }
 
     @Override
@@ -179,12 +177,12 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 3;
-        GTUtility.sendChatTrans(aPlayer, "FastNeutronBreederReactor_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("FastNeutronBreederReactor_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.fast_neutron_breeder_reactor.mode." + machineMode;
     }
 
     @Override
@@ -227,26 +225,8 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FastNeutronBreederReactorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 24, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FastNeutronBreederReactor_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -257,15 +237,6 @@ public class FastNeutronBreederReactor extends WirelessEnergyMultiMachineBase<Fa
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_UNPACKAGER,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_UNPACKAGER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_PACKAGER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
     }
 
 }

@@ -2,15 +2,12 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,22 +16,21 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.enums.GTNLStructureChannels;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import goodgenerator.loader.Loaders;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
@@ -42,9 +38,11 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.core.material.MaterialsAlloy;
-import gtnhlanth.common.register.LanthItemList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssemblerMarkL> {
 
     public static final List<Pair<Block, Integer>> COMPONENT_CASING_VARIANTS = createComponentCasingVariants();
@@ -56,14 +54,12 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
     private static final String[][] shape = StructureUtils.readStructureFromFile(VMC_STRUCTURE_FILE_PATH);
 
     public static List<Pair<Block, Integer>> createComponentCasingVariants() {
-        List<Pair<Block, Integer>> casingVariants = new ArrayList<>(13);
+        List<Pair<Block, Integer>> casingVariants = new ObjectArrayList<>(13);
         for (int tier = 0; tier < 13; tier++) {
             casingVariants.add(Pair.of(Loaders.componentAssemblylineCasing, tier));
         }
         return casingVariants;
     }
-
-    private int mCasingTier;
 
     public NanoAssemblerMarkL(String aName) {
         super(aName);
@@ -119,18 +115,18 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
     public IStructureDefinition<NanoAssemblerMarkL> getStructureDefinition() {
         return StructureDefinition.<NanoAssemblerMarkL>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasingsTT, 8))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('A', Casings.HollowCasing.asElement())
+            .addElement('B', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement(
                 'C',
-                GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING.use(
+                GTStructureChannels.COMPONENT_ASSEMBLYLINE_CASING.use(
                     StructureUtility.ofBlocksTiered(
                         (block, meta) -> block == Loaders.componentAssemblylineCasing ? meta : -1,
                         COMPONENT_CASING_VARIANTS,
                         -2,
                         (t, meta) -> t.mCasingTier = meta,
                         t -> t.mCasingTier)))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
+            .addElement('D', Casings.HeatResistantTriniumPlatedCasing.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(NanoAssemblerMarkL.class)
@@ -146,26 +142,24 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
-            .addElement('G', StructureUtility.ofBlock(LanthItemList.SHIELDED_ACCELERATOR_CASING, 0))
-            .addElement('H', StructureUtility.ofBlock(sBlockCasingsTT, 4))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 8))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
+            .addElement('F', Casings.AssemblyLineCasing.asElement())
+            .addElement('G', Casings.ShieldedAcceleratorCasing.asElement())
+            .addElement('H', Casings.MolecularCasing.asElement())
+            .addElement('I', Casings.NeutroniumStabilizationCasing.asElement())
             .addElement('J', GTStructureUtility.ofFrame(Materials.Duranium))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 0))
-            .addElement('L', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 9))
+            .addElement('K', Casings.ChemicalGradeGlass.asElement())
+            .addElement('L', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('M', Casings.UHVMachineCasing.asElement())
             .addElement(
                 'N',
                 StructureUtility.ofBlockAnyMeta(
                     Block.getBlockFromItem(
                         MaterialsAlloy.TRINIUM_NAQUADAH_CARBON.getFrameBox(1)
                             .getItem())))
-            .addElement(
-                'O',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
-            .addElement('P', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('Q', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 1))
+            .addElement('O', Casings.ReinforcedGlass.asElement())
+            .addElement('P', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('Q', Casings.AdvancedFilterCasing.asElement())
             .build();
     }
 
@@ -176,7 +170,7 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
@@ -199,30 +193,15 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("NanoAssemblerMarkLRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IntegratedAssemblyFacility_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(13, 10, 31, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_NanoAssemblerMarkL_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_NanoAssemblerMarkL_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_NanoAssemblerMarkL_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_NanoAssemblerMarkL_Casing"), 1)
-            .addSubChannelUsage(GTNLStructureChannels.COMPONENT_ASSEMBLY_LINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
+    }
+
+    @Override
+    protected boolean appliesMachineVoltageLimit() {
+        return true;
     }
 
     @Override
@@ -261,8 +240,10 @@ public class NanoAssemblerMarkL extends WirelessEnergyMultiMachineBase<NanoAssem
         String[] origin = super.getInfoData();
         String[] ret = new String[origin.length + 1];
         System.arraycopy(origin, 0, ret, 0, origin.length);
-        ret[origin.length] = StatCollector.translateToLocal("scanner.info.CASS.tier")
-            + (mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1] : "None!");
+        ret[origin.length] = IGregTechDeviceInformation.encode(
+            "gtnl.machine.component_assembly_line.tier",
+            mCasingTier >= 0 ? GTValues.VN[mCasingTier + 1]
+                : IGregTechDeviceInformation.translatable("gtnl.machine.component_assembly_line.tier.none"));
         return ret;
     }
 

@@ -1,14 +1,12 @@
 package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,22 +18,24 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
+import com.science.gtnl.common.recipe.thaumcraft.TCRecipeTools;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.item.ItemUtils;
 import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
@@ -43,6 +43,8 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcaneAssembler>
     implements ISurvivalConstructable {
 
@@ -66,15 +68,20 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.industrial_arcane_assembler.name";
+    }
+
+    @Override
     public IStructureDefinition<IndustrialArcaneAssembler> getStructureDefinition() {
         return StructureDefinition.<IndustrialArcaneAssembler>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('B', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 6))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 8))
+            .addElement('A', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('B', Casings.HighPowerCasing.asElement())
+            .addElement('C', Casings.DimensionalInjectionCasing.asElement())
+            .addElement('D', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('E', Casings.NeutroniumCasing.asElement())
+            .addElement('F', Casings.NeutroniumStabilizationCasing.asElement())
             .addElement(
                 'G',
                 GTStructureUtility.buildHatchAdder(IndustrialArcaneAssembler.class)
@@ -86,14 +93,13 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
                         HatchElement.OutputBus,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy))
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))))
-            .addElement('H', StructureUtility.ofBlock(sBlockCasingsTT, 4))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.PressureContainmentCasing.asElement())))
+            .addElement('H', Casings.MolecularCasing.asElement())
+            .addElement('I', Casings.NaquadriaReinforcedWaterPlantCasing.asElement())
             .addElement('J', GTStructureUtility.ofFrame(Materials.Neutronium))
             .addElement('K', GTStructureUtility.ofFrame(Materials.DarkIron))
-            .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 2))
+            .addElement('L', Casings.OmniPurposeInfinityFusedGlass.asElement())
             .build();
     }
 
@@ -142,6 +148,16 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
         return Arrays.asList(
             GTNLRecipeMaps.IndustrialShapedArcaneCraftingRecipes,
             GTNLRecipeMaps.IndustrialInfusionCraftingRecipes);
+    }
+
+    @NotNull
+    @Override
+    public CheckRecipeResult checkProcessing() {
+        CheckRecipeResult result = super.checkProcessing();
+        if (result.wasSuccessful() && machineMode == InfusionCrafting) {
+            mOutputItems = TCRecipeTools.appendPrimordialPearlReturns(mOutputItems, processingLogic);
+        }
+        return result;
     }
 
     @Override
@@ -195,21 +211,13 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 3);
+        return Casings.PressureContainmentCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("IndustrialArcaneAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IndustrialArcaneAssembler_02"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(19, 19, 19, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_EnergeticIndustrialArcaneAssembler_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -227,17 +235,8 @@ public class IndustrialArcaneAssembler extends MultiMachineBase<IndustrialArcane
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("IndustrialArcaneAssembler_Mode_" + machineMode);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Industrial Arcane Assembler GUI no longer supports mui1 startup
-        // paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
+    public String getMachineModeKey() {
+        return "gtnl.machine.industrial_arcane_assembler.mode." + machineMode;
     }
 
     @Override

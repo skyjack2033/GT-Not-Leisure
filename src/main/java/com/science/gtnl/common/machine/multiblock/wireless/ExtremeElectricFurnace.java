@@ -6,18 +6,19 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -31,9 +32,9 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class ExtremeElectricFurnace extends WirelessEnergyMultiMachineBase<ExtremeElectricFurnace> {
 
     private static final int HORIZONTAL_OFF_SET = 20;
@@ -62,21 +63,21 @@ public class ExtremeElectricFurnace extends WirelessEnergyMultiMachineBase<Extre
         return StructureDefinition.<ExtremeElectricFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.ofFrame(Materials.TungstenSteel))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 12))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaBlockColumn, 5))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 4))
-            .addElement('F', StructureUtility.ofBlock(BlockLoader.metaCasing, 2))
-            .addElement('G', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 15))
+            .addElement('B', GTNLCasings.TungstensteelGearbox.asElement())
+            .addElement('C', GTNLCasings.SteelMachineFrame.asElement())
+            .addElement('D', Casings.GrateMachineCasing.asElement())
+            .addElement('E', Casings.ExtremeEngineIntakeCasing.asElement())
+            .addElement('F', GTNLCasings.HeatVent.asElement())
+            .addElement('G', Casings.ReinforcedSCTurbineCasing.asElement())
             .addElement(
                 'H',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility
                             .ofCoil(ExtremeElectricFurnace::setMCoilLevel, ExtremeElectricFurnace::getMCoilLevel))))
-            .addElement('I', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 15))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings11, 4))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 7))
+            .addElement('I', Casings.BlastSmelterCasing.asElement())
+            .addElement('J', Casings.OsmiumItemPipeCasing.asElement())
+            .addElement('K', Casings.DataDriveMachineCasing.asElement())
             .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockTintedGlass, 1))
             .addElement(
                 'M',
@@ -94,10 +95,10 @@ public class ExtremeElectricFurnace extends WirelessEnergyMultiMachineBase<Extre
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))))
-            .addElement('N', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+                            Casings.NaquadriaReinforcedWaterPlantCasing.asElement())))
+            .addElement('N', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement('O', HatchElement.Muffler.newAny(getCasingTextureID(), 1))
-            .addElement('P', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('P', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement('Q', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
             .addElement('R', GTStructureUtility.ofFrame(Materials.Naquadah))
             .build();
@@ -154,7 +155,7 @@ public class ExtremeElectricFurnace extends WirelessEnergyMultiMachineBase<Extre
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 12);
+        return Casings.NaquadriaReinforcedWaterPlantCasing.getTextureId();
     }
 
     @Override
@@ -177,28 +178,8 @@ public class ExtremeElectricFurnace extends WirelessEnergyMultiMachineBase<Extre
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ExtremeElectricFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ExtremeElectricFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(41, 26, 18, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ExtremeElectricFurnace_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ExtremeElectricFurnace_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ExtremeElectricFurnace_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ExtremeElectricFurnace_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ExtremeElectricFurnace_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

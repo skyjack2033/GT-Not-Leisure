@@ -6,7 +6,6 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -15,9 +14,11 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoltageIndex;
@@ -31,8 +32,9 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeEngravingLaser extends GTMMultiMachineBase<LargeEngravingLaser> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -48,6 +50,11 @@ public class LargeEngravingLaser extends GTMMultiMachineBase<LargeEngravingLaser
 
     public LargeEngravingLaser(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_engraving_laser.name";
     }
 
     @Override
@@ -69,11 +76,10 @@ public class LargeEngravingLaser extends GTMMultiMachineBase<LargeEngravingLaser
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 1))))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.LaserContainmentCasing.asElement())))
+            .addElement('C', Casings.TungstensteelPipeCasing.asElement())
+            .addElement('D', Casings.GrateMachineCasing.asElement())
             .build();
     }
 
@@ -159,25 +165,13 @@ public class LargeEngravingLaser extends GTMMultiMachineBase<LargeEngravingLaser
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings10, 1);
+        return Casings.LaserContainmentCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeEngravingLaserRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEngravingLaser_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEngravingLaser_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeEngravingLaser_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 4, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeEngravingLaser_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeEngravingLaser_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeEngravingLaser_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeEngravingLaser_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

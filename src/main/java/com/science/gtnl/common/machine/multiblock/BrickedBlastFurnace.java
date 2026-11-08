@@ -4,7 +4,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -17,10 +16,12 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.GameUtils;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Mods;
@@ -36,6 +37,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class BrickedBlastFurnace extends SteamMultiMachineBase<BrickedBlastFurnace> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -54,6 +57,11 @@ public class BrickedBlastFurnace extends SteamMultiMachineBase<BrickedBlastFurna
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.bricked_blast_furnace.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new BrickedBlastFurnace(this.mName);
     }
@@ -62,7 +70,7 @@ public class BrickedBlastFurnace extends SteamMultiMachineBase<BrickedBlastFurna
     public IStructureDefinition<BrickedBlastFurnace> getStructureDefinition() {
         return StructureDefinition.<BrickedBlastFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13))
+            .addElement('A', Casings.BronzeFireboxCasing.asElement())
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(BrickedBlastFurnace.class)
@@ -75,23 +83,21 @@ public class BrickedBlastFurnace extends SteamMultiMachineBase<BrickedBlastFurna
                         HatchElement.OutputBus,
                         HatchElement.Maintenance)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 15))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.Firebricks.asElement())))
             .addElement('C', GTStructureUtility.ofFrame(Materials.Bronze))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 10))
+            .addElement('D', Casings.BronzePlatedBricks.asElement())
             .addElement(
                 'E',
                 StructureUtility.ofChain(
                     StructureUtility.ofBlockAnyMeta(Blocks.stonebrick),
-                    StructureUtility.ofBlockAnyMeta(
-                        Mods.Chisel.isModLoaded() ? Block.getBlockFromName("chisel:stonebricksmooth") : Blocks.stone)))
+                    StructureUtility
+                        .ofBlockAnyMeta(GameUtils.blockOr(Mods.Chisel.ID, "stonebricksmooth", Blocks.stone))))
             .build();
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 15);
+        return Casings.Firebricks.getTextureId();
     }
 
     @Override
@@ -128,11 +134,6 @@ public class BrickedBlastFurnace extends SteamMultiMachineBase<BrickedBlastFurna
     @Override
     public RecipeMap<?> getRecipeMap() {
         return RecipeMaps.primitiveBlastRecipes;
-    }
-
-    @Override
-    public boolean getPerfectOC() {
-        return false;
     }
 
     @Override
@@ -174,24 +175,13 @@ public class BrickedBlastFurnace extends SteamMultiMachineBase<BrickedBlastFurna
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("BrickBlastFurnaceRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.bricked_blast_furnace.recipe_type");
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("BrickBlastFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_04"))
-            .beginStructureBlock(15, 14, 15, true)
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_Casing_00"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_Casing_01"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_Casing_02"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_Casing_03"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_BrickBlastFurnace_Casing_04"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

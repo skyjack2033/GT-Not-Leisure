@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -11,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,7 +21,9 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.ITierConverter;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.common.render.tile.AtomicEnergyExcitationPlantRenderer;
 import com.science.gtnl.utils.StructureUtils;
@@ -31,11 +31,11 @@ import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.metadata.FuelRefiningMetadata;
 
-import bartworks.system.material.WerkstoffLoader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -55,8 +55,11 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 import gregtech.common.render.IMTERenderer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import kubatech.loaders.BlockLoader;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnergyExcitationPlant>
     implements ISurvivalConstructable, IMTERenderer {
 
@@ -86,12 +89,19 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
     public boolean isRenderActive = false;
     public float rotation = 0;
 
+    private boolean structurePiecesValid;
+
     public AtomicEnergyExcitationPlant(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
     }
 
     public AtomicEnergyExcitationPlant(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.atomic_energy_excitation_plant.name";
     }
 
     @Override
@@ -165,7 +175,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
         float aX, float aY, float aZ, ItemStack aTool) {
         if (getBaseMetaTileEntity().isServerSide()) {
             enableRender = !enableRender;
-            GTUtility.sendChatTrans(aPlayer, "Info_Render_" + (enableRender ? "Enabled" : "Disabled"));
+            GTUtility.sendChatTrans(aPlayer, "gtnl.chat.render." + (enableRender ? "enabled" : "disabled"));
             checkStructure(true, getBaseMetaTileEntity());
         }
         return true;
@@ -215,14 +225,13 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
     }
 
     public static List<Pair<Block, Integer>> getAllFieldCoilTiers() {
-        ArrayList<Pair<Block, Integer>> tiers = new ArrayList<>();
+        ObjectArrayList<Pair<Block, Integer>> tiers = new ObjectArrayList<>();
         for (Block coil : coils) {
             tiers.add(Pair.of(coil, 0));
         }
         return tiers;
     }
 
-    // TODO: Use GTNLMaterials
     @Override
     public IStructureDefinition<AtomicEnergyExcitationPlant> getStructureDefinition() {
         return StructureDefinition.<AtomicEnergyExcitationPlant>builder()
@@ -247,7 +256,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                         GTStructureUtility.ofCoil(
                             AtomicEnergyExcitationPlant::setMCoilLevel,
                             AtomicEnergyExcitationPlant::getMCoilLevel))))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
+            .addElement('E', Casings.ActiveNeutroniumCasing.asElement())
             .addElement(
                 'F',
                 GTStructureUtility.buildHatchAdder(AtomicEnergyExcitationPlant.class)
@@ -258,16 +267,15 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                         HatchElement.InputBus,
                         HatchElement.InputHatch,
                         HatchElement.OutputHatch,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))))
+                            Casings.HeatResistantTriniumPlatedCasing.asElement())))
             .addElement('G', GTStructureUtility.ofFrame(Materials.Neutronium))
-            .addElement('H', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 129))
-            .addElement('I', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings, 31_766 + 129))
+            .addElement('H', GTNLCasings.ReboltedNeutroniumCasing.asElement())
+            .addElement('I', GTNLCasings.BoltedNeutroniumCasing.asElement())
             .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockMetal4, 13))
             .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockMetal4, 14))
             .addElement('L', StructureUtility.isAir())
@@ -276,6 +284,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        structurePiecesValid = false;
         machineTier = -1;
         if (isRenderActive) {
             if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)
@@ -285,7 +294,6 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                     VERTICAL_OFF_SET_SPHERE,
                     DEPTH_OFF_SET_SPHERE,
                     errors)) {
-                buildSphere();
                 return;
             }
         } else if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)
@@ -297,17 +305,24 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
                 errors)) {
                     return;
                 }
+        structurePiecesValid = true;
         setupParameters();
         checkHatch(errors);
         checkCasingMin(errors, mCountCasing, 350);
+    }
 
-        if (!isRenderActive && enableRender && mTotalRunTime > 0) {
+    @Override
+    protected void onStructureCheckFinished(IGregTechTileEntity base) {
+        super.onStructureCheckFinished(base);
+        if (!structurePiecesValid) {
+            if (isRenderActive) buildSphere();
+        } else if (!isRenderActive && enableRender && mTotalRunTime > 0) {
             destroySphere();
         } else if (isRenderActive && !enableRender) {
             buildSphere();
         }
 
-        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
+        base.sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 
     @Override
@@ -441,7 +456,7 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings9, 11);
+        return Casings.HeatResistantTriniumPlatedCasing.getTextureId();
     }
 
     @Override
@@ -451,27 +466,8 @@ public class AtomicEnergyExcitationPlant extends GTMMultiMachineBase<AtomicEnerg
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("AtomicEnergyExcitationPlantRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_02"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(17, 29, 23, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_AtomicEnergyExcitationPlant_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

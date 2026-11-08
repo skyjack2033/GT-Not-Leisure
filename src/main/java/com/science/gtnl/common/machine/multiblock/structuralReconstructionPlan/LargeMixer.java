@@ -2,13 +2,10 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,10 +13,12 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.TAE;
@@ -28,13 +27,15 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeMixer extends GTMMultiMachineBase<LargeMixer> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -53,13 +54,18 @@ public class LargeMixer extends GTMMultiMachineBase<LargeMixer> implements ISurv
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_mixer.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeMixer> getStructureDefinition() {
         return StructureDefinition.<LargeMixer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 12))
+            .addElement('A', GTNLCasings.TungstensteelGearbox.asElement())
             .addElement('B', GTStructureUtility.ofFrame(Materials.TungstenSteel))
-            .addElement('C', StructureUtility.ofBlock(sBlockCasings2, 14))
-            .addElement('D', StructureUtility.ofBlock(sBlockCasings2, 15))
+            .addElement('C', Casings.TitaniumPipeCasing.asElement())
+            .addElement('D', Casings.TungstensteelPipeCasing.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(LargeMixer.class)
@@ -75,7 +81,7 @@ public class LargeMixer extends GTMMultiMachineBase<LargeMixer> implements ISurv
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasingsMisc, 11))))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.MultitankExteriorCasing.asElement())))
             .build();
     }
 
@@ -109,7 +115,7 @@ public class LargeMixer extends GTMMultiMachineBase<LargeMixer> implements ISurv
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.mixerNonCellRecipes;
+        return RecipeMaps.mixerNonCellRecipes;
     }
 
     @Override
@@ -137,20 +143,8 @@ public class LargeMixer extends GTMMultiMachineBase<LargeMixer> implements ISurv
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeMixerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeMixer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeMixer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 6, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeMixer_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeMixer_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeMixer_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeMixer_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeMixer_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeMixer_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

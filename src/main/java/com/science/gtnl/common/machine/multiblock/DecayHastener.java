@@ -6,7 +6,6 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -15,11 +14,12 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -32,6 +32,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class DecayHastener extends GTMMultiMachineBase<DecayHastener> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -50,6 +52,11 @@ public class DecayHastener extends GTMMultiMachineBase<DecayHastener> implements
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.decay_hastener.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new DecayHastener(this.mName);
     }
@@ -58,10 +65,10 @@ public class DecayHastener extends GTMMultiMachineBase<DecayHastener> implements
     public IStructureDefinition<DecayHastener> getStructureDefinition() {
         return StructureDefinition.<DecayHastener>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 15))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 6))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 8))
+            .addElement('A', Casings.SuperconductingCoilBlock.asElement())
+            .addElement('B', Casings.PressureContainmentCasing.asElement())
+            .addElement('C', Casings.FusionMachineCasing.asElement())
+            .addElement('D', Casings.HermeticCasing8.asElement())
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(DecayHastener.class)
@@ -76,9 +83,8 @@ public class DecayHastener extends GTMMultiMachineBase<DecayHastener> implements
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
             .addElement('F', GTStructureUtility.ofFrame(Materials.BlackSteel))
             .build();
     }
@@ -118,7 +124,7 @@ public class DecayHastener extends GTMMultiMachineBase<DecayHastener> implements
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -141,18 +147,8 @@ public class DecayHastener extends GTMMultiMachineBase<DecayHastener> implements
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("DecayHastenerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DecayHastener_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DecayHastener_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 13, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_DecayHastener_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_DecayHastener_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_DecayHastener_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_DecayHastener_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

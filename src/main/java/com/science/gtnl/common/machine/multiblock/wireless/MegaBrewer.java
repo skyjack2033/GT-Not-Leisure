@@ -2,7 +2,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,7 +9,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,17 +17,17 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -43,8 +41,8 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
 
     private static final int MACHINEMODE_FREWERY = 0;
@@ -68,17 +66,17 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
     public IStructureDefinition<MegaBrewer> getStructureDefinition() {
         return StructureDefinition.<MegaBrewer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings6, 10))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('D', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
+            .addElement('A', Casings.HighPowerCasing.asElement())
+            .addElement('B', Casings.HermeticCasing10.asElement())
+            .addElement('C', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('D', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('E', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
             .addElement(
                 'F',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility
                         .activeCoils(GTStructureUtility.ofCoil(MegaBrewer::setMCoilLevel, MegaBrewer::getMCoilLevel))))
-            .addElement('G', StructureUtility.ofBlock(BlockLoader.metaCasing, 7))
+            .addElement('G', GTNLCasings.Antifreeze_Heatproof_Machine_Casing.asElement())
             .addElement(
                 'H',
                 GTStructureUtility.buildHatchAdder(MegaBrewer.class)
@@ -93,10 +91,9 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 11))))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.ThermalContainmentCasing.asElement())))
+            .addElement('I', Casings.ChemicallyInertMachineCasing.asElement())
             .addElement('J', GTStructureUtility.ofFrame(Materials.Neutronium))
             .build();
     }
@@ -196,28 +193,8 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MegaBrewerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaBrewer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(28, 22, 15, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MegaBrewer_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -230,14 +207,6 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_DEFAULT);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-    }
-
-    @Override
     public boolean supportsMachineModeSwitch() {
         return true;
     }
@@ -246,12 +215,12 @@ public class MegaBrewer extends WirelessEnergyMultiMachineBase<MegaBrewer> {
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "MegaBrewer_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("MegaBrewer_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.mega_brewer.mode." + machineMode;
     }
 
 }

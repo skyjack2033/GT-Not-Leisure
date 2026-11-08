@@ -6,7 +6,6 @@ import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,16 +15,15 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
-import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -39,6 +37,8 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -57,6 +57,11 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.vacuum_freezer.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new VacuumFreezer(this.mName);
     }
@@ -65,10 +70,8 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
     public IStructureDefinition<VacuumFreezer> getStructureDefinition() {
         return StructureDefinition.<VacuumFreezer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 2))
-            .addElement(
-                'B',
-                StructureUtility.ofBlockAnyMeta(GameRegistry.findBlock(Mods.IndustrialCraft2.ID, "blockAlloyGlass")))
+            .addElement('A', GTNLCasings.HeatVent.asElement())
+            .addElement('B', Casings.ReinforcedGlass.asElement())
             .addElement(
                 'C',
                 buildHatchAdder(VacuumFreezer.class).casingIndex(getCasingTextureID())
@@ -79,14 +82,12 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
                         HatchElement.OutputHatch,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 1))))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 14))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.FrostProofMachineCasing.asElement())))
+            .addElement('D', Casings.TitaniumPipeCasing.asElement())
+            .addElement('E', Casings.CleanStainlessSteelMachineCasing.asElement())
             .build();
     }
 
@@ -119,11 +120,6 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
     }
 
     @Override
-    public boolean getPerfectOC() {
-        return false;
-    }
-
-    @Override
     public RecipeMap<?> getRecipeMap() {
         return RecipeMaps.vacuumFreezerRecipes;
     }
@@ -145,9 +141,14 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
                     .setRecipeHeat(0)
                     .setHeatOC(true)
                     .setHeatDiscount(false)
-                    .setDurationModifier(1 / 1.33);
+                    .setDurationModifier(getDurationModifier());
             }
         }.setMaxParallelSupplier(this::getTrueParallel);
+    }
+
+    @Override
+    public double getDurationModifier() {
+        return 1.0 / 1.33;
     }
 
     @Override
@@ -160,7 +161,7 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 1);
+        return Casings.FrostProofMachineCasing.getTextureId();
     }
 
     @Override
@@ -193,18 +194,8 @@ public class VacuumFreezer extends MultiMachineBase<VacuumFreezer> implements IS
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("VacuumFreezerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_VacuumFreezer_02"))
-            .beginStructureBlock(11, 7, 6, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_VacuumFreezer_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

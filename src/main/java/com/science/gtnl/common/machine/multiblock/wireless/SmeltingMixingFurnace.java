@@ -3,9 +3,7 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static kubatech.loaders.BlockLoader.defcCasingBlock;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -28,10 +26,11 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
@@ -39,13 +38,12 @@ import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import bartworks.common.loaders.ItemRegistry;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -62,12 +60,14 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.util.minecraft.ItemUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import tectech.thing.casing.BlockGTCasingsTT;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<SmeltingMixingFurnace> {
 
     public static final FluidStack[] valid_fuels = { Materials.ExcitedDTCC.getFluid(1L),
@@ -95,6 +95,11 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.smelting_mixing_furnace.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new SmeltingMixingFurnace(mName);
     }
@@ -103,23 +108,23 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     public IStructureDefinition<SmeltingMixingFurnace> getStructureDefinition() {
         return StructureDefinition.<SmeltingMixingFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(ItemRegistry.bw_realglas2, 0))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 7))
+            .addElement('A', StructureUtility.ofBlock(ItemRegistry.bw_realglas, 6))
+            .addElement('B', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('C', GTNLCasings.Antifreeze_Heatproof_Machine_Casing.asElement())
             .addElement('D', StructureUtility.ofBlock(defcCasingBlock, 7))
             .addElement('E', StructureUtility.ofBlock(defcCasingBlock, 10))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 12))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 13))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 12))
-            .addElement('L', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('M', StructureUtility.ofBlock(sBlockCasingsTT, 8))
+            .addElement('F', Casings.DimensionallyTranscendentCasing.asElement())
+            .addElement('G', Casings.DimensionalInjectionCasing.asElement())
+            .addElement('H', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('I', Casings.SolidifierCasing.asElement())
+            .addElement('J', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('K', Casings.NaquadriaReinforcedWaterPlantCasing.asElement())
+            .addElement('L', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('M', Casings.HollowCasing.asElement())
             .addElement('N', GTStructureUtility.ofFrame(Materials.Infinity))
-            .addElement('O', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 4))
-            .addElement('P', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 11))
-            .addElement('Q', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 12))
+            .addElement('O', Casings.WashPlantCasing.asElement())
+            .addElement('P', Casings.MolecularContainmentCasing.asElement())
+            .addElement('Q', Casings.HastelloyNReactorCasing.asElement())
             .addElement(
                 'R',
                 GTStructureUtility.buildHatchAdder(SmeltingMixingFurnace.class)
@@ -135,8 +140,7 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++this.mCountCasing, StructureUtility.ofBlock(sBlockCasingsTT, 0))))
+                        StructureUtility.onElementPass(x -> ++this.mCountCasing, Casings.HighPowerCasing.asElement())))
             .build();
     }
 
@@ -262,11 +266,16 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     }
 
     @Override
+    public boolean getPerfectOC() {
+        return true;
+    }
+
+    @Override
     public void setProcessingLogicPower(ProcessingLogic logic) {
         if (wirelessMode) {
             logic.setAvailableVoltage(
                 machineMode == MACHINEMODE_DTPF ? Integer.MAX_VALUE * 8L : GTValues.V[Math.min(mParallelTier + 1, 14)]);
-            logic.setAvailableAmperage(8L << (2L * mParallelTier) - 2L);
+            logic.setAvailableAmperage((8L << (2L * mParallelTier)) - 2L);
             logic.setAmperageOC(true);
             logic.enablePerfectOverclock();
             return;
@@ -347,29 +356,8 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SmeltingMixingFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(17, 17, 33, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_SmeltingMixingFurnace_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -378,8 +366,8 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     public String[] getInfoData() {
         if (!enableMnemonic) return super.getInfoData();
         String[] original = super.getInfoData();
-        List<String> list = new ArrayList<>(Arrays.asList(original));
-        list.add(StatCollector.translateToLocal("Info_PlasmaForge_00"));
+        List<String> list = new ObjectArrayList<>(Arrays.asList(original));
+        list.add("gtnl.machine.smelting_mixing_furnace.info.decay_blocking_enabled");
         return list.toArray(new String[0]);
     }
 
@@ -391,23 +379,16 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         machineMode = (machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "SmeltingMixingFurnace_Mode_" + machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("SmeltingMixingFurnace_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return machineMode == MACHINEMODE_DTPF ? "gtnl.machine.smelting_mixing_furnace.mode.plasma_forge"
+            : "gtnl.machine.smelting_mixing_furnace.mode.smelting_mixing";
     }
 
     @Override
@@ -421,7 +402,8 @@ public class SmeltingMixingFurnace extends WirelessEnergyMultiMachineBase<Smelti
         super.getWailaBody(itemStack, currentTip, accessor, config);
         NBTTagCompound tag = accessor.getNBTData();
         if (!tag.getBoolean("enableMnemonic")) return;
-        currentTip.add(StatCollector.translateToLocal("Info_PlasmaForge_00"));
+        currentTip
+            .add(StatCollector.translateToLocal("gtnl.machine.smelting_mixing_furnace.info.decay_blocking_enabled"));
     }
 
     @Override

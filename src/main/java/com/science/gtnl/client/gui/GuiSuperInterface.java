@@ -11,8 +11,9 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.gui.container.ContainerSuperInterface;
 import com.science.gtnl.common.packet.SwitchToCustomGuiPacket;
-import com.science.gtnl.container.ContainerSuperInterface;
+import com.science.gtnl.utils.ColorUtils;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.config.AdvancedBlockingMode;
@@ -132,7 +133,7 @@ public class GuiSuperInterface extends GuiUpgradeable {
             16,
             16,
             "<",
-            StatCollector.translateToLocal("text.SuperInterface.tooltip.0"));
+            StatCollector.translateToLocal("gtnl.gui.super_interface.tooltip.previous_page"));
 
         this.nextPage = new GuiTextAeButton(
             102,
@@ -141,7 +142,7 @@ public class GuiSuperInterface extends GuiUpgradeable {
             16,
             16,
             ">",
-            StatCollector.translateToLocal("text.SuperInterface.tooltip.1"));
+            StatCollector.translateToLocal("gtnl.gui.super_interface.tooltip.next_page"));
         this.buttonList.add(prevPage);
         this.buttonList.add(nextPage);
     }
@@ -168,10 +169,15 @@ public class GuiSuperInterface extends GuiUpgradeable {
                         : ButtonToolTips.OptimizePatternsNoReq.getLocal()));
         }
 
-        this.fontRendererObj
-            .drawString(getGuiDisplayName(StatCollector.translateToLocal("container.SuperInterface")), 8, 6, 4210752);
-        String pageLabel = StatCollector
-            .translateToLocalFormatted("text.SuperInterface.page", container.currentPage + 1, container.getMaxPages());
+        this.fontRendererObj.drawString(
+            getGuiDisplayName(StatCollector.translateToLocal("gtnl.gui.super_interface.name")),
+            8,
+            6,
+            4210752);
+        String pageLabel = StatCollector.translateToLocalFormatted(
+            "gtnl.gui.super_interface.page",
+            container.currentPage + 1,
+            container.getMaxPages());
         this.fontRendererObj.drawString(pageLabel, 100, 6, 4210752);
 
         this.prevPage.enabled = container.currentPage > 0;
@@ -276,10 +282,11 @@ public class GuiSuperInterface extends GuiUpgradeable {
             this.drawTexturedModalRect(this.xPosition, this.yPosition, 240, 240, 16, 16);
 
             var fontrenderer = mc.fontRenderer;
-            int color = this.enabled ? 0xE0E0E0 : 0x707070;
+            int color = this.enabled ? ColorUtils.guiTextColorLight.getColor()
+                : ColorUtils.guiTextColorDisabled.getColor();
 
             if (this.field_146123_n && this.enabled) {
-                color = 0xFFFFA0;
+                color = ColorUtils.guiTextColorSoftYellow.getColor();
             }
 
             this.drawCenteredString(

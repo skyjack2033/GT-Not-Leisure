@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static gregtech.common.misc.WirelessNetworkManager.addEUToGlobalEnergyMap;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -23,24 +22,23 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.MathUtils;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.Utils;
-import com.science.gtnl.utils.machine.NineIndustrialMultiMachineManager;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
+import com.science.gtnl.utils.text.LanguageLoader;
 
 import bartworks.common.loaders.ItemRegistry;
 import goodgenerator.loader.Loaders;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -51,15 +49,16 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.util.GTLanguageManager;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
-import tectech.thing.casing.TTCasingsContainer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import kubatech.loaders.BlockLoader;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<NineIndustrialMultiMachine> {
 
     public NineIndustrialMultiMachineManager modeManager = new NineIndustrialMultiMachineManager();
@@ -83,7 +82,7 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
         for (int id = 0; id < 108; id++) {
             RecipeMap<?> recipeMap = getRecipeMap(id);
             if (recipeMap != null) {
-                String aNEI = GTLanguageManager.getTranslation(getRecipeMap(id).unlocalizedName);
+                String aNEI = LanguageLoader.gtTranslation(getRecipeMap(id).unlocalizedName);
                 aToolTipNames[id] = aNEI != null ? aNEI : "BAD NEI NAME";
             }
         }
@@ -106,10 +105,10 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
     public IStructureDefinition<NineIndustrialMultiMachine> getStructureDefinition() {
         return StructureDefinition.<NineIndustrialMultiMachine>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(ItemRegistry.bw_realglas2, 0))
+            .addElement('A', StructureUtility.ofBlock(ItemRegistry.bw_realglas, 6))
             .addElement('B', StructureUtility.ofBlock(Loaders.FRF_Coil_4, 0))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('D', StructureUtility.ofBlock(kubatech.loaders.BlockLoader.defcCasingBlock, 12))
+            .addElement('C', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('D', StructureUtility.ofBlock(BlockLoader.defcCasingBlock, 12))
             .addElement(
                 'E',
                 GTStructureUtility.buildHatchAdder(NineIndustrialMultiMachine.class)
@@ -125,18 +124,18 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++this.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 12))))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 13))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 6))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings5, 13))
-            .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsNH, 12))
-            .addElement('M', StructureUtility.ofBlock(TTCasingsContainer.sBlockCasingsTT, 4))
+                            Casings.DimensionallyTranscendentCasing.asElement())))
+            .addElement('F', Casings.DimensionalInjectionCasing.asElement())
+            .addElement('G', Casings.DimensionalBridge.asElement())
+            .addElement('H', Casings.NeutroniumCasing.asElement())
+            .addElement('I', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('J', Casings.ExtremeDensitySpaceBendingCasing.asElement())
+            .addElement('K', Casings.EternalCoilBlock.asElement())
+            .addElement('L', Casings.UMVMachineCasing.asElement())
+            .addElement('M', Casings.MolecularCasing.asElement())
             .addElement('N', GTStructureUtility.ofFrame(Materials.Neutronium))
-            .addElement('O', StructureUtility.ofBlock(TTCasingsContainer.StabilisationFieldGenerators, 2))
-            .addElement('P', StructureUtility.ofBlock(TTCasingsContainer.TimeAccelerationFieldGenerator, 8))
+            .addElement('O', Casings.StableStabilisationFieldGenerator.asElement())
+            .addElement('P', Casings.GallifreyanTimeDilationFieldGenerator.asElement())
             .build();
     }
 
@@ -170,7 +169,7 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 12);
+        return Casings.DimensionallyTranscendentCasing.getTextureId();
     }
 
     @Override
@@ -286,14 +285,14 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("NineIndustrialMultiMachine_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return NineIndustrialMultiMachineManager.getModeLocalization(machineMode);
     }
 
     @Override
     public String[] getInfoData() {
         String[] data = super.getInfoData();
-        ArrayList<String> mInfo = new ArrayList<>(Arrays.asList(data));
+        ObjectArrayList<String> mInfo = new ObjectArrayList<>(Arrays.asList(data));
         String mode = StatCollector
             .translateToLocal(NineIndustrialMultiMachineManager.getModeLocalization(machineMode));
         mInfo.add(mode);
@@ -316,22 +315,11 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
         return new GTNLMultiBlockBaseGui<>(this).withMachineModeIcons(createDefaultMachineModeIcons());
     }
 
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after this GUI no longer supports mui1 startup paths.
-        machineModeIcons.clear();
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_DEFAULT);
-        for (int i = 0; i <= 35; i++) {
-            machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_DEFAULT);
-        }
-    }
-
     @NotNull
     @Override
     public CheckRecipeResult checkProcessing() {
         costingEU = BigInteger.ZERO;
-        costingEUText = Utils.ZERO_STRING;
+        costingEUText = MathUtils.ZERO_STRING;
 
         if (!wirelessMode) return handleNonWirelessModeProcessing();
 
@@ -371,7 +359,7 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
         BigInteger costEU = BigInteger.valueOf(processingLogic.getCalculatedEut())
             .multiply(BigInteger.valueOf(processingLogic.getDuration()));
 
-        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(Utils.NEGATIVE_ONE))) {
+        if (!addEUToGlobalEnergyMap(ownerUUID, costEU.multiply(MathUtils.NEGATIVE_ONE))) {
             return CheckRecipeResultRegistry.insufficientPower(costEU.longValue());
         }
 
@@ -387,7 +375,7 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
                 }
             }
         }
-        mOutputItems = Utils.mergeArray(mOutputItems, outputItems);
+        mOutputItems = MathUtils.mergeArray(mOutputItems, outputItems);
 
         FluidStack[] outputFluids = processingLogic.getOutputFluids();
         if (outputFluids != null) {
@@ -399,7 +387,7 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
                 }
             }
         }
-        mOutputFluids = Utils.mergeArray(mOutputFluids, outputFluids);
+        mOutputFluids = MathUtils.mergeArray(mOutputFluids, outputFluids);
 
         endRecipeProcessing();
         return result;
@@ -472,28 +460,28 @@ public class NineIndustrialMultiMachine extends WirelessEnergyMultiMachineBase<N
         }
 
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("NineIndustrialMultiMachineRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_07"));
+        tt.addMachineType(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.recipe_type"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.0"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.1"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.2"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.3"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.4"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.5"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.6"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.info.7"));
         for (int i = 0; i < 36; i++) {
             tt.addInfo(
-                StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_Mode_" + i) + " - "
+                StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.mode." + i) + " - "
                     + EnumChatFormatting.YELLOW
                     + aBuiltStrings[i]
                     + EnumChatFormatting.RESET);
         }
         tt.beginStructureBlock(29, 29, 29, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_Casing"))
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_NineIndustrialMultiMachine_Casing"))
+            .addInputBus("0+", StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.casing"))
+            .addOutputBus("0+", StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.casing"))
+            .addInputHatch("0+", StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.casing"))
+            .addOutputHatch("0+", StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.casing"))
+            .addEnergyHatch("0+", StatCollector.translateToLocal("gtnl.machine.nine_industrial_multi_machine.casing"))
             .toolTipFinisher();
         return tt;
     }

@@ -2,13 +2,11 @@ package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings1;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,23 +14,25 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class MassFabricator extends GTMMultiMachineBase<MassFabricator> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -67,10 +67,9 @@ public class MassFabricator extends GTMMultiMachineBase<MassFabricator> implemen
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasings1, 7))))
-            .addElement('B', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 8))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 2))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.ZPMMachineCasing.asElement())))
+            .addElement('B', Casings.MatterGenerationCoil.asElement())
+            .addElement('C', GTNLCasings.HeatVent.asElement())
             .build();
     }
 
@@ -109,7 +108,7 @@ public class MassFabricator extends GTMMultiMachineBase<MassFabricator> implemen
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.multiblockMassFabricatorRecipes;
+        return RecipeMaps.multiblockMassFabricatorRecipes;
     }
 
     @Override
@@ -119,7 +118,7 @@ public class MassFabricator extends GTMMultiMachineBase<MassFabricator> implemen
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings1, 7);
+        return Casings.ZPMMachineCasing.getTextureId();
     }
 
     @Override
@@ -142,21 +141,8 @@ public class MassFabricator extends GTMMultiMachineBase<MassFabricator> implemen
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("MassFabricatorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .addPerfectOCInfo()
-            .beginStructureBlock(5, 5, 8, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_MassFabricator_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

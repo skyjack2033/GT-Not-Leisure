@@ -2,13 +2,11 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings5Misc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,12 +18,14 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 import com.science.gtnl.utils.recipes.metadata.IsaMillMetadata;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -40,22 +40,22 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
-import gregtech.api.structure.error.TranslatableText;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.core.item.chemistry.general.ItemGenericChemBase;
 import gtPlusPlus.core.util.math.MathUtils;
 import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.nbthandlers.MTEHatchMillingBalls;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalConstructable {
 
-    private static final TranslatableText MILLING_BALL_BUS_NAME = TranslatableText
-        .lang("gt.blockmachines.hatch.milling.name");
+    private static final String MILLING_BALL_BUS_NAME = "gt.blockmachines.hatch.milling.name";
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
     public static final String IM_STRUCTURE_FILE_PATH = RESOURCE_ROOT_ID + ":" + "multiblock/isa_mill";
@@ -64,7 +64,7 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
     private static final int DEPTH_OFF_SET = 0;
     private static final String[][] shape = StructureUtils.readStructureFromFile(IM_STRUCTURE_FILE_PATH);
 
-    private final ArrayList<MTEHatchMillingBalls> mMillingBallBuses = new ArrayList<>();
+    private final List<MTEHatchMillingBalls> mMillingBallBuses = new ObjectArrayList<>();
 
     public IsaMill(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -72,6 +72,11 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
 
     public IsaMill(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.isa_mill.name";
     }
 
     @Override
@@ -95,6 +100,7 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
                     GTStructureUtility.buildHatchAdder(IsaMill.class)
                         .adder(IsaMill::addMillingBallsHatch)
                         .hatchClass(MTEHatchMillingBalls.class)
+                        .description(() -> MILLING_BALL_BUS_NAME)
                         .shouldReject(t -> !t.mMillingBallBuses.isEmpty())
                         .casingIndex(getCasingTextureID())
                         .hint(1)
@@ -110,10 +116,9 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility
-                        .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings5Misc, 0))))
-            .addElement('C', StructureUtility.ofBlock(blockCasings5Misc, 1))
-            .addElement('D', StructureUtility.ofBlock(blockCasings5Misc, 2))
+                    StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.IsaMillExteriorCasing.asElement())))
+            .addElement('C', Casings.IsaMillPiping.asElement())
+            .addElement('D', Casings.IsaMillGearboxCasing.asElement())
             .build();
     }
 
@@ -273,7 +278,7 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
     public ProcessingLogic createProcessingLogic() {
         return new GTNLProcessingLogic() {
 
-            ItemStack millingBall;
+            public ItemStack millingBall;
 
             @NotNull
             @Override
@@ -352,21 +357,8 @@ public class IsaMill extends GTMMultiMachineBase<IsaMill> implements ISurvivalCo
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("IsaMillRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_IsaMill_01"))
-            .addPerfectOCInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 9, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_IsaMill_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

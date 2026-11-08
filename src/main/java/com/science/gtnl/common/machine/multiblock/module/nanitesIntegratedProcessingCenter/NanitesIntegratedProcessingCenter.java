@@ -1,10 +1,7 @@
 package com.science.gtnl.common.machine.multiblock.module.nanitesIntegratedProcessingCenter;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -19,9 +16,9 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
@@ -30,6 +27,7 @@ import com.science.gtnl.utils.recipes.metadata.NanitesIntegratedProcessingMetada
 
 import bartworks.util.BWUtil;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
@@ -53,7 +51,10 @@ import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 import gtnhlanth.common.register.LanthItemList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class NanitesIntegratedProcessingCenter
     extends WirelessEnergyMultiMachineBase<NanitesIntegratedProcessingCenter> {
 
@@ -65,7 +66,7 @@ public class NanitesIntegratedProcessingCenter
         + "multiblock/nanites_integrated_processing_center";
     private static final String[][] shape = StructureUtils.readStructureFromFile(NIPC_STRUCTURE_FILE_PATH);
 
-    public ArrayList<NanitesBaseModule<?>> moduleMachine = new ArrayList<>();
+    public ObjectArrayList<NanitesBaseModule<?>> moduleMachine = new ObjectArrayList<>();
     public boolean oreModule = false;
     public boolean bioModule = false;
     public boolean polModule = false;
@@ -79,12 +80,17 @@ public class NanitesIntegratedProcessingCenter
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.nanites_integrated_processing_center.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new NanitesIntegratedProcessingCenter(this.mName);
     }
 
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 10);
+        return Casings.RadiantNaquadahAlloyCasing.getTextureId();
     }
 
     @Override
@@ -118,8 +124,8 @@ public class NanitesIntegratedProcessingCenter
                         module.setHeatingCapacity(mHeatingCapacity);
                     } else {
                         module.disconnect();
-                        module.setEUtDiscount(1);
-                        module.setDurationModifier(1);
+                        module.setEUtDiscount(1.0D);
+                        module.setDurationModifier(1.0D);
                         module.setMaxParallel(0);
                         module.setHeatingCapacity(0);
                     }
@@ -165,14 +171,13 @@ public class NanitesIntegratedProcessingCenter
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))))
-            .addElement('B', StructureUtility.ofBlock(sBlockCasingsTT, 0))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.RadiantNaquadahAlloyCasing.asElement())))
+            .addElement('B', Casings.HighPowerCasing.asElement())
             .addElement('C', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 10))
+            .addElement('D', Casings.GrateMachineCasing.asElement())
             .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockMetal5, 1))
-            .addElement('F', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
+            .addElement('F', GTNLCasings.NeutroniumGearbox.asElement())
             .addElement(
                 'G',
                 GTStructureChannels.HEATING_COIL.use(
@@ -180,14 +185,14 @@ public class NanitesIntegratedProcessingCenter
                         GTStructureUtility.ofCoil(
                             NanitesIntegratedProcessingCenter::setMCoilLevel,
                             NanitesIntegratedProcessingCenter::getMCoilLevel))))
-            .addElement('H', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 10))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
+            .addElement('H', Casings.StainlessSteelTurbineCasing.asElement())
+            .addElement('I', Casings.PressureContainmentCasing.asElement())
             .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 9))
-            .addElement('K', StructureUtility.ofBlock(LanthItemList.SHIELDED_ACCELERATOR_CASING, 0))
-            .addElement('L', StructureUtility.ofBlock(blockCasings4Misc, 4))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
+            .addElement('K', Casings.ShieldedAcceleratorCasing.asElement())
+            .addElement('L', Casings.QuantumForceTransformerCoilCasing.asElement())
+            .addElement('M', Casings.AssemblyLineCasing.asElement())
             .addElement('N', GTStructureUtility.ofFrame(Materials.CosmicNeutronium))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
+            .addElement('O', Casings.PTFEPipeCasing.asElement())
             .addElement('P', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
             .addElement(
                 'Q',
@@ -198,10 +203,10 @@ public class NanitesIntegratedProcessingCenter
                         .hint(1)
                         .hint(1)
                         .buildAndChain(GregTechAPI.sBlockCasings8, 10),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 0),
-                    StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 8),
+                    Casings.AdvancedIridiumPlatedMachineCasing.asElement(),
+                    Casings.ChemicallyInertMachineCasing.asElement(),
+                    Casings.RobustTungstenSteelMachineCasing.asElement(),
+                    Casings.NeutroniumStabilizationCasing.asElement(),
                     StructureUtility.ofBlock(GregTechAPI.sBlockReinforced, 2)))
             .build();
     }
@@ -282,13 +287,16 @@ public class NanitesIntegratedProcessingCenter
                     new NanitesIntegratedProcessingRecipesData(false, false, false));
 
                 if (data.bioengineeringModule && !bioModule) {
-                    return SimpleCheckRecipeResult.ofFailure("missing_bio_module");
+                    return SimpleCheckRecipeResult.ofFailure(
+                        "gtnl.machine.nanites_integrated_processing_center.error.missing_bioengineering_module");
                 }
                 if (data.oreExtractionModule && !oreModule) {
-                    return SimpleCheckRecipeResult.ofFailure("missing_ore_module");
+                    return SimpleCheckRecipeResult.ofFailure(
+                        "gtnl.machine.nanites_integrated_processing_center.error.missing_ore_extraction_module");
                 }
                 if (data.polymerTwistingModule && !polModule) {
-                    return SimpleCheckRecipeResult.ofFailure("missing_pol_module");
+                    return SimpleCheckRecipeResult.ofFailure(
+                        "gtnl.machine.nanites_integrated_processing_center.error.missing_polymer_twisting_module");
                 }
 
                 return recipe.mSpecialValue <= mHeatingCapacity ? CheckRecipeResultRegistry.SUCCESSFUL
@@ -321,26 +329,42 @@ public class NanitesIntegratedProcessingCenter
     @Override
     public MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("NanitesIntegratedProcessingCenterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
+        tt.addMachineType(
+            StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.recipe_type"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.0"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.1"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.2"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.2"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.3"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.4"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.5"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.6"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.7"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.8"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.9"))
+            .addInfo(StatCollector.translateToLocal("gtnl.machine.common.wireless.tooltip.10"))
+            .addSupportAny()
             .beginStructureBlock(31, 22, 46, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_NanitesIntegratedProcessingCenter_Casing"), 1)
+            .addInputBus(
+                "0+",
+                StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.casing"),
+                1)
+            .addOutputBus(
+                "0+",
+                StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.casing"),
+                1)
+            .addInputHatch(
+                "0+",
+                StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.casing"),
+                1)
+            .addOutputHatch(
+                "0+",
+                StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.casing"),
+                1)
+            .addEnergyHatch(
+                "0+",
+                StatCollector.translateToLocal("gtnl.machine.nanites_integrated_processing_center.tooltip.casing"),
+                1)
             .addSubChannelUsage(GTStructureChannels.BOROGLASS)
             .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
             .toolTipFinisher();

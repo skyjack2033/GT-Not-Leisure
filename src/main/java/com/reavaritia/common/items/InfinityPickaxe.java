@@ -29,10 +29,10 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.reavaritia.client.ReAvaCreativeTabs;
+import com.reavaritia.common.ItemLoader;
 import com.reavaritia.utils.enums.ReAvaItemList;
 import com.reavaritia.utils.item.SubtitleDisplay;
 import com.reavaritia.utils.item.ToolHelper;
@@ -51,9 +51,9 @@ public class InfinityPickaxe extends ItemPickaxe implements SubtitleDisplay {
 
     public InfinityPickaxe() {
         super(ToolHelper.INFINITY);
-        this.setUnlocalizedName("InfinityPickaxe");
+        this.setUnlocalizedName("reavaritia.infinity_pickaxe");
         this.setCreativeTab(ReAvaCreativeTabs.ReAvaritia);
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + "InfinityPickaxe");
+        this.setTextureName(RESOURCE_ROOT_ID + ":infinity_pickaxe");
         ReAvaItemList.InfinityPickaxe.set(new ItemStack(this, 1));
     }
 
@@ -66,7 +66,7 @@ public class InfinityPickaxe extends ItemPickaxe implements SubtitleDisplay {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> toolTip,
         boolean advancedToolTips) {
-        toolTip.add(StatCollector.translateToLocal("Tooltip_InfinityPickaxe_00"));
+        toolTip.add(StatCollector.translateToLocal("reavaritia.item.infinity_pickaxe.tooltip.00"));
     }
 
     @Override
@@ -78,14 +78,14 @@ public class InfinityPickaxe extends ItemPickaxe implements SubtitleDisplay {
 
     @Override
     public EnumRarity getRarity(ItemStack stack) {
-        return EnumHelper.addRarity("COSMIC", EnumChatFormatting.RED, "Cosmic");
+        return ItemLoader.COSMIC;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister ir) {
-        this.itemIcon = ir.registerIcon(RESOURCE_ROOT_ID + ":" + "InfinityPickaxe");
-        this.hammer = ir.registerIcon(RESOURCE_ROOT_ID + ":" + "InfinityHammer");
+        this.itemIcon = ir.registerIcon(RESOURCE_ROOT_ID + ":infinity_pickaxe");
+        this.hammer = ir.registerIcon(RESOURCE_ROOT_ID + ":infinity_hammer");
     }
 
     @Override
@@ -118,8 +118,8 @@ public class InfinityPickaxe extends ItemPickaxe implements SubtitleDisplay {
             player.swingItem();
 
             if (world.isRemote) {
-                String key = isHammerMode ? StatCollector.translateToLocal("Tooltip_Infinity_Mode_2")
-                    : StatCollector.translateToLocal("Tooltip_Infinity_Mode_1");
+                String key = isHammerMode ? StatCollector.translateToLocal("reavaritia.item.infinity.mode.2")
+                    : StatCollector.translateToLocal("reavaritia.item.infinity.mode.1");
                 showSubtitle(key);
             }
         }

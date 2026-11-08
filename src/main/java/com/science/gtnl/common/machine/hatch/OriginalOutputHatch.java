@@ -5,10 +5,13 @@ import net.minecraft.util.StatCollector;
 import com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil;
 
 import gregtech.api.interfaces.ITexture;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchOutput;
 
+@IMetaTileEntity.SkipGenerateName
+@IMetaTileEntity.SkipGenerateDescription
 public class OriginalOutputHatch extends MTEHatchOutput {
 
     public OriginalOutputHatch(int aID, String aName, String aNameRegional) {
@@ -35,11 +38,25 @@ public class OriginalOutputHatch extends MTEHatchOutput {
     }
 
     @Override
+    public String getLocalNameKey() {
+        if (!hasOwnLocalName()) return super.getLocalNameKey();
+        return "gtnl.hatch.original_output.name";
+    }
+
+    @Override
+    public String getLocalName() {
+        if (!hasOwnLocalName()) return super.getLocalName();
+        return StatCollector.translateToLocal(getLocalNameKey());
+    }
+
+    @Override
     public String[] getDescription() {
-        return new String[] { StatCollector.translateToLocal("Tooltip_OriginalOutputHatch_00"), StatCollector
-            .translateToLocalFormatted("Tooltip_OriginalOutputHatch_01", NumberFormatUtil.formatNumber(getCapacity())),
-            StatCollector.translateToLocal("Tooltip_OriginalOutputHatch_02"),
-            StatCollector.translateToLocal("Tooltip_OriginalOutputHatch_03"),
-            StatCollector.translateToLocal("Tooltip_OriginalOutputHatch_04") };
+        return new String[] { StatCollector.translateToLocal("gtnl.hatch.original_output.tooltip.0"),
+            StatCollector.translateToLocalFormatted(
+                "gtnl.hatch.original_output.tooltip.1",
+                NumberFormatUtil.formatNumber(getCapacity())),
+            StatCollector.translateToLocal("gtnl.hatch.original_output.tooltip.2"),
+            StatCollector.translateToLocal("gtnl.hatch.original_output.tooltip.3"),
+            StatCollector.translateToLocal("gtnl.hatch.original_output.tooltip.4") };
     }
 }

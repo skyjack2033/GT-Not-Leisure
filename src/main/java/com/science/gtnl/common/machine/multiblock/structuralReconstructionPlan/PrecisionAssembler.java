@@ -27,6 +27,7 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
@@ -39,7 +40,6 @@ import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoltageIndex;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -60,10 +60,13 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.api.util.tooltip.TooltipHelper;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gregtech.common.misc.GTStructureChannels;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -73,6 +76,8 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
     private static final int HORIZONTAL_OFF_SET = 4;
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 0;
+    private static final String MACHINE_CASING_LIMIT_TOOLTIP_KEY = "gtnl.structure.tooltip.machine_casing_energy_limit";
+    private static final int NO_UNLOCK_TIER = -1;
     private static final String[][] shape = StructureUtils.readStructureFromFile(LPA_STRUCTURE_FILE_PATH);
 
     @Nullable
@@ -90,7 +95,6 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
         return null;
     }
 
-    public int mCasingTier = -1;
     public int mMachineTier = -1;
 
     public PrecisionAssembler(int aID, String aName, String aNameRegional) {
@@ -99,6 +103,11 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
 
     public PrecisionAssembler(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.precision_assembler.name";
     }
 
     @Override
@@ -192,7 +201,26 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
             return;
         }
         checkCasingMin(errors, mCountCasing, 30);
-        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
+    }
+
+    @Override
+    protected void onStructureCheckFinished(IGregTechTileEntity base) {
+        super.onStructureCheckFinished(base);
+        base.sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
+    }
+
+    @Override
+    public void runStructureTooltipCheck(Runnable check) {
+        int originalCasingTier = mCasingTier;
+        int originalMachineTier = mMachineTier;
+        try {
+            mCasingTier = 0;
+            mMachineTier = 0;
+            check.run();
+        } finally {
+            mCasingTier = originalCasingTier;
+            mMachineTier = originalMachineTier;
+        }
     }
 
     @Override
@@ -290,12 +318,12 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
 
     @Override
     public int getMaxTierSkip() {
-        return 0;
+        return NO_TIER_SKIP;
     }
 
     @Override
     public int getMaxParallelRecipes() {
-        if (mGlassTier > 0) {
+        if (mGlassTier >= 0) {
             return (1 << mGlassTier) + mCasingTier * 64;
         } else {
             return 0;
@@ -324,6 +352,37 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
     }
 
     @Override
+    public List<String> getTooltipFeatureLines() {
+        List<String> lines = super.getTooltipFeatureLines();
+        int unlockTier = machineCasingUnlockTier();
+        if (unlockTier != NO_UNLOCK_TIER) {
+            lines.add(
+                StatCollector.translateToLocalFormatted(
+                    MACHINE_CASING_LIMIT_TOOLTIP_KEY,
+                    TooltipHelper.voltageTierText(unlockTier, false)));
+        }
+        return lines;
+    }
+
+    private int machineCasingUnlockTier() {
+        int machine = mMachineTier;
+        int hatch = mEnergyHatchTier;
+        mEnergyHatchTier = VoltageIndex.MAX;
+        try {
+            for (int tier = VoltageIndex.ULV; tier <= VoltageIndex.MAX; tier++) {
+                mMachineTier = tier;
+                int limit = GTUtility.getTier(getMachineVoltageLimit());
+                if (limit >= VoltageIndex.MAX) return tier;
+                if (limit != tier) return NO_UNLOCK_TIER;
+            }
+            return NO_UNLOCK_TIER;
+        } finally {
+            mMachineTier = machine;
+            mEnergyHatchTier = hatch;
+        }
+    }
+
+    @Override
     public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
         int colorIndex, boolean aActive, boolean redstoneLevel) {
         if (side == aFacing) {
@@ -343,23 +402,8 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("PreciseAssemblerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PreciseAssembler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PreciseAssembler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PreciseAssembler_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PreciseAssembler_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(9, 5, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_PreciseAssembler_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_PreciseAssembler_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_PreciseAssembler_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_PreciseAssembler_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_PreciseAssembler_Casing"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.PRASS_UNIT_CASING)
-            .addSubChannelUsage(GTStructureChannels.TIER_MACHINE_CASING)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -369,14 +413,6 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
         return new GTNLMultiBlockBaseGui<>(this).withMachineModeIcons(
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL,
             GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_COMPRESSING);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Precision Assembler GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_COMPRESSING);
     }
 
     @Override
@@ -397,12 +433,12 @@ public class PrecisionAssembler extends MultiMachineBase<PrecisionAssembler> imp
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         machineMode = (machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "PreciseAssembler_Mode_" + machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("PreciseAssembler_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.precision_assembler.mode." + machineMode;
     }
 
     @Override

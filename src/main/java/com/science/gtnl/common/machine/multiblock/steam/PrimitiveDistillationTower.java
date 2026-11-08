@@ -1,12 +1,14 @@
 package com.science.gtnl.common.machine.multiblock.steam;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -15,17 +17,19 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
-import com.science.gtnl.utils.StructureUtils;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
+import com.science.gtnl.common.machine.tooltip.StructureTooltipHooks;
 import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoidingMode;
 import gregtech.api.interfaces.IHatchElement;
+import gregtech.api.interfaces.IOutputHatch;
 import gregtech.api.interfaces.ITexture;
-import gregtech.api.interfaces.fluid.IFluidStore;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchOutput;
@@ -36,8 +40,12 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTStructureUtility;
+import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveDistillationTower>
     implements ISurvivalConstructable {
 
@@ -45,8 +53,9 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     public static final String STRUCTURE_PIECE_LAYER = "layer";
     public static final String STRUCTURE_PIECE_LAYER_HINT = "layerHint";
     public static final String STRUCTURE_PIECE_TOP_HINT = "topHint";
+    private static final int MIN_LAYERS = 6;
 
-    public final List<List<MTEHatchOutput>> mOutputHatchesByLayer = new ArrayList<>();
+    public final List<List<MTEHatchOutput>> mOutputHatchesByLayer = new ObjectArrayList<>();
     public int mHeight;
     public boolean mTopLayerFound;
 
@@ -59,21 +68,19 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.primitive_distillation_tower.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new PrimitiveDistillationTower(this.mName);
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("PrimitiveDistillationTowerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PrimitiveDistillationTower_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PrimitiveDistillationTower_01"))
-            .beginStructureBlock(3, 7, 3, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_PrimitiveDistillationTower_Casing_01"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_PrimitiveDistillationTower_Casing_01"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_PrimitiveDistillationTower_Casing_01"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_PrimitiveDistillationTower_Casing_02"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -142,15 +149,15 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
                 'A',
                 StructureUtility.ofChain(
                     buildSteamWirelessInput(PrimitiveDistillationTower.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings3, 14))
+                        .casingIndex(Casings.SteelFireboxCasing.getTextureId())
                         .hint(1)
                         .build(),
                     buildSteamBigInput(PrimitiveDistillationTower.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings3, 14))
+                        .casingIndex(Casings.SteelFireboxCasing.getTextureId())
                         .hint(1)
                         .build(),
                     buildSteamInput(PrimitiveDistillationTower.class)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings3, 14))
+                        .casingIndex(Casings.SteelFireboxCasing.getTextureId())
                         .hint(1)
                         .build(),
                     GTStructureUtility.buildHatchAdder(PrimitiveDistillationTower.class)
@@ -161,18 +168,18 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
                             HatchElement.InputHatch,
                             HatchElement.InputBus,
                             HatchElement.Maintenance)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings3, 14))
+                        .casingIndex(Casings.SteelFireboxCasing.getTextureId())
                         .hint(1)
                         .build(),
                     StructureUtility.onElementPass(
                         PrimitiveDistillationTower::onCasingFound,
-                        StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 14))))
+                        Casings.SteelFireboxCasing.asElement())))
             .addElement(
                 'B',
                 StructureUtility.ofChain(
                     StructureUtility.onElementPass(
                         PrimitiveDistillationTower::onCasingFound,
-                        StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0)),
+                        Casings.SolidSteelMachineCasing.asElement()),
                     GTStructureUtility.buildHatchAdder(PrimitiveDistillationTower.class)
                         .atLeast(layeredOutputHatch)
                         .casingIndex(getCasingTextureID())
@@ -188,11 +195,10 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
                         t -> t.onTopLayerFound(false),
                         GTStructureUtility
                             .ofHatchAdder(PrimitiveDistillationTower::addOutputToMachineList, getCasingTextureID(), 1)),
-                    StructureUtility.onElementPass(
-                        t -> t.onTopLayerFound(true),
-                        StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0)),
+                    StructureUtility
+                        .onElementPass(t -> t.onTopLayerFound(true), Casings.SolidSteelMachineCasing.asElement()),
                     StructureUtility.isAir()))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))
+            .addElement('D', Casings.SolidSteelMachineCasing.asElement())
             .addElement(
                 'D',
                 GTStructureUtility.buildHatchAdder(PrimitiveDistillationTower.class)
@@ -205,11 +211,15 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
+        // The tooltip reruns this check on the prototype without clearHatches.
+        mHeight = 1;
         if (!checkPiece(STRUCTURE_PIECE_BASE, 1, 0, 0, errors)) return;
         while (mHeight < 7) {
             if (!checkPiece(STRUCTURE_PIECE_LAYER, 1, mHeight, 0, errors)) return;
-            if (mOutputHatchesByLayer.size() < mHeight || mOutputHatchesByLayer.get(mHeight - 1)
-                .isEmpty()) errors.add(GTNLStructureErrors.missingDistillationLayerOutputHatch());
+            if (!StructureTooltipHooks.onCheckLayerHatches(this, MIN_LAYERS, 1, HatchElement.OutputHatch)
+                && (mOutputHatchesByLayer.size() < mHeight || mOutputHatchesByLayer.get(mHeight - 1)
+                    .isEmpty()))
+                errors.add(GTNLStructureErrors.missingDistillationLayerOutputHatch());
             if (mTopLayerFound) {
                 break;
             }
@@ -217,7 +227,7 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
             mHeight++;
         }
         updateHatchTexture();
-        if (mHeight < 6) {
+        if (mHeight < MIN_LAYERS) {
             errors.add(StructureErrorRegistry.TOO_SHORT_HEIGHT);
             return;
         }
@@ -270,39 +280,51 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings2, 0);
+        return Casings.SolidSteelMachineCasing.getTextureId();
     }
 
     @Override
-    public VoidingMode getVoidingMode() {
+    public VoidingMode getDefaultVoidingMode() {
         return VoidingMode.VOID_FLUID;
     }
 
     @Override
+    public Set<VoidingMode> getAllowedVoidingModes() {
+        return VoidingMode.FLUID_ONLY_MODES;
+    }
+
+    @Override
     public boolean supportsVoidProtection() {
-        return false;
+        return true;
     }
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("PrimitiveDistillationTowerRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.primitive_distillation_tower.recipe_type");
     }
 
     @Override
-    public List<? extends IFluidStore> getFluidOutputSlots(FluidStack[] toOutput) {
-        return getFluidOutputSlotsByLayer(toOutput, mOutputHatchesByLayer);
+    public List<IOutputHatch> getOutputHatches(FluidStack[] toOutput) {
+        return getOutputHatchesByLayers(toOutput, mOutputHatchesByLayer);
     }
 
     @Override
-    public void addFluidOutputs(FluidStack[] outputFluids) {
+    public boolean addFluidOutputs(@NotNull FluidStack[] outputFluids) {
+        boolean succeed = true;
         for (int i = 0; i < outputFluids.length && i < mOutputHatchesByLayer.size(); i++) {
             FluidStack fluidStack = outputFluids[i];
             if (fluidStack == null) continue;
-            FluidStack outputStack = fluidStack.copy();
-            if (!dumpFluid(mOutputHatchesByLayer.get(i), outputStack, true)) {
-                dumpFluid(mOutputHatchesByLayer.get(i), outputStack, false);
-            }
+
+            FluidStack remaining = fluidStack.copy();
+            addOutputPartial(remaining, mOutputHatchesByLayer.get(i));
+            if (remaining.amount > 0) succeed = false;
         }
+        return succeed;
+    }
+
+    @Override
+    public boolean canDumpFluidToME(List<GTUtility.FluidId> outputs) {
+        return canDumpFluidToMEByLayer(outputs, mOutputHatchesByLayer);
     }
 
     @Override
@@ -334,7 +356,7 @@ public class PrimitiveDistillationTower extends SteamMultiMachineBase<PrimitiveD
         if (aTileEntity == null || aTileEntity.isDead()
             || !(aTileEntity.getMetaTileEntity() instanceof MTEHatchOutput outputHatch)) return false;
         while (mOutputHatchesByLayer.size() < mHeight) {
-            mOutputHatchesByLayer.add(new ArrayList<>());
+            mOutputHatchesByLayer.add(new ObjectArrayList<>());
         }
         outputHatch.updateTexture(aBaseCasingIndex);
         return mOutputHatchesByLayer.get(mHeight - 1)

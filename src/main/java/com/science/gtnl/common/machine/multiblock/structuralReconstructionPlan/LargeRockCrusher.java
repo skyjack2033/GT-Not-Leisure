@@ -2,15 +2,12 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings4;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsTieredGTPP;
 
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -21,11 +18,13 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -42,6 +41,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.core.material.MaterialsAlloy;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class LargeRockCrusher extends GTMMultiMachineBase<LargeRockCrusher> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -85,9 +85,9 @@ public class LargeRockCrusher extends GTMMultiMachineBase<LargeRockCrusher> impl
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasings4, 14))))
-            .addElement('C', StructureUtility.ofBlock(blockCasingsTieredGTPP, 2))
-            .addElement('D', StructureUtility.ofBlock(BlockLoader.metaBlockColumn, 2))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.MiningOsmiridiumCasing.asElement())))
+            .addElement('C', Casings.IntegralEncasementMV.asElement())
+            .addElement('D', GTNLCasings.CrushingWheels.asElement())
             .build();
     }
 
@@ -164,23 +164,13 @@ public class LargeRockCrusher extends GTMMultiMachineBase<LargeRockCrusher> impl
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings4, 14);
+        return Casings.MiningOsmiridiumCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeRockCrusherRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeRockCrusher_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 4, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeRockCrusher_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeRockCrusher_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeRockCrusher_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeRockCrusher_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeRockCrusher_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

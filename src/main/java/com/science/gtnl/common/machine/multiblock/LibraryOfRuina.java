@@ -4,19 +4,18 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.dreammaster.item.NHItemList;
 import com.google.common.collect.ImmutableList;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -24,17 +23,19 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.GameUtils;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.compat.newhorizons.NHCoreItem;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.GTNLStructureChannels;
 import com.science.gtnl.utils.structure.GTNLStructureErrors;
 
-import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.common.registry.GameRegistry;
 import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Mods;
 import gregtech.api.enums.Textures;
@@ -48,6 +49,8 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -57,8 +60,7 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
     private static final int VERTICAL_OFF_SET = 34;
     private static final int DEPTH_OFF_SET = 20;
 
-    public static final ItemStack CRYSTAL = Mods.NewHorizonsCoreMod.isModLoaded() ? getTwilightCrystal()
-        : new ItemStack(Items.diamond);
+    public static final ItemStack CRYSTAL = NHCoreItem.TwilightCrystal.get(1, new ItemStack(Items.diamond));
 
     public LibraryOfRuina(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -66,6 +68,11 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
 
     public LibraryOfRuina(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.library_of_ruina.name";
     }
 
     @Override
@@ -86,7 +93,7 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
                         -1,
                         (t, m) -> {},
                         t -> -1)))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 13))
+            .addElement('B', GTNLCasings.DimensionallyStableCasing.asElement())
             .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsSE, 1))
             .addElement(
                 'D',
@@ -105,24 +112,27 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
                             StructureUtility.ofBlockAnyMeta(LanthItemList.SHIELDED_ACCELERATOR_CASING))))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 4))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
+            .addElement('E', Casings.ElectricCompressorCasing.asElement())
+            .addElement('F', Casings.ExtremeDensitySpaceBendingCasing.asElement())
+            .addElement('G', Casings.HeatResistantTriniumPlatedCasing.asElement())
+            .addElement('H', GTNLCasings.FusionGlass.asElement())
             .addElement(
                 'I',
-                StructureUtility.ofChain(
-                    StructureUtility.ofBlock(Blocks.water, 0),
-                    StructureUtility.ofBlockAnyMeta(
-                        Mods.TwilightForest.isModLoaded()
-                            ? GameRegistry.findBlock(Mods.TwilightForest.ID, "tile.TFPortal")
-                            : Blocks.end_portal)))
+                StructureUtility.withDescription(
+                    Collections.singletonList(Blocks.water.getUnlocalizedName() + ".name"),
+                    StructureUtility.ofChain(
+                        StructureUtility.ofBlock(Blocks.water, 0),
+                        StructureUtility.ofBlockAnyMeta(twilightPortal()))))
             .build();
     }
 
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new LibraryOfRuina(this.mName);
+    }
+
+    public static Block twilightPortal() {
+        return GameUtils.blockOr(Mods.TwilightForest.ID, "tile.TFPortal", Blocks.end_portal);
     }
 
     @Override
@@ -218,35 +228,8 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LibraryOfRuinaRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_07"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(69, 51, 73, true)
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_09"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_10"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_11"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_12"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_13"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_14"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_15"))
-            .addStructureInfo(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_16"))
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LibraryOfRuina_Casing"))
-            .addSubChannelUsage(GTNLStructureChannels.STRUCTURE_RENDER)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -254,6 +237,8 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
     public void replaceWaterWithPortal() {
         IGregTechTileEntity aBaseMetaTileEntity = this.getBaseMetaTileEntity();
         World world = aBaseMetaTileEntity.getWorld();
+        // Tooltip prototypes have no world.
+        if (world == null) return;
         int baseX = aBaseMetaTileEntity.getXCoord();
         int baseY = aBaseMetaTileEntity.getYCoord();
         int baseZ = aBaseMetaTileEntity.getZCoord();
@@ -265,11 +250,7 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
         int perpX = perpDir.offsetX;
         int perpZ = perpDir.offsetZ;
 
-        Block targetBlock = Blocks.end_portal;
-        if (Mods.TwilightForest.isModLoaded()) {
-            targetBlock = GameRegistry.findBlock(Mods.TwilightForest.ID, "tile.TFPortal");
-            if (targetBlock == null) targetBlock = Blocks.end_portal;
-        }
+        Block targetBlock = twilightPortal();
 
         for (int step = 10; step >= 8; step--) {
             int mainX = backFacing.offsetX * step;
@@ -291,6 +272,8 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
     public void replacePortalWithWater() {
         IGregTechTileEntity aBaseMetaTileEntity = this.getBaseMetaTileEntity();
         World world = aBaseMetaTileEntity.getWorld();
+        // Tooltip prototypes have no world.
+        if (world == null) return;
         int baseX = aBaseMetaTileEntity.getXCoord();
         int baseY = aBaseMetaTileEntity.getYCoord();
         int baseZ = aBaseMetaTileEntity.getZCoord();
@@ -312,16 +295,10 @@ public class LibraryOfRuina extends GTMMultiMachineBase<LibraryOfRuina> implemen
                 int y = baseY - 1;
 
                 Block block = world.getBlock(x, y, z);
-                if (block == Blocks.end_portal || (Mods.TwilightForest.isModLoaded()
-                    && block == GameRegistry.findBlock(Mods.TwilightForest.ID, "tile.TFPortal"))) {
+                if (block == Blocks.end_portal || block == twilightPortal()) {
                     world.setBlock(x, y, z, Blocks.water, 0, 3);
                 }
             }
         }
-    }
-
-    @Optional.Method(modid = "dreamcraft")
-    public static ItemStack getTwilightCrystal() {
-        return NHItemList.TwilightCrystal.get(1);
     }
 }

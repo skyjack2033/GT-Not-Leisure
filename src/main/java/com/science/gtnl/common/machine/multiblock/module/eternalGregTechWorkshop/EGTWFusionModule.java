@@ -8,6 +8,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class EGTWFusionModule extends EternalGregTechWorkshopModule {
 
     public EGTWFusionModule(int aID, String aName, String aNameRegional) {
@@ -31,12 +32,12 @@ public class EGTWFusionModule extends EternalGregTechWorkshopModule {
     @Override
     public MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("EGTWFusionModuleRecipeType"))
+        tt.addMachineType(StatCollector.translateToLocal("gtnl.machine.etgw_fusion_module.recipe_type"))
             .beginStructureBlock(9, 5, 7, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_EGTWFusionModule_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_EGTWFusionModule_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_EGTWFusionModule_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_EGTWFusionModule_Casing"), 1)
+            .addInputBus("0+", StatCollector.translateToLocal("gtnl.machine.egtw_fusion_module.casing"), 1)
+            .addOutputBus("0+", StatCollector.translateToLocal("gtnl.machine.egtw_fusion_module.casing"), 1)
+            .addInputHatch("0+", StatCollector.translateToLocal("gtnl.machine.egtw_fusion_module.casing"), 1)
+            .addOutputHatch("0+", StatCollector.translateToLocal("gtnl.machine.egtw_fusion_module.casing"), 1)
             .toolTipFinisher();
         return tt;
     }

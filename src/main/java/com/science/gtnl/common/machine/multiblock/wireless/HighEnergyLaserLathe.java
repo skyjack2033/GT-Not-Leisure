@@ -2,24 +2,24 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -31,9 +31,9 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEnergyLaserLathe> {
 
     private static final int HORIZONTAL_OFF_SET = 16;
@@ -62,9 +62,9 @@ public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEne
         return StructureDefinition.<HighEnergyLaserLathe>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', StructureUtility.ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('B', StructureUtility.ofBlock(sBlockCasingsTT, 0))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 6))
+            .addElement('B', Casings.HighPowerCasing.asElement())
+            .addElement('C', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('D', Casings.NeutroniumCasing.asElement())
             .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockGem2, 11))
             .addElement(
                 'F',
@@ -76,21 +76,21 @@ public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEne
                         HatchElement.InputHatch,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
-                    .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7))
+                    .casingIndex(Casings.AdvancedIridiumPlatedMachineCasing.getTextureId())
                     .hint(1)
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 12))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaCasing, 6))
-            .addElement('I', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('J', StructureUtility.ofBlock(sBlockCasingsTT, 4))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 1))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
+            .addElement('G', Casings.ReinforcedPhotolithographicFrameworkCasing.asElement())
+            .addElement('H', GTNLCasings.Laser_Cooling_Casing.asElement())
+            .addElement('I', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('J', Casings.MolecularCasing.asElement())
+            .addElement('K', Casings.LaserContainmentCasing.asElement())
             .addElement('L', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockGlass1, 1))
+            .addElement('M', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('N', Casings.FilterMachineCasing.asElement())
+            .addElement('O', Casings.ElectronPermeableNeutroniumCoatedGlass.asElement())
             .build();
     }
 
@@ -145,7 +145,7 @@ public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEne
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
@@ -168,27 +168,8 @@ public class HighEnergyLaserLathe extends WirelessEnergyMultiMachineBase<HighEne
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("HighEnergyLaserLatheRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_HighEnergyLaserLathe_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(33, 16, 17, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_HighEnergyLaserLathe_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_HighEnergyLaserLathe_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_HighEnergyLaserLathe_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_HighEnergyLaserLathe_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

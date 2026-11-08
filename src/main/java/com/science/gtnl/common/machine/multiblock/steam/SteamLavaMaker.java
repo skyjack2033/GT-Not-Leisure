@@ -14,7 +14,9 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
@@ -31,8 +33,9 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class SteamLavaMaker extends SteamMultiMachineBase<SteamLavaMaker> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -51,13 +54,18 @@ public class SteamLavaMaker extends SteamMultiMachineBase<SteamLavaMaker> implem
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.steam_lava_maker.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new SteamLavaMaker(this.mName);
     }
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamLavaMakerRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_lava_maker.recipe_type");
     }
 
     @Override
@@ -93,13 +101,14 @@ public class SteamLavaMaker extends SteamMultiMachineBase<SteamLavaMaker> implem
                 'A',
                 StructureUtility.ofChain(
                     buildSteamWirelessInput(SteamLavaMaker.class)
-                        .casingIndex(GTUtility.getTextureId((byte) 116, (byte) 27))
+                        .casingIndex(GTNLCasings.StronzeWrappedCasing.getTextureId())
                         .hint(1)
                         .build(),
-                    buildSteamBigInput(SteamLavaMaker.class).casingIndex(GTUtility.getTextureId((byte) 116, (byte) 27))
+                    buildSteamBigInput(SteamLavaMaker.class)
+                        .casingIndex(GTNLCasings.StronzeWrappedCasing.getTextureId())
                         .hint(1)
                         .build(),
-                    buildSteamInput(SteamLavaMaker.class).casingIndex(GTUtility.getTextureId((byte) 116, (byte) 27))
+                    buildSteamInput(SteamLavaMaker.class).casingIndex(GTNLCasings.StronzeWrappedCasing.getTextureId())
                         .hint(1)
                         .build(),
                     GTStructureUtility.buildHatchAdder(SteamLavaMaker.class)
@@ -108,10 +117,10 @@ public class SteamLavaMaker extends SteamMultiMachineBase<SteamLavaMaker> implem
                             HatchElement.InputBus,
                             HatchElement.OutputHatch,
                             HatchElement.Maintenance)
-                        .casingIndex(GTUtility.getTextureId((byte) 116, (byte) 27))
+                        .casingIndex(GTNLCasings.StronzeWrappedCasing.getTextureId())
                         .hint(1)
                         .buildAndChain(),
-                    StructureUtility.ofBlock(BlockLoader.metaCasing, 27)))
+                    GTNLCasings.StronzeWrappedCasing.asElement()))
             .addElement('B', GTStructureUtility.chainAllGlasses())
             .addElement(
                 'C',
@@ -145,19 +154,15 @@ public class SteamLavaMaker extends SteamMultiMachineBase<SteamLavaMaker> implem
         int aColorIndex, boolean aActive, boolean aRedstone) {
         if (side == facing) {
             if (aActive) {
-                return new ITexture[] {
-                    Textures.BlockIcons.getCasingTextureForId(GTUtility.getTextureId((byte) 116, (byte) 27)),
-                    TextureFactory.builder()
-                        .addIcon(BlockIcons.OVERLAY_FRONT_STEAM_LAVA_MAKER_ACTIVE)
-                        .extFacing()
-                        .build() };
+                return new ITexture[] { GTNLCasings.StronzeWrappedCasing.getCasingTexture(), TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_STEAM_LAVA_MAKER_ACTIVE)
+                    .extFacing()
+                    .build() };
             } else {
-                return new ITexture[] {
-                    Textures.BlockIcons.getCasingTextureForId(GTUtility.getTextureId((byte) 116, (byte) 27)),
-                    TextureFactory.builder()
-                        .addIcon(BlockIcons.OVERLAY_FRONT_STEAM_LAVA_MAKER)
-                        .extFacing()
-                        .build() };
+                return new ITexture[] { GTNLCasings.StronzeWrappedCasing.getCasingTexture(), TextureFactory.builder()
+                    .addIcon(BlockIcons.OVERLAY_FRONT_STEAM_LAVA_MAKER)
+                    .extFacing()
+                    .build() };
             }
         }
         return new ITexture[] {
@@ -167,15 +172,8 @@ public class SteamLavaMaker extends SteamMultiMachineBase<SteamLavaMaker> implem
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(getMachineType())
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamLavaMaker_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamLavaMaker_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamLavaMaker_02"))
-            .beginStructureBlock(3, 5, 3, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_SteamLavaMaker_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_SteamLavaMaker_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

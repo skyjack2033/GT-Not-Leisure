@@ -2,12 +2,10 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings8;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -17,8 +15,10 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -32,6 +32,8 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class ChemicalPlant extends GTMMultiMachineBase<ChemicalPlant> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -47,6 +49,11 @@ public class ChemicalPlant extends GTMMultiMachineBase<ChemicalPlant> implements
 
     public ChemicalPlant(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.chemical_plant.name";
     }
 
     @Override
@@ -78,8 +85,8 @@ public class ChemicalPlant extends GTMMultiMachineBase<ChemicalPlant> implements
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(sBlockCasings8, 0))))
-            .addElement('C', StructureUtility.ofBlock(sBlockCasings8, 1))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.ChemicallyInertMachineCasing.asElement())))
+            .addElement('C', Casings.PTFEPipeCasing.asElement())
             .build();
     }
 
@@ -156,7 +163,7 @@ public class ChemicalPlant extends GTMMultiMachineBase<ChemicalPlant> implements
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings8, 0);
+        return Casings.ChemicallyInertMachineCasing.getTextureId();
     }
 
     @Override
@@ -189,24 +196,8 @@ public class ChemicalPlant extends GTMMultiMachineBase<ChemicalPlant> implements
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ChemicalPlantRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ChemicalPlant_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ChemicalPlant_01"))
-            .addPerfectOCInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_ChemicalPlant_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_ChemicalPlant_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ChemicalPlant_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ChemicalPlant_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ChemicalPlant_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ChemicalPlant_Casing"))
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

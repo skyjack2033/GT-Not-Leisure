@@ -69,21 +69,21 @@
       "requiredItems:9": {
         "0:10": {
           "Count:3": 45,
-          "Damage:2": 0,
+          "Damage:2": 10,
           "OreDict:8": "",
-          "id:8": "IC2:blockAlloyGlass"
+          "id:8": "gregtech:gt.blockglass1"
         },
         "1:10": {
           "Count:3": 32,
           "Damage:2": 26,
           "OreDict:8": "",
-          "id:8": "sciencenotleisure:tile.MetaCasing"
+          "id:8": "sciencenotleisure:meta_casing"
         },
         "2:10": {
           "Count:3": 77,
           "Damage:2": 29,
           "OreDict:8": "",
-          "id:8": "sciencenotleisure:tile.MetaCasing"
+          "id:8": "sciencenotleisure:meta_casing"
         }
       },
       "taskID:8": "bq_standard:optional_retrieval"

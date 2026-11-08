@@ -11,9 +11,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
+import com.gtnllib.utils.MetaTooltipUtils;
 import com.science.gtnl.loader.ItemLoader;
+import com.science.gtnl.utils.ColorUtils;
 import com.science.gtnl.utils.item.MetaItemStackUtils;
-import com.science.gtnl.utils.item.MetaTooltipUtils;
 
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
@@ -30,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  */
 @Optional.Interface(iface = "fox.spiteful.avaritia.render.IHaloRenderItem", modid = "Avaritia")
-public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
+public class MetaItemAdder extends ItemAdderBasic implements IHaloRenderItem {
 
     public static final Int2ObjectMap<String[]> META_ITEM_TOOLTIPS_MAP = new Int2ObjectOpenHashMap<>();
     public static final IntSet META_SET = new IntOpenHashSet();
@@ -71,24 +72,24 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
 
     @Override
     public String getUnlocalizedName(ItemStack aItemStack) {
-        return "item." + this.unlocalizedName + "." + aItemStack.getItemDamage();
+        return "gtnl.item." + this.unlocalizedName + "." + aItemStack.getItemDamage();
     }
 
     @Override
     public String getUnlocalizedName() {
-        return "item." + this.unlocalizedName;
+        return "gtnl.item." + this.unlocalizedName;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister iconRegister) {
         super.registerIcons(iconRegister);
-        this.itemIcon = iconRegister.registerIcon(RESOURCE_ROOT_ID + ":" + "MetaItem/0");
+        this.itemIcon = iconRegister.registerIcon(RESOURCE_ROOT_ID + ":meta_item/0");
         MetaTooltipUtils.registerIcons(
             META_SET,
             ItemStaticDataClientOnly.META_ITEM_01_ICONS,
             iconRegister,
-            RESOURCE_ROOT_ID + ":" + "MetaItem/");
+            RESOURCE_ROOT_ID + ":meta_item/");
         halo = new IIcon[1];
         halo[0] = iconRegister.registerIcon(RESOURCE_ROOT_ID + ":" + "halonoise");
     }
@@ -146,6 +147,6 @@ public class MetaItemAdder extends ItemAdder_Basic implements IHaloRenderItem {
     @Override
     @Optional.Method(modid = "Avaritia")
     public int getHaloColour(ItemStack stack) {
-        return 0xE6FFFFFF;
+        return ColorUtils.itemGhostWhite.getColor();
     }
 }

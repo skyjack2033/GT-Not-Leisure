@@ -17,10 +17,29 @@ public abstract class MixinWerkstoffLoader {
         at = @At(
             value = "INVOKE",
             target = "Ljava/util/HashMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-            ordinal = 41,
+            ordinal = 40,
+            remap = false))
+    private static void injectNaniteItems(CallbackInfo ci) {
+        if (!WerkstoffLoader.items.containsKey(OrePrefixes.nanite)) {
+            WerkstoffLoader.items.put(OrePrefixes.nanite, new BWMetaGeneratedItems(OrePrefixes.nanite));
+        }
+    }
+
+    @Inject(
+        method = "addItemsForGeneration()V",
+        at = @At(
+            value = "INVOKE",
+            target = "Ljava/util/HashMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+            ordinal = 43,
             remap = false))
     private static void injectSuperdenseAndNaniteItems(CallbackInfo ci) {
-        WerkstoffLoader.items.put(OrePrefixes.plateSuperdense, new BWMetaGeneratedItems(OrePrefixes.plateSuperdense));
-        WerkstoffLoader.items.put(OrePrefixes.nanite, new BWMetaGeneratedItems(OrePrefixes.nanite));
+        if (!WerkstoffLoader.items.containsKey(OrePrefixes.nanite)) {
+            WerkstoffLoader.items.put(OrePrefixes.nanite, new BWMetaGeneratedItems(OrePrefixes.nanite));
+        }
+
+        if (!WerkstoffLoader.items.containsKey(OrePrefixes.plateSuperdense)) {
+            WerkstoffLoader.items
+                .put(OrePrefixes.plateSuperdense, new BWMetaGeneratedItems(OrePrefixes.plateSuperdense));
+        }
     }
 }

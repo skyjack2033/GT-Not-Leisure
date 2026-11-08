@@ -7,7 +7,6 @@ import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -16,8 +15,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -29,9 +30,10 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeSiftingFunnel extends GTMMultiMachineBase<LargeSiftingFunnel> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -50,10 +52,15 @@ public class LargeSiftingFunnel extends GTMMultiMachineBase<LargeSiftingFunnel> 
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_sifting_funnel.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeSiftingFunnel> getStructureDefinition() {
         return StructureDefinition.<LargeSiftingFunnel>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 6))
+            .addElement('A', Casings.LargeSieveGrate.asElement())
             .addElement(
                 'B',
                 buildHatchAdder(LargeSiftingFunnel.class).casingIndex(getCasingTextureID())
@@ -67,9 +74,7 @@ public class LargeSiftingFunnel extends GTMMultiMachineBase<LargeSiftingFunnel> 
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 0))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.CentrifugeCasing.asElement())))
             .build();
     }
 
@@ -146,20 +151,8 @@ public class LargeSiftingFunnel extends GTMMultiMachineBase<LargeSiftingFunnel> 
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeSiftingFunnelRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 5, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeSiftingFunnel_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

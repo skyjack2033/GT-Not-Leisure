@@ -1,8 +1,7 @@
 package com.science.gtnl.common.machine.multiblock.module.steamElevator;
 
-import static gtPlusPlus.api.recipe.GTPPRecipeMaps.simpleWasherRecipes;
+import static gregtech.api.recipe.RecipeMaps.simpleWasherRecipes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -23,11 +22,10 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.jetbrains.annotations.NotNull;
 
 import com.cleanroommc.modularui.drawable.UITexture;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 
-import gnu.trove.map.hash.TIntIntHashMap;
 import gregtech.api.enums.Materials;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.modularui2.GTGuiTextures;
@@ -39,6 +37,7 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -47,6 +46,7 @@ import lombok.Setter;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SteamOreProcessorModule extends SteamElevatorModuleBase {
 
     private static final UITexture[] MODE_ICONS = { GTGuiTextures.OVERLAY_BUTTON_MACHINEMODE_IOF_MACERATOR,
@@ -102,7 +102,7 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamOreProcessorModuleRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_ore_processor_module.recipe_type");
     }
 
     @Override
@@ -280,19 +280,14 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
     }
 
     @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SteamOreProcessorModuleRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamOreProcessorModule_08"))
-            .beginStructureBlock(1, 5, 2, false)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -300,19 +295,6 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
     @Override
     protected @NotNull MTEMultiBlockBaseGui<?> getGui() {
         return super.getGui().withMachineModeIcons(MODE_ICONS);
-    }
-
-    @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Steam Ore Processor Module GUI is fully ported to mui2.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_BENDING);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_WASHPLANT);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_CHEMBATH);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_SIMPLEWASHER);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_BENDING);
     }
 
     @Override
@@ -327,9 +309,8 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
     }
 
     @Override
-    public String getMachineModeName() {
-        List<String> des = getDisplayMode(getProcessingMode());
-        return String.join("\n", des);
+    public String getMachineModeKey() {
+        return "gtnl.machine.steam_ore_processor_module.mode." + machineMode;
     }
 
     @Override
@@ -340,8 +321,9 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
             GTUtility.sendChatTrans(aPlayer, "GT5U.machines.oreprocessor.void", mVoidStone);
             return;
         }
-        machineMode = getProcessingMode().next()
-            .ordinal();
+        setMachineMode(
+            getProcessingMode().next()
+                .ordinal());
         List<String> des = getDisplayMode(getProcessingMode());
         GTUtility.sendChatTrans(aPlayer, "GT5U.MULTI_MACHINE_CHANGE", String.join("", des));
     }
@@ -369,7 +351,8 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
         NBTTagCompound tag = accessor.getNBTData();
 
         currenttip.add(
-            StatCollector.translateToLocal("Info_SteamOreProcessorModule_00") + EnumChatFormatting.BLUE
+            StatCollector.translateToLocal("gtnl.waila.steam_ore_processor_module.actual_parallel")
+                + EnumChatFormatting.BLUE
                 + tag.getInteger("currentParallelism")
                 + EnumChatFormatting.RESET);
         currenttip.addAll(getDisplayMode(tag.getInteger("mMode")));
@@ -650,25 +633,25 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
     }
 
     public void doCompress(List<ItemStack> aList) {
-        TIntIntHashMap rProduct = new TIntIntHashMap();
+        Int2IntOpenHashMap rProduct = new Int2IntOpenHashMap();
         for (ItemStack stack : aList) {
             int tID = GTUtility.stackToInt(stack);
             if (mVoidStone && GTUtility.areStacksEqual(getStone(), stack)) {
                 continue;
             }
             if (tID != 0) {
-                rProduct.adjustOrPutValue(tID, stack.stackSize, stack.stackSize);
+                rProduct.addTo(tID, stack.stackSize);
             }
         }
         midProduct = new ItemStack[rProduct.size()];
 
         int cnt = 0;
-        var i = rProduct.iterator();
-
-        while (i.hasNext()) {
-            i.advance();
-            ItemStack stack = GTUtility.intToStack(i.key());
-            midProduct[cnt] = GTUtility.copyAmountUnsafe(i.value(), stack);
+        var entries = rProduct.int2IntEntrySet()
+            .fastIterator();
+        while (entries.hasNext()) {
+            var entry = entries.next();
+            ItemStack stack = GTUtility.intToStack(entry.getIntKey());
+            midProduct[cnt] = GTUtility.copyAmountUnsafe(entry.getIntValue(), stack);
             cnt++;
         }
     }
@@ -763,7 +746,7 @@ public class SteamOreProcessorModule extends SteamElevatorModuleBase {
         String simpleWasher = StatCollector.translateToLocalFormatted("GT5U.machines.oreprocessor.Simple_Washer");
         String arrow = " " + gray + "-> ";
 
-        List<String> des = new ArrayList<>();
+        List<String> des = new ObjectArrayList<>();
         des.add(StatCollector.translateToLocalFormatted("GT5U.multiblock.runningMode") + " ");
 
         switch (mode) {

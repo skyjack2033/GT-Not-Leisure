@@ -3,10 +3,8 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static gregtech.api.util.GTRecipeConstants.GLASS;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,8 +28,11 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.GameUtils;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
 import com.science.gtnl.common.machine.multiblock.LargeIncubator;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
+import com.science.gtnl.utils.ColorUtils;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLParallelHelper;
@@ -47,8 +48,8 @@ import bartworks.util.BWUtil;
 import bartworks.util.BioCulture;
 import bartworks.util.Coords;
 import bartworks.util.ResultWrongSievert;
-import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Mods;
@@ -72,10 +73,13 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.recipe.Sievert;
-import gregtech.common.misc.GTStructureChannels;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalConstructable {
 
     public static Object2IntMap<Coords> staticColorMap = new Object2IntOpenHashMap<>();
@@ -87,10 +91,11 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
     private static final int HORIZONTAL_OFF_SET = 2;
     private static final int VERTICAL_OFF_SET = 4;
     private static final int DEPTH_OFF_SET = 0;
+    private static final int DEFAULT_CULTURE_COLOR = ColorUtils.rgb(ColorUtils.guiTextColorGray);
 
     public Sievert defaultSievertData = new Sievert(0, false);
-    public HashSet<EntityPlayerMP> playerMPHashSet = new HashSet<>();
-    public ArrayList<MTERadioHatch> mRadHatches = new ArrayList<>();
+    public ObjectOpenHashSet<EntityPlayerMP> playerMPHashSet = new ObjectOpenHashSet<>();
+    public ObjectArrayList<MTERadioHatch> mRadHatches = new ObjectArrayList<>();
     public int height = 1;
     public Fluid mFluid = FluidRegistry.LAVA;
     public BioCulture mCulture;
@@ -106,6 +111,11 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
 
     public Incubator(String aName) {
         super(aName);
+    }
+
+    @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.incubator.name";
     }
 
     @Override
@@ -151,7 +161,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
         return StructureDefinition.<Incubator>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 11))
+            .addElement('B', Casings.FilterMachineCasing.asElement())
             .addElement(
                 'C',
                 StructureUtility.ofChain(
@@ -172,10 +182,8 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
                         StructureUtility.ofBlock(GregTechAPI.sBlockReinforced, 2))))
             .addElement(
                 'D',
-                StructureUtility.ofBlockAnyMeta(
-                    Mods.EtFuturumRequiem.isModLoaded() ? GameRegistry.findBlock(Mods.EtFuturumRequiem.ID, "sponge")
-                        : Blocks.sponge,
-                    1))
+                StructureUtility
+                    .ofBlockAnyMeta(GameUtils.blockOr(Mods.EtFuturumRequiem.ID, "sponge", Blocks.sponge), 1))
             .addElement(
                 'E',
                 StructureUtility
@@ -389,26 +397,8 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("IncubatorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_Incubator_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_Incubator_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_Incubator_02"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 5, 5, false)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("Tooltip_Incubator_RadioHatch"),
-                StatCollector.translateToLocal("Tooltip_Incubator_Casing"),
-                1)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_Incubator_Casing"), 1)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -506,7 +496,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
                         .getZCoord(),
                 this.getBaseMetaTileEntity()
                     .getWorld().provider.dimensionId),
-            lCulture == null ? BioCulture.NULLCULTURE.getColorRGB() : lCulture.getColorRGB());
+            lCulture == null ? DEFAULT_CULTURE_COLOR : lCulture.getColorRGB());
 
         if (SideReference.Side.Server) {
             GTValues.NW.sendPacketToAllPlayersInRange(
@@ -525,7 +515,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
                                 .getZCoord(),
                         this.getBaseMetaTileEntity()
                             .getWorld().provider.dimensionId),
-                    lCulture == null ? BioCulture.NULLCULTURE.getColorRGB() : lCulture.getColorRGB(),
+                    lCulture == null ? DEFAULT_CULTURE_COLOR : lCulture.getColorRGB(),
                     true),
                 this.getBaseMetaTileEntity()
                     .getXCoord(),
@@ -548,7 +538,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
                                 .getZCoord(),
                         this.getBaseMetaTileEntity()
                             .getWorld().provider.dimensionId),
-                    lCulture == null ? BioCulture.NULLCULTURE.getColorRGB() : lCulture.getColorRGB(),
+                    lCulture == null ? DEFAULT_CULTURE_COLOR : lCulture.getColorRGB(),
                     false),
                 this.getBaseMetaTileEntity()
                     .getXCoord(),
@@ -698,8 +688,7 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
                                             .getZCoord(),
                                     this.getBaseMetaTileEntity()
                                         .getWorld().provider.dimensionId),
-                                this.mCulture == null ? BioCulture.NULLCULTURE.getColorRGB()
-                                    : this.mCulture.getColorRGB(),
+                                this.mCulture == null ? DEFAULT_CULTURE_COLOR : this.mCulture.getColorRGB(),
                                 true),
                             this.getBaseMetaTileEntity()
                                 .getXCoord(),
@@ -801,7 +790,8 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
 
     public enum RadioHatchElement implements IHatchElement<Incubator> {
 
-        RadioHatch(Incubator::addRadiationInputToMachineList, MTERadioHatch.class) {
+        RadioHatch("gt.blockmachines.bw.radiohatchhv.name", Incubator::addRadiationInputToMachineList,
+            MTERadioHatch.class) {
 
             @Override
             public long count(Incubator bioVat) {
@@ -811,11 +801,24 @@ public class Incubator extends MultiMachineBase<Incubator> implements ISurvivalC
 
         public final List<Class<? extends IMetaTileEntity>> mteClasses;
         public final IGTHatchAdder<Incubator> adder;
+        private final String nameKey;
 
         @SafeVarargs
-        RadioHatchElement(IGTHatchAdder<Incubator> adder, Class<? extends IMetaTileEntity>... mteClasses) {
+        RadioHatchElement(String nameKey, IGTHatchAdder<Incubator> adder,
+            Class<? extends IMetaTileEntity>... mteClasses) {
+            this.nameKey = nameKey;
             this.mteClasses = Collections.unmodifiableList(Arrays.asList(mteClasses));
             this.adder = adder;
+        }
+
+        @Override
+        public String getDescriptionLangKey() {
+            return nameKey;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return StatCollector.translateToLocal(nameKey);
         }
 
         @Override

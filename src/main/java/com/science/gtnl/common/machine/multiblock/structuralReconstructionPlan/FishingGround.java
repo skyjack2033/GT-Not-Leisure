@@ -2,14 +2,11 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
 import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
@@ -19,9 +16,11 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.TAE;
@@ -36,6 +35,8 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class FishingGround extends GTMMultiMachineBase<FishingGround> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -54,6 +55,11 @@ public class FishingGround extends GTMMultiMachineBase<FishingGround> implements
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.fishing_ground.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new FishingGround(this.mName);
     }
@@ -62,7 +68,7 @@ public class FishingGround extends GTMMultiMachineBase<FishingGround> implements
     public IStructureDefinition<FishingGround> getStructureDefinition() {
         return StructureDefinition.<FishingGround>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings2, 13))
+            .addElement('A', Casings.SteelPipeCasing.asElement())
             .addElement('B', GTStructureUtility.ofFrame(Materials.StainlessSteel))
             .addElement(
                 'C',
@@ -74,12 +80,11 @@ public class FishingGround extends GTMMultiMachineBase<FishingGround> implements
                         HatchElement.InputBus,
                         HatchElement.InputHatch,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 2))))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.HastelloyXStructuralBlock.asElement())))
             .addElement(
                 'D',
                 StructureUtility.ofChain(
@@ -178,18 +183,8 @@ public class FishingGround extends GTMMultiMachineBase<FishingGround> implements
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("FishingGroundRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_FishingGround_00"))
-            .addPerfectOCInfo()
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(13, 4, 13, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_FishingGround_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_FishingGround_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_FishingGround_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_FishingGround_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

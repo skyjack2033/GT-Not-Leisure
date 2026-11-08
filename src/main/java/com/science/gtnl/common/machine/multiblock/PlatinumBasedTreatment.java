@@ -5,7 +5,6 @@ import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -14,12 +13,13 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
@@ -37,8 +37,9 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.GTStructureChannels;
-import gtPlusPlus.core.block.ModBlocks;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatment> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -58,32 +59,19 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.platinum_based_treatment.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity iGregTechTileEntity) {
         return new PlatinumBasedTreatment(this.mName);
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("PlatinumBasedTreatmentRecipes"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_05"))
-            .addPerfectOCInfo()
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 17, 18, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_00"))
-            .addMufflerHatch(StatCollector.translateToLocal("Tooltip_PlatinumBasedTreatment_Casing_01"))
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
-            .addSubChannelUsage(GTStructureChannels.HEATING_COIL)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -93,24 +81,24 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
         return StructureDefinition.<PlatinumBasedTreatment>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses(-1, (te, t) -> te.mGlassTier = t, te -> te.mGlassTier))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 11))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sSolenoidCoilCasings, 3))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 13))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 14))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 0))
-            .addElement('G', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 1))
+            .addElement('B', Casings.HeatProofMachineCasing.asElement())
+            .addElement('C', Casings.IVSolenoidSuperconductorCoil.asElement())
+            .addElement('D', Casings.SolidifierCasing.asElement())
+            .addElement('E', Casings.SolidifierRadiator.asElement())
+            .addElement('F', Casings.RobustTungstenSteelMachineCasing.asElement())
+            .addElement('G', Casings.CleanStainlessSteelMachineCasing.asElement())
             .addElement(
                 'H',
                 GTStructureChannels.HEATING_COIL.use(
                     GTStructureUtility.activeCoils(
                         GTStructureUtility
                             .ofCoil(PlatinumBasedTreatment::setMCoilLevel, PlatinumBasedTreatment::getMCoilLevel))))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
+            .addElement('I', Casings.ChemicallyInertMachineCasing.asElement())
+            .addElement('J', Casings.PTFEPipeCasing.asElement())
             .addElement('K', GTStructureUtility.ofFrame(Materials.BlackSteel))
-            .addElement('L', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 5))
-            .addElement('M', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 6))
-            .addElement('N', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 11))
+            .addElement('L', Casings.IndustrialSieveCasing.asElement())
+            .addElement('M', Casings.LargeSieveGrate.asElement())
+            .addElement('N', Casings.ThermalContainmentCasing.asElement())
             .addElement(
                 'O',
                 GTStructureUtility.buildHatchAdder(PlatinumBasedTreatment.class)
@@ -124,14 +112,10 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
                         HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy))
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 2))))
-            .addElement('P', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 0))
-            .addElement('Q', StructureUtility.ofBlock(ModBlocks.blockCasingsMisc, 5))
-            .addElement(
-                'R',
-                HatchElement.Muffler.newAny(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11), 6))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.MultiUseCasing.asElement())))
+            .addElement('P', Casings.CentrifugeCasing.asElement())
+            .addElement('Q', Casings.ElectrolyzerCasing.asElement())
+            .addElement('R', HatchElement.Muffler.newAny(Casings.HeatProofMachineCasing.getTextureId(), 6))
             .build();
     }
 
@@ -226,7 +210,7 @@ public class PlatinumBasedTreatment extends MultiMachineBase<PlatinumBasedTreatm
     public void updateHatchTexture() {
         super.updateHatchTexture();
         for (MTEHatch h : mMufflerHatches) {
-            h.updateTexture(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 11));
+            h.updateTexture(Casings.HeatProofMachineCasing.getTextureId());
         }
     }
 

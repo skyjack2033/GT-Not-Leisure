@@ -6,7 +6,6 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,14 +15,15 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 import com.science.gtnl.utils.recipes.GTNLProcessingLogic;
 
 import bartworks.API.recipe.BartWorksRecipeMaps;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -38,6 +38,8 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImplosionCompressor>
     implements ISurvivalConstructable {
 
@@ -58,6 +60,11 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.electric_implosion_compressor.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new ElectricImplosionCompressor(this.mName);
     }
@@ -66,8 +73,8 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
     public IStructureDefinition<ElectricImplosionCompressor> getStructureDefinition() {
         return StructureDefinition.<ElectricImplosionCompressor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaBlockGlass, 2))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 15))
+            .addElement('A', GTNLCasings.FusionGlass.asElement())
+            .addElement('B', Casings.TungstensteelPipeCasing.asElement())
             .addElement(
                 'C',
                 GTStructureUtility.buildHatchAdder(ElectricImplosionCompressor.class)
@@ -84,7 +91,7 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 0))))
+                            Casings.RobustTungstenSteelMachineCasing.asElement())))
             .addElement('D', GTStructureUtility.ofFrame(Materials.TungstenSteel))
             .addElement('E', HatchElement.Muffler.newAny(getCasingTextureID(), 1))
             .build();
@@ -142,7 +149,7 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 0);
+        return Casings.RobustTungstenSteelMachineCasing.getTextureId();
     }
 
     @Override
@@ -175,18 +182,8 @@ public class ElectricImplosionCompressor extends GTMMultiMachineBase<ElectricImp
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ElectricImplosionCompressorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 8, 5, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ElectricImplosionCompressor_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

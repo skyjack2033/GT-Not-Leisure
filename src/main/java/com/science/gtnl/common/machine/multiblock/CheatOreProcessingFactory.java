@@ -1,14 +1,12 @@
 package com.science.gtnl.common.machine.multiblock;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gtPlusPlus.core.block.ModBlocks.blockCasingsMisc;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,12 +17,13 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.common.material.GTNLRecipeMaps;
 import com.science.gtnl.utils.StructureUtils;
 
-import bartworks.system.material.WerkstoffLoader;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -40,9 +39,10 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.misc.GTStructureChannels;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessingFactory> {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -120,26 +120,25 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
             true);
     }
 
-    // TODO: Use GTNLMaterials
     @Override
     public IStructureDefinition<CheatOreProcessingFactory> getStructureDefinition() {
         return StructureDefinition.<CheatOreProcessingFactory>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasings, 31_766 + 300))
+            .addElement('A', GTNLCasings.ReboltedBronzeCasing.asElement())
             .addElement('B', GTStructureUtility.ofFrame(Materials.Bronze))
-            .addElement('C', StructureUtility.ofBlock(blockCasingsMisc, 2))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 2))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 12))
-            .addElement('F', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 13))
+            .addElement('C', Casings.HeatResistantCokeOvenCasing.asElement())
+            .addElement('D', Casings.BronzeGearBoxCasing.asElement())
+            .addElement('E', Casings.BronzePipeCasing.asElement())
+            .addElement('F', Casings.BronzeFireboxCasing.asElement())
             .addElement(
                 'G',
                 StructureUtility.ofChain(
                     GTStructureUtility.buildHatchAdder(CheatOreProcessingFactory.class)
                         .atLeast(HatchElement.Maintenance, HatchElement.InputBus, HatchElement.OutputBus)
-                        .casingIndex(StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10))
+                        .casingIndex(Casings.BronzePlatedBricks.getTextureId())
                         .hint(1)
                         .build(),
-                    StructureUtility.ofBlock(WerkstoffLoader.BWBlockCasingsAdvanced, 31_766 + 300)))
+                    GTNLCasings.ReboltedBronzeCasing.asElement()))
             .addElement('H', GTStructureUtility.chainAllGlasses())
             .build();
     }
@@ -153,7 +152,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
     public CheckRecipeResult OP_Process_Wireless() {
         Object2ObjectOpenHashMap<ItemId, ArrayList<GTRecipe>> recipeIndex = getRecipeIndex();
         ArrayList<ItemStack> inputs = getStoredInputs();
-        ArrayList<ItemStack> outputs = new ArrayList<>(inputs.size());
+        ObjectArrayList<ItemStack> outputs = new ObjectArrayList<>(inputs.size());
         for (ItemStack items : inputs) {
             boolean hasNotFound = true;
             ArrayList<GTRecipe> matchingRecipes = recipeIndex.get(ItemId.createNoCopy(items));
@@ -199,7 +198,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
             }
         }
         if (outputs.isEmpty()) return CheckRecipeResultRegistry.NO_RECIPE;
-        mOutputItems = outputs.toArray(new ItemStack[outputs.size()]);
+        mOutputItems = outputs.toArray(new ItemStack[0]);
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
@@ -229,7 +228,7 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings1, 10);
+        return Casings.BronzePlatedBricks.getTextureId();
     }
 
     @Override
@@ -262,10 +261,8 @@ public class CheatOreProcessingFactory extends MultiMachineBase<CheatOreProcessi
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("CheatOreProcessingFactoryRecipeType"))
-            .beginStructureBlock(41, 26, 18, false)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

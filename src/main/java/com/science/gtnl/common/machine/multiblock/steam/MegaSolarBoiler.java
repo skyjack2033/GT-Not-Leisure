@@ -7,7 +7,6 @@ import static gregtech.api.GregTechAPI.sBlockCasings1;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -19,19 +18,15 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.api.math.Alignment;
-import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
-import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
-import com.gtnewhorizons.modularui.common.widget.SlotWidget;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
-import com.science.gtnl.common.gui.modularui.MegaSolarBoilerGui;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.gui.modularui.multiblock.MegaSolarBoilerGui;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
@@ -46,8 +41,9 @@ import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
-import gregtech.common.misc.GTStructureChannels;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -68,13 +64,18 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.mega_solar_boiler.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity arg0) {
         return new MegaSolarBoiler(this.mName);
     }
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("MegaSolarBoilerRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.mega_solar_boiler.recipe_type");
     }
 
     @Override
@@ -82,11 +83,11 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
         return StructureDefinition.<MegaSolarBoiler>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
             .addElement('A', GTStructureUtility.chainAllGlasses())
-            .addElement('B', StructureUtility.ofBlock(sBlockCasings1, 10))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 0))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 12))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 13))
-            .addElement('F', StructureUtility.ofBlock(BlockLoader.metaBlockColumn, 3))
+            .addElement('B', Casings.BronzePlatedBricks.asElement())
+            .addElement('C', Casings.SolidSteelMachineCasing.asElement())
+            .addElement('D', Casings.BronzePipeCasing.asElement())
+            .addElement('E', Casings.SteelPipeCasing.asElement())
+            .addElement('F', GTNLCasings.SolarBoilingCell.asElement())
             .addElement(
                 'G',
                 StructureUtility.ofChain(
@@ -99,7 +100,7 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
                         .casingIndex(10)
                         .hint(1)
                         .buildAndChain(),
-                    StructureUtility.ofBlock(sBlockCasings1, 10)))
+                    Casings.BronzePlatedBricks.asElement()))
             .build();
     }
 
@@ -124,13 +125,12 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
 
     @Override
     public void checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack, List<StructureError> errors) {
-        if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
-        checkHatchMin(errors, HatchElement.OutputHatch, 1);
+        checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors);
     }
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(sBlockCasings1, 10);
+        return Casings.BronzePlatedBricks.getTextureId();
     }
 
     @Override
@@ -172,6 +172,11 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
     }
 
     @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
     public int getTierRecipes() {
         return 14;
     }
@@ -188,13 +193,8 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(getMachineType())
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaSolarBoiler_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaSolarBoiler_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_MegaSolarBoiler_02"))
-            .beginStructureBlock(21, 5, 7, true)
-            .addSubChannelUsage(GTStructureChannels.BOROGLASS)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -210,18 +210,6 @@ public class MegaSolarBoiler extends SteamMultiMachineBase<MegaSolarBoiler> impl
 
     public void setStateFromGui(String state) {
         this.state = state;
-    }
-
-    @Override
-    @Deprecated
-    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        // TODO: Remove this mui1 fallback after the Mega Solar Boiler terminal text is fully ported to mui2.
-        super.drawTexts(screenElements, inventorySlot);
-
-        screenElements.widget(
-            new TextWidget().setStringSupplier(() -> EnumChatFormatting.GREEN + state)
-                .setTextAlignment((Alignment.CenterLeft)))
-            .widget(new FakeSyncWidget.StringSyncer(() -> state, val -> state = val));
     }
 
     @SideOnly(Side.CLIENT)

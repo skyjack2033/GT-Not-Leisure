@@ -1,8 +1,5 @@
 package com.science.gtnl.common.item.items;
 
-import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.block.Block;
@@ -16,24 +13,23 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.util.GTModHandler;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class SuspiciousStew extends ItemFood {
 
-    public static Map<String, PotionEffect> FLOWER_EFFECTS = new HashMap<>();
+    public static Map<String, PotionEffect> FLOWER_EFFECTS = new Object2ObjectOpenHashMap<>();
 
     public SuspiciousStew() {
         super(3, 0.6F, false);
-        this.setUnlocalizedName("SuspiciousStew");
-        this.setTextureName(RESOURCE_ROOT_ID + ":" + "SuspiciousStew");
         this.setMaxStackSize(1);
-        this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureItem);
-        GameRegistry.registerItem(this, getUnlocalizedName());
-        GTNLItemList.SuspiciousStew.set(new ItemStack(this, 1));
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "item.gtnl.suspicious_stew";
     }
 
     @Override

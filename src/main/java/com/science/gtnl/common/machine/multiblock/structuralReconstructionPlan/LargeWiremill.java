@@ -2,14 +2,11 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings3Misc;
 
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -18,8 +15,10 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
@@ -33,6 +32,8 @@ import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeWiremill extends GTMMultiMachineBase<LargeWiremill> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -51,10 +52,15 @@ public class LargeWiremill extends GTMMultiMachineBase<LargeWiremill> implements
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_wiremill.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeWiremill> getStructureDefinition() {
         return StructureDefinition.<LargeWiremill>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings2, 4))
+            .addElement('A', Casings.TitaniumGearBoxCasing.asElement())
             .addElement(
                 'B',
                 buildHatchAdder(LargeWiremill.class).casingIndex(getCasingTextureID())
@@ -63,12 +69,11 @@ public class LargeWiremill extends GTMMultiMachineBase<LargeWiremill> implements
                         HatchElement.Maintenance,
                         HatchElement.InputBus,
                         HatchElement.OutputBus,
-                        HatchElement.Maintenance,
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
                         StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings3Misc, 1))))
+                            .onElementPass(x -> ++x.mCountCasing, Casings.InconelReinforcedCasing.asElement())))
             .build();
     }
 
@@ -145,18 +150,8 @@ public class LargeWiremill extends GTMMultiMachineBase<LargeWiremill> implements
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeWiremillRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeWiremill_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeWiremill_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 3, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeWiremill_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeWiremill_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeWiremill_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeWiremill_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }

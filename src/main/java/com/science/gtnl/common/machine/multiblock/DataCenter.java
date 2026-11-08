@@ -1,12 +1,8 @@
 package com.science.gtnl.common.machine.multiblock;
 
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlockAnyMeta;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gregtech.api.GregTechAPI.sBlockCasings10;
-import static gregtech.api.GregTechAPI.sBlockCasings8;
-import static gregtech.api.GregTechAPI.sBlockGlass1;
 import static gregtech.api.enums.HatchElement.Dynamo;
 import static gregtech.api.enums.HatchElement.Energy;
 import static gregtech.api.enums.HatchElement.ExoticEnergy;
@@ -15,10 +11,8 @@ import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static tectech.thing.metaTileEntity.multi.base.TTMultiblockBase.HatchElement.EnergyMulti;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,9 +27,11 @@ import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructa
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.machine.multiMachineBase.TTMultiMachineBase;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
@@ -51,9 +47,9 @@ import gregtech.api.structure.error.StructureErrors;
 import gregtech.api.util.GTRecipe.RecipeAssemblyLine;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.IGTHatchAdder;
-import gregtech.api.util.MultiblockTooltipBuilder;
-import gregtech.common.WirelessComputationPacket;
 import gtnhlanth.common.register.LanthItemList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import tectech.mechanics.dataTransport.ALRecipeDataPacket;
 import tectech.thing.casing.BlockGTCasingsTT;
 import tectech.thing.casing.TTCasingsContainer;
@@ -63,7 +59,8 @@ import tectech.thing.metaTileEntity.hatch.MTEHatchWirelessDataItemsOutput;
 import tectech.thing.metaTileEntity.multi.base.TTMultiblockBase;
 import tectech.thing.metaTileEntity.multi.base.render.TTRenderedExtendedFacingTexture;
 
-public class DataCenter extends TTMultiblockBase implements ISurvivalConstructable {
+@IMetaTileEntity.SkipGenerateDescription
+public class DataCenter extends TTMultiMachineBase implements ISurvivalConstructable {
 
     private static final int HORIZONTAL_OFF_SET = 1;
     private static final int VERTICAL_OFF_SET = 7;
@@ -73,9 +70,9 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
     private static final String[][] shape = StructureUtils.readStructureFromFile(DC_STRUCTURE_FILE_PATH);
 
     public boolean wirelessModeEnabled = false;
-    public ArrayList<MTEHatchDataItemsOutput> mStacksDataOutputs = new ArrayList<>();
-    public ArrayList<MTEHatchWirelessDataItemsOutput> mWirelessStacksDataOutputs = new ArrayList<>();
-    public ArrayList<MTEHatchDataAccess> mDataAccessHatches = new ArrayList<>();
+    public ObjectArrayList<MTEHatchDataItemsOutput> mStacksDataOutputs = new ObjectArrayList<>();
+    public ObjectArrayList<MTEHatchWirelessDataItemsOutput> mWirelessStacksDataOutputs = new ObjectArrayList<>();
+    public ObjectArrayList<MTEHatchDataAccess> mDataAccessHatches = new ObjectArrayList<>();
     public boolean slave = false;
 
     public DataCenter(int aID, String aName, String aNameRegional) {
@@ -108,7 +105,7 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
 
     @Override
     public void outputAfterRecipe_EM() {
-        HashSet<RecipeAssemblyLine> availableRecipes = new HashSet<>();
+        ObjectOpenHashSet<RecipeAssemblyLine> availableRecipes = new ObjectOpenHashSet<>();
 
         for (MTEHatchDataAccess dataAccess : GTUtility.validMTEList(mDataAccessHatches)) {
             availableRecipes.addAll(dataAccess.getAssemblyLineRecipes());
@@ -185,7 +182,7 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(TTCasingsContainer.sBlockCasingsTT, 0))
-            .addElement('B', ofBlock(TTCasingsContainer.sBlockCasingsTT, 3))
+            .addElement('B', Casings.AdvancedComputerCasing.asElement())
             .addElement(
                 'C',
                 buildHatchAdder(DataCenter.class)
@@ -200,13 +197,13 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
                     .casingIndex(getCasingTextureID() + 1)
                     .hint(2)
                     .buildAndChain(TTCasingsContainer.sBlockCasingsTT, 1))
-            .addElement('D', ofBlock(sBlockCasings8, 7))
-            .addElement('E', ofBlock(sBlockCasings10, 9))
+            .addElement('D', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('E', Casings.CoolantDuct.asElement())
             .addElement('F', ofBlockAnyMeta(LanthItemList.ELECTRODE_CASING))
-            .addElement('G', ofBlock(TTCasingsContainer.sBlockCasingsTT, 4))
-            .addElement('H', ofBlock(TTCasingsContainer.sBlockCasingsTT, 2))
-            .addElement('I', ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('J', ofBlock(sBlockGlass1, 1))
+            .addElement('G', Casings.MolecularCasing.asElement())
+            .addElement('H', Casings.ComputerHeatVent.asElement())
+            .addElement('I', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('J', Casings.ElectronPermeableNeutroniumCoatedGlass.asElement())
             .addElement('K', ofFrame(Materials.Naquadria))
             .build();
     }
@@ -266,41 +263,11 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
     }
 
     @Override
-    public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("DataCenterRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_DataCenter_03"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(15, 9, 15, true)
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_DataCenter_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_DataCenter_Casing"), 1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("gt.blockmachines.hatch.dataoutass.tier.07.name"),
-                StatCollector.translateToLocal("tt.keyword.Structure.AnyComputerCasing"),
-                1)
-            .addOtherStructurePart(
-                StatCollector.translateToLocal("tt.keyword.Structure.DataAccessHatch"),
-                StatCollector.translateToLocal("tt.keyword.Structure.AnyHighPowerCasing"),
-                2)
-            .toolTipFinisher();
-        return tt;
-    }
-
-    @Override
     public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         if (getBaseMetaTileEntity().isServerSide()) {
             wirelessModeEnabled = !wirelessModeEnabled;
-            if (wirelessModeEnabled) {
-                GTUtility.sendChatTrans(aPlayer, "Info_GTNL_WirelessMode_Enabled");
-                WirelessComputationPacket.enableWirelessNetWork(getBaseMetaTileEntity());
-            } else {
-                GTUtility.sendChatTrans(aPlayer, "Info_GTNL_WirelessMode_Disabled");
-                WirelessComputationPacket.disableWirelessNetWork(getBaseMetaTileEntity());
-            }
+            switchWirelessComputation(aPlayer, wirelessModeEnabled);
         }
     }
 
@@ -327,28 +294,29 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
 
     public enum DataBankHatches implements IHatchElement<DataCenter> {
 
-        DataStick(MTEHatchDataAccess.class) {
+        DataStick("gt.blockmachines.hatch.dataaccess.name", MTEHatchDataAccess.class) {
 
             @Override
             public long count(DataCenter t) {
                 return t.mDataAccessHatches.size();
             }
         },
-        OutboundConnector(MTEHatchDataItemsOutput.class) {
+        OutboundConnector("gt.blockmachines.hatch.dataoutass.tier.07.name", MTEHatchDataItemsOutput.class) {
 
             @Override
             public long count(DataCenter t) {
                 return t.mStacksDataOutputs.size();
             }
         },
-        InboundConnector(MTEHatchDataItemsInput.class) {
+        InboundConnector("gt.blockmachines.hatch.datainass.tier.07.name", MTEHatchDataItemsInput.class) {
 
             @Override
             public long count(DataCenter t) {
                 return t.mDataAccessHatches.size();
             }
         },
-        WirelessOutboundConnector(MTEHatchWirelessDataItemsOutput.class) {
+        WirelessOutboundConnector("gt.blockmachines.hatch.dataoutass.wireless.tier.12.name",
+            MTEHatchWirelessDataItemsOutput.class) {
 
             @Override
             public long count(DataCenter t) {
@@ -357,10 +325,22 @@ public class DataCenter extends TTMultiblockBase implements ISurvivalConstructab
         };
 
         private final List<? extends Class<? extends IMetaTileEntity>> mteClasses;
+        private final String nameKey;
 
         @SafeVarargs
-        DataBankHatches(Class<? extends IMetaTileEntity>... mteClasses) {
+        DataBankHatches(String nameKey, Class<? extends IMetaTileEntity>... mteClasses) {
+            this.nameKey = nameKey;
             this.mteClasses = Collections.unmodifiableList(Arrays.asList(mteClasses));
+        }
+
+        @Override
+        public String getDescriptionLangKey() {
+            return nameKey;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return StatCollector.translateToLocal(nameKey);
         }
 
         @Override

@@ -1,8 +1,6 @@
 package com.science.gtnl.common.machine.multiblock.module.nanitesIntegratedProcessingCenter;
 
-import static bartworks.common.loaders.ItemRegistry.bw_realglas;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings4Misc;
 
 import java.util.List;
 
@@ -13,10 +11,11 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.utils.StructureUtils;
 
-import gregtech.api.GregTechAPI;
+import bartworks.common.loaders.ItemRegistry;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -27,6 +26,7 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class OreExtractionModule extends NanitesBaseModule<OreExtractionModule> {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -50,7 +50,7 @@ public class OreExtractionModule extends NanitesBaseModule<OreExtractionModule> 
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings4, 0);
+        return Casings.RobustTungstenSteelMachineCasing.getTextureId();
     }
 
     @Override
@@ -75,11 +75,11 @@ public class OreExtractionModule extends NanitesBaseModule<OreExtractionModule> 
     public IStructureDefinition<OreExtractionModule> getStructureDefinition() {
         return StructureDefinition.<OreExtractionModule>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 0))
-            .addElement('B', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 15))
-            .addElement('C', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))
-            .addElement('E', StructureUtility.ofBlock(BlockLoader.metaCasing, 8))
+            .addElement('A', Casings.ChemicallyInertMachineCasing.asElement())
+            .addElement('B', Casings.SuperconductingCoilBlock.asElement())
+            .addElement('C', GTNLCasings.NeutroniumPipeCasing.asElement())
+            .addElement('D', Casings.AdvancedIridiumPlatedMachineCasing.asElement())
+            .addElement('E', GTNLCasings.MolybdenumDisilicideCoil.asElement())
             .addElement('F', GTStructureUtility.ofFrame(Materials.CosmicNeutronium))
             .addElement(
                 'G',
@@ -96,15 +96,15 @@ public class OreExtractionModule extends NanitesBaseModule<OreExtractionModule> 
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 0))))
-            .addElement('H', StructureUtility.ofBlock(blockCasings4Misc, 11))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings2, 5))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 8))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 1))
-            .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockCasings4, 12))
+                            Casings.RobustTungstenSteelMachineCasing.asElement())))
+            .addElement('H', Casings.TurbodyneCasing.asElement())
+            .addElement('I', Casings.AssemblyLineCasing.asElement())
+            .addElement('J', Casings.NeutroniumStabilizationCasing.asElement())
+            .addElement('K', Casings.PTFEPipeCasing.asElement())
+            .addElement('L', Casings.TungstensteelTurbineCasing.asElement())
             .addElement('M', GTStructureUtility.ofFrame(Materials.Invar))
-            .addElement('N', StructureUtility.ofBlock(BlockLoader.metaCasing, 12))
-            .addElement('O', StructureUtility.ofBlock(bw_realglas, 14))
+            .addElement('N', GTNLCasings.TungstensteelGearbox.asElement())
+            .addElement('O', StructureUtility.ofBlock(ItemRegistry.bw_realglas, 6))
             .build();
     }
 

@@ -12,16 +12,19 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
+import com.glodblock.github.util.RenderUtil;
 import com.science.gtnl.ScienceNotLeisure;
+import com.science.gtnl.common.gui.container.ContainerSuperDualInterfaceFluid;
 import com.science.gtnl.common.packet.SwitchSuperDualInterfaceGuiPacket;
 import com.science.gtnl.common.part.PartSuperDualInterface;
-import com.science.gtnl.container.ContainerSuperDualInterfaceFluid;
+import com.science.gtnl.utils.ColorUtils;
 import com.science.gtnl.utils.enums.GTNLItemList;
 import com.science.gtnl.utils.enums.GuiType;
 
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiTabButton;
+import appeng.core.localization.GuiText;
 
 public class GuiSuperDualInterfaceFluid extends AEBaseGui {
 
@@ -51,7 +54,7 @@ public class GuiSuperDualInterfaceFluid extends AEBaseGui {
             this.guiTop,
             this.cont.getTile() instanceof PartSuperDualInterface ? GTNLItemList.PartSuperDualInterface.get(1)
                 : GTNLItemList.SuperDualInterface.get(1),
-            StatCollector.translateToLocal("text.SuperDualInterface.tooltip.switch"),
+            StatCollector.translateToLocal("gtnl.gui.super_dual_interface.tooltip.switch"),
             itemRender);
         this.buttonList.add(this.switcher);
         this.prevPage = new GuiSuperInterface.GuiTextAeButton(
@@ -61,7 +64,7 @@ public class GuiSuperDualInterfaceFluid extends AEBaseGui {
             16,
             16,
             "<",
-            StatCollector.translateToLocal("text.SuperInterface.tooltip.0"));
+            StatCollector.translateToLocal("gtnl.gui.super_interface.tooltip.previous_page"));
         this.nextPage = new GuiSuperInterface.GuiTextAeButton(
             102,
             this.guiLeft - 18,
@@ -69,20 +72,25 @@ public class GuiSuperDualInterfaceFluid extends AEBaseGui {
             16,
             16,
             ">",
-            StatCollector.translateToLocal("text.SuperInterface.tooltip.1"));
+            StatCollector.translateToLocal("gtnl.gui.super_interface.tooltip.next_page"));
         this.buttonList.add(this.prevPage);
         this.buttonList.add(this.nextPage);
     }
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        fontRendererObj.drawString(getGuiDisplayName(I18n.format("container.SuperDualInterface")), 8, 6, 0x404040);
-        fontRendererObj.drawString(appeng.core.localization.GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
         fontRendererObj.drawString(
-            StatCollector.translateToLocalFormatted("text.SuperInterface.page", cont.currentPage + 1, cont.maxPage),
+            getGuiDisplayName(I18n.format("gtnl.gui.super_dual_interface.name")),
+            8,
+            6,
+            ColorUtils.guiTextColorGray.getColor());
+        fontRendererObj.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, ColorUtils.guiTextColorGray.getColor());
+        fontRendererObj.drawString(
+            StatCollector
+                .translateToLocalFormatted("gtnl.gui.super_interface.page", cont.currentPage + 1, cont.maxPage),
             110,
             6,
-            0x404040);
+            ColorUtils.guiTextColorGray.getColor());
 
         GL11.glColor4f(1F, 1F, 1F, 1F);
         IAEFluidTank fluidInv = cont.getTile()
@@ -96,9 +104,13 @@ public class GuiSuperDualInterfaceFluid extends AEBaseGui {
                 continue;
             }
             if (!(cont.getTile() instanceof PartSuperDualInterface)) {
-                fontRendererObj.drawString(String.valueOf(i + 1), TANK_X + i * TANK_X_OFF + 5, 22, 0x404040);
+                fontRendererObj.drawString(
+                    String.valueOf(i + 1),
+                    TANK_X + i * TANK_X_OFF + 5,
+                    22,
+                    ColorUtils.guiTextColorGray.getColor());
             }
-            com.glodblock.github.util.RenderUtil.renderFluidIntoGui(
+            RenderUtil.renderFluidIntoGui(
                 this,
                 TANK_X + TANK_X_OFF * i,
                 TANK_Y,

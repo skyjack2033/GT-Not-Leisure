@@ -5,11 +5,9 @@ import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,15 +17,16 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
+import com.gtnllib.utils.MathUtils;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.hatch.ParallelControllerHatch;
 import com.science.gtnl.common.machine.monitor.EnergyMonitorCustomWirelessEutProvider;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
-import com.science.gtnl.utils.Utils;
 import com.science.gtnl.utils.recipes.GTNLOverclockCalculator;
 
-import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Textures;
@@ -44,7 +43,10 @@ import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.misc.WirelessNetworkManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurnace>
     implements ISurvivalConstructable, EnergyMonitorCustomWirelessEutProvider {
 
@@ -64,6 +66,11 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.reaction_furnace.name";
+    }
+
+    @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new ReactionFurnace(this.mName);
     }
@@ -74,20 +81,19 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
     }
 
     @Override
+    protected TooltipStats readTooltipStats() {
+        return new TooltipStats(super.readTooltipStats().parallels(), Double.NaN, Double.NaN, false, true);
+    }
+
+    @Override
+    protected boolean overclocksPerfectlyInWirelessMode() {
+        return false;
+    }
+
+    @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("ReactionFurnaceRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ReactionFurnace_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_ReactionFurnace_01"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(31, 21, 29, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_ReactionFurnace_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_ReactionFurnace_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_ReactionFurnace_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_ReactionFurnace_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -96,11 +102,11 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
     public IStructureDefinition<ReactionFurnace> getStructureDefinition() {
         return StructureDefinition.<ReactionFurnace>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
-            .addElement('B', StructureUtility.ofBlock(BlockLoader.metaCasing, 14))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 7))
-            .addElement('D', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))
-            .addElement('E', StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 10))
+            .addElement('A', Casings.HeatResistantTriniumPlatedCasing.asElement())
+            .addElement('B', GTNLCasings.PressureBalancedCasing.asElement())
+            .addElement('C', Casings.StabilizedNaquadahWaterPlantCasing.asElement())
+            .addElement('D', Casings.PressureContainmentCasing.asElement())
+            .addElement('E', Casings.RadiantNaquadahAlloyCasing.asElement())
             .addElement(
                 'F',
                 buildHatchAdder(ReactionFurnace.class).casingIndex(getCasingTextureID())
@@ -114,7 +120,7 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
             .build();
     }
 
@@ -138,7 +144,7 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
     @NotNull
     public CheckRecipeResult checkProcessing() {
         costingEU = BigInteger.ZERO;
-        costingEUText = Utils.ZERO_STRING;
+        costingEUText = MathUtils.ZERO_STRING;
         List<ItemStack> tInput = getAllStoredInputs();
 
         if (tInput.isEmpty()) {
@@ -150,7 +156,7 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
         long availableEUt;
 
         if (wirelessMode) {
-            availableEUt = Utils.toLongSafe(WirelessNetworkManager.getUserEU(ownerUUID));
+            availableEUt = MathUtils.toLongSafe(WirelessNetworkManager.getUserEU(ownerUUID));
 
             if (availableEUt < 4) {
                 return CheckRecipeResultRegistry.insufficientPower(4);
@@ -221,11 +227,11 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
         } else {
             costingEU = BigInteger.valueOf(finalParallel)
                 .multiply(BigInteger.valueOf(4L));
-            WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, costingEU.multiply(Utils.NEGATIVE_ONE));
+            WirelessNetworkManager.addEUToGlobalEnergyMap(ownerUUID, costingEU.multiply(MathUtils.NEGATIVE_ONE));
             this.lEUt = 0;
         }
 
-        ArrayList<ItemStack> smeltedOutputs = new ArrayList<>();
+        ObjectArrayList<ItemStack> smeltedOutputs = new ObjectArrayList<>();
         long toSmelt = finalParallel;
 
         for (ItemStack item : tInput) {
@@ -325,7 +331,7 @@ public class ReactionFurnace extends WirelessEnergyMultiMachineBase<ReactionFurn
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override

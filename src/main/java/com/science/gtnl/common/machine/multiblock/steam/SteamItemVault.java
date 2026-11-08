@@ -28,22 +28,19 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.google.common.collect.ImmutableMap;
 import com.gtnewhorizon.gtnhlib.util.data.ItemId;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
-import com.gtnewhorizons.modularui.common.widget.DynamicPositionedColumn;
-import com.gtnewhorizons.modularui.common.widget.FakeSyncWidget;
-import com.gtnewhorizons.modularui.common.widget.SlotWidget;
-import com.gtnewhorizons.modularui.common.widget.TextWidget;
 import com.science.gtnl.api.IStackVault;
-import com.science.gtnl.common.gui.modularui.SteamItemVaultGui;
-import com.science.gtnl.common.gui.modularui.VaultTypeCountFormatter;
+import com.science.gtnl.api.casing.GTNLCasings;
+import com.science.gtnl.common.gui.modularui.multiblock.SteamItemVaultGui;
 import com.science.gtnl.common.machine.hatch.VaultPortHatch;
 import com.science.gtnl.common.machine.multiMachineBase.SteamMultiMachineBase;
-import com.science.gtnl.loader.BlockLoader;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 import com.science.gtnl.utils.enums.BlockIcons;
 
@@ -58,6 +55,7 @@ import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechDeviceInformation;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
 import gregtech.api.recipe.check.CheckRecipeResult;
@@ -72,9 +70,11 @@ import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchInputBusME;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSteamBusInput;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
     implements ISurvivalConstructable, IStackVault {
 
@@ -125,21 +125,6 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
     }
 
     @Override
-    @Deprecated
-    public void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
-        super.drawTexts(screenElements, inventorySlot);
-        screenElements
-            .widget(
-                new TextWidget()
-                    .setStringSupplier(
-                        () -> VaultTypeCountFormatter
-                            .createTypeCountText(typeCountPayloadForGui, "Info_SteamItemVault_TypeCount"))
-                    .setDefaultColor(COLOR_TEXT_WHITE.get())
-                    .setEnabled(true))
-            .widget(new FakeSyncWidget.StringSyncer(this::getTypeCountPayloadForGui, this::setTypeCountPayloadFromGui));
-    }
-
-    @Override
     public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
         if (checkStructure(true, getBaseMetaTileEntity())) {
             this.mStartUpCheck = -1;
@@ -176,7 +161,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
     public IStructureDefinition<SteamItemVault> getStructureDefinition() {
         return StructureDefinition.<SteamItemVault>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(SHAPE))
-            .addElement('A', StructureUtility.ofBlock(BlockLoader.metaCasing, 29))
+            .addElement('A', GTNLCasings.HyperPressureBreelCasing.asElement())
             .addElement('B', GTStructureUtility.ofFrame(Materials.Steel))
             .addElement(
                 'C',
@@ -207,8 +192,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
                         .casingIndex(getCasingTextureID())
                         .hint(1)
                         .build(),
-                    StructureUtility
-                        .onElementPass(x -> x.mCountCasing++, StructureUtility.ofBlock(BlockLoader.metaCasing02, 0))))
+                    StructureUtility.onElementPass(x -> x.mCountCasing++, GTNLCasings.VibrationSafeCasing.asElement())))
             .addElement('D', GTStructureUtility.chainAllGlasses())
             .build();
     }
@@ -331,7 +315,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
 
     @Override
     public int getCasingTextureID() {
-        return GTUtility.getTextureId((byte) 116, (byte) 32);
+        return GTNLCasings.VibrationSafeCasing.getTextureId();
     }
 
     @Override
@@ -361,31 +345,32 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
 
     @Override
     public String getMachineType() {
-        return StatCollector.translateToLocal("SteamItemVaultRecipeType");
+        return StatCollector.translateToLocal("gtnl.machine.steam_item_vault.recipe_type");
+    }
+
+    @Override
+    public TooltipStats getTooltipStats() {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getTooltipVars() {
+        return ImmutableMap.of("max_types", MAX_DISTINCT_ITEMS, "capacity", NF.format(MAX_CAPACITY_ITEM));
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("SteamItemVaultRecipeType"))
-            .addInfo(StatCollector.translateToLocalFormatted("Tooltip_SteamItemVault_00", MAX_DISTINCT_ITEMS))
-            .addInfo(StatCollector.translateToLocalFormatted("Tooltip_SteamItemVault_01", MAX_DISTINCT_ITEMS))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamItemVault_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamItemVault_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_SteamItemVault_04"))
-            .addInfo(StatCollector.translateToLocalFormatted("Tooltip_SteamItemVault_05", NF.format(MAX_CAPACITY_ITEM)))
-            .beginStructureBlock(7, 11, 7, false)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_SteamItemVault_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_SteamItemVault_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
 
     @Override
     public String[] getInfoData() {
-        ArrayList<String> info = new ArrayList<>();
+        ObjectArrayList<String> info = new ObjectArrayList<>();
         info.add(
-            EnumChatFormatting.YELLOW + StatCollector.translateToLocal("Info_SteamItemVault_StoredItems")
+            EnumChatFormatting.YELLOW + IGregTechDeviceInformation.encode("gtnl.waila.steam_item_vault.stored_items")
                 + EnumChatFormatting.RESET);
 
         int index = 0;
@@ -402,23 +387,24 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
         }
 
         info.add(
-            EnumChatFormatting.YELLOW + StatCollector.translateToLocal("Info_SteamItemVault_OperationalData")
+            EnumChatFormatting.YELLOW
+                + IGregTechDeviceInformation.encode("gtnl.waila.steam_item_vault.operational_data")
                 + EnumChatFormatting.RESET);
         info.add(
-            StatCollector.translateToLocalFormatted("Info_SteamItemVault_ItemUsed", NF.format(getItemStoredAmount())));
-        info.add(StatCollector.translateToLocalFormatted("Info_SteamItemVault_ItemTotal", NF.format(capacityItem)));
+            IGregTechDeviceInformation
+                .encode("gtnl.waila.steam_item_vault.item_used", NF.format(getItemStoredAmount())));
+        info.add(IGregTechDeviceInformation.encode("gtnl.waila.steam_item_vault.item_total", NF.format(capacityItem)));
         info.add(
-            StatCollector.translateToLocalFormatted("Info_SteamItemVault_PerItemCapacity", NF.format(capacityPerItem)));
+            IGregTechDeviceInformation
+                .encode("gtnl.waila.steam_item_vault.per_item_capacity", NF.format(capacityPerItem)));
         info.add(
-            StatCollector.translateToLocalFormatted(
-                "Info_SteamItemVault_ItemUsedTypes",
-                NF.format(stackTypesCount(ITEM_STACK_TYPE))));
+            IGregTechDeviceInformation
+                .encode("gtnl.waila.steam_item_vault.item_used_types", NF.format(stackTypesCount(ITEM_STACK_TYPE))));
         info.add(
-            StatCollector.translateToLocalFormatted(
-                "Info_SteamItemVault_ItemTotalTypes",
-                NF.format(maxStackTypes(ITEM_STACK_TYPE))));
-        info.add(StatCollector.translateToLocalFormatted("Info_SteamItemVault_RunningCost", getActualEnergyUsage()));
-        info.add(StatCollector.translateToLocalFormatted("Info_SteamItemVault_AutoVoiding", doVoidExcess));
+            IGregTechDeviceInformation
+                .encode("gtnl.waila.steam_item_vault.item_total_types", NF.format(maxStackTypes(ITEM_STACK_TYPE))));
+        info.add(IGregTechDeviceInformation.encode("gtnl.waila.steam_item_vault.running_cost", getActualEnergyUsage()));
+        info.add(IGregTechDeviceInformation.encode("gtnl.waila.steam_item_vault.auto_voiding", doVoidExcess));
         info.add(EnumChatFormatting.STRIKETHROUGH + "---------------------------------------------");
         return info.toArray(new String[0]);
     }
@@ -427,7 +413,7 @@ public class SteamItemVault extends SteamMultiMachineBase<SteamItemVault>
     public void onScrewdriverRightClick(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.setDoVoidExcess(!doVoidExcess);
-        GTUtility.sendChatTrans(aPlayer, "Info_SteamItemVault_AutoVoiding", doVoidExcess);
+        GTUtility.sendChatTrans(aPlayer, "gtnl.chat.steam_item_vault.auto_voiding", doVoidExcess);
     }
 
     @Override

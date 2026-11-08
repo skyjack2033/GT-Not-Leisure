@@ -2,9 +2,7 @@ package com.science.gtnl.common.machine.multiblock.structuralReconstructionPlan;
 
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
-import static gregtech.api.GregTechAPI.sBlockCasings2;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gtPlusPlus.core.block.ModBlocks.blockCasings2Misc;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +10,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,12 +21,13 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.common.gui.modularui.GTNLMultiBlockBaseGui;
 import com.science.gtnl.common.machine.multiMachineBase.GTMMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
 import com.science.gtnl.utils.StructureUtils;
 
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.TAE;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -43,6 +41,8 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 
+@IMetaTileEntity.SkipGenerateDescription
+@IMetaTileEntity.SkipGenerateName
 public class LargeExtractor extends GTMMultiMachineBase<LargeExtractor> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
@@ -63,10 +63,15 @@ public class LargeExtractor extends GTMMultiMachineBase<LargeExtractor> implemen
     }
 
     @Override
+    public String getLocalNameKey() {
+        return "gtnl.machine.large_extractor.name";
+    }
+
+    @Override
     public IStructureDefinition<LargeExtractor> getStructureDefinition() {
         return StructureDefinition.<LargeExtractor>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(sBlockCasings2, 13))
+            .addElement('A', Casings.SteelPipeCasing.asElement())
             .addElement(
                 'B',
                 buildHatchAdder(LargeExtractor.class).casingIndex(getCasingTextureID())
@@ -80,8 +85,7 @@ public class LargeExtractor extends GTMMultiMachineBase<LargeExtractor> implemen
                         HatchElement.Energy.or(HatchElement.ExoticEnergy),
                         ParallelCon)
                     .buildAndChain(
-                        StructureUtility
-                            .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(blockCasings2Misc, 4))))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.WashPlantCasing.asElement())))
             .build();
     }
 
@@ -159,20 +163,8 @@ public class LargeExtractor extends GTMMultiMachineBase<LargeExtractor> implemen
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("LargeExtractorRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeExtractor_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_LargeExtractor_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_GTMMultiMachine_03"))
-            .addMultiAmpHatchInfo()
-            .beginStructureBlock(5, 3, 3, true)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_LargeExtractor_Casing"))
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_LargeExtractor_Casing"))
-            .addInputBus(StatCollector.translateToLocal("Tooltip_LargeExtractor_Casing"))
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_LargeExtractor_Casing"))
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_LargeExtractor_Casing"))
-            .addMaintenanceHatch(StatCollector.translateToLocal("Tooltip_LargeExtractor_Casing"))
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -185,23 +177,15 @@ public class LargeExtractor extends GTMMultiMachineBase<LargeExtractor> implemen
     }
 
     @Override
-    @Deprecated
-    public void setMachineModeIcons() {
-        // TODO: Remove this mui1 fallback after the Large Extractor GUI no longer supports mui1 startup paths.
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_METAL);
-        machineModeIcons.add(GTUITextures.OVERLAY_BUTTON_MACHINEMODE_LPF_FLUID);
-    }
-
-    @Override
     public void onModeChangeByScrewdriver(ForgeDirection side, EntityPlayer aPlayer, float aX, float aY, float aZ,
         ItemStack aTool) {
         this.machineMode = (this.machineMode + 1) % 2;
-        GTUtility.sendChatTrans(aPlayer, "LargeExtractor_Mode_" + this.machineMode);
+        GTUtility.sendChatTrans(aPlayer, getMachineModeKey());
     }
 
     @Override
-    public String getMachineModeName() {
-        return StatCollector.translateToLocal("LargeExtractor_Mode_" + machineMode);
+    public String getMachineModeKey() {
+        return "gtnl.machine.large_extractor.mode." + machineMode;
     }
 
     @Override

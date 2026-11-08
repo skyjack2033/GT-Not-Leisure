@@ -11,9 +11,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import com.science.gtnl.client.GTNLCreativeTabs;
 import com.science.gtnl.common.block.blocks.item.ItemBlockEternalGregTechWorkshopRender;
 import com.science.gtnl.common.block.blocks.tile.TileEntityEternalGregTechWorkshop;
+import com.science.gtnl.common.item.GTNLCreativeTabs;
 import com.science.gtnl.utils.enums.GTNLItemList;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -27,12 +27,19 @@ public class BlockEternalGregTechWorkshopRender extends Block {
         this.setResistance(20f);
         this.setHardness(-1.0f);
         this.setCreativeTab(GTNLCreativeTabs.GTNotLeisureBlock);
-        this.setBlockName("EternalGregTechWorkshopRenderer");
+        this.setBlockName("gtnl.eternal_greg_tech_workshop_renderer");
         this.setLightLevel(1.0f);
-        GameRegistry.registerBlock(this, ItemBlockEternalGregTechWorkshopRender.class, getUnlocalizedName());
         GameRegistry
-            .registerTileEntity(TileEntityEternalGregTechWorkshop.class, "EternalGregTechWorkshopRenderTileEntity");
+            .registerBlock(this, ItemBlockEternalGregTechWorkshopRender.class, "eternal_greg_tech_workshop_render");
+        GameRegistry.registerTileEntity(
+            TileEntityEternalGregTechWorkshop.class,
+            "eternal_greg_tech_workshop_render_tile_entity");
         GTNLItemList.EternalGregTechWorkshopRender.set(new ItemStack(this, 1));
+    }
+
+    @Override
+    public String getUnlocalizedName() {
+        return "gtnl.block.eternal_greg_tech_workshop_renderer";
     }
 
     @Override

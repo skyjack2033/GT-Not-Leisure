@@ -3,7 +3,6 @@ package com.science.gtnl.common.machine.multiblock.wireless;
 import static com.science.gtnl.ScienceNotLeisure.RESOURCE_ROOT_ID;
 import static com.science.gtnl.common.machine.multiMachineBase.MultiMachineBase.CustomHatchElement.ParallelCon;
 import static kubatech.loaders.BlockLoader.defcCasingBlock;
-import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
 import java.util.List;
 
@@ -11,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gtnewhorizon.structurelib.alignment.enumerable.Rotation;
@@ -20,16 +18,18 @@ import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureUtility;
 import com.science.gtnl.ScienceNotLeisure;
-import com.science.gtnl.common.entity.EntityParticleBeam;
+import com.science.gtnl.api.casing.GTNLCasings;
 import com.science.gtnl.common.machine.multiMachineBase.WirelessEnergyMultiMachineBase;
+import com.science.gtnl.common.machine.tooltip.GTNLMultiblockTooltipBuilder;
+import com.science.gtnl.common.render.entity.EntityParticleBeam;
 import com.science.gtnl.common.render.tile.KerrNewmanHomogenizerRenderer;
-import com.science.gtnl.loader.BlockLoader;
 import com.science.gtnl.utils.StructureUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import goodgenerator.loader.Loaders;
 import gregtech.api.GregTechAPI;
+import gregtech.api.casing.Casings;
 import gregtech.api.enums.HatchElement;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
@@ -38,17 +38,16 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.GregTechTileClientEvents;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.GTStructureUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.render.IMTERenderer;
-import gtPlusPlus.api.recipe.GTPPRecipeMaps;
-import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.material.MaterialsAlloy;
-import gtnhlanth.common.register.LanthItemList;
 
+@IMetaTileEntity.SkipGenerateDescription
 public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNewmanHomogenizer>
     implements IMTERenderer {
 
@@ -167,7 +166,7 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
     public IStructureDefinition<KerrNewmanHomogenizer> getStructureDefinition() {
         return StructureDefinition.<KerrNewmanHomogenizer>builder()
             .addShape(STRUCTURE_PIECE_MAIN, StructureUtility.transpose(shape))
-            .addElement('A', StructureUtility.ofBlock(ModBlocks.blockCasings3Misc, 13))
+            .addElement('A', Casings.AdvancedFusionCoil.asElement())
             .addElement(
                 'B',
                 GTStructureUtility.buildHatchAdder(KerrNewmanHomogenizer.class)
@@ -182,10 +181,9 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
                     .casingIndex(getCasingTextureID())
                     .hint(3)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 3))))
-            .addElement('C', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 11))
+                        StructureUtility
+                            .onElementPass(x -> ++x.mCountCasing, Casings.PressureContainmentCasing.asElement())))
+            .addElement('C', Casings.ExtremeDensitySpaceBendingCasing.asElement())
             .addElement('D', GTStructureUtility.ofFrame(Materials.TungstenCarbide))
             .addElement(
                 'E',
@@ -203,7 +201,7 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
                     .buildAndChain(
                         StructureUtility.onElementPass(
                             x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(GregTechAPI.sBlockCasings8, 7))))
+                            Casings.AdvancedIridiumPlatedMachineCasing.asElement())))
             .addElement(
                 'F',
                 GTStructureUtility.buildHatchAdder(KerrNewmanHomogenizer.class)
@@ -220,23 +218,23 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
                     .buildAndChain(
                         StructureUtility
                             .onElementPass(x -> ++x.mCountCasing, StructureUtility.ofBlock(defcCasingBlock, 7))))
-            .addElement('G', StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 2))
-            .addElement('H', StructureUtility.ofBlock(BlockLoader.metaCasing, 5))
-            .addElement('I', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 12))
-            .addElement('J', StructureUtility.ofBlock(GregTechAPI.sBlockCasings3, 12))
-            .addElement('K', StructureUtility.ofBlock(GregTechAPI.sBlockCasings11, 4))
-            .addElement('L', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 0))
-            .addElement('M', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 7))
+            .addElement('G', Casings.HastelloyXStructuralBlock.asElement())
+            .addElement('H', GTNLCasings.NeutroniumGearbox.asElement())
+            .addElement('I', Casings.BackgroundRadiationAbsorbentCasing.asElement())
+            .addElement('J', Casings.RadiationProofMachineCasing.asElement())
+            .addElement('K', Casings.OsmiumItemPipeCasing.asElement())
+            .addElement('L', Casings.PBIPipeCasing.asElement())
+            .addElement('M', Casings.StabilizedNaquadahWaterPlantCasing.asElement())
             .addElement('N', StructureUtility.ofBlock(GregTechAPI.sBlockTintedGlass, 1))
-            .addElement('O', StructureUtility.ofBlock(GregTechAPI.sBlockCasings10, 7))
-            .addElement('P', StructureUtility.ofBlock(BlockLoader.metaCasing, 4))
+            .addElement('O', Casings.ActiveNeutroniumCasing.asElement())
+            .addElement('P', GTNLCasings.NeutroniumPipeCasing.asElement())
             .addElement('Q', GTStructureUtility.ofFrame(Materials.Trinium))
             .addElement('R', StructureUtility.ofBlock(Loaders.gravityStabilizationCasing, 0))
-            .addElement('S', StructureUtility.ofBlock(ModBlocks.blockCasings6Misc, 0))
-            .addElement('T', StructureUtility.ofBlock(sBlockCasingsTT, 6))
-            .addElement('U', StructureUtility.ofBlock(LanthItemList.SHIELDED_ACCELERATOR_CASING, 0))
+            .addElement('S', Casings.FusionMachineCasingMKIV.asElement())
+            .addElement('T', Casings.ContainmentFieldGenerator.asElement())
+            .addElement('U', Casings.ShieldedAcceleratorCasing.asElement())
             .addElement('V', StructureUtility.ofBlock(GregTechAPI.sBlockCasingsDyson, 1))
-            .addElement('W', StructureUtility.ofBlock(GregTechAPI.sBlockCasings9, 11))
+            .addElement('W', Casings.HeatResistantTriniumPlatedCasing.asElement())
             .addElement(
                 'X',
                 GTStructureUtility.buildHatchAdder(KerrNewmanHomogenizer.class)
@@ -251,18 +249,16 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
                     .casingIndex(getCasingTextureID())
                     .hint(1)
                     .buildAndChain(
-                        StructureUtility.onElementPass(
-                            x -> ++x.mCountCasing,
-                            StructureUtility.ofBlock(ModBlocks.blockCasings2Misc, 12))))
-            .addElement('Y', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
+                        StructureUtility.onElementPass(x -> ++x.mCountCasing, Casings.BulkProductionFrame.asElement())))
+            .addElement('Y', Casings.DimensionalBridge.asElement())
             .addElement(
                 'Z',
                 StructureUtility.ofBlockAnyMeta(
                     Block.getBlockFromItem(
                         MaterialsAlloy.HASTELLOY_N.getFrameBox(1)
                             .getItem())))
-            .addElement('0', StructureUtility.ofBlock(ModBlocks.blockSpecialMultiCasings, 15))
-            .addElement('1', StructureUtility.ofBlock(GregTechAPI.sBlockCasings1, 14))
+            .addElement('0', Casings.ReinforcedSCTurbineCasing.asElement())
+            .addElement('1', Casings.DimensionalBridge.asElement())
             .addElement(
                 '2',
                 StructureUtility.ofBlockAnyMeta(
@@ -304,7 +300,12 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         if (!checkPiece(STRUCTURE_PIECE_MAIN, HORIZONTAL_OFF_SET, VERTICAL_OFF_SET, DEPTH_OFF_SET, errors)) return;
         setupParameters();
         checkHatch(errors);
-        getBaseMetaTileEntity().sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
+    }
+
+    @Override
+    protected void onStructureCheckFinished(IGregTechTileEntity base) {
+        super.onStructureCheckFinished(base);
+        base.sendBlockEvent(GregTechTileClientEvents.CHANGE_CUSTOM_DATA, getUpdateData());
     }
 
     @Override
@@ -314,7 +315,7 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
 
     @Override
     public RecipeMap<?> getRecipeMap() {
-        return GTPPRecipeMaps.mixerNonCellRecipes;
+        return RecipeMaps.mixerNonCellRecipes;
     }
 
     @Override
@@ -337,31 +338,13 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
 
     @Override
     public int getCasingTextureID() {
-        return StructureUtils.getTextureIndex(GregTechAPI.sBlockCasings8, 7);
+        return Casings.AdvancedIridiumPlatedMachineCasing.getTextureId();
     }
 
     @Override
     public MultiblockTooltipBuilder createTooltip() {
-        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
-        tt.addMachineType(StatCollector.translateToLocal("KerrNewmanHomogenizerRecipeType"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_00"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_01"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_02"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_03"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_04"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_05"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_06"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_07"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_08"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_09"))
-            .addInfo(StatCollector.translateToLocal("Tooltip_WirelessEnergyMultiMachine_10"))
-            .addTecTechHatchInfo()
-            .beginStructureBlock(83, 36, 83, true)
-            .addInputBus(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addOutputBus(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addInputHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addOutputHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
-            .addEnergyHatch(StatCollector.translateToLocal("Tooltip_KerrNewmanHomogenizer_Casing"), 1)
+        GTNLMultiblockTooltipBuilder tt = new GTNLMultiblockTooltipBuilder();
+        tt.addAutoTooltip(this)
             .toolTipFinisher();
         return tt;
     }
@@ -371,7 +354,7 @@ public class KerrNewmanHomogenizer extends WirelessEnergyMultiMachineBase<KerrNe
         float aX, float aY, float aZ, ItemStack aTool) {
         if (getBaseMetaTileEntity().isServerSide()) {
             this.enableRender = !enableRender;
-            GTUtility.sendChatTrans(aPlayer, "Info_Render_" + (this.enableRender ? "Enabled" : "Disabled"));
+            GTUtility.sendChatTrans(aPlayer, "gtnl.chat.render." + (this.enableRender ? "enabled" : "disabled"));
         }
         return true;
     }
